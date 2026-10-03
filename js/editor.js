@@ -446,55 +446,53 @@ async function generatePDF() {
     const { template } = editorState;
     const canvas = document.getElementById('document-canvas');
     
-    // Créer un conteneur temporaire pour le PDF
-    const pdfContainer = document.createElement('div');
-    pdfContainer.style.position = 'fixed';
-    pdfContainer.style.left = '0';
-    pdfContainer.style.top = '0';
-    pdfContainer.style.width = '210mm';
-    pdfContainer.style.height = '297mm';
-    pdfContainer.style.background = 'white';
-    pdfContainer.style.zIndex = '-1';
-    pdfContainer.style.opacity = '0';
-    pdfContainer.innerHTML = canvas.innerHTML;
-    
-    // Copier les styles
-    const styleTag = document.getElementById('template-style');
-    if (styleTag) {
-        const styleClone = styleTag.cloneNode(true);
-        pdfContainer.appendChild(styleClone);
-    }
-    
-    // Ajouter les styles inline pour la couleur
-    pdfContainer.style.setProperty('--doc-primary-color', editorState.primaryColor);
-    
-    document.body.appendChild(pdfContainer);
-    
-    // Attendre que les images soient chargées
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    const opt = {
-        margin: 0,
-        filename: `TakiDoc_${template.id}_${Date.now()}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-            scale: 2, 
-            useCORS: true,
-            allowTaint: true,
-            logging: false
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+    // Afficher un message de chargement
+    const originalText = document.getElementById('btn-download').textContent;
+    document.getElementById('btn-download').textContent = ' Génération en cours...';
+    document.getElementById('btn-download').disabled = true;
     
     try {
-        await html2pdf().set(opt).from(pdfContainer).save();
+        // Utiliser html2canvas directement sur l'élément visible
+        const canvasImage = await html2canvas(canvas, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            windowWidth: canvas.scrollWidth,
+            windowHeight: canvas.scrollHeight
+        });
+        
+        // Créer le PDF avec jsPDF
+        const imgData = canvasImage.toDataURL('image/jpeg', 0.98);
+        const pdf = new jspdf.jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+        
+        // Calculer les dimensions pour A4
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = canvasImage.width;
+        const imgHeight = canvasImage.height;
+        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+        
+        const imgX = (pdfWidth - imgWidth * ratio) / 2;
+        const imgY = 0;
+        
+        pdf.addImage(imgData, 'JPEG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+        
+        // Télécharger le PDF
+        pdf.save(`TakiDoc_${template.id}_${Date.now()}.pdf`);
+        
     } catch (error) {
         console.error('Erreur PDF:', error);
-        alert('Erreur lors du téléchargement du PDF');
+        alert('Erreur lors du téléchargement du PDF: ' + error.message);
+    } finally {
+        document.getElementById('btn-download').textContent = originalText;
+        document.getElementById('btn-download').disabled = false;
     }
-    
-    // Nettoyer
-    document.body.removeChild(pdfContainer);
 }
 
 // ============================================
