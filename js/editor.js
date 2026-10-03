@@ -1,5 +1,5 @@
 // ============================================
-// TAKIDOC - LOGIQUE DE L'ÉDITEUR (VERSION CORRIGÉE)
+// TAKIDOC - LOGIQUE DE L'ÉDITEUR (VERSION FINALE)
 // L'équipe Meurphy
 // ============================================
 
@@ -24,6 +24,53 @@ const editorState = {
     customData: {},
     primaryColor: '#0F172A',
     photoDataUrl: null
+};
+
+// Valeurs par défaut pour TOUS les champs
+const DEFAULT_VALUES = {
+    'nom': 'Meurphy TALAMIO',
+    'poste': 'Directeur Général',
+    'email': 'brazzamarket.infos@gmail.com',
+    'telephone': '+242 06 518 69 67',
+    'adresse': 'Brazzaville, Congo',
+    'profil': 'Professionnel expérimenté avec plus de 10 ans d\'expérience dans mon domaine. Passionné par l\'innovation et la recherche de l\'excellence. Je cherche à mettre mes compétences au service d\'une entreprise dynamique.',
+    'exp1_titre': 'Directeur Général',
+    'exp1_date': '2020 - Présent',
+    'exp1_entreprise': 'Entreprise XYZ - Brazzaville',
+    'exp1_desc': 'Direction stratégique de l\'entreprise. Management d\'une équipe de 50 personnes. Augmentation du chiffre d\'affaires de 30% en 2 ans.',
+    'exp2_titre': 'Chef de Projet Senior',
+    'exp2_date': '2015 - 2020',
+    'exp2_entreprise': 'Société ABC - Pointe-Noire',
+    'exp2_desc': 'Gestion de projets majeurs. Coordination avec les parties prenantes. Livraison de 15 projets dans les délais et budgets impartis.',
+    'form1_diplome': 'Master en Management',
+    'form1_ecole': 'Université Marien Ngouabi',
+    'form1_date': '2013 - 2015',
+    'form2_diplome': 'Licence en Gestion',
+    'form2_ecole': 'Université de Brazzaville',
+    'form2_date': '2010 - 2013',
+    'skill1_name': 'Gestion de projet',
+    'skill2_name': 'Leadership',
+    'skill3_name': 'Communication',
+    'skill4_name': 'Analyse stratégique',
+    'lang1_name': 'Français',
+    'lang1_level': 'Courant',
+    'lang2_name': 'Anglais',
+    'lang2_level': 'Professionnel',
+    'interets': 'Lecture, Voyages, Technologie, Sport',
+    'expediteur_nom': 'Meurphy TALAMIO',
+    'expediteur_adresse': 'Brazzaville, Congo',
+    'expediteur_telephone': '+242 06 518 69 67',
+    'expediteur_email': 'brazzamarket.infos@gmail.com',
+    'destinataire_nom': 'Monsieur le Directeur',
+    'destinataire_fonction': 'Directeur des Ressources Humaines',
+    'destinataire_entreprise': 'Entreprise Cible',
+    'destinataire_adresse': 'Brazzaville, Congo',
+    'objet': 'Candidature au poste de Directeur Général',
+    'paragraphe1': 'Madame, Monsieur,',
+    'paragraphe2': 'Par la présente, je me permets de vous adresser ma candidature pour le poste mentionné ci-dessus. Fort d\'une expérience solide dans mon domaine, je suis convaincu de pouvoir apporter une contribution significative à votre entreprise.',
+    'paragraphe3': 'Au cours de mon parcours professionnel, j\'ai développé des compétences clés qui correspondent parfaitement aux exigences de ce poste. Mon sens de l\'initiative, ma capacité d\'adaptation et mon esprit d\'équipe sont des atouts que je souhaite mettre à votre disposition.',
+    'paragraphe4': 'Je serais honoré de pouvoir vous exposer plus en détail mes motivations lors d\'un entretien. Dans l\'attente de votre réponse, je vous prie d\'agréer, Madame, Monsieur, l\'expression de mes salutations distinguées.',
+    'signature': 'Meurphy TALAMIO'
 };
 
 // ============================================
@@ -77,9 +124,14 @@ function initEditor() {
         setupColorPicker();
     }
     
-    setupFields(template.fields || []);
+    // Initialiser les données par défaut
+    initializeDefaultData();
     
+    // Rendu du document AVEC les valeurs par défaut
     renderDocument();
+    
+    // Setup des champs de formulaire
+    setupFields(template.fields || []);
     
     setupZoomControls();
     setupDownloadButton();
@@ -88,7 +140,17 @@ function initEditor() {
 }
 
 // ============================================
-// RENDU DU DOCUMENT
+// INITIALISATION DES DONNÉES PAR DÉFAUT
+// ============================================
+function initializeDefaultData() {
+    // Initialiser customData avec les valeurs par défaut
+    Object.keys(DEFAULT_VALUES).forEach(key => {
+        editorState.customData[key] = DEFAULT_VALUES[key];
+    });
+}
+
+// ============================================
+// RENDU DU DOCUMENT (AVEC VALEURS PAR DÉFAUT)
 // ============================================
 function renderDocument() {
     const canvas = document.getElementById('document-canvas');
@@ -103,8 +165,27 @@ function renderDocument() {
     
     if (templateRender) {
         styleTag.textContent = templateRender.cssStyles || '';
-        canvas.innerHTML = templateRender.htmlStructure || '<p>Aperçu non disponible</p>';
+        
+        // Injecter le HTML avec les valeurs par défaut REMPLACÉES
+        let html = templateRender.htmlStructure || '<p>Aperçu non disponible</p>';
+        
+        // Remplacer tous les placeholders par les valeurs par défaut
+        Object.keys(editorState.customData).forEach(key => {
+            const regex = new RegExp(`id="field-${key}"[^>]*>[^<]*<`, 'g');
+            const replacement = `id="field-${key}">${editorState.customData[key]}<`;
+            html = html.replace(regex, replacement);
+        });
+        
+        // Gérer la photo/initials
+        if (template.has_photo) {
+            const photoRegex = /<div class="cv-photo" id="doc-photo">[\s\S]*?<\/div>/;
+            const photoReplacement = `<div class="cv-photo" id="doc-photo"><span class="cv-photo-placeholder" id="photo-initials">MT</span></div>`;
+            html = html.replace(photoRegex, photoReplacement);
+        }
+        
+        canvas.innerHTML = html;
     } else {
+        // Rendu générique pour les templates sans design personnalisé
         styleTag.textContent = `
             .generic-preview { 
                 width: 210mm; 
@@ -122,14 +203,15 @@ function renderDocument() {
         
         let fieldsHtml = '';
         if (template.fields && template.fields.length > 0) {
-            fieldsHtml = template.fields.map(field => `
-                <div class="field">
-                    <div class="field-label">${field.field_label}</div>
-                    <div class="field-value" id="field-${field.field_name}" contenteditable="true">
-                        ${field.default_value || `[${field.field_label}]`}
+            fieldsHtml = template.fields.map(field => {
+                const value = editorState.customData[field.field_name] || `[${field.field_label}]`;
+                return `
+                    <div class="field">
+                        <div class="field-label">${field.field_label}</div>
+                        <div class="field-value" id="field-${field.field_name}">${value}</div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         } else {
             fieldsHtml = '<p style="color: #94a3b8; text-align: center; margin-top: 50px;">Aucun champ personnalisable pour ce document</p>';
         }
@@ -144,7 +226,107 @@ function renderDocument() {
     }
     
     applyPrimaryColor();
-    syncEditableFields();
+    attachFieldListeners();
+}
+
+// ============================================
+// ATTACHER LES ÉCOUTEURS D'ÉVÉNEMENTS (SYNCHRONISATION TEMPS RÉEL)
+// ============================================
+function attachFieldListeners() {
+    // Pour chaque champ dans le document (id="field-xxx")
+    document.querySelectorAll('[id^="field-"]').forEach(el => {
+        const fieldName = el.id.replace('field-', '');
+        
+        // Écouter les modifications dans le document (contenteditable)
+        el.addEventListener('input', (e) => {
+            const newValue = e.target.textContent;
+            editorState.customData[fieldName] = newValue;
+            
+            // Mettre à jour le champ de formulaire correspondant
+            const input = document.getElementById(`input-field-${fieldName}`);
+            if (input) {
+                input.value = newValue;
+            }
+            
+            // Mettre à jour les initiales si c'est le champ nom
+            if (fieldName === 'nom') {
+                updateInitials(newValue);
+            }
+        });
+    });
+}
+
+// ============================================
+// GESTION DES CHAMPS DE FORMULAIRE
+// ============================================
+function setupFields(fields) {
+    const container = document.getElementById('fields-container');
+    container.innerHTML = '';
+    
+    fields.forEach(field => {
+        const fieldDiv = document.createElement('div');
+        fieldDiv.className = 'form-field';
+        
+        const label = document.createElement('label');
+        label.textContent = field.field_label + (field.is_required ? ' *' : '');
+        fieldDiv.appendChild(label);
+        
+        let input;
+        if (field.field_type === 'textarea') {
+            input = document.createElement('textarea');
+            input.rows = 4;
+        } else {
+            input = document.createElement('input');
+            input.type = field.field_type === 'color' ? 'color' : 'text';
+        }
+        
+        input.id = `input-field-${field.field_name}`;
+        input.value = editorState.customData[field.field_name] || DEFAULT_VALUES[field.field_name] || `[${field.field_label}]`;
+        input.placeholder = `Entrez ${field.field_label.toLowerCase()}`;
+        
+        // Synchronisation TEMPS RÉEL caractère par caractère
+        input.addEventListener('input', (e) => {
+            const newValue = e.target.value;
+            editorState.customData[field.field_name] = newValue;
+            
+            // Mettre à jour le document immédiatement
+            const docField = document.getElementById(`field-${field.field_name}`);
+            if (docField) {
+                docField.textContent = newValue;
+            }
+            
+            // Mettre à jour les initiales si c'est le champ nom
+            if (field.field_name === 'nom') {
+                updateInitials(newValue);
+            }
+        });
+        
+        fieldDiv.appendChild(input);
+        container.appendChild(fieldDiv);
+    });
+}
+
+// ============================================
+// MISE À JOUR DES INITIALES
+// ============================================
+function updateInitials(nomComplet) {
+    const initialsElement = document.getElementById('photo-initials');
+    if (!initialsElement) return;
+    
+    // Extraire les initiales (première lettre de chaque mot)
+    const words = nomComplet.trim().split(/\s+/);
+    let initials = '';
+    
+    if (words.length >= 2) {
+        // Prendre la première lettre du premier et dernier mot
+        initials = (words[0][0] + words[words.length - 1][0]).toUpperCase();
+    } else if (words.length === 1 && words[0].length > 0) {
+        initials = words[0][0].toUpperCase();
+    } else {
+        initials = '??';
+    }
+    
+    initialsElement.textContent = initials;
 }
 
 // ============================================
@@ -172,18 +354,6 @@ function setupColorPicker() {
 function applyPrimaryColor() {
     const canvas = document.getElementById('document-canvas');
     canvas.style.setProperty('--doc-primary-color', editorState.primaryColor);
-    
-    // Mettre à jour tous les éléments qui utilisent la couleur
-    canvas.querySelectorAll('*').forEach(el => {
-        const style = window.getComputedStyle(el);
-        if (style.color.includes('var(--doc-primary-color)') || 
-            style.backgroundColor.includes('var(--doc-primary-color)') ||
-            style.borderColor.includes('var(--doc-primary-color)')) {
-            el.style.color = editorState.primaryColor;
-            el.style.backgroundColor = editorState.primaryColor;
-            el.style.borderColor = editorState.primaryColor;
-        }
-    });
 }
 
 // ============================================
@@ -222,133 +392,18 @@ function updatePhotoInDocument() {
     if (!photoContainer) return;
     
     if (editorState.photoDataUrl) {
+        // Afficher la photo
         photoContainer.innerHTML = `<img src="${editorState.photoDataUrl}" alt="Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
     } else {
-        photoContainer.innerHTML = '<span class="cv-photo-placeholder">Photo</span>';
-    }
-}
-
-// ============================================
-// GESTION DES CHAMPS DE TEXTE (CORRIGÉ)
-// ============================================
-function setupFields(fields) {
-    const container = document.getElementById('fields-container');
-    container.innerHTML = '';
-    
-    // Valeurs par défaut pour les champs courants
-    const defaultValues = {
-        'nom': 'Meurphy TALAMIO',
-        'poste': 'Directeur Général',
-        'email': 'brazzamarket.infos@gmail.com',
-        'telephone': '+242 06 518 69 67',
-        'adresse': 'Brazzaville, Congo',
-        'profil': 'Professionnel expérimenté avec plus de 10 ans d\'expérience dans mon domaine. Passionné par l\'innovation et la recherche de l\'excellence.',
-        'exp1_titre': 'Directeur Général',
-        'exp1_date': '2020 - Présent',
-        'exp1_entreprise': 'Entreprise XYZ - Brazzaville',
-        'exp1_desc': 'Direction stratégique de l\'entreprise. Management d\'une équipe de 50 personnes.',
-        'exp2_titre': 'Chef de Projet Senior',
-        'exp2_date': '2015 - 2020',
-        'exp2_entreprise': 'Société ABC - Pointe-Noire',
-        'exp2_desc': 'Gestion de projets majeurs. Coordination avec les parties prenantes.',
-        'form1_diplome': 'Master en Management',
-        'form1_ecole': 'Université Marien Ngouabi',
-        'form1_date': '2013 - 2015',
-        'form2_diplome': 'Licence en Gestion',
-        'form2_ecole': 'Université de Brazzaville',
-        'form2_date': '2010 - 2013',
-        'skill1_name': 'Gestion de projet',
-        'skill2_name': 'Leadership',
-        'skill3_name': 'Communication',
-        'skill4_name': 'Analyse stratégique',
-        'lang1_name': 'Français',
-        'lang1_level': 'Courant',
-        'lang2_name': 'Anglais',
-        'lang2_level': 'Professionnel',
-        'interets': 'Lecture, Voyages, Technologie, Sport',
-        'expediteur_nom': 'Meurphy TALAMIO',
-        'expediteur_adresse': 'Brazzaville, Congo\nTéléphone: +242 06 518 69 67',
-        'expediteur_telephone': '+242 06 518 69 67',
-        'expediteur_email': 'brazzamarket.infos@gmail.com',
-        'destinataire_nom': 'Monsieur le Directeur',
-        'destinataire_fonction': 'Directeur des Ressources Humaines',
-        'destinataire_entreprise': 'Entreprise Cible',
-        'destinataire_adresse': 'Brazzaville, Congo',
-        'objet': 'Candidature au poste de Directeur Général',
-        'paragraphe1': 'Madame, Monsieur,',
-        'paragraphe2': 'Par la présente, je me permets de vous adresser ma candidature pour le poste mentionné ci-dessus. Fort d\'une expérience solide dans mon domaine, je suis convaincu de pouvoir apporter une contribution significative à votre entreprise.',
-        'paragraphe3': 'Au cours de mon parcours professionnel, j\'ai développé des compétences clés qui correspondent parfaitement aux exigences de ce poste. Mon sens de l\'initiative, ma capacité d\'adaptation et mon esprit d\'équipe sont des atouts que je souhaite mettre à votre disposition.',
-        'paragraphe4': 'Je serais honoré de pouvoir vous exposer plus en détail mes motivations lors d\'un entretien. Dans l\'attente de votre réponse, je vous prie d\'agréer, Madame, Monsieur, l\'expression de mes salutations distinguées.',
-        'signature': 'Meurphy TALAMIO'
-    };
-    
-    fields.forEach(field => {
-        const fieldDiv = document.createElement('div');
-        fieldDiv.className = 'form-field';
-        
-        const label = document.createElement('label');
-        label.textContent = field.field_label + (field.is_required ? ' *' : '');
-        fieldDiv.appendChild(label);
-        
-        let input;
-        if (field.field_type === 'textarea') {
-            input = document.createElement('textarea');
-            input.rows = 4;
-        } else {
-            input = document.createElement('input');
-            input.type = field.field_type === 'color' ? 'color' : 'text';
+        // Afficher les initiales
+        const nom = editorState.customData['nom'] || 'Meurphy TALAMIO';
+        const words = nom.trim().split(/\s+/);
+        let initials = 'MT';
+        if (words.length >= 2) {
+            initials = (words[0][0] + words[words.length - 1][0]).toUpperCase();
         }
-        
-        input.id = `field-${field.field_name}`;
-        // Utiliser la valeur par défaut si elle existe, sinon une valeur générique
-        input.value = field.default_value || defaultValues[field.field_name] || `[${field.field_label}]`;
-        input.placeholder = `Entrez ${field.field_label.toLowerCase()}`;
-        
-        // Stocker la valeur initiale
-        editorState.customData[field.field_name] = input.value;
-        
-        // Écouter les changements en temps réel
-        input.addEventListener('input', (e) => {
-            editorState.customData[field.field_name] = e.target.value;
-            updateFieldInDocument(field.field_name, e.target.value);
-        });
-        
-        fieldDiv.appendChild(input);
-        container.appendChild(fieldDiv);
-    });
-    
-    // Initialiser le document avec les valeurs par défaut
-    setTimeout(() => {
-        fields.forEach(field => {
-            const input = document.getElementById(`field-${field.field_name}`);
-            if (input) {
-                updateFieldInDocument(field.field_name, input.value);
-            }
-        });
-    }, 100);
-}
-
-function updateFieldInDocument(fieldName, value) {
-    const fieldEl = document.getElementById(`field-${fieldName}`);
-    if (fieldEl) {
-        fieldEl.textContent = value;
+        photoContainer.innerHTML = `<span class="cv-photo-placeholder" id="photo-initials" style="font-size: 2rem; font-weight: 700; color: white;">${initials}</span>`;
     }
-}
-
-function syncEditableFields() {
-    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-        const fieldId = el.id;
-        if (fieldId && fieldId.startsWith('field-')) {
-            const fieldName = fieldId.replace('field-', '');
-            el.addEventListener('input', () => {
-                editorState.customData[fieldName] = el.textContent;
-                const input = document.getElementById(`field-${fieldName}`);
-                if (input && input.tagName !== 'DIV') {
-                    input.value = el.textContent;
-                }
-            });
-        }
-    });
 }
 
 // ============================================
@@ -378,7 +433,7 @@ function setupZoomControls() {
 }
 
 // ============================================
-// TÉLÉCHARGEMENT PDF (GRATUIT EN MODE TEST)
+// TÉLÉCHARGEMENT PDF (CORRIGÉ)
 // ============================================
 function setupDownloadButton() {
     const btn = document.getElementById('btn-download');
@@ -391,34 +446,59 @@ async function generatePDF() {
     const { template } = editorState;
     const canvas = document.getElementById('document-canvas');
     
-    // Créer un clone du document pour le PDF
-    const clone = canvas.cloneNode(true);
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.transform = 'none';
-    document.body.appendChild(clone);
+    // Créer un conteneur temporaire pour le PDF
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.position = 'fixed';
+    pdfContainer.style.left = '0';
+    pdfContainer.style.top = '0';
+    pdfContainer.style.width = '210mm';
+    pdfContainer.style.height = '297mm';
+    pdfContainer.style.background = 'white';
+    pdfContainer.style.zIndex = '-1';
+    pdfContainer.style.opacity = '0';
+    pdfContainer.innerHTML = canvas.innerHTML;
+    
+    // Copier les styles
+    const styleTag = document.getElementById('template-style');
+    if (styleTag) {
+        const styleClone = styleTag.cloneNode(true);
+        pdfContainer.appendChild(styleClone);
+    }
+    
+    // Ajouter les styles inline pour la couleur
+    pdfContainer.style.setProperty('--doc-primary-color', editorState.primaryColor);
+    
+    document.body.appendChild(pdfContainer);
+    
+    // Attendre que les images soient chargées
+    await new Promise(resolve => setTimeout(resolve, 500));
     
     const opt = {
         margin: 0,
         filename: `TakiDoc_${template.id}_${Date.now()}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: { 
+            scale: 2, 
+            useCORS: true,
+            allowTaint: true,
+            logging: false
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     
     try {
-        await html2pdf().set(opt).from(clone).save();
-        alert('PDF téléchargé avec succès !');
+        await html2pdf().set(opt).from(pdfContainer).save();
     } catch (error) {
         console.error('Erreur PDF:', error);
         alert('Erreur lors du téléchargement du PDF');
     }
     
-    document.body.removeChild(clone);
+    // Nettoyer
+    document.body.removeChild(pdfContainer);
 }
 
 // ============================================
-// ACHAT ET PAIEMENT (OPTIONNEL EN MODE TEST)
+// ACHAT ET PAIEMENT
 // ============================================
 function setupBuyButton() {
     const btn = document.getElementById('btn-buy');
