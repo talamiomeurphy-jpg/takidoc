@@ -1065,6 +1065,250 @@ export function getTemplate_Attestation_Travail() {
     };
 }
 
+
+// --- DOCUMENT 7 : CV Ingénieur Tech ---
+export function getTemplate_CV_Ingenieur_Tech() {
+    return {
+        id: 'cv_ingenieur_tech',
+        name: 'CV Ingénieur Tech',
+        category: 'cv',
+        price: 1500,
+        hasPhoto: true,
+        hasColorPicker: true,
+        description: 'Design moderne et technique, spécialisé pour les métiers IT et ingénierie.',
+        cssStyles: `
+            .cv-tech-container { width: 210mm; min-height: 297mm; background: white; font-family: 'Inter', sans-serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); display: grid; grid-template-columns: 35% 65%; }
+            .cv-tech-sidebar { background: #1e293b; color: white; padding: 40px 25px; }
+            .cv-tech-photo { width: 140px; height: 140px; border-radius: 50%; background: rgba(255,255,255,0.1); margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid var(--doc-primary-color, #0F172A); }
+            .cv-tech-photo img { width: 100%; height: 100%; object-fit: cover; }
+            .cv-tech-photo-placeholder { font-size: 2.5rem; font-weight: 800; color: white; }
+            .cv-tech-sidebar-title { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin: 30px 0 15px; padding-bottom: 8px; border-bottom: 2px solid var(--doc-primary-color, #0F172A); }
+            .cv-tech-contact-item { font-size: 0.9rem; margin-bottom: 12px; word-break: break-word; }
+            .cv-tech-skill-bar { margin-bottom: 15px; }
+            .cv-tech-skill-name { font-size: 0.9rem; margin-bottom: 5px; }
+            .cv-tech-skill-track { height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; }
+            .cv-tech-skill-fill { height: 100%; background: var(--doc-primary-color, #0F172A); border-radius: 4px; }
+            .cv-tech-main { padding: 40px 35px; }
+            .cv-tech-name { font-size: 2.5rem; font-weight: 800; color: #1e293b; line-height: 1; margin-bottom: 10px; }
+            .cv-tech-title { font-size: 1.2rem; color: var(--doc-primary-color, #0F172A); font-weight: 600; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .cv-tech-section { margin-bottom: 30px; }
+            .cv-tech-section-title { font-size: 1.1rem; font-weight: 800; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+            .cv-tech-section-title::before { content: ''; width: 4px; height: 20px; background: var(--doc-primary-color, #0F172A); border-radius: 2px; }
+            .cv-tech-text { font-size: 0.95rem; line-height: 1.6; color: #475569; }
+            .cv-tech-item { margin-bottom: 20px; padding-left: 15px; border-left: 3px solid #e2e8f0; }
+            .cv-tech-item-title { font-weight: 700; color: #0f172a; font-size: 1.05rem; }
+            .cv-tech-item-date { font-size: 0.85rem; color: #64748b; font-style: italic; margin-bottom: 5px; }
+            .cv-tech-item-subtitle { font-size: 0.95rem; color: var(--doc-primary-color, #0F172A); font-weight: 600; margin-bottom: 8px; }
+            .cv-tech-tech-stack { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+            .cv-tech-tech-tag { background: #f1f5f9; color: #0f172a; padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: 600; border-left: 3px solid var(--doc-primary-color, #0F172A); }
+        `,
+        htmlStructure: `
+            <div class="cv-tech-container">
+                <aside class="cv-tech-sidebar">
+                    <div class="cv-tech-photo" id="doc-photo"><span class="cv-tech-photo-placeholder" id="photo-initials">MT</span></div>
+                    <div class="cv-tech-sidebar-title">Contact</div>
+                    <div class="cv-tech-contact-item"> <span id="field-email">brazzamarket.infos@gmail.com</span></div>
+                    <div class="cv-tech-contact-item">☎ <span id="field-telephone">+242 06 518 69 67</span></div>
+                    <div class="cv-tech-contact-item">⌖ <span id="field-adresse">Brazzaville, Congo</span></div>
+                    <div class="cv-tech-contact-item">💻 <span id="field-github">github.com/meurphy</span></div>
+                    
+                    <div class="cv-tech-sidebar-title">Compétences Techniques</div>
+                    <div class="cv-tech-skill-bar"><div class="cv-tech-skill-name" id="field-tech1_name">JavaScript/TypeScript</div><div class="cv-tech-skill-track"><div class="cv-tech-skill-fill" style="width: 90%"></div></div></div>
+                    <div class="cv-tech-skill-bar"><div class="cv-tech-skill-name" id="field-tech2_name">React/Node.js</div><div class="cv-tech-skill-track"><div class="cv-tech-skill-fill" style="width: 85%"></div></div></div>
+                    <div class="cv-tech-skill-bar"><div class="cv-tech-skill-name" id="field-tech3_name">Python/Django</div><div class="cv-tech-skill-track"><div class="cv-tech-skill-fill" style="width: 80%"></div></div></div>
+                    <div class="cv-tech-skill-bar"><div class="cv-tech-skill-name" id="field-tech4_name">SQL/NoSQL</div><div class="cv-tech-skill-track"><div class="cv-tech-skill-fill" style="width: 75%"></div></div></div>
+                    
+                    <div class="cv-tech-sidebar-title">Langues</div>
+                    <div class="cv-tech-contact-item"><strong id="field-lang1_name">Français</strong> : <span id="field-lang1_level">Courant</span></div>
+                    <div class="cv-tech-contact-item"><strong id="field-lang2_name">Anglais</strong> : <span id="field-lang2_level">Technique</span></div>
+                </aside>
+                <main class="cv-tech-main">
+                    <h1 class="cv-tech-name" id="field-nom">Meurphy TALAMIO</h1>
+                    <div class="cv-tech-title" id="field-poste">Ingénieur Full Stack Senior</div>
+                    
+                    <section class="cv-tech-section">
+                        <div class="cv-tech-section-title">Profil</div>
+                        <p class="cv-tech-text" id="field-profil">Ingénieur passionné avec 7 ans d'expérience dans le développement d'applications web et mobiles. Spécialisé en architectures modernes et solutions cloud. Leader technique d'équipes agiles.</p>
+                    </section>
+                    
+                    <section class="cv-tech-section">
+                        <div class="cv-tech-section-title">Expériences</div>
+                        <div class="cv-tech-item">
+                            <div class="cv-tech-item-title" id="field-exp1_titre">Lead Developer Full Stack</div>
+                            <div class="cv-tech-item-date" id="field-exp1_date">2021 - Présent</div>
+                            <div class="cv-tech-item-subtitle" id="field-exp1_entreprise">TechCorp Solutions</div>
+                            <p class="cv-tech-text" id="field-exp1_desc">Direction technique d'une équipe de 8 développeurs. Architecture microservices. Déploiement CI/CD. Réduction du temps de chargement de 40%.</p>
+                            <div class="cv-tech-tech-stack">
+                                <span class="cv-tech-tech-tag" id="field-exp1_tech1">React</span>
+                                <span class="cv-tech-tech-tag" id="field-exp1_tech2">Node.js</span>
+                                <span class="cv-tech-tech-tag" id="field-exp1_tech3">AWS</span>
+                            </div>
+                        </div>
+                        <div class="cv-tech-item">
+                            <div class="cv-tech-item-title" id="field-exp2_titre">Développeur Backend</div>
+                            <div class="cv-tech-item-date" id="field-exp2_date">2018 - 2021</div>
+                            <div class="cv-tech-item-subtitle" id="field-exp2_entreprise">StartupXYZ</div>
+                            <p class="cv-tech-text" id="field-exp2_desc">Développement d'APIs RESTful. Optimisation de bases de données. Intégration de systèmes de paiement.</p>
+                            <div class="cv-tech-tech-stack">
+                                <span class="cv-tech-tech-tag" id="field-exp2_tech1">Python</span>
+                                <span class="cv-tech-tech-tag" id="field-exp2_tech2">Django</span>
+                                <span class="cv-tech-tech-tag" id="field-exp2_tech3">PostgreSQL</span>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="cv-tech-section">
+                        <div class="cv-tech-section-title">Formation</div>
+                        <div class="cv-tech-item">
+                            <div class="cv-tech-item-title" id="field-form1_diplome">Master en Informatique</div>
+                            <div class="cv-tech-item-date" id="field-form1_date">2016 - 2018</div>
+                            <div class="cv-tech-item-subtitle" id="field-form1_ecole">Université Marien Ngouabi</div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        `
+    };
+}
+
+// --- DOCUMENT 8 : Lettre de Recommandation ---
+export function getTemplate_Lettre_Recommandation() {
+    return {
+        id: 'lettre_recommandation',
+        name: 'Lettre de Recommandation',
+        category: 'lettre',
+        price: 800,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Format professionnel pour recommander un candidat ou un collaborateur.',
+        cssStyles: `
+            .lettre-reco-container { width: 210mm; min-height: 297mm; background: white; padding: 50px 60px; font-family: 'Georgia', 'Times New Roman', serif; color: #1e293b; line-height: 1.8; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+            .lettre-reco-header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+            .lettre-reco-expediteur { font-size: 0.95rem; line-height: 1.5; }
+            .lettre-reco-destinataire { text-align: right; font-size: 0.95rem; line-height: 1.5; }
+            .lettre-reco-date { text-align: right; margin-bottom: 30px; font-weight: 600; color: var(--doc-primary-color, #0F172A); }
+            .lettre-reco-objet { font-weight: 700; margin-bottom: 25px; color: var(--doc-primary-color, #0F172A); font-size: 1.05rem; text-decoration: underline; text-underline-offset: 4px; }
+            .lettre-reco-corps { margin-bottom: 20px; text-align: justify; font-size: 1rem; }
+            .lettre-reco-corps p { margin-bottom: 15px; }
+            .lettre-reco-info-personne { font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .lettre-reco-formule { margin-top: 30px; font-style: italic; }
+            .lettre-reco-signature { margin-top: 40px; text-align: right; }
+            .lettre-reco-signature-nom { font-weight: 700; color: var(--doc-primary-color, #0F172A); font-size: 1.1rem; }
+            .lettre-reco-signature-fonction { font-size: 0.95rem; color: #64748b; margin-top: 5px; }
+        `,
+        htmlStructure: `
+            <div class="lettre-reco-container">
+                <div class="lettre-reco-header">
+                    <div class="lettre-reco-expediteur">
+                        <strong id="field-expediteur_nom">Meurphy TALAMIO</strong><br>
+                        <span id="field-expediteur_fonction">Directeur Général</span><br>
+                        <span id="field-expediteur_entreprise">Entreprise XYZ</span><br>
+                        <span id="field-expediteur_adresse">Brazzaville, Congo</span><br>
+                        <span id="field-expediteur_telephone">+242 06 518 69 67</span><br>
+                        <span id="field-expediteur_email">brazzamarket.infos@gmail.com</span>
+                    </div>
+                    <div class="lettre-reco-destinataire">
+                        <strong id="field-destinataire_nom">À qui de droit</strong><br>
+                        <span id="field-destinataire_entreprise">Entreprise Cible</span><br>
+                        <span id="field-destinataire_adresse">Brazzaville, Congo</span>
+                    </div>
+                </div>
+                
+                <div class="lettre-reco-date">Brazzaville, le <span id="field-date">04 octobre 2026</span></div>
+                
+                <div class="lettre-reco-objet">Objet : <span id="field-objet">Lettre de recommandation pour [Nom de la personne]</span></div>
+                
+                <div class="lettre-reco-corps">
+                    <p id="field-paragraphe1">Madame, Monsieur,</p>
+                    <p id="field-paragraphe2">Par la présente, je tiens à recommander vivement <span class="lettre-reco-info-personne" id="field-personne_nom">Monsieur/Madame [Nom]</span>, que j'ai eu le plaisir de connaître pendant <span class="lettre-reco-info-personne" id="field-duree_collaboration">3 ans</span> au sein de notre entreprise <span class="lettre-reco-info-personne" id="field-entreprise_nom2">Entreprise XYZ</span>.</p>
+                    <p id="field-paragraphe3">Durant cette période, <span class="lettre-reco-info-personne" id="field-personne_pronom">il/elle</span> a occupé le poste de <span class="lettre-reco-info-personne" id="field-personne_poste">[Poste occupé]</span> et a fait preuve d'un professionnalisme exemplaire, d'une grande rigueur et d'un excellent esprit d'équipe. <span class="lettre-reco-info-personne" id="field-personne_pronom2">Il/Elle</span> a notamment contribué à <span class="lettre-reco-info-personne" id="field-realisation_majeure">[Réalisation majeure]</span>.</p>
+                    <p id="field-paragraphe4">Je suis convaincu que <span class="lettre-reco-info-personne" id="field-personne_pronom3">il/elle</span> sera un atout précieux pour votre organisation et je le/la recommande sans réserve.</p>
+                    <p id="field-paragraphe5">Je reste à votre disposition pour tout complément d'information.</p>
+                </div>
+                
+                <div class="lettre-reco-formule">Cordialement,</div>
+                <div class="lettre-reco-signature">
+                    <div class="lettre-reco-signature-nom" id="field-expediteur_nom2">Meurphy TALAMIO</div>
+                    <div class="lettre-reco-signature-fonction" id="field-expediteur_fonction2">Directeur Général</div>
+                </div>
+            </div>
+        `
+    };
+}
+
+// --- DOCUMENT 9 : Attestation de Salaire ---
+export function getTemplate_Attestation_Salaire() {
+    return {
+        id: 'attestation_salaire',
+        name: 'Attestation de Salaire',
+        category: 'attestation',
+        price: 1000,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Document officiel attestant du salaire d\'un employé .',
+        cssStyles: `
+            .att-salaire-container { width: 210mm; min-height: 297mm; background: white; padding: 60px 70px; font-family: 'Times New Roman', 'Georgia', serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); line-height: 1.8; }
+            .att-salaire-header { text-align: center; margin-bottom: 50px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .att-salaire-entreprise-nom { font-size: 1.8rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+            .att-salaire-entreprise-info { font-size: 0.95rem; color: #64748b; line-height: 1.6; }
+            .att-salaire-titre { text-align: center; font-size: 2rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 3px; margin: 40px 0; text-decoration: underline; text-underline-offset: 8px; }
+            .att-salaire-corps { font-size: 1.1rem; line-height: 2; text-align: justify; margin-bottom: 30px; }
+            .att-salaire-corps p { margin-bottom: 20px; text-indent: 40px; }
+            .att-salaire-info { font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .att-salaire-tableau { width: 100%; margin: 30px 0; border-collapse: collapse; }
+            .att-salaire-tableau td { padding: 12px 15px; border: 1px solid #e2e8f0; }
+            .att-salaire-tableau td:first-child { font-weight: 600; background: #f8fafc; width: 40%; }
+            .att-salaire-date-lieu { text-align: right; font-size: 1.05rem; margin: 40px 0; font-style: italic; }
+            .att-salaire-signature { margin-top: 60px; text-align: right; }
+            .att-salaire-signature-label { font-size: 1rem; color: #64748b; margin-bottom: 80px; }
+            .att-salaire-signature-nom { font-size: 1.1rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); border-top: 2px solid var(--doc-primary-color, #0F172A); display: inline-block; padding-top: 10px; min-width: 200px; }
+            .att-salaire-signature-fonction { font-size: 0.95rem; color: #64748b; margin-top: 5px; }
+            .att-salaire-footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 0.85rem; color: #94a3b8; font-style: italic; }
+        `,
+        htmlStructure: `
+            <div class="att-salaire-container">
+                <header class="att-salaire-header">
+                    <div class="att-salaire-entreprise-nom" id="field-entreprise_nom">ENTREPRISE XYZ</div>
+                    <div class="att-salaire-entreprise-info">
+                        <div id="field-entreprise_adresse">123 Avenue de l'Indépendance, Brazzaville</div>
+                        <div>Tél: <span id="field-entreprise_telephone">+242 06 000 00 00</span> | Email: <span id="field-entreprise_email">contact@entreprise.com</span></div>
+                    </div>
+                </header>
+                
+                <h1 class="att-salaire-titre">Attestation de Salaire</h1>
+                
+                <div class="att-salaire-corps">
+                    <p>Je soussigné(e), <span class="att-salaire-info" id="field-signataire_nom">Monsieur le Directeur Général</span>, agissant en qualité de <span class="att-salaire-info" id="field-signataire_fonction">Directeur Général</span> de la société <span class="att-salaire-info" id="field-entreprise_nom2">ENTREPRISE XYZ</span>,</p>
+                    
+                    <p>Certifie par la présente que <span class="att-salaire-info" id="field-employe_nom">Meurphy TALAMIO</span>, occupant le poste de <span class="att-salaire-info" id="field-employe_poste">Directeur Général</span> au sein de notre entreprise depuis le <span class="att-salaire-info" id="field-employe_date_embauche">01/01/2020</span>, perçoit une rémunération mensuelle brute de <span class="att-salaire-info" id="field-salaire_montant">1 500 000 FCFA</span>.</p>
+                    
+                    <p>Cette rémunération se décompose comme suit :</p>
+                </div>
+                
+                <table class="att-salaire-tableau">
+                    <tr><td>Salaire de base</td><td id="field-salaire_base">1 200 000 FCFA</td></tr>
+                    <tr><td>Primes et indemnités</td><td id="field-salaire_primes">300 000 FCFA</td></tr>
+                    <tr><td><strong>Total brut mensuel</strong></td><td><strong id="field-salaire_total">1 500 000 FCFA</strong></td></tr>
+                </table>
+                
+                <div class="att-salaire-corps">
+                    <p>Cette attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit, notamment pour faciliter ses démarches administratives et bancaires.</p>
+                </div>
+                
+                <div class="att-salaire-date-lieu">Fait à <span id="field-ville">Brazzaville</span>, le <span id="field-date">04 octobre 2026</span></div>
+                
+                <div class="att-salaire-signature">
+                    <div class="att-salaire-signature-label">Le Signataire</div>
+                    <div class="att-salaire-signature-nom" id="field-signataire_nom2">Monsieur le Directeur Général</div>
+                    <div class="att-salaire-signature-fonction" id="field-signataire_fonction2">Directeur Général</div>
+                </div>
+                
+                <div class="att-salaire-footer">Document généré par TakiDoc - L'équipe Meurphy | www.takidoc.onrender.com</div>
+            </div>
+        `
+    };
+}
+
 // ============================================
 // REGISTRE CENTRAL MIS À JOUR
 // ============================================
@@ -1072,8 +1316,11 @@ export const templatesRegistry = [
     getTemplate_CV_Executif_Moderne(),
     getTemplate_CV_Classique_Francais(),
     getTemplate_Attestation_Travail(),
-    getTemplate_CV_Etudiant_Stage(),    // ← AJOUTÉ
-    getTemplate_CV_Creatif_Design(),    // ← AJOUTÉ
-    getTemplate_Lettre_Motivation_Stage(), // ← AJOUTÉ
-    getTemplate_Lettre_Motivation_Classique()
+    getTemplate_CV_Etudiant_Stage(),
+    getTemplate_CV_Creatif_Design(),
+    getTemplate_Lettre_Motivation_Stage(),
+    getTemplate_Lettre_Motivation_Classique(),
+    getTemplate_CV_Ingenieur_Tech(),           // ← AJOUTÉ
+    getTemplate_Lettre_Recommandation(),       // ← AJOUTÉ
+    getTemplate_Attestation_Salaire()          // ← AJOUTÉ
 ];
