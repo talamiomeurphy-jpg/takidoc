@@ -8,6 +8,8 @@ import { templatesRegistry } from './templates-registry.js';
 
 // URLs OpenPay par montant
 const OPENPAY_LINKS = {
+    // URLs OpenPay par montant
+    25: 'https://openpay.cg/pay/4c2d33bc4576c2978c1ceee857019d18245b36646eacf33abcb6ec7b8c6337bd',
     800: 'https://openpay.cg/pay/f70b59c1f63e0e6a2d55b5dbde5203fe5bb6d73645b7c2cf8fc9a60117c9282b',
     1000: 'https://openpay.cg/pay/d244c8900efd9f3a73c98436fe4ffcae61ed413c99ede74a6de8bd705b91dc2c',
     1200: 'https://openpay.cg/pay/bb6a4ec95996eaed88ba07272e00756803f63fa4af7f134d2accb492ebdf6e59',
