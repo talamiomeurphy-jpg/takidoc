@@ -6,22 +6,650 @@
     <title>Éditeur - TakiDoc</title>
     <meta name="description" content="Personnalisez votre document professionnel">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/editor.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <!-- html2pdf pour la génération PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        /* ============================================
+           TAKIDOC - STYLES DE L'ÉDITEUR (INTÉGRÉS)
+           ============================================ */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+        
+        /* Navigation éditeur */
+        .editor-nav {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .editor-nav .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .editor-nav .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            text-decoration: none;
+        }
+        
+        .editor-nav .logo span {
+            color: #d97706;
+        }
+        
+        .editor-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1.2rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #0f172a;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .btn-secondary:hover {
+            border-color: #d97706;
+            color: #d97706;
+        }
+        
+        .btn-full {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+        }
+        
+        .btn-icon {
+            background: white;
+            border: 1px solid #e2e8f0;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-icon:hover {
+            background: #f1f5f9;
+        }
+        
+        /* Layout de l'éditeur */
+        .editor-layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Sidebar gauche */
+        .editor-sidebar {
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            max-height: calc(100vh - 80px);
+            position: sticky;
+            top: 80px;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .sidebar-section {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .sidebar-section:last-child {
+            border-bottom: none;
+        }
+        
+        .sidebar-section h3 {
+            font-size: 1.1rem;
+            color: #0f172a;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Upload photo */
+        .photo-upload {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .photo-upload-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #64748b;
+            font-weight: 500;
+            background: #f8fafc;
+        }
+        
+        .photo-upload-btn:hover {
+            border-color: #d97706;
+            color: #d97706;
+            background: #fffbeb;
+        }
+        
+        .btn-remove {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .btn-remove:hover {
+            background: #fecaca;
+        }
+        
+        /* Color picker */
+        .color-picker-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        #color-picker {
+            width: 100%;
+            height: 60px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            padding: 4px;
+            background: white;
+        }
+        
+        .color-presets {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.75rem;
+        }
+        
+        .color-preset {
+            width: 100%;
+            aspect-ratio: 1;
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .color-preset:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        /* Champs de formulaire */
+        .form-field {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-field label {
+            display: block;
+            font-size: 0.9rem;
+            color: #475569;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-field input,
+        .form-field textarea {
+            width: 100%;
+            padding: 0.85rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            background: #f8fafc;
+        }
+        
+        .form-field input:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: #d97706;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+        }
+        
+        .form-field textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Prix et bouton d'achat */
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+        }
+        
+        .price-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .price-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .price-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #d97706;
+        }
+        
+        /* Preview droite */
+        .editor-preview {
+            background: #e2e8f0;
+            overflow-y: auto;
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .preview-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        #zoom-level {
+            font-weight: 600;
+            min-width: 60px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        
+        .preview-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            overflow: auto;
+        }
+        
+        .document-canvas {
+            transform-origin: top center;
+            transition: transform 0.3s;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border-radius: 4px;
+        }
+        
+        /* Generic preview */
+        .generic-preview {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            padding: 50px;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .generic-preview h1 {
+            color: var(--doc-primary-color, #0f172a);
+            margin-bottom: 15px;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .generic-preview .doc-description {
+            color: #64748b;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .generic-preview .field {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid var(--doc-primary-color, #d97706);
+        }
+        
+        .generic-preview .field-label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .generic-preview .field-value {
+            min-height: 30px;
+            color: #1e293b;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .generic-preview .field-value:empty::before {
+            content: 'Cliquez pour éditer...';
+            color: #94a3b8;
+            font-style: italic;
+        }
+        
+        .generic-preview .no-fields {
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 80px;
+            font-size: 1.1rem;
+            padding: 40px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        
+        /* Loading & Error overlays */
+        .loading-overlay,
+        .error-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loading-content,
+        .error-content {
+            text-align: center;
+            max-width: 500px;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #d97706;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error-content h2 {
+            color: #0f172a;
+            margin-bottom: 1rem;
+            font-size: 1.75rem;
+        }
+        
+        .error-content p {
+            color: #64748b;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Modal de paiement */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover {
+            background: #e2e8f0;
+        }
+        
+        .modal-content h2 {
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+        }
+        
+        .payment-amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #d97706;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .payment-option {
+            display: block;
+            cursor: pointer;
+        }
+        
+        .payment-option input {
+            display: none;
+        }
+        
+        .payment-badge-mtn,
+        .payment-badge-airtel {
+            display: block;
+            padding: 1.25rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+        
+        .payment-badge-mtn {
+            background: linear-gradient(135deg, #ffcc00 0%, #003399 100%);
+            color: #003399;
+        }
+        
+        .payment-badge-airtel {
+            background: linear-gradient(135deg, #ff0000 0%, #990000 100%);
+            color: white;
+        }
+        
+        .payment-option input:checked + .payment-badge-mtn,
+        .payment-option input:checked + .payment-badge-airtel {
+            border-color: #d97706;
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
+            transform: scale(1.02);
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.95rem;
+        }
+        
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"] {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #f8fafc;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #d97706;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .editor-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .editor-sidebar {
+                position: static;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            
+            .editor-preview {
+                min-height: 600px;
+            }
+        }
+    </style>
 </head>
 <body>
 
     <!-- Navigation simplifiée -->
-    <nav class="navbar editor-nav">
-        <div class="container nav-container">
+    <nav class="editor-nav">
+        <div class="nav-container">
             <a href="index.html" class="logo">Taki<span>Doc</span></a>
             <div class="editor-actions">
                 <button id="btn-preview" class="btn btn-secondary btn-sm">👁️ Aperçu</button>
@@ -34,7 +662,7 @@
     <div id="editor-loading" class="loading-overlay">
         <div class="loading-content">
             <div class="spinner"></div>
-            <p>Chargement du document...</p>
+            <p style="color: #64748b; font-size: 1.1rem;">Chargement du document...</p>
         </div>
     </div>
 
@@ -71,7 +699,7 @@
 
             <!-- Section Couleur (si applicable) -->
             <div id="color-section" class="sidebar-section" style="display: none;">
-                <h3> Couleur principale</h3>
+                <h3>🎨 Couleur principale</h3>
                 <div class="color-picker-wrapper">
                     <input type="color" id="color-picker" value="#0F172A">
                     <div class="color-presets">
@@ -123,7 +751,7 @@
         <div class="modal-content">
             <button class="modal-close" id="modal-close">✕</button>
             <h2>Finaliser votre achat</h2>
-            <p id="payment-doc-name">Document</p>
+            <p id="payment-doc-name" style="color: #64748b; margin-bottom: 1rem;">Document</p>
             <div class="payment-amount" id="payment-amount">0 FCFA</div>
             
             <form id="payment-form">
@@ -142,12 +770,12 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="pay-phone">Numéro de téléphone</label>
+                    <label for="pay-phone">Numéro de téléphone *</label>
                     <input type="tel" id="pay-phone" placeholder="06 00 00 00" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="pay-email">Email (pour le reçu)</label>
+                    <label for="pay-email">Email (pour le reçu) *</label>
                     <input type="email" id="pay-email" placeholder="votre@email.com" required>
                 </div>
                 
