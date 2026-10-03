@@ -29,7 +29,6 @@ const editorState = {
 // INITIALISATION
 // ============================================
 document.addEventListener('DOMContentLoaded', async () => {
-    // Récupérer l'ID du template depuis l'URL
     const urlParams = new URLSearchParams(window.location.search);
     const templateId = urlParams.get('id');
     
@@ -38,7 +37,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
     
-    // Charger le template depuis Supabase
     const template = await fetchTemplateById(templateId);
     
     if (!template) {
@@ -46,18 +44,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
     
-    // Trouver le rendu visuel dans le registry JS
+    // Trouver le rendu visuel dans le registry JS (peut être null)
     const templateRender = templatesRegistry.find(t => t.id === templateId);
     
-    if (!templateRender) {
-        console.error('Template trouvé dans la BDD mais pas dans le registry JS');
-        showError();
-        return;
-    }
-    
-    // Initialiser l'éditeur
     editorState.template = template;
-    editorState.templateRender = templateRender;
+    editorState.templateRender = templateRender; // Peut être null
     editorState.primaryColor = '#0F172A';
     
     initEditor();
@@ -69,34 +60,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 function initEditor() {
     const { template, templateRender } = editorState;
     
-    // Cacher le loading, montrer l'interface
     document.getElementById('editor-loading').style.display = 'none';
     document.getElementById('editor-interface').style.display = 'grid';
     
-    // Titre et catégorie
     document.getElementById('doc-title').textContent = template.name;
     document.getElementById('doc-category').textContent = template.category?.name || 'Document';
     document.getElementById('doc-price').textContent = `${template.price_xaf} FCFA`;
     
-    // Section photo
     if (template.has_photo) {
         document.getElementById('photo-section').style.display = 'block';
         setupPhotoUpload();
     }
     
-    // Section couleur
     if (template.has_color_picker) {
         document.getElementById('color-section').style.display = 'block';
         setupColorPicker();
     }
     
-    // Champs personnalisables
     setupFields(template.fields || []);
     
-    // Rendu du document
     renderDocument();
     
-    // Boutons
     setupZoomControls();
     setupDownloadButton();
     setupBuyButton();
@@ -108,24 +92,60 @@ function initEditor() {
 // ============================================
 function renderDocument() {
     const canvas = document.getElementById('document-canvas');
-    const { templateRender } = editorState;
+    const { templateRender, template } = editorState;
     
-    // Injecter le CSS spécifique au template
     let styleTag = document.getElementById('template-style');
     if (!styleTag) {
         styleTag = document.createElement('style');
         styleTag.id = 'template-style';
         document.head.appendChild(styleTag);
     }
-    styleTag.textContent = templateRender.cssStyles || '';
     
-    // Injecter le HTML du document
-    canvas.innerHTML = templateRender.htmlStructure || '<p>Aperçu non disponible</p>';
+    // Si pas de rendu personnalisé, afficher un aperçu générique
+    if (templateRender) {
+        styleTag.textContent = templateRender.cssStyles || '';
+        canvas.innerHTML = templateRender.htmlStructure || '<p>Aperçu non disponible</p>';
+    } else {
+        // Aperçu générique pour les templates sans rendu
+        styleTag.textContent = `
+            .generic-preview { 
+                width: 210mm; 
+                min-height: 297mm; 
+                background: white; 
+                padding: 40px; 
+                box-shadow: 0 0 15px rgba(0,0,0,0.1);
+                font-family: 'Inter', sans-serif;
+            }
+            .generic-preview h1 { color: var(--doc-primary-color, #0F172A); margin-bottom: 20px; }
+            .generic-preview .field { margin: 15px 0; padding: 10px; background: #f8fafc; border-radius: 4px; }
+            .generic-preview .field-label { font-weight: 600; color: #64748b; font-size: 0.9rem; }
+            .generic-preview .field-value { margin-top: 5px; min-height: 20px; }
+        `;
+        
+        let fieldsHtml = '';
+        if (template.fields && template.fields.length > 0) {
+            fieldsHtml = template.fields.map(field => `
+                <div class="field">
+                    <div class="field-label">${field.field_label}</div>
+                    <div class="field-value" id="field-${field.field_name}" contenteditable="true">
+                        ${field.default_value || `[${field.field_label}]`}
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            fieldsHtml = '<p style="color: #94a3b8; text-align: center; margin-top: 50px;">Aucun champ personnalisable pour ce document</p>';
+        }
+        
+        canvas.innerHTML = `
+            <div class="generic-preview">
+                <h1>${template.name}</h1>
+                <p style="color: #64748b; margin-bottom: 30px;">${template.description || ''}</p>
+                ${fieldsHtml}
+            </div>
+        `;
+    }
     
-    // Appliquer la couleur primaire
     applyPrimaryColor();
-    
-    // Rendre les champs éditables synchronisés
     syncEditableFields();
 }
 
@@ -154,13 +174,6 @@ function setupColorPicker() {
 function applyPrimaryColor() {
     const canvas = document.getElementById('document-canvas');
     canvas.style.setProperty('--doc-primary-color', editorState.primaryColor);
-    
-    // Mettre à jour les éléments avec la couleur inline
-    canvas.querySelectorAll('[style*="var(--doc-primary-color"]').forEach(el => {
-        el.style.color = editorState.primaryColor;
-        el.style.borderColor = editorState.primaryColor;
-        el.style.backgroundColor = editorState.primaryColor;
-    });
 }
 
 // ============================================
@@ -180,7 +193,6 @@ function setupPhotoUpload() {
             editorState.photoDataUrl = event.target.result;
             label.textContent = '✓ Photo ajoutée';
             removeBtn.style.display = 'block';
-            updatePhotoInDocument();
         };
         reader.readAsDataURL(file);
     });
@@ -190,19 +202,7 @@ function setupPhotoUpload() {
         input.value = '';
         label.textContent = '+ Ajouter une photo';
         removeBtn.style.display = 'none';
-        updatePhotoInDocument();
     });
-}
-
-function updatePhotoInDocument() {
-    const photoContainer = document.getElementById('doc-photo');
-    if (!photoContainer) return;
-    
-    if (editorState.photoDataUrl) {
-        photoContainer.innerHTML = `<img src="${editorState.photoDataUrl}" alt="Photo">`;
-    } else {
-        photoContainer.innerHTML = '<span class="photo-placeholder">Photo</span>';
-    }
 }
 
 // ============================================
@@ -251,7 +251,6 @@ function updateFieldInDocument(fieldName, value) {
 }
 
 function syncEditableFields() {
-    // Synchroniser les champs contenteditable avec les inputs
     document.querySelectorAll('[contenteditable="true"]').forEach(el => {
         const fieldId = el.id;
         if (fieldId && fieldId.startsWith('field-')) {
@@ -344,16 +343,13 @@ async function processPayment() {
     const phone = document.getElementById('pay-phone').value;
     const email = document.getElementById('pay-email').value;
     
-    // Validation
     if (!phone || !email) {
         alert('Veuillez remplir tous les champs obligatoires');
         return;
     }
     
-    // Générer un token unique
     const purchaseToken = `tok_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    // Créer l'intention d'achat dans Supabase
     const pendingPurchase = await createPendingPurchase({
         purchase_token: purchaseToken,
         template_id: template.id,
@@ -364,16 +360,13 @@ async function processPayment() {
     });
     
     if (pendingPurchase) {
-        // Stocker le token dans localStorage pour la page de confirmation
         localStorage.setItem('takidoc_pending_token', purchaseToken);
         localStorage.setItem('takidoc_pending_email', email);
         localStorage.setItem('takidoc_pending_phone', phone);
         
-        // Obtenir l'URL OpenPay correspondante au montant
         const openPayUrl = OPENPAY_LINKS[template.price_xaf];
         
         if (openPayUrl) {
-            // Rediriger vers OpenPay
             window.location.href = openPayUrl;
         } else {
             alert('Erreur: Montant non configuré pour le paiement');
