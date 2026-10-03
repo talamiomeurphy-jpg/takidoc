@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de paiement - TakiDoc</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/confirmation.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">Taki<span>Doc</span></a>
+        </div>
+    </nav>
+
+    <div class="confirmation-container">
+        <div class="confirmation-card">
+            <div class="confirmation-header">
+                <h1>📄 Récupérer votre document</h1>
+                <p>Entrez vos informations pour accéder à votre document acheté</p>
+            </div>
+
+            <form id="confirmation-form" class="confirmation-form">
+                <div class="form-group">
+                    <label for="confirm-email">Email utilisé pour le paiement *</label>
+                    <input type="email" id="confirm-email" required placeholder="votre@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-phone">Téléphone utilisé pour le paiement *</label>
+                    <input type="tel" id="confirm-phone" required placeholder="06 00 00 00">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                     Rechercher mon achat
+                </button>
+            </form>
+
+            <div id="loading-state" class="loading-state" style="display: none;">
+                <div class="spinner"></div>
+                <p>Recherche de votre achat...</p>
+            </div>
+
+            <div id="error-state" class="error-state" style="display: none;">
+                <p>Aucun achat trouvé avec ces informations.</p>
+                <p class="error-hint">Vérifiez votre email et téléphone, ou réessayez dans quelques minutes si le paiement est en cours.</p>
+            </div>
+
+            <div id="success-state" class="success-state" style="display: none;">
+                <div class="success-icon">✓</div>
+                <h2>Paiement confirmé !</h2>
+                <p id="success-doc-name">Votre document est prêt</p>
+                <button id="download-btn" class="btn btn-primary btn-full">
+                    ⬇️ Télécharger le PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/confirmation.js"></script>
+</body>
+</html>

@@ -89,3 +89,57 @@ export async function saveUserDocument(documentData) {
     }
     return data;
 }
+
+// ... (tout le code existant reste)
+
+// Fonction pour créer une intention d'achat (pending purchase)
+export async function createPendingPurchase(pendingData) {
+    const { data, error } = await supabase
+        .from('pending_purchases')
+        .insert([pendingData])
+        .select()
+        .single();
+    
+    if (error) {
+        console.error('Erreur lors de la création de l\'intention d\'achat:', error);
+        return null;
+    }
+    return data;
+}
+
+// Fonction pour récupérer un achat en attente par token
+export async function getPendingPurchaseByToken(token) {
+    const { data, error } = await supabase
+        .from('pending_purchases')
+        .select('*')
+        .eq('purchase_token', token)
+        .single();
+    
+    if (error) {
+        console.error('Erreur lors de la récupération de l\'intention d\'achat:', error);
+        return null;
+    }
+    return data;
+}
+
+// Fonction pour récupérer un achat validé
+export async function getCompletedPurchase(email, phone) {
+    const { data, error } = await supabase
+        .from('purchases')
+        .select(`
+            *,
+            template:templates(*),
+            user_document:user_documents(*)
+        `)
+        .or(`guest_email.eq.${email},guest_phone.eq.${phone}`)
+        .eq('payment_status', 'completed')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+    
+    if (error) {
+        console.error('Erreur lors de la récupération de l\'achat:', error);
+        return null;
+    }
+    return data;
+}
