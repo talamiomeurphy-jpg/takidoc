@@ -471,10 +471,319 @@ export function getTemplate_Lettre_Motivation_Classique() {
     };
 }
 
+
+// --- DOCUMENT 2 : CV Classique Français ---
+export function getTemplate_CV_Classique_Francais() {
+    return {
+        id: 'cv_classique_francais',
+        name: 'CV Classique Français',
+        category: 'cv',
+        price: 1200,
+        hasPhoto: true,
+        hasColorPicker: true,
+        description: 'Format traditionnel apprécié des recruteurs français et administrations.',
+        
+        cssStyles: `
+            .cv-classique-container {
+                width: 210mm;
+                min-height: 297mm;
+                background: white;
+                padding: 50px 60px;
+                font-family: 'Georgia', 'Times New Roman', serif;
+                color: #1e293b;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+            
+            .cv-classique-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 40px;
+                padding-bottom: 25px;
+                border-bottom: 3px solid var(--doc-primary-color, #0F172A);
+            }
+            
+            .cv-classique-info {
+                flex: 1;
+            }
+            
+            .cv-classique-name {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: var(--doc-primary-color, #0F172A);
+                margin-bottom: 10px;
+                line-height: 1.1;
+            }
+            
+            .cv-classique-title {
+                font-size: 1.3rem;
+                color: #64748b;
+                font-style: italic;
+                margin-bottom: 20px;
+            }
+            
+            .cv-classique-contact {
+                font-size: 0.95rem;
+                line-height: 1.6;
+                color: #475569;
+            }
+            
+            .cv-classique-contact div {
+                margin-bottom: 5px;
+            }
+            
+            .cv-classique-photo {
+                width: 120px;
+                height: 150px;
+                background: #f1f5f9;
+                border: 2px solid var(--doc-primary-color, #0F172A);
+                margin-left: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                flex-shrink: 0;
+            }
+            
+            .cv-classique-photo img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            
+            .cv-classique-photo-placeholder {
+                color: #94a3b8;
+                font-size: 2rem;
+                font-weight: 700;
+            }
+            
+            .cv-classique-section {
+                margin-bottom: 30px;
+            }
+            
+            .cv-classique-section-title {
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--doc-primary-color, #0F172A);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 15px;
+                padding-bottom: 8px;
+                border-bottom: 2px solid var(--doc-primary-color, #0F172A);
+            }
+            
+            .cv-classique-profile {
+                font-size: 1rem;
+                line-height: 1.7;
+                color: #475569;
+                text-align: justify;
+            }
+            
+            .cv-classique-experience {
+                margin-bottom: 20px;
+            }
+            
+            .cv-classique-experience-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                margin-bottom: 5px;
+            }
+            
+            .cv-classique-experience-title {
+                font-weight: 700;
+                font-size: 1.1rem;
+                color: #0f172a;
+            }
+            
+            .cv-classique-experience-date {
+                font-size: 0.9rem;
+                color: #64748b;
+                font-style: italic;
+            }
+            
+            .cv-classique-experience-company {
+                font-size: 1rem;
+                color: var(--doc-primary-color, #0F172A);
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+            
+            .cv-classique-experience-desc {
+                font-size: 0.95rem;
+                color: #475569;
+                line-height: 1.6;
+                text-align: justify;
+            }
+            
+            .cv-classique-education {
+                margin-bottom: 15px;
+            }
+            
+            .cv-classique-education-degree {
+                font-weight: 700;
+                font-size: 1.05rem;
+                color: #0f172a;
+            }
+            
+            .cv-classique-education-school {
+                font-size: 1rem;
+                color: var(--doc-primary-color, #0F172A);
+                font-weight: 600;
+            }
+            
+            .cv-classique-education-date {
+                font-size: 0.9rem;
+                color: #64748b;
+            }
+            
+            .cv-classique-skills-list {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            
+            .cv-classique-skill {
+                font-size: 0.95rem;
+                color: #475569;
+                padding: 5px 0;
+            }
+            
+            .cv-classique-skill::before {
+                content: '• ';
+                color: var(--doc-primary-color, #0F172A);
+                font-weight: 700;
+            }
+            
+            .cv-classique-languages {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
+            .cv-classique-language {
+                font-size: 0.95rem;
+            }
+            
+            .cv-classique-language strong {
+                color: #0f172a;
+            }
+            
+            .cv-classique-language span {
+                color: #64748b;
+                font-style: italic;
+            }
+        `,
+        
+        htmlStructure: `
+            <div class="cv-classique-container">
+                <!-- En-tête -->
+                <header class="cv-classique-header">
+                    <div class="cv-classique-info">
+                        <h1 class="cv-classique-name" id="field-nom">Meurphy TALAMIO</h1>
+                        <div class="cv-classique-title" id="field-poste">Directeur Général</div>
+                        <div class="cv-classique-contact">
+                            <div>✉ <span id="field-email">brazzamarket.infos@gmail.com</span></div>
+                            <div>☎ <span id="field-telephone">+242 06 518 69 67</span></div>
+                            <div>⌖ <span id="field-adresse">Brazzaville, Congo</span></div>
+                        </div>
+                    </div>
+                    <div class="cv-classique-photo" id="doc-photo">
+                        <span class="cv-classique-photo-placeholder" id="photo-initials">MT</span>
+                    </div>
+                </header>
+                
+                <!-- Profil -->
+                <section class="cv-classique-section">
+                    <div class="cv-classique-section-title">Profil</div>
+                    <p class="cv-classique-profile" id="field-profil">
+                        Professionnel expérimenté avec plus de 10 ans d'expérience dans mon domaine. 
+                        Passionné par l'innovation et la recherche de l'excellence. 
+                        Je cherche à mettre mes compétences au service d'une entreprise dynamique.
+                    </p>
+                </section>
+                
+                <!-- Expériences -->
+                <section class="cv-classique-section">
+                    <div class="cv-classique-section-title">Expériences Professionnelles</div>
+                    
+                    <div class="cv-classique-experience">
+                        <div class="cv-classique-experience-header">
+                            <div class="cv-classique-experience-title" id="field-exp1_titre">Directeur Général</div>
+                            <div class="cv-classique-experience-date" id="field-exp1_date">2020 - Présent</div>
+                        </div>
+                        <div class="cv-classique-experience-company" id="field-exp1_entreprise">Entreprise XYZ - Brazzaville</div>
+                        <div class="cv-classique-experience-desc" id="field-exp1_desc">
+                            Direction stratégique de l'entreprise. Management d'une équipe de 50 personnes. 
+                            Augmentation du chiffre d'affaires de 30% en 2 ans.
+                        </div>
+                    </div>
+                    
+                    <div class="cv-classique-experience">
+                        <div class="cv-classique-experience-header">
+                            <div class="cv-classique-experience-title" id="field-exp2_titre">Chef de Projet Senior</div>
+                            <div class="cv-classique-experience-date" id="field-exp2_date">2015 - 2020</div>
+                        </div>
+                        <div class="cv-classique-experience-company" id="field-exp2_entreprise">Société ABC - Pointe-Noire</div>
+                        <div class="cv-classique-experience-desc" id="field-exp2_desc">
+                            Gestion de projets majeurs. Coordination avec les parties prenantes. 
+                            Livraison de 15 projets dans les délais et budgets impartis.
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Formation -->
+                <section class="cv-classique-section">
+                    <div class="cv-classique-section-title">Formation</div>
+                    
+                    <div class="cv-classique-education">
+                        <div class="cv-classique-education-degree" id="field-form1_diplome">Master en Management</div>
+                        <div class="cv-classique-education-school" id="field-form1_ecole">Université Marien Ngouabi</div>
+                        <div class="cv-classique-education-date" id="field-form1_date">2013 - 2015</div>
+                    </div>
+                    
+                    <div class="cv-classique-education">
+                        <div class="cv-classique-education-degree" id="field-form2_diplome">Licence en Gestion</div>
+                        <div class="cv-classique-education-school" id="field-form2_ecole">Université de Brazzaville</div>
+                        <div class="cv-classique-education-date" id="field-form2_date">2010 - 2013</div>
+                    </div>
+                </section>
+                
+                <!-- Compétences -->
+                <section class="cv-classique-section">
+                    <div class="cv-classique-section-title">Compétences</div>
+                    <div class="cv-classique-skills-list">
+                        <div class="cv-classique-skill" id="field-skill1_name">Gestion de projet</div>
+                        <div class="cv-classique-skill" id="field-skill2_name">Leadership</div>
+                        <div class="cv-classique-skill" id="field-skill3_name">Communication</div>
+                        <div class="cv-classique-skill" id="field-skill4_name">Analyse stratégique</div>
+                    </div>
+                </section>
+                
+                <!-- Langues -->
+                <section class="cv-classique-section">
+                    <div class="cv-classique-section-title">Langues</div>
+                    <div class="cv-classique-languages">
+                        <div class="cv-classique-language">
+                            <strong id="field-lang1_name">Français</strong> - <span id="field-lang1_level">Courant</span>
+                        </div>
+                        <div class="cv-classique-language">
+                            <strong id="field-lang2_name">Anglais</strong> - <span id="field-lang2_level">Professionnel</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        `
+    };
+}
+
+
+
 // ============================================
 // REGISTRE CENTRAL
 // ============================================
 export const templatesRegistry = [
     getTemplate_CV_Executif_Moderne(),
+     getTemplate_CV_Classique_Francais(),
     getTemplate_Lettre_Motivation_Classique()
 ];
