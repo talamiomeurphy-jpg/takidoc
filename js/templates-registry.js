@@ -1739,6 +1739,367 @@ export function getTemplate_Contrat_Stage() {
     };
 }
 
+// --- DOCUMENT 13 : Devis de Prestation ---
+export function getTemplate_Devis_Prestation() {
+    return {
+        id: 'devis_prestation',
+        name: 'Devis de Prestation',
+        category: 'commercial',
+        price: 1200,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Devis professionnel pour freelances et entreprises.',
+        cssStyles: `
+            .devis-container { width: 210mm; min-height: 297mm; background: white; padding: 50px 60px; font-family: 'Inter', sans-serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+            .devis-header { display: flex; justify-content: space-between; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .devis-entreprise { flex: 1; }
+            .devis-entreprise-nom { font-size: 1.8rem; font-weight: 800; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; }
+            .devis-entreprise-info { font-size: 0.9rem; color: #64748b; line-height: 1.6; }
+            .devis-client { flex: 1; text-align: right; }
+            .devis-client-label { font-size: 0.85rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
+            .devis-client-nom { font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 5px; }
+            .devis-client-info { font-size: 0.9rem; color: #475569; line-height: 1.5; }
+            .devis-titre-box { background: var(--doc-primary-color, #0F172A); color: white; padding: 20px 30px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+            .devis-titre { font-size: 1.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+            .devis-numero { font-size: 1rem; font-weight: 600; }
+            .devis-dates { display: flex; gap: 30px; margin-bottom: 30px; padding: 15px; background: #f8fafc; border-radius: 8px; }
+            .devis-date-item { flex: 1; }
+            .devis-date-label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+            .devis-date-value { font-size: 1rem; font-weight: 600; color: #0f172a; }
+            .devis-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+            .devis-table th { background: var(--doc-primary-color, #0F172A); color: white; padding: 12px 15px; text-align: left; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+            .devis-table td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; font-size: 0.95rem; }
+            .devis-table tr:nth-child(even) { background: #f8fafc; }
+            .devis-table .col-designation { width: 50%; }
+            .devis-table .col-qty { width: 10%; text-align: center; }
+            .devis-table .col-price { width: 20%; text-align: right; }
+            .devis-table .col-total { width: 20%; text-align: right; font-weight: 600; }
+            .devis-totaux { display: flex; justify-content: flex-end; margin-bottom: 30px; }
+            .devis-totaux-box { width: 300px; }
+            .devis-total-row { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #e2e8f0; }
+            .devis-total-row.final { background: var(--doc-primary-color, #0F172A); color: white; font-size: 1.2rem; font-weight: 700; border-radius: 4px; }
+            .devis-conditions { background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 30px; font-size: 0.9rem; }
+            .devis-conditions-title { font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+            .devis-conditions-text { color: #475569; line-height: 1.6; }
+            .devis-footer { text-align: center; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 0.85rem; color: #94a3b8; }
+        `,
+        htmlStructure: `
+            <div class="devis-container">
+                <header class="devis-header">
+                    <div class="devis-entreprise">
+                        <div class="devis-entreprise-nom" id="field-entreprise_nom">ENTREPRISE XYZ</div>
+                        <div class="devis-entreprise-info">
+                            <div id="field-entreprise_adresse">123 Avenue de l'Indépendance, Brazzaville</div>
+                            <div>Tél: <span id="field-entreprise_telephone">+242 06 000 00 00</span></div>
+                            <div>Email: <span id="field-entreprise_email">contact@entreprise.com</span></div>
+                        </div>
+                    </div>
+                    <div class="devis-client">
+                        <div class="devis-client-label">Client</div>
+                        <div class="devis-client-nom" id="field-client_nom">Monsieur le Client</div>
+                        <div class="devis-client-info">
+                            <div id="field-client_adresse">Adresse du client</div>
+                            <div>Tél: <span id="field-client_telephone">+242 06 000 00 00</span></div>
+                            <div>Email: <span id="field-client_email">client@email.com</span></div>
+                        </div>
+                    </div>
+                </header>
+                
+                <div class="devis-titre-box">
+                    <div class="devis-titre">DEVIS</div>
+                    <div class="devis-numero">N° <span id="field-devis_numero">DEV-2026-001</span></div>
+                </div>
+                
+                <div class="devis-dates">
+                    <div class="devis-date-item">
+                        <div class="devis-date-label">Date d'émission</div>
+                        <div class="devis-date-value" id="field-date_emission">04/10/2026</div>
+                    </div>
+                    <div class="devis-date-item">
+                        <div class="devis-date-label">Validité</div>
+                        <div class="devis-date-value" id="field-date_validite">30 jours</div>
+                    </div>
+                </div>
+                
+                <table class="devis-table">
+                    <thead>
+                        <tr>
+                            <th class="col-designation">Désignation</th>
+                            <th class="col-qty">Qté</th>
+                            <th class="col-price">Prix unitaire</th>
+                            <th class="col-total">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="field-prestation1_nom">Prestation 1 - Description détaillée</td>
+                            <td class="col-qty" id="field-prestation1_qty">1</td>
+                            <td class="col-price" id="field-prestation1_prix">500 000 FCFA</td>
+                            <td class="col-total" id="field-prestation1_total">500 000 FCFA</td>
+                        </tr>
+                        <tr>
+                            <td id="field-prestation2_nom">Prestation 2 - Description détaillée</td>
+                            <td class="col-qty" id="field-prestation2_qty">2</td>
+                            <td class="col-price" id="field-prestation2_prix">300 000 FCFA</td>
+                            <td class="col-total" id="field-prestation2_total">600 000 FCFA</td>
+                        </tr>
+                        <tr>
+                            <td id="field-prestation3_nom">Prestation 3 - Description détaillée</td>
+                            <td class="col-qty" id="field-prestation3_qty">1</td>
+                            <td class="col-price" id="field-prestation3_prix">200 000 FCFA</td>
+                            <td class="col-total" id="field-prestation3_total">200 000 FCFA</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="devis-totaux">
+                    <div class="devis-totaux-box">
+                        <div class="devis-total-row">
+                            <span>Total HT</span>
+                            <span id="field-total_ht">1 300 000 FCFA</span>
+                        </div>
+                        <div class="devis-total-row">
+                            <span>TVA (18%)</span>
+                            <span id="field-tva">234 000 FCFA</span>
+                        </div>
+                        <div class="devis-total-row final">
+                            <span>TOTAL TTC</span>
+                            <span id="field-total_ttc">1 534 000 FCFA</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="devis-conditions">
+                    <div class="devis-conditions-title">Conditions</div>
+                    <div class="devis-conditions-text" id="field-conditions">
+                        Mode de paiement : 50% à la commande, 50% à la livraison. Délai de réalisation : 30 jours. Ce devis est valable 30 jours à compter de sa date d'émission.
+                    </div>
+                </div>
+                
+                <div class="devis-footer">
+                    Document généré par TakiDoc - L'équipe Meurphy | www.takidoc.onrender.com
+                </div>
+            </div>
+        `
+    };
+}
+
+// --- DOCUMENT 14 : Facture Simple ---
+export function getTemplate_Facture_Simple() {
+    return {
+        id: 'facture_simple',
+        name: 'Facture Simple',
+        category: 'commercial',
+        price: 1200,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Facture conforme aux normes commerciales.',
+        cssStyles: `
+            .facture-container { width: 210mm; min-height: 297mm; background: white; padding: 50px 60px; font-family: 'Inter', sans-serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+            .facture-header { display: flex; justify-content: space-between; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .facture-entreprise-nom { font-size: 1.8rem; font-weight: 800; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; }
+            .facture-entreprise-info { font-size: 0.9rem; color: #64748b; line-height: 1.6; }
+            .facture-client-box { text-align: right; }
+            .facture-client-label { font-size: 0.85rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
+            .facture-client-nom { font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 5px; }
+            .facture-client-info { font-size: 0.9rem; color: #475569; line-height: 1.5; }
+            .facture-titre-box { background: var(--doc-primary-color, #0F172A); color: white; padding: 20px 30px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+            .facture-titre { font-size: 1.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+            .facture-numero { font-size: 1rem; font-weight: 600; }
+            .facture-dates { display: flex; gap: 30px; margin-bottom: 30px; padding: 15px; background: #f8fafc; border-radius: 8px; }
+            .facture-date-item { flex: 1; }
+            .facture-date-label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+            .facture-date-value { font-size: 1rem; font-weight: 600; color: #0f172a; }
+            .facture-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+            .facture-table th { background: var(--doc-primary-color, #0F172A); color: white; padding: 12px 15px; text-align: left; font-size: 0.9rem; text-transform: uppercase; }
+            .facture-table td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; font-size: 0.95rem; }
+            .facture-table tr:nth-child(even) { background: #f8fafc; }
+            .facture-totaux { display: flex; justify-content: flex-end; margin-bottom: 30px; }
+            .facture-totaux-box { width: 300px; }
+            .facture-total-row { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #e2e8f0; }
+            .facture-total-row.final { background: var(--doc-primary-color, #0F172A); color: white; font-size: 1.2rem; font-weight: 700; border-radius: 4px; }
+            .facture-paiement { background: #f0fdf4; border: 2px solid #10b981; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+            .facture-paiement-title { font-weight: 700; color: #065f46; margin-bottom: 10px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+            .facture-paiement-info { color: #065f46; line-height: 1.6; }
+            .facture-footer { text-align: center; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 0.85rem; color: #94a3b8; }
+        `,
+        htmlStructure: `
+            <div class="facture-container">
+                <header class="facture-header">
+                    <div>
+                        <div class="facture-entreprise-nom" id="field-entreprise_nom">ENTREPRISE XYZ</div>
+                        <div class="facture-entreprise-info">
+                            <div id="field-entreprise_adresse">123 Avenue de l'Indépendance, Brazzaville</div>
+                            <div>Tél: <span id="field-entreprise_telephone">+242 06 000 00 00</span></div>
+                            <div>Email: <span id="field-entreprise_email">contact@entreprise.com</span></div>
+                            <div>NIF: <span id="field-entreprise_nif">123456789</span></div>
+                        </div>
+                    </div>
+                    <div class="facture-client-box">
+                        <div class="facture-client-label">Facturé à</div>
+                        <div class="facture-client-nom" id="field-client_nom">Monsieur le Client</div>
+                        <div class="facture-client-info">
+                            <div id="field-client_adresse">Adresse du client</div>
+                            <div>Tél: <span id="field-client_telephone">+242 06 000 00 00</span></div>
+                            <div>Email: <span id="field-client_email">client@email.com</span></div>
+                        </div>
+                    </div>
+                </header>
+                
+                <div class="facture-titre-box">
+                    <div class="facture-titre">FACTURE</div>
+                    <div class="facture-numero">N° <span id="field-facture_numero">FAC-2026-001</span></div>
+                </div>
+                
+                <div class="facture-dates">
+                    <div class="facture-date-item">
+                        <div class="facture-date-label">Date d'émission</div>
+                        <div class="facture-date-value" id="field-date_emission">04/10/2026</div>
+                    </div>
+                    <div class="facture-date-item">
+                        <div class="facture-date-label">Date d'échéance</div>
+                        <div class="facture-date-value" id="field-date_echeance">04/11/2026</div>
+                    </div>
+                </div>
+                
+                <table class="facture-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%">Désignation</th>
+                            <th style="width: 10%">Qté</th>
+                            <th style="width: 20%">Prix unitaire</th>
+                            <th style="width: 20%">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="field-article1_nom">Article 1 - Description</td>
+                            <td id="field-article1_qty">1</td>
+                            <td id="field-article1_prix">500 000 FCFA</td>
+                            <td id="field-article1_total">500 000 FCFA</td>
+                        </tr>
+                        <tr>
+                            <td id="field-article2_nom">Article 2 - Description</td>
+                            <td id="field-article2_qty">2</td>
+                            <td id="field-article2_prix">300 000 FCFA</td>
+                            <td id="field-article2_total">600 000 FCFA</td>
+                        </tr>
+                        <tr>
+                            <td id="field-article3_nom">Article 3 - Description</td>
+                            <td id="field-article3_qty">1</td>
+                            <td id="field-article3_prix">200 000 FCFA</td>
+                            <td id="field-article3_total">200 000 FCFA</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="facture-totaux">
+                    <div class="facture-totaux-box">
+                        <div class="facture-total-row">
+                            <span>Total HT</span>
+                            <span id="field-total_ht">1 300 000 FCFA</span>
+                        </div>
+                        <div class="facture-total-row">
+                            <span>TVA (18%)</span>
+                            <span id="field-tva">234 000 FCFA</span>
+                        </div>
+                        <div class="facture-total-row final">
+                            <span>TOTAL TTC</span>
+                            <span id="field-total_ttc">1 534 000 FCFA</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="facture-paiement">
+                    <div class="facture-paiement-title">Informations de paiement</div>
+                    <div class="facture-paiement-info" id="field-info_paiement">
+                        Mode de paiement : Virement bancaire ou Mobile Money. Compte : 1234567890. Banque : BICICI.
+                    </div>
+                </div>
+                
+                <div class="facture-footer">
+                    Document généré par TakiDoc - L'équipe Meurphy | www.takidoc.onrender.com
+                </div>
+            </div>
+        `
+    };
+}
+
+// --- DOCUMENT 15 : Attestation de Résidence ---
+export function getTemplate_Attestation_Residence() {
+    return {
+        id: 'attestation_residence',
+        name: 'Attestation de Résidence',
+        category: 'attestation',
+        price: 800,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Justificatif de domicile officiel.',
+        cssStyles: `
+            .att-res-container { width: 210mm; min-height: 297mm; background: white; padding: 60px 70px; font-family: 'Times New Roman', 'Georgia', serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); line-height: 1.8; }
+            .att-res-header { text-align: center; margin-bottom: 50px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .att-res-republique { font-size: 1rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+            .att-res-devise { font-size: 0.9rem; font-style: italic; color: #64748b; margin-bottom: 15px; }
+            .att-res-mairie { font-size: 1.3rem; font-weight: 700; color: #0f172a; }
+            .att-res-titre { text-align: center; font-size: 2rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 3px; margin: 40px 0; text-decoration: underline; text-underline-offset: 8px; }
+            .att-res-corps { font-size: 1.1rem; line-height: 2; text-align: justify; margin-bottom: 30px; }
+            .att-res-corps p { margin-bottom: 20px; text-indent: 40px; }
+            .att-res-info { font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .att-res-box { background: #f8fafc; border-left: 4px solid var(--doc-primary-color, #0F172A); padding: 20px; margin: 30px 0; }
+            .att-res-box-title { font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
+            .att-res-box-content { font-size: 1rem; line-height: 1.8; }
+            .att-res-date-lieu { text-align: right; font-size: 1.05rem; margin: 40px 0; font-style: italic; }
+            .att-res-signature { margin-top: 60px; text-align: right; }
+            .att-res-signature-label { font-size: 1rem; color: #64748b; margin-bottom: 80px; }
+            .att-res-signature-nom { font-size: 1.1rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); border-top: 2px solid var(--doc-primary-color, #0F172A); display: inline-block; padding-top: 10px; min-width: 200px; }
+            .att-res-signature-fonction { font-size: 0.95rem; color: #64748b; margin-top: 5px; }
+            .att-res-footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 0.85rem; color: #94a3b8; font-style: italic; }
+        `,
+        htmlStructure: `
+            <div class="att-res-container">
+                <header class="att-res-header">
+                    <div class="att-res-republique">République du Congo</div>
+                    <div class="att-res-devise">Unité - Travail - Progrès</div>
+                    <div class="att-res-mairie" id="field-mairie_nom">Mairie de Brazzaville</div>
+                </header>
+                
+                <h1 class="att-res-titre">Attestation de Résidence</h1>
+                
+                <div class="att-res-corps">
+                    <p>Je soussigné(e), <span class="att-res-info" id="field-signataire_nom">Monsieur le Maire</span>, agissant en qualité de <span class="att-res-info" id="field-signataire_fonction">Maire de la commune de Brazzaville</span>,</p>
+                    
+                    <p>Certifie par la présente que <span class="att-res-info" id="field-resident_nom">Meurphy TALAMIO</span>, né(e) le <span class="att-res-info" id="field-resident_naissance">01/01/1990</span> à <span class="att-res-info" id="field-resident_lieu_naissance">Brazzaville</span>, titulaire de la CNI n° <span class="att-res-info" id="field-resident_cni">123456789</span>,</p>
+                    
+                    <p>Demeure effectivement au <span class="att-res-info" id="field-resident_adresse">123 Quartier Poto-Poto, Brazzaville</span> depuis le <span class="att-res-info" id="field-resident_date_arrivee">01/01/2020</span>, soit depuis <span class="att-res-info" id="field-resident_duree">6 ans</span>.</p>
+                </div>
+                
+                <div class="att-res-box">
+                    <div class="att-res-box-title">Informations complémentaires</div>
+                    <div class="att-res-box-content">
+                        <div><strong>Quartier :</strong> <span id="field-quartier">Poto-Poto</span></div>
+                        <div><strong>Arrondissement :</strong> <span id="field-arrondissement">3ème</span></div>
+                        <div><strong>Téléphone de contact :</strong> <span id="field-telephone_contact">+242 06 518 69 67</span></div>
+                    </div>
+                </div>
+                
+                <div class="att-res-corps">
+                    <p>Cette attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit, notamment pour ses démarches administratives.</p>
+                </div>
+                
+                <div class="att-res-date-lieu">Fait à <span id="field-ville">Brazzaville</span>, le <span id="field-date">04 octobre 2026</span></div>
+                
+                <div class="att-res-signature">
+                    <div class="att-res-signature-label">Le Maire</div>
+                    <div class="att-res-signature-nom" id="field-signataire_nom2">Monsieur le Maire</div>
+                    <div class="att-res-signature-fonction" id="field-signataire_fonction2">Maire de la commune</div>
+                </div>
+                
+                <div class="att-res-footer">Document généré par TakiDoc - L'équipe Meurphy | www.takidoc.onrender.com</div>
+            </div>
+        `
+    };
+}
+
 // ============================================
 // REGISTRE CENTRAL MIS À JOUR
 // ============================================
@@ -1753,7 +2114,10 @@ export const templatesRegistry = [
     getTemplate_CV_Ingenieur_Tech(),
     getTemplate_Lettre_Recommandation(),
     getTemplate_Attestation_Salaire(),
-    getTemplate_Contrat_CDI(),              // ← AJOUTÉ
-    getTemplate_Contrat_CDD(),             // ← AJOUTÉ
-    getTemplate_Contrat_Stage()            // ← AJOUTÉ
+    getTemplate_Contrat_CDI(),
+    getTemplate_Contrat_CDD(),
+    getTemplate_Contrat_Stage(),
+    getTemplate_Devis_Prestation(),              // ← AJOUTÉ
+    getTemplate_Facture_Simple(),                // ← AJOUTÉ
+    getTemplate_Attestation_Residence()          // ← AJOUTÉ
 ];
