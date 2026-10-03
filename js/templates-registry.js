@@ -2100,8 +2100,286 @@ export function getTemplate_Attestation_Residence() {
     };
 }
 
+// --- DOCUMENT 17 : Certificat Médical ---
+export function getTemplate_Certificat_Medical() {
+    return {
+        id: 'certificat_medical',
+        name: 'Certificat Médical',
+        category: 'attestation',
+        price: 1000,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Modèle de certificat médical pour aptitude au travail ou au sport.',
+        cssStyles: `
+            .certif-med-container { width: 210mm; min-height: 297mm; background: white; padding: 60px 70px; font-family: 'Times New Roman', 'Georgia', serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); line-height: 1.8; }
+            .certif-med-header { text-align: center; margin-bottom: 50px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .certif-med-doctor { font-size: 1.5rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; }
+            .certif-med-info { font-size: 0.95rem; color: #64748b; line-height: 1.6; }
+            .certif-med-titre { text-align: center; font-size: 2rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 3px; margin: 40px 0; text-decoration: underline; text-underline-offset: 8px; }
+            .certif-med-corps { font-size: 1.1rem; line-height: 2; text-align: justify; margin-bottom: 30px; }
+            .certif-med-corps p { margin-bottom: 20px; text-indent: 40px; }
+            .certif-med-info-patient { font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .certif-med-constat { background: #f0fdf4; border: 2px solid #10b981; padding: 20px; margin: 30px 0; border-radius: 8px; }
+            .certif-med-constat-title { font-weight: 700; color: #065f46; margin-bottom: 10px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
+            .certif-med-date-lieu { text-align: right; font-size: 1.05rem; margin: 40px 0; font-style: italic; }
+            .certif-med-signature { margin-top: 60px; text-align: right; }
+            .certif-med-signature-label { font-size: 1rem; color: #64748b; margin-bottom: 80px; }
+            .certif-med-signature-nom { font-size: 1.1rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); border-top: 2px solid var(--doc-primary-color, #0F172A); display: inline-block; padding-top: 10px; min-width: 200px; }
+            .certif-med-footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 0.85rem; color: #94a3b8; font-style: italic; }
+        `,
+        htmlStructure: `
+            <div class="certif-med-container">
+                <header class="certif-med-header">
+                    <div class="certif-med-doctor" id="field-medecin_nom">Dr. Meurphy TALAMIO</div>
+                    <div class="certif-med-info">
+                        <div id="field-medecin_adresse">123 Avenue de l'Indépendance, Brazzaville</div>
+                        <div>Tél: <span id="field-medecin_telephone">+242 06 000 00 00</span> | Ordre des Médecins n° <span id="field-medecin_ordre">12345</span></div>
+                    </div>
+                </header>
+                
+                <h1 class="certif-med-titre">Certificat Médical</h1>
+                
+                <div class="certif-med-corps">
+                    <p>Je soussigné(e), <span class="certif-med-info-patient" id="field-medecin_nom2">Dr. Meurphy TALAMIO</span>, docteur en médecine, certifie avoir examiné ce jour :</p>
+                    <p>Monsieur/Madame <span class="certif-med-info-patient" id="field-patient_nom">Meurphy TALAMIO</span>, né(e) le <span class="certif-med-info-patient" id="field-patient_naissance">01/01/1990</span> à <span class="certif-med-info-patient" id="field-patient_lieu">Brazzaville</span>, titulaire de la CNI n° <span class="certif-med-info-patient" id="field-patient_cni">123456789</span>.</p>
+                </div>
+                
+                <div class="certif-med-constat">
+                    <div class="certif-med-constat-title">Constatations et Aptitude</div>
+                    <p style="margin: 0; color: #065f46;" id="field-constat">
+                        L'examen clinique ne révèle aucune contre-indication apparente à la pratique de l'activité professionnelle / sportive demandée. L'intéressé(e) est déclaré(e) apte à ce jour.
+                    </p>
+                </div>
+                
+                <div class="certif-med-corps">
+                    <p>Ce certificat est délivré à la demande de l'intéressé(e) pour servir et valoir ce que de droit.</p>
+                </div>
+                
+                <div class="certif-med-date-lieu">Fait à <span id="field-ville">Brazzaville</span>, le <span id="field-date">04 octobre 2026</span></div>
+                
+                <div class="certif-med-signature">
+                    <div class="certif-med-signature-label">Le Médecin</div>
+                    <div class="certif-med-signature-nom" id="field-medecin_nom3">Dr. Meurphy TALAMIO</div>
+                </div>
+                
+                <div class="certif-med-footer">Document généré par TakiDoc - L'équipe Meurphy | www.takidoc.onrender.com</div>
+            </div>
+        `
+    };
+}
+
+// --- DOCUMENT 18 : Rapport d'Activité ---
+export function getTemplate_Rapport_Activite() {
+    return {
+        id: 'rapport_activite',
+        name: 'Rapport d\'Activité',
+        category: 'administratif',
+        price: 1200,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Modèle professionnel pour rendre compte d\'une période d\'activité.',
+        cssStyles: `
+            .rapport-container { width: 210mm; min-height: 297mm; background: white; padding: 60px 70px; font-family: 'Inter', sans-serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); line-height: 1.7; }
+            .rapport-header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .rapport-entreprise { font-size: 1.5rem; font-weight: 800; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; }
+            .rapport-titre { font-size: 2rem; font-weight: 800; color: #0f172a; margin: 30px 0; text-transform: uppercase; letter-spacing: 1px; }
+            .rapport-meta { display: flex; justify-content: space-between; margin-bottom: 40px; padding: 20px; background: #f8fafc; border-radius: 8px; }
+            .rapport-meta-item { flex: 1; }
+            .rapport-meta-label { font-size: 0.85rem; color: #64748b; text-transform: uppercase; margin-bottom: 5px; font-weight: 600; }
+            .rapport-meta-value { font-size: 1rem; font-weight: 600; color: #0f172a; }
+            .rapport-section { margin-bottom: 30px; }
+            .rapport-section-title { font-size: 1.2rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+            .rapport-text { font-size: 1rem; line-height: 1.8; color: #475569; text-align: justify; }
+            .rapport-list { list-style: disc; margin-left: 20px; margin-bottom: 15px; }
+            .rapport-list li { margin-bottom: 8px; color: #475569; }
+            .rapport-footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 0.85rem; color: #94a3b8; }
+        `,
+        htmlStructure: `
+            <div class="rapport-container">
+                <header class="rapport-header">
+                    <div class="rapport-entreprise" id="field-entreprise_nom">ENTREPRISE XYZ</div>
+                    <div class="rapport-titre">Rapport d'Activité</div>
+                </header>
+                
+                <div class="rapport-meta">
+                    <div class="rapport-meta-item">
+                        <div class="rapport-meta-label">Rédigé par</div>
+                        <div class="rapport-meta-value" id="field-employe_nom">Meurphy TALAMIO</div>
+                        <div style="font-size: 0.9rem; color: #64748b;" id="field-employe_poste">Directeur Général</div>
+                    </div>
+                    <div class="rapport-meta-item">
+                        <div class="rapport-meta-label">Période concernée</div>
+                        <div class="rapport-meta-value">Du <span id="field-periode_debut">01/01/2026</span></div>
+                        <div class="rapport-meta-value">Au <span id="field-periode_fin">30/09/2026</span></div>
+                    </div>
+                </div>
+                
+                <div class="rapport-section">
+                    <div class="rapport-section-title">1. Introduction</div>
+                    <p class="rapport-text" id="field-introduction">Ce rapport a pour objet de présenter les activités menées et les résultats obtenus au cours de la période spécifiée. Il met en lumière les réalisations majeures et les perspectives d'avenir.</p>
+                </div>
+                
+                <div class="rapport-section">
+                    <div class="rapport-section-title">2. Activités Principales</div>
+                    <ul class="rapport-list">
+                        <li id="field-activite1">Mise en place de la nouvelle stratégie commerciale et augmentation du portefeuille client de 20%.</li>
+                        <li id="field-activite2">Optimisation des processus internes ayant permis une réduction des coûts opérationnels de 15%.</li>
+                        <li id="field-activite3">Recrutement et formation d'une nouvelle équipe de 5 collaborateurs.</li>
+                    </ul>
+                </div>
+                
+                <div class="rapport-section">
+                    <div class="rapport-section-title">3. Résultats et Bilan</div>
+                    <p class="rapport-text" id="field-resultats">Les objectifs fixés en début de période ont été globalement atteints. Le chiffre d'affaires a connu une croissance de 12% par rapport à l'année précédente, dépassant les prévisions initiales.</p>
+                </div>
+                
+                <div class="rapport-section">
+                    <div class="rapport-section-title">4. Conclusion et Perspectives</div>
+                    <p class="rapport-text" id="field-conclusion">La période écoulée a été marquée par une croissance solide et une structuration efficace de l'entreprise. Les perspectives pour le prochain trimestre sont encourageantes, avec plusieurs projets majeurs en cours de finalisation.</p>
+                </div>
+                
+                <div style="text-align: right; margin-top: 40px; font-style: italic; color: #64748b;">
+                    Fait à <span id="field-ville">Brazzaville</span>, le <span id="field-date">04 octobre 2026</span>
+                </div>
+                
+                <div class="rapport-footer">Document généré par TakiDoc - L'équipe Meurphy | www.takidoc.onrender.com</div>
+            </div>
+        `
+    };
+}
+
+// --- DOCUMENT 19 : Procuration ---
+export function getTemplate_Procuration() {
+    return {
+        id: 'procuration',
+        name: 'Procuration',
+        category: 'administratif',
+        price: 1000,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Modèle de procuration pour représenter une personne dans des démarches.',
+        cssStyles: `
+            .procuration-container { width: 210mm; min-height: 297mm; background: white; padding: 60px 70px; font-family: 'Times New Roman', 'Georgia', serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); line-height: 1.8; }
+            .procuration-titre { text-align: center; font-size: 2rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 3px; margin: 40px 0; text-decoration: underline; text-underline-offset: 8px; }
+            .procuration-corps { font-size: 1.1rem; line-height: 2; text-align: justify; margin-bottom: 30px; }
+            .procuration-corps p { margin-bottom: 20px; text-indent: 40px; }
+            .procuration-info { font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .procuration-pouvoirs { background: #fef3c7; border-left: 4px solid #d97706; padding: 20px; margin: 30px 0; }
+            .procuration-pouvoirs-title { font-weight: 700; color: #92400e; margin-bottom: 10px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
+            .procuration-date-lieu { text-align: right; font-size: 1.05rem; margin: 40px 0; font-style: italic; }
+            .procuration-signatures { margin-top: 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+            .procuration-signature-block { text-align: center; }
+            .procuration-signature-label { font-size: 1rem; color: #64748b; margin-bottom: 80px; font-weight: 600; }
+            .procuration-signature-line { border-top: 2px solid var(--doc-primary-color, #0F172A); padding-top: 10px; font-weight: 700; color: var(--doc-primary-color, #0F172A); font-size: 1.1rem; }
+            .procuration-footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 0.85rem; color: #94a3b8; font-style: italic; }
+        `,
+        htmlStructure: `
+            <div class="procuration-container">
+                <h1 class="procuration-titre">Procuration</h1>
+                
+                <div class="procuration-corps">
+                    <p>Je soussigné(e), <span class="procuration-info" id="field-mandant_nom">Meurphy TALAMIO</span>, né(e) le <span class="procuration-info" id="field-mandant_naissance">01/01/1990</span> à <span class="procuration-info" id="field-mandant_lieu">Brazzaville</span>, titulaire de la CNI n° <span class="procuration-info" id="field-mandant_cni">123456789</span>, demeurant au <span class="procuration-info" id="field-mandant_adresse">123 Quartier Poto-Poto, Brazzaville</span>,</p>
+                    
+                    <p>Donne par la présente procuration à :</p>
+                    
+                    <p>Monsieur/Madame <span class="procuration-info" id="field-mandataire_nom">Jean DUPONT</span>, né(e) le <span class="procuration-info" id="field-mandataire_naissance">15/05/1985</span> à <span class="procuration-info" id="field-mandataire_lieu">Pointe-Noire</span>, titulaire de la CNI n° <span class="procuration-info" id="field-mandataire_cni">987654321</span>, demeurant au <span class="procuration-info" id="field-mandataire_adresse">456 Avenue de la Paix, Pointe-Noire</span>,</p>
+                    
+                    <p>Pour me représenter et agir en mon nom et pour mon compte dans le cadre suivant :</p>
+                </div>
+                
+                <div class="procuration-pouvoirs">
+                    <div class="procuration-pouvoirs-title">Objet et étendue des pouvoirs</div>
+                    <p style="margin: 0; color: #92400e; text-indent: 0;" id="field-objet_procuration">
+                        Effectuer toutes les démarches nécessaires auprès de l'administration pour le retrait de mon passeport, signer tous les documents afférents à cette demande, et percevoir le document une fois établi.
+                    </p>
+                </div>
+                
+                <div class="procuration-corps">
+                    <p>Cette procuration est valable pour une durée de <span class="procuration-info" id="field-duree_validite">3 mois</span> à compter de sa date de signature.</p>
+                    <p>Pour servir et valoir ce que de droit.</p>
+                </div>
+                
+                <div class="procuration-date-lieu">Fait à <span id="field-ville">Brazzaville</span>, le <span id="field-date">04 octobre 2026</span></div>
+                
+                <div class="procuration-signatures">
+                    <div class="procuration-signature-block">
+                        <div class="procuration-signature-label">Le Mandant (Signature précédée de "Bon pour pouvoir")</div>
+                        <div class="procuration-signature-line" id="field-mandant_nom2">Meurphy TALAMIO</div>
+                    </div>
+                    <div class="procuration-signature-block">
+                        <div class="procuration-signature-label">Le Mandataire (Signature précédée de "Bon pour acceptation")</div>
+                        <div class="procuration-signature-line" id="field-mandataire_nom2">Jean DUPONT</div>
+                    </div>
+                </div>
+                
+                <div class="procuration-footer">Document généré par TakiDoc - L'équipe Meurphy | www.takidoc.onrender.com</div>
+            </div>
+        `
+    };
+}
+
+// --- DOCUMENT 20 : Déclaration sur l'Honneur ---
+export function getTemplate_Declaration_Honneur() {
+    return {
+        id: 'declaration_sur_honneur',
+        name: 'Déclaration sur l\'Honneur',
+        category: 'administratif',
+        price: 800,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Modèle officiel de déclaration sur l\'honneur pour démarches administratives.',
+        cssStyles: `
+            .decl-container { width: 210mm; min-height: 297mm; background: white; padding: 60px 70px; font-family: 'Times New Roman', 'Georgia', serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); line-height: 1.8; }
+            .decl-titre { text-align: center; font-size: 2rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 3px; margin: 40px 0; text-decoration: underline; text-underline-offset: 8px; }
+            .decl-corps { font-size: 1.1rem; line-height: 2; text-align: justify; margin-bottom: 30px; }
+            .decl-corps p { margin-bottom: 20px; text-indent: 40px; }
+            .decl-info { font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .decl-objet-box { background: #f0f9ff; border: 2px solid #0ea5e9; padding: 20px; margin: 30px 0; border-radius: 8px; text-align: center; }
+            .decl-objet-title { font-weight: 700; color: #0369a1; margin-bottom: 10px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
+            .decl-objet-text { font-size: 1.1rem; color: #0c4a6e; font-weight: 600; }
+            .decl-mention-legale { background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin: 30px 0; font-size: 0.95rem; color: #991b1b; font-style: italic; }
+            .decl-date-lieu { text-align: right; font-size: 1.05rem; margin: 40px 0; font-style: italic; }
+            .decl-signature { margin-top: 60px; text-align: right; }
+            .decl-signature-label { font-size: 1rem; color: #64748b; margin-bottom: 80px; }
+            .decl-signature-nom { font-size: 1.1rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); border-top: 2px solid var(--doc-primary-color, #0F172A); display: inline-block; padding-top: 10px; min-width: 200px; }
+            .decl-footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 0.85rem; color: #94a3b8; font-style: italic; }
+        `,
+        htmlStructure: `
+            <div class="decl-container">
+                <h1 class="decl-titre">Déclaration sur l'Honneur</h1>
+                
+                <div class="decl-corps">
+                    <p>Je soussigné(e), <span class="decl-info" id="field-declarant_nom">Meurphy TALAMIO</span>, né(e) le <span class="decl-info" id="field-declarant_naissance">01/01/1990</span> à <span class="decl-info" id="field-declarant_lieu">Brazzaville</span>, titulaire de la CNI n° <span class="decl-info" id="field-declarant_cni">123456789</span>, demeurant au <span class="decl-info" id="field-declarant_adresse">123 Quartier Poto-Poto, Brazzaville</span>,</p>
+                </div>
+                
+                <div class="decl-objet-box">
+                    <div class="decl-objet-title">Déclare sur l'honneur que</div>
+                    <div class="decl-objet-text" id="field-objet_declaration">je suis actuellement sans emploi et ne perçois aucune rémunération professionnelle.</div>
+                </div>
+                
+                <div class="decl-corps">
+                    <p id="field-texte_complementaire">Cette déclaration est établie pour servir et valoir ce que de droit, notamment dans le cadre de ma demande d'inscription aux services sociaux.</p>
+                </div>
+                
+                <div class="decl-mention-legale">
+                    J'ai pris connaissance que cette fausse déclaration m'expose aux sanctions pénales prévues par l'article 441-7 du Code pénal (fausse attestation ou certificat).
+                </div>
+                
+                <div class="decl-date-lieu">Fait à <span id="field-ville">Brazzaville</span>, le <span id="field-date">04 octobre 2026</span></div>
+                
+                <div class="decl-signature">
+                    <div class="decl-signature-label">Signature du déclarant</div>
+                    <div class="decl-signature-nom" id="field-declarant_nom2">Meurphy TALAMIO</div>
+                </div>
+                
+                <div class="decl-footer">Document généré par TakiDoc - L'équipe Meurphy | www.takidoc.onrender.com</div>
+            </div>
+        `
+    };
+}
+
 // ============================================
-// REGISTRE CENTRAL MIS À JOUR
+// REGISTRE CENTRAL FINAL (20 DOCUMENTS)
 // ============================================
 export const templatesRegistry = [
     getTemplate_CV_Executif_Moderne(),
@@ -2117,7 +2395,11 @@ export const templatesRegistry = [
     getTemplate_Contrat_CDI(),
     getTemplate_Contrat_CDD(),
     getTemplate_Contrat_Stage(),
-    getTemplate_Devis_Prestation(),              // ← AJOUTÉ
-    getTemplate_Facture_Simple(),                // ← AJOUTÉ
-    getTemplate_Attestation_Residence()          // ← AJOUTÉ
+    getTemplate_Devis_Prestation(),
+    getTemplate_Facture_Simple(),
+    getTemplate_Attestation_Residence(),
+    getTemplate_Certificat_Medical(),         // ← 17
+    getTemplate_Rapport_Activite(),           // ← 18
+    getTemplate_Procuration(),                // ← 19
+    getTemplate_Declaration_Honneur()         // ← 20
 ];
