@@ -446,13 +446,14 @@ async function generatePDF() {
     const { template } = editorState;
     const canvas = document.getElementById('document-canvas');
     
-    // Afficher un message de chargement
-    const originalText = document.getElementById('btn-download').textContent;
-    document.getElementById('btn-download').textContent = ' Génération en cours...';
-    document.getElementById('btn-download').disabled = true;
+    // Message de chargement
+    const btn = document.getElementById('btn-download');
+    const originalText = btn.textContent;
+    btn.textContent = '⏳ Génération en cours...';
+    btn.disabled = true;
     
     try {
-        // Utiliser html2canvas directement sur l'élément visible
+        // Capturer le document avec html2canvas
         const canvasImage = await html2canvas(canvas, {
             scale: 2,
             useCORS: true,
@@ -490,8 +491,8 @@ async function generatePDF() {
         console.error('Erreur PDF:', error);
         alert('Erreur lors du téléchargement du PDF: ' + error.message);
     } finally {
-        document.getElementById('btn-download').textContent = originalText;
-        document.getElementById('btn-download').disabled = false;
+        btn.textContent = originalText;
+        btn.disabled = false;
     }
 }
 
