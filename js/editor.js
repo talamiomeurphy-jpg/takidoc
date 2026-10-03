@@ -1,5 +1,5 @@
 // ============================================
-// TAKIDOC - LOGIQUE DE L'ÉDITEUR
+// TAKIDOC - LOGIQUE DE L'ÉDITEUR (VERSION CORRIGÉE)
 // L'équipe Meurphy
 // ============================================
 
@@ -7,9 +7,8 @@ import { fetchTemplateById, createPendingPurchase } from './supabase-config.js';
 import { templatesRegistry } from './templates-registry.js';
 
 // URLs OpenPay par montant
-// URLs OpenPay par montant
 const OPENPAY_LINKS = {
-    100: 'https://openpay.cg/pay/4c2d33bc4576c2978c1ceee857019d18245b36646eacf33abcb6ec7b8c6337bd', // <-- AJOUTÉ POUR LE TEST
+    100: 'https://openpay.cg/pay/4c2d33bc4576c2978c1ceee857019d18245b36646eacf33abcb6ec7b8c6337bd',
     800: 'https://openpay.cg/pay/f70b59c1f63e0e6a2d55b5dbde5203fe5bb6d73645b7c2cf8fc9a60117c9282b',
     1000: 'https://openpay.cg/pay/d244c8900efd9f3a73c98436fe4ffcae61ed413c99ede74a6de8bd705b91dc2c',
     1200: 'https://openpay.cg/pay/bb6a4ec95996eaed88ba07272e00756803f63fa4af7f134d2accb492ebdf6e59',
@@ -46,11 +45,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
     
-    // Trouver le rendu visuel dans le registry JS (peut être null)
     const templateRender = templatesRegistry.find(t => t.id === templateId);
     
     editorState.template = template;
-    editorState.templateRender = templateRender; // Peut être null
+    editorState.templateRender = templateRender;
     editorState.primaryColor = '#0F172A';
     
     initEditor();
@@ -103,12 +101,10 @@ function renderDocument() {
         document.head.appendChild(styleTag);
     }
     
-    // Si pas de rendu personnalisé, afficher un aperçu générique
     if (templateRender) {
         styleTag.textContent = templateRender.cssStyles || '';
         canvas.innerHTML = templateRender.htmlStructure || '<p>Aperçu non disponible</p>';
     } else {
-        // Aperçu générique pour les templates sans rendu
         styleTag.textContent = `
             .generic-preview { 
                 width: 210mm; 
@@ -176,6 +172,18 @@ function setupColorPicker() {
 function applyPrimaryColor() {
     const canvas = document.getElementById('document-canvas');
     canvas.style.setProperty('--doc-primary-color', editorState.primaryColor);
+    
+    // Mettre à jour tous les éléments qui utilisent la couleur
+    canvas.querySelectorAll('*').forEach(el => {
+        const style = window.getComputedStyle(el);
+        if (style.color.includes('var(--doc-primary-color)') || 
+            style.backgroundColor.includes('var(--doc-primary-color)') ||
+            style.borderColor.includes('var(--doc-primary-color)')) {
+            el.style.color = editorState.primaryColor;
+            el.style.backgroundColor = editorState.primaryColor;
+            el.style.borderColor = editorState.primaryColor;
+        }
+    });
 }
 
 // ============================================
@@ -195,6 +203,7 @@ function setupPhotoUpload() {
             editorState.photoDataUrl = event.target.result;
             label.textContent = '✓ Photo ajoutée';
             removeBtn.style.display = 'block';
+            updatePhotoInDocument();
         };
         reader.readAsDataURL(file);
     });
@@ -204,15 +213,74 @@ function setupPhotoUpload() {
         input.value = '';
         label.textContent = '+ Ajouter une photo';
         removeBtn.style.display = 'none';
+        updatePhotoInDocument();
     });
 }
 
+function updatePhotoInDocument() {
+    const photoContainer = document.getElementById('doc-photo');
+    if (!photoContainer) return;
+    
+    if (editorState.photoDataUrl) {
+        photoContainer.innerHTML = `<img src="${editorState.photoDataUrl}" alt="Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+    } else {
+        photoContainer.innerHTML = '<span class="cv-photo-placeholder">Photo</span>';
+    }
+}
+
 // ============================================
-// GESTION DES CHAMPS DE TEXTE
+// GESTION DES CHAMPS DE TEXTE (CORRIGÉ)
 // ============================================
 function setupFields(fields) {
     const container = document.getElementById('fields-container');
     container.innerHTML = '';
+    
+    // Valeurs par défaut pour les champs courants
+    const defaultValues = {
+        'nom': 'Meurphy TALAMIO',
+        'poste': 'Directeur Général',
+        'email': 'brazzamarket.infos@gmail.com',
+        'telephone': '+242 06 518 69 67',
+        'adresse': 'Brazzaville, Congo',
+        'profil': 'Professionnel expérimenté avec plus de 10 ans d\'expérience dans mon domaine. Passionné par l\'innovation et la recherche de l\'excellence.',
+        'exp1_titre': 'Directeur Général',
+        'exp1_date': '2020 - Présent',
+        'exp1_entreprise': 'Entreprise XYZ - Brazzaville',
+        'exp1_desc': 'Direction stratégique de l\'entreprise. Management d\'une équipe de 50 personnes.',
+        'exp2_titre': 'Chef de Projet Senior',
+        'exp2_date': '2015 - 2020',
+        'exp2_entreprise': 'Société ABC - Pointe-Noire',
+        'exp2_desc': 'Gestion de projets majeurs. Coordination avec les parties prenantes.',
+        'form1_diplome': 'Master en Management',
+        'form1_ecole': 'Université Marien Ngouabi',
+        'form1_date': '2013 - 2015',
+        'form2_diplome': 'Licence en Gestion',
+        'form2_ecole': 'Université de Brazzaville',
+        'form2_date': '2010 - 2013',
+        'skill1_name': 'Gestion de projet',
+        'skill2_name': 'Leadership',
+        'skill3_name': 'Communication',
+        'skill4_name': 'Analyse stratégique',
+        'lang1_name': 'Français',
+        'lang1_level': 'Courant',
+        'lang2_name': 'Anglais',
+        'lang2_level': 'Professionnel',
+        'interets': 'Lecture, Voyages, Technologie, Sport',
+        'expediteur_nom': 'Meurphy TALAMIO',
+        'expediteur_adresse': 'Brazzaville, Congo\nTéléphone: +242 06 518 69 67',
+        'expediteur_telephone': '+242 06 518 69 67',
+        'expediteur_email': 'brazzamarket.infos@gmail.com',
+        'destinataire_nom': 'Monsieur le Directeur',
+        'destinataire_fonction': 'Directeur des Ressources Humaines',
+        'destinataire_entreprise': 'Entreprise Cible',
+        'destinataire_adresse': 'Brazzaville, Congo',
+        'objet': 'Candidature au poste de Directeur Général',
+        'paragraphe1': 'Madame, Monsieur,',
+        'paragraphe2': 'Par la présente, je me permets de vous adresser ma candidature pour le poste mentionné ci-dessus. Fort d\'une expérience solide dans mon domaine, je suis convaincu de pouvoir apporter une contribution significative à votre entreprise.',
+        'paragraphe3': 'Au cours de mon parcours professionnel, j\'ai développé des compétences clés qui correspondent parfaitement aux exigences de ce poste. Mon sens de l\'initiative, ma capacité d\'adaptation et mon esprit d\'équipe sont des atouts que je souhaite mettre à votre disposition.',
+        'paragraphe4': 'Je serais honoré de pouvoir vous exposer plus en détail mes motivations lors d\'un entretien. Dans l\'attente de votre réponse, je vous prie d\'agréer, Madame, Monsieur, l\'expression de mes salutations distinguées.',
+        'signature': 'Meurphy TALAMIO'
+    };
     
     fields.forEach(field => {
         const fieldDiv = document.createElement('div');
@@ -232,9 +300,14 @@ function setupFields(fields) {
         }
         
         input.id = `field-${field.field_name}`;
-        input.value = field.default_value || '';
+        // Utiliser la valeur par défaut si elle existe, sinon une valeur générique
+        input.value = field.default_value || defaultValues[field.field_name] || `[${field.field_label}]`;
         input.placeholder = `Entrez ${field.field_label.toLowerCase()}`;
         
+        // Stocker la valeur initiale
+        editorState.customData[field.field_name] = input.value;
+        
+        // Écouter les changements en temps réel
         input.addEventListener('input', (e) => {
             editorState.customData[field.field_name] = e.target.value;
             updateFieldInDocument(field.field_name, e.target.value);
@@ -243,6 +316,16 @@ function setupFields(fields) {
         fieldDiv.appendChild(input);
         container.appendChild(fieldDiv);
     });
+    
+    // Initialiser le document avec les valeurs par défaut
+    setTimeout(() => {
+        fields.forEach(field => {
+            const input = document.getElementById(`field-${field.field_name}`);
+            if (input) {
+                updateFieldInDocument(field.field_name, input.value);
+            }
+        });
+    }, 100);
 }
 
 function updateFieldInDocument(fieldName, value) {
@@ -295,17 +378,47 @@ function setupZoomControls() {
 }
 
 // ============================================
-// TÉLÉCHARGEMENT PDF
+// TÉLÉCHARGEMENT PDF (GRATUIT EN MODE TEST)
 // ============================================
 function setupDownloadButton() {
     const btn = document.getElementById('btn-download');
     btn.addEventListener('click', () => {
-        alert('Téléchargement disponible après paiement. Cliquez sur "Acheter et télécharger" pour procéder au paiement.');
+        generatePDF();
     });
 }
 
+async function generatePDF() {
+    const { template } = editorState;
+    const canvas = document.getElementById('document-canvas');
+    
+    // Créer un clone du document pour le PDF
+    const clone = canvas.cloneNode(true);
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.transform = 'none';
+    document.body.appendChild(clone);
+    
+    const opt = {
+        margin: 0,
+        filename: `TakiDoc_${template.id}_${Date.now()}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    
+    try {
+        await html2pdf().set(opt).from(clone).save();
+        alert('PDF téléchargé avec succès !');
+    } catch (error) {
+        console.error('Erreur PDF:', error);
+        alert('Erreur lors du téléchargement du PDF');
+    }
+    
+    document.body.removeChild(clone);
+}
+
 // ============================================
-// ACHAT ET PAIEMENT
+// ACHAT ET PAIEMENT (OPTIONNEL EN MODE TEST)
 // ============================================
 function setupBuyButton() {
     const btn = document.getElementById('btn-buy');
