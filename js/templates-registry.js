@@ -777,16 +777,249 @@ export function getTemplate_CV_Classique_Francais() {
     };
 }
 
+// --- DOCUMENT 4 : CV Étudiant Stage ---
+export function getTemplate_CV_Etudiant_Stage() {
+    return {
+        id: 'cv_etudiant_stage',
+        name: 'CV Étudiant Stage',
+        category: 'cv',
+        price: 1000,
+        hasPhoto: true,
+        hasColorPicker: true,
+        description: 'Design simple et clair, mettant en avant la formation et le potentiel.',
+        cssStyles: `
+            .cv-etudiant-container { width: 210mm; min-height: 297mm; background: white; padding: 50px; font-family: 'Inter', sans-serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+            .cv-etudiant-header { display: flex; align-items: center; gap: 30px; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .cv-etudiant-photo { width: 120px; height: 120px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 3px solid var(--doc-primary-color, #0F172A); flex-shrink: 0; }
+            .cv-etudiant-photo img { width: 100%; height: 100%; object-fit: cover; }
+            .cv-etudiant-photo-placeholder { font-size: 2rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .cv-etudiant-info h1 { font-size: 2.2rem; font-weight: 800; color: var(--doc-primary-color, #0F172A); margin-bottom: 5px; }
+            .cv-etudiant-info h2 { font-size: 1.2rem; color: #64748b; font-weight: 500; margin-bottom: 10px; }
+            .cv-etudiant-contact { font-size: 0.9rem; color: #475569; display: flex; gap: 15px; flex-wrap: wrap; }
+            .cv-etudiant-section { margin-bottom: 25px; }
+            .cv-etudiant-title { font-size: 1.1rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 2px solid #e2e8f0; }
+            .cv-etudiant-text { font-size: 0.95rem; line-height: 1.6; color: #475569; text-align: justify; }
+            .cv-etudiant-item { margin-bottom: 15px; }
+            .cv-etudiant-item-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+            .cv-etudiant-item-title { font-weight: 700; color: #0f172a; }
+            .cv-etudiant-item-date { font-size: 0.85rem; color: #64748b; font-style: italic; }
+            .cv-etudiant-item-subtitle { font-size: 0.95rem; color: var(--doc-primary-color, #0F172A); font-weight: 600; margin-bottom: 5px; }
+            .cv-etudiant-skills { display: flex; flex-wrap: wrap; gap: 10px; }
+            .cv-etudiant-skill-tag { background: #f1f5f9; color: #0f172a; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 500; border-left: 3px solid var(--doc-primary-color, #0F172A); }
+        `,
+        htmlStructure: `
+            <div class="cv-etudiant-container">
+                <header class="cv-etudiant-header">
+                    <div class="cv-etudiant-photo" id="doc-photo"><span class="cv-etudiant-photo-placeholder" id="photo-initials">MT</span></div>
+                    <div class="cv-etudiant-info">
+                        <h1 id="field-nom">Meurphy TALAMIO</h1>
+                        <h2 id="field-poste">Étudiant en Master Management</h2>
+                        <div class="cv-etudiant-contact">
+                            <span>✉ <span id="field-email">brazzamarket.infos@gmail.com</span></span>
+                            <span>☎ <span id="field-telephone">+242 06 518 69 67</span></span>
+                            <span>⌖ <span id="field-adresse">Brazzaville, Congo</span></span>
+                        </div>
+                    </div>
+                </header>
+                <section class="cv-etudiant-section">
+                    <div class="cv-etudiant-title">Objectif</div>
+                    <p class="cv-etudiant-text" id="field-profil">Étudiant sérieux et motivé, je recherche un stage de fin d'études de 6 mois pour mettre en pratique mes connaissances en gestion et contribuer activement aux projets de votre entreprise.</p>
+                </section>
+                <section class="cv-etudiant-section">
+                    <div class="cv-etudiant-title">Formation</div>
+                    <div class="cv-etudiant-item">
+                        <div class="cv-etudiant-item-header"><div class="cv-etudiant-item-title" id="field-form1_diplome">Master 1 en Management</div><div class="cv-etudiant-item-date" id="field-form1_date">2025 - Présent</div></div>
+                        <div class="cv-etudiant-item-subtitle" id="field-form1_ecole">Université Marien Ngouabi, Brazzaville</div>
+                    </div>
+                    <div class="cv-etudiant-item">
+                        <div class="cv-etudiant-item-header"><div class="cv-etudiant-item-title" id="field-form2_diplome">Licence en Gestion</div><div class="cv-etudiant-item-date" id="field-form2_date">2022 - 2025</div></div>
+                        <div class="cv-etudiant-item-subtitle" id="field-form2_ecole">Université de Brazzaville</div>
+                    </div>
+                </section>
+                <section class="cv-etudiant-section">
+                    <div class="cv-etudiant-title">Expériences & Bénévolat</div>
+                    <div class="cv-etudiant-item">
+                        <div class="cv-etudiant-item-header"><div class="cv-etudiant-item-title" id="field-exp1_titre">Stagiaire Assistant Administratif</div><div class="cv-etudiant-item-date" id="field-exp1_date">Juin 2024 - Août 2024</div></div>
+                        <div class="cv-etudiant-item-subtitle" id="field-exp1_entreprise">Mairie de Brazzaville</div>
+                        <p class="cv-etudiant-text" id="field-exp1_desc">Classement de dossiers, accueil du public, rédaction de comptes-rendus de réunion.</p>
+                    </div>
+                </section>
+                <section class="cv-etudiant-section">
+                    <div class="cv-etudiant-title">Compétences</div>
+                    <div class="cv-etudiant-skills">
+                        <span class="cv-etudiant-skill-tag" id="field-skill1_name">Pack Office</span>
+                        <span class="cv-etudiant-skill-tag" id="field-skill2_name">Travail d'équipe</span>
+                        <span class="cv-etudiant-skill-tag" id="field-skill3_name">Rédaction</span>
+                        <span class="cv-etudiant-skill-tag" id="field-skill4_name">Organisation</span>
+                    </div>
+                </section>
+                <section class="cv-etudiant-section">
+                    <div class="cv-etudiant-title">Langues & Centres d'intérêt</div>
+                    <p class="cv-etudiant-text"><strong id="field-lang1_name">Français</strong> : <span id="field-lang1_level">Courant</span> | <strong id="field-lang2_name">Anglais</strong> : <span id="field-lang2_level">Scolaire</span></p>
+                    <p class="cv-etudiant-text" style="margin-top: 10px;" id="field-interets">Lecture, Sport collectif, Bénévolat associatif</p>
+                </option>
+            </div>
+        `
+    };
+}
+
+// --- DOCUMENT 5 : CV Créatif Design ---
+export function getTemplate_CV_Creatif_Design() {
+    return {
+        id: 'cv_creatif_design',
+        name: 'CV Créatif Design',
+        category: 'cv',
+        price: 1500,
+        hasPhoto: true,
+        hasColorPicker: true,
+        description: 'Design moderne et audacieux, idéal pour les métiers du web, du graphisme ou du marketing.',
+        cssStyles: `
+            .cv-creatif-container { width: 210mm; min-height: 297mm; background: white; font-family: 'Inter', sans-serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); display: grid; grid-template-columns: 30% 70%; }
+            .cv-creatif-sidebar { background: var(--doc-primary-color, #0F172A); color: white; padding: 40px 25px; }
+            .cv-creatif-photo { width: 130px; height: 130px; border-radius: 12px; background: rgba(255,255,255,0.2); margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+            .cv-creatif-photo img { width: 100%; height: 100%; object-fit: cover; }
+            .cv-creatif-photo-placeholder { font-size: 2.5rem; font-weight: 800; color: white; }
+            .cv-creatif-sidebar-title { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin: 30px 0 15px; padding-bottom: 8px; border-bottom: 2px solid rgba(255,255,255,0.3); }
+            .cv-creatif-contact-item { font-size: 0.9rem; margin-bottom: 12px; word-break: break-word; }
+            .cv-creatif-skill-bar { margin-bottom: 15px; }
+            .cv-creatif-skill-name { font-size: 0.9rem; margin-bottom: 5px; }
+            .cv-creatif-skill-track { height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; }
+            .cv-creatif-skill-fill { height: 100%; background: white; border-radius: 4px; }
+            .cv-creatif-main { padding: 40px 35px; }
+            .cv-creatif-name { font-size: 2.5rem; font-weight: 800; color: var(--doc-primary-color, #0F172A); line-height: 1; margin-bottom: 10px; }
+            .cv-creatif-title { font-size: 1.2rem; color: #64748b; font-weight: 600; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .cv-creatif-section { margin-bottom: 30px; }
+            .cv-creatif-section-title { font-size: 1.1rem; font-weight: 800; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+            .cv-creatif-text { font-size: 0.95rem; line-height: 1.6; color: #475569; }
+            .cv-creatif-item { margin-bottom: 20px; padding-left: 15px; border-left: 3px solid #e2e8f0; }
+            .cv-creatif-item-title { font-weight: 700; color: #0f172a; font-size: 1.05rem; }
+            .cv-creatif-item-date { font-size: 0.85rem; color: #64748b; font-style: italic; margin-bottom: 5px; }
+            .cv-creatif-item-subtitle { font-size: 0.95rem; color: var(--doc-primary-color, #0F172A); font-weight: 600; margin-bottom: 8px; }
+        `,
+        htmlStructure: `
+            <div class="cv-creatif-container">
+                <aside class="cv-creatif-sidebar">
+                    <div class="cv-creatif-photo" id="doc-photo"><span class="cv-creatif-photo-placeholder" id="photo-initials">MT</span></div>
+                    <div class="cv-creatif-sidebar-title">Contact</div>
+                    <div class="cv-creatif-contact-item">✉ <span id="field-email">brazzamarket.infos@gmail.com</span></div>
+                    <div class="cv-creatif-contact-item">☎ <span id="field-telephone">+242 06 518 69 67</span></div>
+                    <div class="cv-creatif-contact-item">⌖ <span id="field-adresse">Brazzaville, Congo</span></div>
+                    <div class="cv-creatif-contact-item">🔗 <span id="field-portfolio">www.monportfolio.com</span></div>
+                    
+                    <div class="cv-creatif-sidebar-title">Logiciels</div>
+                    <div class="cv-creatif-skill-bar"><div class="cv-creatif-skill-name" id="field-logiciel1_name">Photoshop</div><div class="cv-creatif-skill-track"><div class="cv-creatif-skill-fill" style="width: 90%"></div></div></div>
+                    <div class="cv-creatif-skill-bar"><div class="cv-creatif-skill-name" id="field-logiciel2_name">Illustrator</div><div class="cv-creatif-skill-track"><div class="cv-creatif-skill-fill" style="width: 85%"></div></div></div>
+                    <div class="cv-creatif-skill-bar"><div class="cv-creatif-skill-name" id="field-logiciel3_name">Figma</div><div class="cv-creatif-skill-track"><div class="cv-creatif-skill-fill" style="width: 80%"></div></div></div>
+                    
+                    <div class="cv-creatif-sidebar-title">Langues</div>
+                    <div class="cv-creatif-contact-item"><strong id="field-lang1_name">Français</strong> : <span id="field-lang1_level">Courant</span></div>
+                    <div class="cv-creatif-contact-item"><strong id="field-lang2_name">Anglais</strong> : <span id="field-lang2_level">Professionnel</span></div>
+                </aside>
+                <main class="cv-creatif-main">
+                    <h1 class="cv-creatif-name" id="field-nom">Meurphy TALAMIO</h1>
+                    <div class="cv-creatif-title" id="field-poste">Directeur Artistique / Graphiste</div>
+                    
+                    <section class="cv-creatif-section">
+                        <div class="cv-creatif-section-title">Profil</div>
+                        <p class="cv-creatif-text" id="field-profil">Créatif passionné avec 5 ans d'expérience dans la conception d'identités visuelles percutantes. J'aime transformer des idées complexes en designs simples et élégants.</p>
+                    </section>
+                    
+                    <section class="cv-creatif-section">
+                        <div class="cv-creatif-section-title">Expériences</div>
+                        <div class="cv-creatif-item">
+                            <div class="cv-creatif-item-title" id="field-exp1_titre">Graphiste Senior</div>
+                            <div class="cv-creatif-item-date" id="field-exp1_date">2021 - Présent</div>
+                            <div class="cv-creatif-item-subtitle" id="field-exp1_entreprise">Agence Créative XYZ</div>
+                            <p class="cv-creatif-text" id="field-exp1_desc">Direction artistique de campagnes publicitaires. Création de maquettes web et print. Management d'un junior designer.</p>
+                        </div>
+                        <div class="cv-creatif-item">
+                            <div class="cv-creatif-item-title" id="field-exp2_titre">Designer Freelance</div>
+                            <div class="cv-creatif-item-date" id="field-exp2_date">2019 - 2021</div>
+                            <div class="cv-creatif-item-subtitle" id="field-exp2_entreprise">Indépendant</div>
+                            <p class="cv-creatif-text" id="field-exp2_desc">Réalisation de logos, chartes graphiques et supports de communication pour des PME locales.</p>
+                        </div>
+                    </section>
+                    
+                    <section class="cv-creatif-section">
+                        <div class="cv-creatif-section-title">Formation</div>
+                        <div class="cv-creatif-item">
+                            <div class="cv-creatif-item-title" id="field-form1_diplome">Master en Design Graphique</div>
+                            <div class="cv-creatif-item-date" id="field-form1_date">2017 - 2019</div>
+                            <div class="cv-creatif-item-subtitle" id="field-form1_ecole">École des Beaux-Arts</div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        `
+    };
+}
+
+// --- DOCUMENT 6 : Lettre de Motivation Stage ---
+export function getTemplate_Lettre_Motivation_Stage() {
+    return {
+        id: 'lettre_motivation_stage',
+        name: 'Lettre de Motivation Stage',
+        category: 'lettre',
+        price: 800,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Format dynamique et adapté aux étudiants recherchant un stage.',
+        cssStyles: `
+            .lettre-stage-container { width: 210mm; min-height: 297mm; background: white; padding: 50px 60px; font-family: 'Inter', sans-serif; color: #1e293b; line-height: 1.6; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+            .lettre-stage-header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+            .lettre-stage-expediteur { font-size: 0.95rem; line-height: 1.5; }
+            .lettre-stage-destinataire { text-align: right; font-size: 0.95rem; line-height: 1.5; }
+            .lettre-stage-date { text-align: right; margin-bottom: 30px; font-weight: 600; color: var(--doc-primary-color, #0F172A); }
+            .lettre-stage-objet { font-weight: 700; margin-bottom: 25px; color: var(--doc-primary-color, #0F172A); font-size: 1.05rem; text-decoration: underline; text-underline-offset: 4px; }
+            .lettre-stage-corps { margin-bottom: 20px; text-align: justify; font-size: 1rem; }
+            .lettre-stage-corps p { margin-bottom: 15px; }
+            .lettre-stage-formule { margin-top: 30px; font-style: italic; }
+            .lettre-stage-signature { margin-top: 40px; text-align: right; font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+        `,
+        htmlStructure: `
+            <div class="lettre-stage-container">
+                <div class="lettre-stage-header">
+                    <div class="lettre-stage-expediteur">
+                        <strong id="field-expediteur_nom">Meurphy TALAMIO</strong><br>
+                        <span id="field-expediteur_adresse">Brazzaville, Congo</span><br>
+                        <span id="field-expediteur_telephone">+242 06 518 69 67</span><br>
+                        <span id="field-expediteur_email">brazzamarket.infos@gmail.com</span>
+                    </div>
+                    <div class="lettre-stage-destinataire">
+                        <strong id="field-destinataire_nom">Monsieur le Responsable RH</strong><br>
+                        <span id="field-destinataire_fonction">Responsable des Stages</span><br>
+                        <span id="field-destinataire_entreprise">Entreprise Cible</span><br>
+                        <span id="field-destinataire_adresse">Brazzaville, Congo</span>
+                    </div>
+                </div>
+                
+                <div class="lettre-stage-date">Brazzaville, le <span id="field-date">04 octobre 2026</span></div>
+                
+                <div class="lettre-stage-objet">Objet : <span id="field-objet">Candidature pour un stage de fin d'études</span></div>
+                
+                <div class="lettre-stage-corps">
+                    <p id="field-paragraphe1">Madame, Monsieur,</p>
+                    <p id="field-paragraphe2">Actuellement étudiant en <span id="field-formation">Master Management</span> à l'Université Marien Ngouabi, je suis à la recherche d'un stage de fin d'études d'une durée de <span id="field-duree">6 mois</span> à partir de <span id="field-date_debut">janvier 2027</span>.</p>
+                    <p id="field-paragraphe3">Votre entreprise, reconnue pour <span id="field-raison_interet">son innovation et son excellence</span>, représente pour moi l'environnement idéal pour mettre en pratique mes connaissances et développer de nouvelles compétences. Sérieux, motivé et doté d'un bon esprit d'équipe, je suis prêt à m'investir pleinement dans les missions que vous voudrez bien me confier.</p>
+                    <p id="field-paragraphe4">Je me tiens à votre entière disposition pour un entretien afin de vous exposer plus en détail mes motivations. Dans cette attente, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.</p>
+                </div>
+                
+                <div class="lettre-stage-formule">Cordialement,</div>
+                <div class="lettre-stage-signature" id="field-signature">Meurphy TALAMIO</div>
+            </div>
+        `
+    };
+}
 
 // ============================================
-// REGISTRE CENTRAL
+// REGISTRE CENTRAL MIS À JOUR
 // ============================================
-
-
 export const templatesRegistry = [
     getTemplate_CV_Executif_Moderne(),
     getTemplate_CV_Classique_Francais(),
     getTemplate_Attestation_Travail(),
+    getTemplate_CV_Etudiant_Stage(),    // ← AJOUTÉ
+    getTemplate_CV_Creatif_Design(),    // ← AJOUTÉ
+    getTemplate_Lettre_Motivation_Stage(), // ← AJOUTÉ
     getTemplate_Lettre_Motivation_Classique()
 ];
-
