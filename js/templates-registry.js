@@ -1309,6 +1309,436 @@ export function getTemplate_Attestation_Salaire() {
     };
 }
 
+
+// --- DOCUMENT 10 : Contrat CDI ---
+export function getTemplate_Contrat_CDI() {
+    return {
+        id: 'contrat_cdi',
+        name: 'Contrat de Travail CDI',
+        category: 'contrat',
+        price: 2000,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Modèle complet de contrat à durée indéterminée conforme au droit du travail.',
+        cssStyles: `
+            .contrat-container { width: 210mm; min-height: 297mm; background: white; padding: 50px 60px; font-family: 'Times New Roman', 'Georgia', serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); line-height: 1.8; }
+            .contrat-header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .contrat-entreprise-nom { font-size: 1.8rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+            .contrat-entreprise-info { font-size: 0.95rem; color: #64748b; line-height: 1.6; }
+            .contrat-titre { text-align: center; font-size: 1.8rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 2px; margin: 40px 0; text-decoration: underline; text-underline-offset: 8px; }
+            .contrat-parties { margin-bottom: 30px; }
+            .contrat-partie { margin-bottom: 20px; padding: 15px; background: #f8fafc; border-left: 4px solid var(--doc-primary-color, #0F172A); }
+            .contrat-partie-title { font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; font-size: 1.05rem; }
+            .contrat-partie-info { font-size: 0.95rem; line-height: 1.6; }
+            .contrat-article { margin-bottom: 25px; }
+            .contrat-article-title { font-size: 1.1rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; text-transform: uppercase; }
+            .contrat-article-content { font-size: 0.95rem; line-height: 1.7; text-align: justify; }
+            .contrat-article-content p { margin-bottom: 10px; }
+            .contrat-info { font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .contrat-signatures { margin-top: 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+            .contrat-signature-block { text-align: center; }
+            .contrat-signature-label { font-size: 0.95rem; color: #64748b; margin-bottom: 60px; font-weight: 600; }
+            .contrat-signature-line { border-top: 2px solid var(--doc-primary-color, #0F172A); padding-top: 10px; font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .contrat-date-lieu { text-align: right; font-size: 1rem; margin: 30px 0; font-style: italic; }
+            .contrat-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 0.85rem; color: #94a3b8; font-style: italic; }
+        `,
+        htmlStructure: `
+            <div class="contrat-container">
+                <header class="contrat-header">
+                    <div class="contrat-entreprise-nom" id="field-entreprise_nom">ENTREPRISE XYZ</div>
+                    <div class="contrat-entreprise-info">
+                        <div id="field-entreprise_adresse">123 Avenue de l'Indépendance, Brazzaville</div>
+                        <div>Tél: <span id="field-entreprise_telephone">+242 06 000 00 00</span> | Email: <span id="field-entreprise_email">contact@entreprise.com</span></div>
+                    </div>
+                </header>
+                
+                <h1 class="contrat-titre">Contrat de Travail à Durée Indéterminée</h1>
+                
+                <div class="contrat-date-lieu">Fait à <span id="field-ville">Brazzaville</span>, le <span id="field-date">04 octobre 2026</span></div>
+                
+                <div class="contrat-parties">
+                    <div class="contrat-partie">
+                        <div class="contrat-partie-title">ENTRE LES SOUSSIGNÉS</div>
+                        <div class="contrat-partie-info">
+                            La société <span class="contrat-info" id="field-entreprise_nom2">ENTREPRISE XYZ</span>, immatriculée sous le numéro <span class="contrat-info" id="field-entreprise_immatriculation">123456789</span>, dont le siège social est situé au <span class="contrat-info" id="field-entreprise_siege">123 Avenue de l'Indépendance, Brazzaville</span>, représentée par <span class="contrat-info" id="field-employeur_nom">Monsieur le Directeur Général</span>, agissant en qualité de <span class="contrat-info" id="field-employeur_fonction">Directeur Général</span>,<br><br>
+                            Ci-après dénommée "<strong>l'Employeur</strong>",
+                        </div>
+                    </div>
+                    
+                    <div class="contrat-partie">
+                        <div class="contrat-partie-title">ET</div>
+                        <div class="contrat-partie-info">
+                            Monsieur/Madame <span class="contrat-info" id="field-employe_nom">Meurphy TALAMIO</span>, né(e) le <span class="contrat-info" id="field-employe_naissance">01/01/1990</span> à <span class="contrat-info" id="field-employe_lieu_naissance">Brazzaville</span>, titulaire de la CNI n° <span class="contrat-info" id="field-employe_cni">123456789</span>, demeurant au <span class="contrat-info" id="field-employe_adresse">Brazzaville, Congo</span>,<br><br>
+                            Ci-après dénommé(e) "<strong>le Salarié</strong>",
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contrat-article">
+                    <div class="contrat-article-title">Article 1 - Objet du contrat</div>
+                    <div class="contrat-article-content">
+                        <p>Le présent contrat a pour objet de définir les conditions dans lesquelles <span class="contrat-info" id="field-employe_nom2">Meurphy TALAMIO</span> est engagé(e) par la société <span class="contrat-info" id="field-entreprise_nom3">ENTREPRISE XYZ</span> dans le cadre d'un contrat de travail à durée indéterminée.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-article">
+                    <div class="contrat-article-title">Article 2 - Fonctions et missions</div>
+                    <div class="contrat-article-content">
+                        <p>Le Salarié est engagé en qualité de <span class="contrat-info" id="field-employe_poste">Directeur Général</span>. Il/Elle aura pour missions principales : <span class="contrat-info" id="field-missions">Direction stratégique de l'entreprise, management des équipes, développement commercial</span>.</p>
+                        <p>Le Salarié sera placé sous l'autorité de <span class="contrat-info" id="field-superieur_hierarchique">Monsieur le Président du Conseil d'Administration</span>.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-article">
+                    <div class="contrat-article-title">Article 3 - Date d'entrée et période d'essai</div>
+                    <div class="contrat-article-content">
+                        <p>Le présent contrat prend effet à compter du <span class="contrat-info" id="field-date_debut">01/01/2027</span>.</p>
+                        <p>Le Salarié sera soumis à une période d'essai de <span class="contrat-info" id="field-duree_essai">3 mois</span>, renouvelable une fois pour une durée équivalente.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-article">
+                    <div class="contrat-article-title">Article 4 - Rémunération</div>
+                    <div class="contrat-article-content">
+                        <p>En contrepartie de son travail, le Salarié percevra une rémunération mensuelle brute de <span class="contrat-info" id="field-salaire_montant">1 500 000 FCFA</span>, composée d'un salaire de base de <span class="contrat-info" id="field-salaire_base">1 200 000 FCFA</span> et de primes pour un montant de <span class="contrat-info" id="field-salaire_primes">300 000 FCFA</span>.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-article">
+                    <div class="contrat-article-title">Article 5 - Durée du travail</div>
+                    <div class="contrat-article-content">
+                        <p>La durée du travail est fixée à <span class="contrat-info" id="field-duree_travail">40 heures</span> par semaine, réparties selon l'organisation de l'entreprise.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-article">
+                    <div class="contrat-article-title">Article 6 - Lieu de travail</div>
+                    <div class="contrat-article-content">
+                        <p>Le Salarié exercera ses fonctions au siège social de l'entreprise situé à <span class="contrat-info" id="field-lieu_travail">Brazzaville</span>. Des déplacements professionnels pourront être demandés.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-article">
+                    <div class="contrat-article-title">Article 7 - Congés payés</div>
+                    <div class="contrat-article-content">
+                        <p>Le Salarié bénéficiera de <span class="contrat-info" id="field-jours_conges">30 jours</span> de congés payés par an, conformément à la législation en vigueur.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-article">
+                    <div class="contrat-article-title">Article 8 - Résiliation du contrat</div>
+                    <div class="contrat-article-content">
+                        <p>Chacune des parties pourra mettre fin au présent contrat à tout moment, sous réserve de respecter un préavis de <span class="contrat-info" id="field-duree_preavis">3 mois</span> pour le Salarié et de <span class="contrat-info" id="field-duree_preavis_employeur">6 mois</span> pour l'Employeur.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-signatures">
+                    <div class="contrat-signature-block">
+                        <div class="contrat-signature-label">L'Employeur</div>
+                        <div class="contrat-signature-line" id="field-employeur_nom2">Monsieur le Directeur Général</div>
+                    </div>
+                    <div class="contrat-signature-block">
+                        <div class="contrat-signature-label">Le Salarié</div>
+                        <div class="contrat-signature-line" id="field-employe_nom3">Meurphy TALAMIO</div>
+                    </div>
+                </div>
+                
+                <div class="contrat-footer">Document généré par TakiDoc - L'équipe Meurphy | www.takidoc.onrender.com</div>
+            </div>
+        `
+    };
+}
+
+// --- DOCUMENT 11 : Contrat CDD ---
+export function getTemplate_Contrat_CDD() {
+    return {
+        id: 'contrat_cdd',
+        name: 'Contrat de Travail CDD',
+        category: 'contrat',
+        price: 2000,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Modèle de contrat à durée déterminée avec motif de recours.',
+        cssStyles: `
+            .contrat-cdd-container { width: 210mm; min-height: 297mm; background: white; padding: 50px 60px; font-family: 'Times New Roman', 'Georgia', serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); line-height: 1.8; }
+            .contrat-cdd-header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .contrat-cdd-entreprise-nom { font-size: 1.8rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+            .contrat-cdd-entreprise-info { font-size: 0.95rem; color: #64748b; line-height: 1.6; }
+            .contrat-cdd-titre { text-align: center; font-size: 1.8rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 2px; margin: 40px 0; text-decoration: underline; text-underline-offset: 8px; }
+            .contrat-cdd-motif { background: #fef3c7; border-left: 4px solid #d97706; padding: 15px; margin-bottom: 30px; font-size: 0.95rem; }
+            .contrat-cdd-motif strong { color: #92400e; }
+            .contrat-cdd-parties { margin-bottom: 30px; }
+            .contrat-cdd-partie { margin-bottom: 20px; padding: 15px; background: #f8fafc; border-left: 4px solid var(--doc-primary-color, #0F172A); }
+            .contrat-cdd-partie-title { font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; font-size: 1.05rem; }
+            .contrat-cdd-partie-info { font-size: 0.95rem; line-height: 1.6; }
+            .contrat-cdd-article { margin-bottom: 25px; }
+            .contrat-cdd-article-title { font-size: 1.1rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; text-transform: uppercase; }
+            .contrat-cdd-article-content { font-size: 0.95rem; line-height: 1.7; text-align: justify; }
+            .contrat-cdd-article-content p { margin-bottom: 10px; }
+            .contrat-cdd-info { font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .contrat-cdd-duree-box { background: #dbeafe; border: 2px solid #3b82f6; padding: 20px; margin: 30px 0; text-align: center; }
+            .contrat-cdd-duree-box .label { font-size: 0.9rem; color: #64748b; margin-bottom: 5px; }
+            .contrat-cdd-duree-box .value { font-size: 1.3rem; font-weight: 700; color: #1e40af; }
+            .contrat-cdd-signatures { margin-top: 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+            .contrat-cdd-signature-block { text-align: center; }
+            .contrat-cdd-signature-label { font-size: 0.95rem; color: #64748b; margin-bottom: 60px; font-weight: 600; }
+            .contrat-cdd-signature-line { border-top: 2px solid var(--doc-primary-color, #0F172A); padding-top: 10px; font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .contrat-cdd-date-lieu { text-align: right; font-size: 1rem; margin: 30px 0; font-style: italic; }
+            .contrat-cdd-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 0.85rem; color: #94a3b8; font-style: italic; }
+        `,
+        htmlStructure: `
+            <div class="contrat-cdd-container">
+                <header class="contrat-cdd-header">
+                    <div class="contrat-cdd-entreprise-nom" id="field-entreprise_nom">ENTREPRISE XYZ</div>
+                    <div class="contrat-cdd-entreprise-info">
+                        <div id="field-entreprise_adresse">123 Avenue de l'Indépendance, Brazzaville</div>
+                        <div>Tél: <span id="field-entreprise_telephone">+242 06 000 00 00</span> | Email: <span id="field-entreprise_email">contact@entreprise.com</span></div>
+                    </div>
+                </header>
+                
+                <h1 class="contrat-cdd-titre">Contrat de Travail à Durée Déterminée</h1>
+                
+                <div class="contrat-cdd-motif">
+                    <strong>Motif de recours :</strong> <span id="field-motif_recours">Accroissement temporaire d'activité</span>
+                </div>
+                
+                <div class="contrat-cdd-duree-box">
+                    <div class="label">Durée du contrat</div>
+                    <div class="value">Du <span id="field-date_debut">01/01/2027</span> au <span id="field-date_fin">30/06/2027</span> (<span id="field-duree_totale">6 mois</span>)</div>
+                </div>
+                
+                <div class="contrat-cdd-date-lieu">Fait à <span id="field-ville">Brazzaville</span>, le <span id="field-date">04 octobre 2026</span></div>
+                
+                <div class="contrat-cdd-parties">
+                    <div class="contrat-cdd-partie">
+                        <div class="contrat-cdd-partie-title">ENTRE LES SOUSSIGNÉS</div>
+                        <div class="contrat-cdd-partie-info">
+                            La société <span class="contrat-cdd-info" id="field-entreprise_nom2">ENTREPRISE XYZ</span>, immatriculée sous le numéro <span class="contrat-cdd-info" id="field-entreprise_immatriculation">123456789</span>, dont le siège social est situé au <span class="contrat-cdd-info" id="field-entreprise_siege">123 Avenue de l'Indépendance, Brazzaville</span>, représentée par <span class="contrat-cdd-info" id="field-employeur_nom">Monsieur le Directeur Général</span>,<br><br>
+                            Ci-après dénommée "<strong>l'Employeur</strong>",
+                        </div>
+                    </div>
+                    
+                    <div class="contrat-cdd-partie">
+                        <div class="contrat-cdd-partie-title">ET</div>
+                        <div class="contrat-cdd-partie-info">
+                            Monsieur/Madame <span class="contrat-cdd-info" id="field-employe_nom">Meurphy TALAMIO</span>, né(e) le <span class="contrat-cdd-info" id="field-employe_naissance">01/01/1990</span> à <span class="contrat-cdd-info" id="field-employe_lieu_naissance">Brazzaville</span>, titulaire de la CNI n° <span class="contrat-cdd-info" id="field-employe_cni">123456789</span>,<br><br>
+                            Ci-après dénommé(e) "<strong>le Salarié</strong>",
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contrat-cdd-article">
+                    <div class="contrat-cdd-article-title">Article 1 - Objet et motif du contrat</div>
+                    <div class="contrat-cdd-article-content">
+                        <p>Le présent contrat est conclu pour une durée déterminée en raison de <span class="contrat-cdd-info" id="field-motif_detail">l'accroissement temporaire d'activité lié à un projet spécifique</span>.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-cdd-article">
+                    <div class="contrat-cdd-article-title">Article 2 - Fonctions</div>
+                    <div class="contrat-cdd-article-content">
+                        <p>Le Salarié est engagé en qualité de <span class="contrat-cdd-info" id="field-employe_poste">Chef de Projet</span>. Ses missions principales sont : <span class="contrat-cdd-info" id="field-missions">Gestion du projet X, coordination des équipes, reporting</span>.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-cdd-article">
+                    <div class="contrat-cdd-article-title">Article 3 - Rémunération</div>
+                    <div class="contrat-cdd-article-content">
+                        <p>Le Salarié percevra une rémunération mensuelle brute de <span class="contrat-cdd-info" id="field-salaire_montant">1 200 000 FCFA</span>.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-cdd-article">
+                    <div class="contrat-cdd-article-title">Article 4 - Durée du travail</div>
+                    <div class="contrat-cdd-article-content">
+                        <p>La durée du travail est fixée à <span class="contrat-cdd-info" id="field-duree_travail">40 heures</span> par semaine.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-cdd-article">
+                    <div class="contrat-cdd-article-title">Article 5 - Renouvellement</div>
+                    <div class="contrat-cdd-article-content">
+                        <p>Le présent contrat pourra être renouvelé <span class="contrat-cdd-info" id="field-nombre_renouvellements">1 fois</span> pour une durée de <span class="contrat-cdd-info" id="field-duree_renouvellement">3 mois</span>, dans la limite de la durée maximale légale.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-cdd-article">
+                    <div class="contrat-cdd-article-title">Article 6 - Indemnité de fin de contrat</div>
+                    <div class="contrat-cdd-article-content">
+                        <p>À l'issue du contrat, le Salarié percevra une indemnité de fin de contrat égale à <span class="contrat-cdd-info" id="field-taux_indemnite">10%</span> de la rémunération totale brute versée.</p>
+                    </div>
+                </div>
+                
+                <div class="contrat-cdd-signatures">
+                    <div class="contrat-cdd-signature-block">
+                        <div class="contrat-cdd-signature-label">L'Employeur</div>
+                        <div class="contrat-cdd-signature-line" id="field-employeur_nom2">Monsieur le Directeur Général</div>
+                    </div>
+                    <div class="contrat-cdd-signature-block">
+                        <div class="contrat-cdd-signature-label">Le Salarié</div>
+                        <div class="contrat-cdd-signature-line" id="field-employe_nom2">Meurphy TALAMIO</div>
+                    </div>
+                </div>
+                
+                <div class="contrat-cdd-footer">Document généré par TakiDoc - L'équipe Meurphy | www.takidoc.onrender.com</div>
+            </div>
+        `
+    };
+}
+
+// --- DOCUMENT 12 : Contrat Stage ---
+export function getTemplate_Contrat_Stage() {
+    return {
+        id: 'contrat_stage',
+        name: 'Convention de Stage',
+        category: 'contrat',
+        price: 1500,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Convention tripartite pour stage étudiant (école, entreprise, stagiaire).',
+        cssStyles: `
+            .stage-container { width: 210mm; min-height: 297mm; background: white; padding: 50px 60px; font-family: 'Times New Roman', 'Georgia', serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); line-height: 1.8; }
+            .stage-header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .stage-entreprise-nom { font-size: 1.8rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+            .stage-entreprise-info { font-size: 0.95rem; color: #64748b; line-height: 1.6; }
+            .stage-titre { text-align: center; font-size: 1.8rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 2px; margin: 40px 0; text-decoration: underline; text-underline-offset: 8px; }
+            .stage-tripartite { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+            .stage-partie { padding: 15px; background: #f8fafc; border-left: 4px solid var(--doc-primary-color, #0F172A); }
+            .stage-partie-title { font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; font-size: 0.95rem; text-transform: uppercase; }
+            .stage-partie-info { font-size: 0.9rem; line-height: 1.6; }
+            .stage-duree-box { background: #dbeafe; border: 2px solid #3b82f6; padding: 20px; margin: 30px 0; text-align: center; }
+            .stage-duree-box .label { font-size: 0.9rem; color: #64748b; margin-bottom: 5px; }
+            .stage-duree-box .value { font-size: 1.3rem; font-weight: 700; color: #1e40af; }
+            .stage-article { margin-bottom: 25px; }
+            .stage-article-title { font-size: 1.1rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; text-transform: uppercase; }
+            .stage-article-content { font-size: 0.95rem; line-height: 1.7; text-align: justify; }
+            .stage-article-content p { margin-bottom: 10px; }
+            .stage-info { font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .stage-objectifs { background: #f0fdf4; border: 2px solid #10b981; padding: 20px; margin: 30px 0; }
+            .stage-objectifs-title { font-weight: 700; color: #065f46; margin-bottom: 10px; }
+            .stage-objectifs-list { list-style: disc; margin-left: 20px; }
+            .stage-objectifs-list li { margin-bottom: 8px; font-size: 0.95rem; }
+            .stage-signatures { margin-top: 60px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; }
+            .stage-signature-block { text-align: center; }
+            .stage-signature-label { font-size: 0.9rem; color: #64748b; margin-bottom: 60px; font-weight: 600; }
+            .stage-signature-line { border-top: 2px solid var(--doc-primary-color, #0F172A); padding-top: 10px; font-weight: 700; color: var(--doc-primary-color, #0F172A); font-size: 0.9rem; }
+            .stage-date-lieu { text-align: right; font-size: 1rem; margin: 30px 0; font-style: italic; }
+            .stage-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 0.85rem; color: #94a3b8; font-style: italic; }
+        `,
+        htmlStructure: `
+            <div class="stage-container">
+                <header class="stage-header">
+                    <div class="stage-entreprise-nom" id="field-entreprise_nom">ENTREPRISE XYZ</div>
+                    <div class="stage-entreprise-info">
+                        <div id="field-entreprise_adresse">123 Avenue de l'Indépendance, Brazzaville</div>
+                        <div>Tél: <span id="field-entreprise_telephone">+242 06 000 00 00</span> | Email: <span id="field-entreprise_email">contact@entreprise.com</span></div>
+                    </div>
+                </header>
+                
+                <h1 class="stage-titre">Convention de Stage</h1>
+                
+                <div class="stage-duree-box">
+                    <div class="label">Durée du stage</div>
+                    <div class="value">Du <span id="field-date_debut">01/01/2027</span> au <span id="field-date_fin">30/06/2027</span> (<span id="field-duree_totale">6 mois</span>)</div>
+                </div>
+                
+                <div class="stage-date-lieu">Fait à <span id="field-ville">Brazzaville</span>, le <span id="field-date">04 octobre 2026</span></div>
+                
+                <div class="stage-tripartite">
+                    <div class="stage-partie">
+                        <div class="stage-partie-title">L'Entreprise</div>
+                        <div class="stage-partie-info">
+                            <span class="stage-info" id="field-entreprise_nom2">ENTREPRISE XYZ</span><br>
+                            Représentée par <span class="stage-info" id="field-employeur_nom">Monsieur le Directeur</span><br>
+                            <span class="stage-info" id="field-entreprise_siege">123 Avenue de l'Indépendance</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stage-partie">
+                        <div class="stage-partie-title">L'École</div>
+                        <div class="stage-partie-info">
+                            <span class="stage-info" id="field-ecole_nom">Université Marien Ngouabi</span><br>
+                            Représentée par <span class="stage-info" id="field-ecole_representant">Monsieur le Doyen</span><br>
+                            <span class="stage-info" id="field-ecole_adresse">Brazzaville, Congo</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stage-partie">
+                        <div class="stage-partie-title">Le Stagiaire</div>
+                        <div class="stage-partie-info">
+                            <span class="stage-info" id="field-stagiaire_nom">Meurphy TALAMIO</span><br>
+                            Né(e) le <span class="stage-info" id="field-stagiaire_naissance">01/01/2000</span><br>
+                            <span class="stage-info" id="field-stagiaire_formation">Master Management</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stage-article">
+                    <div class="stage-article-title">Article 1 - Objet de la convention</div>
+                    <div class="stage-article-content">
+                        <p>La présente convention a pour objet de définir les conditions dans lesquelles <span class="stage-info" id="field-stagiaire_nom2">Meurphy TALAMIO</span> effectuera un stage au sein de la société <span class="stage-info" id="field-entreprise_nom3">ENTREPRISE XYZ</span>.</p>
+                    </div>
+                </div>
+                
+                <div class="stage-objectifs">
+                    <div class="stage-objectifs-title">Objectifs du stage</div>
+                    <ul class="stage-objectifs-list">
+                        <li id="field-objectif1">Découverte du monde professionnel</li>
+                        <li id="field-objectif2">Mise en pratique des connaissances acquises</li>
+                        <li id="field-objectif3">Développement de compétences spécifiques</li>
+                    </ul>
+                </div>
+                
+                <div class="stage-article">
+                    <div class="stage-article-title">Article 2 - Missions confiées</div>
+                    <div class="stage-article-content">
+                        <p>Le stagiaire se verra confier les missions suivantes : <span class="stage-info" id="field-missions">Assistance à la gestion de projet, analyse de données, rédaction de rapports</span>.</p>
+                        <p>Il/Elle sera placé(e) sous la responsabilité de <span class="stage-info" id="field-tuteur_nom">Monsieur le Chef de Département</span>, agissant en qualité de tuteur.</p>
+                    </div>
+                </div>
+                
+                <div class="stage-article">
+                    <div class="stage-article-title">Article 3 - Durée et horaires</div>
+                    <div class="stage-article-content">
+                        <p>Le stage se déroulera sur une période de <span class="stage-info" id="field-duree_hebdomadaire">35 heures</span> par semaine, du lundi au vendredi.</p>
+                    </div>
+                </div>
+                
+                <div class="stage-article">
+                    <div class="stage-article-title">Article 4 - Gratification</div>
+                    <div class="stage-article-content">
+                        <p>Le stagiaire percevra une gratification mensuelle de <span class="stage-info" id="field-gratification">150 000 FCFA</span>.</p>
+                    </div>
+                </div>
+                
+                <div class="stage-article">
+                    <div class="stage-article-title">Article 5 - Évaluation</div>
+                    <div class="stage-article-content">
+                        <p>Une évaluation du stage sera réalisée par le tuteur en fin de stage. Un rapport de stage devra être remis par le stagiaire à l'issue de la période.</p>
+                    </div>
+                </div>
+                
+                <div class="stage-signatures">
+                    <div class="stage-signature-block">
+                        <div class="stage-signature-label">L'Entreprise</div>
+                        <div class="stage-signature-line" id="field-employeur_nom2">Monsieur le Directeur</div>
+                    </div>
+                    <div class="stage-signature-block">
+                        <div class="stage-signature-label">L'École</div>
+                        <div class="stage-signature-line" id="field-ecole_representant2">Monsieur le Doyen</div>
+                    </div>
+                    <div class="stage-signature-block">
+                        <div class="stage-signature-label">Le Stagiaire</div>
+                        <div class="stage-signature-line" id="field-stagiaire_nom2">Meurphy TALAMIO</div>
+                    </div>
+                </div>
+                
+                <div class="stage-footer">Document généré par TakiDoc - L'équipe Meurphy | www.takidoc.onrender.com</div>
+            </div>
+        `
+    };
+}
+
 // ============================================
 // REGISTRE CENTRAL MIS À JOUR
 // ============================================
@@ -1320,7 +1750,10 @@ export const templatesRegistry = [
     getTemplate_CV_Creatif_Design(),
     getTemplate_Lettre_Motivation_Stage(),
     getTemplate_Lettre_Motivation_Classique(),
-    getTemplate_CV_Ingenieur_Tech(),           // ← AJOUTÉ
-    getTemplate_Lettre_Recommandation(),       // ← AJOUTÉ
-    getTemplate_Attestation_Salaire()          // ← AJOUTÉ
+    getTemplate_CV_Ingenieur_Tech(),
+    getTemplate_Lettre_Recommandation(),
+    getTemplate_Attestation_Salaire(),
+    getTemplate_Contrat_CDI(),              // ← AJOUTÉ
+    getTemplate_Contrat_CDD(),             // ← AJOUTÉ
+    getTemplate_Contrat_Stage()            // ← AJOUTÉ
 ];
