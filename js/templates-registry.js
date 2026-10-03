@@ -1011,6 +1011,60 @@ export function getTemplate_Lettre_Motivation_Stage() {
     };
 }
 
+// --- DOCUMENT 3 : Attestation de Travail ---
+export function getTemplate_Attestation_Travail() {
+    return {
+        id: 'attestation_travail',
+        name: 'Attestation de Travail',
+        category: 'attestation',
+        price: 1000,
+        hasPhoto: false,
+        hasColorPicker: true,
+        description: 'Modèle officiel d\'attestation de travail pour justifier de l\'emploi.',
+        cssStyles: `
+            .attestation-container { width: 210mm; min-height: 297mm; background: white; padding: 60px 70px; font-family: 'Times New Roman', 'Georgia', serif; color: #1e293b; box-shadow: 0 0 20px rgba(0,0,0,0.1); line-height: 1.8; }
+            .attestation-header { text-align: center; margin-bottom: 50px; padding-bottom: 20px; border-bottom: 3px solid var(--doc-primary-color, #0F172A); }
+            .attestation-entreprise-nom { font-size: 1.8rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+            .attestation-entreprise-info { font-size: 0.95rem; color: #64748b; line-height: 1.6; }
+            .attestation-titre { text-align: center; font-size: 2rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); text-transform: uppercase; letter-spacing: 3px; margin: 40px 0; text-decoration: underline; text-underline-offset: 8px; }
+            .attestation-corps { font-size: 1.1rem; line-height: 2; text-align: justify; margin-bottom: 30px; }
+            .attestation-corps p { margin-bottom: 20px; text-indent: 40px; }
+            .attestation-info-employe { font-weight: 700; color: var(--doc-primary-color, #0F172A); }
+            .attestation-date-lieu { text-align: right; font-size: 1.05rem; margin: 40px 0; font-style: italic; }
+            .attestation-signature { margin-top: 60px; text-align: right; }
+            .attestation-signature-label { font-size: 1rem; color: #64748b; margin-bottom: 80px; }
+            .attestation-signature-nom { font-size: 1.1rem; font-weight: 700; color: var(--doc-primary-color, #0F172A); border-top: 2px solid var(--doc-primary-color, #0F172A); display: inline-block; padding-top: 10px; min-width: 200px; }
+            .attestation-signature-fonction { font-size: 0.95rem; color: #64748b; margin-top: 5px; }
+            .attestation-footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 0.85rem; color: #94a3b8; font-style: italic; }
+        `,
+        htmlStructure: `
+            <div class="attestation-container">
+                <header class="attestation-header">
+                    <div class="attestation-entreprise-nom" id="field-entreprise_nom">ENTREPRISE XYZ</div>
+                    <div class="attestation-entreprise-info">
+                        <div id="field-entreprise_adresse">123 Avenue de l'Indépendance, Brazzaville</div>
+                        <div>Tél: <span id="field-entreprise_telephone">+242 06 000 00 00</span> | Email: <span id="field-entreprise_email">contact@entreprise.com</span></div>
+                    </div>
+                </header>
+                <h1 class="attestation-titre">Attestation de Travail</h1>
+                <div class="attestation-corps">
+                    <p>Je soussigné(e), <span class="attestation-info-employe" id="field-signataire_nom">Monsieur le Directeur Général</span>, agissant en qualité de <span class="attestation-info-employe" id="field-signataire_fonction">Directeur Général</span> de la société <span class="attestation-info-employe" id="field-entreprise_nom2">ENTREPRISE XYZ</span>,</p>
+                    <p>Certifie par la présente que <span class="attestation-info-employe" id="field-employe_nom">Meurphy TALAMIO</span>, né(e) le <span class="attestation-info-employe" id="field-employe_naissance">01/01/1990</span> à <span class="attestation-info-employe" id="field-employe_lieu_naissance">Brazzaville</span>, titulaire de la CNI n° <span class="attestation-info-employe" id="field-employe_cni">123456789</span>,</p>
+                    <p>Est employé(e) au sein de notre entreprise depuis le <span class="attestation-info-employe" id="field-employe_date_embauche">01/01/2020</span> en qualité de <span class="attestation-info-employe" id="field-employe_poste">Directeur Général</span>, et y occupe actuellement les fonctions de <span class="attestation-info-employe" id="field-employe_fonction_actuelle">Directeur Général</span>.</p>
+                    <p>Cette attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit.</p>
+                </div>
+                <div class="attestation-date-lieu">Fait à <span id="field-ville">Brazzaville</span>, le <span id="field-date">04 octobre 2026</span></div>
+                <div class="attestation-signature">
+                    <div class="attestation-signature-label">Le Signataire</div>
+                    <div class="attestation-signature-nom" id="field-signataire_nom2">Monsieur le Directeur Général</div>
+                    <div class="attestation-signature-fonction" id="field-signataire_fonction2">Directeur Général</div>
+                </div>
+                <div class="attestation-footer">Document généré par TakiDoc - L'équipe Meurphy | www.takidoc.onrender.com</div>
+            </div>
+        `
+    };
+}
+
 // ============================================
 // REGISTRE CENTRAL MIS À JOUR
 // ============================================
