@@ -786,7 +786,7 @@ export function getTemplate_CV_Classique_Francais() {
 export const templatesRegistry = [
     getTemplate_CV_Executif_Moderne(),
     getTemplate_CV_Classique_Francais(),
-    getTemplate_Attestation_Travail(),  // ← AJOUTÉ
+    getTemplate_Attestation_Travail(),
     getTemplate_Lettre_Motivation_Classique()
 ];
 
