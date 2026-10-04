@@ -20,11 +20,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
-        /* ============================================
-           TAKIDOC - ÉDITEUR RESPONSIVE
-           L'équipe Meurphy
-           ============================================ */
-        
         * {
             margin: 0;
             padding: 0;
@@ -55,25 +50,27 @@
             color: var(--text-dark);
             overflow-x: hidden;
             touch-action: manipulation;
+            -webkit-font-smoothing: antialiased;
         }
         
         /* ============================================
-           NAVIGATION ÉDITEUR
+           NAVIGATION ÉDITEUR ULTRA-MODERNE
            ============================================ */
         .editor-nav {
-            background: white;
-            border-bottom: 1px solid var(--border);
-            padding: 0.875rem 0;
+            background: linear-gradient(135deg, white 0%, #f8fafc 100%);
+            border-bottom: 2px solid var(--border);
+            padding: 0.75rem 0;
             position: sticky;
             top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-sm);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            backdrop-filter: blur(10px);
         }
         
         .editor-nav .nav-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 1rem;
+            padding: 0 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -88,9 +85,20 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            white-space: nowrap;
+            transition: transform 0.2s;
         }
         
-        .editor-nav .logo span { color: var(--accent); }
+        .editor-nav .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .editor-nav .logo span { 
+            color: var(--accent);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         
         .nav-back {
             display: flex;
@@ -98,12 +106,21 @@
             gap: 0.5rem;
             color: var(--text-medium);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.9rem;
-            transition: color 0.2s;
+            transition: all 0.2s;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            background: var(--bg-light);
+            border: 1px solid var(--border);
         }
         
-        .nav-back:hover { color: var(--accent); }
+        .nav-back:hover { 
+            color: var(--accent);
+            background: white;
+            border-color: var(--accent);
+            transform: translateX(-2px);
+        }
         
         .editor-actions {
             display: flex;
@@ -111,26 +128,29 @@
             align-items: center;
         }
         
-        /* Toggle sidebar (mobile/tablette) */
         .sidebar-toggle {
             display: none;
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            width: 40px;
-            height: 40px;
+            background: linear-gradient(135deg, var(--bg-light) 0%, white 100%);
+            border: 2px solid var(--border);
+            width: 42px;
+            height: 42px;
             border-radius: var(--radius);
             cursor: pointer;
             font-size: 1.1rem;
             color: var(--text-dark);
             transition: all 0.2s;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
         }
         
         .sidebar-toggle:hover {
-            background: var(--border);
+            border-color: var(--accent);
+            transform: scale(1.05);
         }
         
         /* ============================================
-           BOUTONS
+           BOUTONS PREMIUM
            ============================================ */
         .btn {
             padding: 0.75rem 1.25rem;
@@ -146,33 +166,53 @@
             justify-content: center;
             gap: 0.5rem;
             font-family: inherit;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
         }
         
         .btn-sm {
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1rem;
             font-size: 0.85rem;
         }
         
         .btn-primary {
             background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
         }
         
         .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(217, 119, 6, 0.4);
         }
         
         .btn-secondary {
             background: white;
             color: var(--primary);
             border: 2px solid var(--border);
+            box-shadow: var(--shadow-sm);
         }
         
         .btn-secondary:hover {
             border-color: var(--accent);
             color: var(--accent);
+            transform: translateY(-1px);
         }
         
         .btn-full {
@@ -182,10 +222,10 @@
         }
         
         .btn-icon {
-            background: white;
-            border: 1px solid var(--border);
-            width: 36px;
-            height: 36px;
+            background: linear-gradient(135deg, white 0%, #f8fafc 100%);
+            border: 2px solid var(--border);
+            width: 38px;
+            height: 38px;
             border-radius: var(--radius);
             cursor: pointer;
             font-size: 1rem;
@@ -195,30 +235,39 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
         }
         
         .btn-icon:hover {
-            background: var(--bg-light);
+            background: white;
             border-color: var(--accent);
             color: var(--accent);
+            transform: scale(1.1);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-icon:active {
+            transform: scale(0.95);
         }
         
         /* ============================================
-           LAYOUT ÉDITEUR
+           LAYOUT ÉDITEUR PREMIUM
            ============================================ */
         .editor-layout {
             display: grid;
-            grid-template-columns: 380px 1fr;
+            grid-template-columns: 400px 1fr;
             min-height: calc(100vh - 70px);
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
         }
         
         /* ============================================
-           SIDEBAR GAUCHE
+           SIDEBAR GAUCHE PREMIUM
            ============================================ */
         .editor-sidebar {
-            background: white;
-            border-right: 1px solid var(--border);
+            background: linear-gradient(180deg, white 0%, #f8fafc 100%);
+            border-right: 2px solid var(--border);
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
@@ -226,33 +275,43 @@
             max-height: calc(100vh - 70px);
             position: sticky;
             top: 70px;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.05);
         }
         
         .sidebar-header {
             padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.05) 0%, transparent 100%);
+            margin: -1.5rem -1.5rem 0 -1.5rem;
+            padding: 1.5rem 1.5rem 1rem;
         }
         
         .sidebar-header h2 {
             font-size: 1.25rem;
             color: var(--primary);
             margin-bottom: 0.5rem;
-            font-weight: 700;
+            font-weight: 800;
+            line-height: 1.3;
         }
         
         .category-badge {
             display: inline-block;
             background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
             color: white;
-            padding: 0.25rem 0.875rem;
+            padding: 0.35rem 1rem;
             border-radius: 20px;
             font-size: 0.8rem;
-            font-weight: 600;
+            font-weight: 700;
+            box-shadow: 0 2px 10px rgba(217, 119, 6, 0.3);
         }
         
         .sidebar-section {
             padding-bottom: 1.25rem;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 2px solid var(--border);
+            background: white;
+            padding: 1.25rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
         }
         
         .sidebar-section:last-of-type {
@@ -263,13 +322,18 @@
             font-size: 1rem;
             color: var(--primary);
             margin-bottom: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
         }
         
-        /* Upload photo */
+        .sidebar-section h3 i {
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+        
+        /* Upload photo premium */
         .photo-upload {
             display: flex;
             flex-direction: column;
@@ -281,37 +345,44 @@
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
-            border: 2px dashed var(--border);
+            border: 3px dashed var(--border);
             border-radius: var(--radius-lg);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
             color: var(--text-light);
-            font-weight: 500;
-            background: var(--bg-light);
-            gap: 0.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #f8fafc 0%, white 100%);
+            gap: 0.6rem;
+            font-size: 0.95rem;
         }
         
         .photo-upload-btn:hover {
             border-color: var(--accent);
             color: var(--accent);
-            background: #fffbeb;
+            background: linear-gradient(135deg, #fff7ed 0%, white 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.2);
         }
         
         .btn-remove {
-            background: #fee2e2;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
             color: #dc2626;
             border: none;
             padding: 0.6rem 1rem;
             border-radius: var(--radius);
             cursor: pointer;
             font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
         }
         
-        .btn-remove:hover { background: #fecaca; }
+        .btn-remove:hover { 
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+            transform: translateY(-1px);
+        }
         
-        /* Color picker */
+        /* Color picker premium */
         .color-picker-wrapper {
             display: flex;
             flex-direction: column;
@@ -321,17 +392,23 @@
         #color-picker {
             width: 100%;
             height: 50px;
-            border: 2px solid var(--border);
+            border: 3px solid var(--border);
             border-radius: var(--radius);
             cursor: pointer;
             padding: 4px;
             background: white;
+            transition: all 0.2s;
+        }
+        
+        #color-picker:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
         }
         
         .color-presets {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 0.5rem;
+            gap: 0.6rem;
         }
         
         .color-preset {
@@ -340,16 +417,31 @@
             border: 3px solid white;
             border-radius: 50%;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
             box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+        
+        .color-preset::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            transition: all 0.2s;
         }
         
         .color-preset:hover {
-            transform: scale(1.15);
-            box-shadow: var(--shadow);
+            transform: scale(1.2);
+            box-shadow: var(--shadow-lg);
+            z-index: 10;
         }
         
-        /* Champs de formulaire */
+        .color-preset:hover::after {
+            border-color: var(--accent);
+        }
+        
+        /* Champs de formulaire premium */
         .form-field {
             margin-bottom: 1rem;
         }
@@ -358,20 +450,20 @@
             display: block;
             font-size: 0.85rem;
             color: var(--text-medium);
-            margin-bottom: 0.4rem;
-            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
         
         .form-field input,
         .form-field textarea {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
             border-radius: var(--radius);
             font-family: inherit;
             font-size: 0.9rem;
             transition: all 0.2s;
-            background: var(--bg-light);
+            background: white;
         }
         
         .form-field input:focus,
@@ -379,7 +471,8 @@
             outline: none;
             border-color: var(--accent);
             background: white;
-            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+            box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.1);
+            transform: translateY(-1px);
         }
         
         .form-field textarea {
@@ -387,11 +480,14 @@
             min-height: 80px;
         }
         
-        /* Prix et bouton d'achat */
+        /* Prix et bouton d'achat premium */
         .sidebar-footer {
             margin-top: auto;
-            padding-top: 1.25rem;
-            border-top: 2px solid var(--border);
+            padding-top: 1.5rem;
+            border-top: 3px solid var(--border);
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.05) 0%, transparent 100%);
+            margin: 1.5rem -1.5rem -1.5rem -1.5rem;
+            padding: 1.5rem;
         }
         
         .price-display {
@@ -399,53 +495,64 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
         }
         
         .price-label {
             color: var(--text-light);
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.9rem;
         }
         
         .price-value {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 800;
-            color: var(--accent);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         /* ============================================
-           PREVIEW DROITE
+           PREVIEW DROITE - MINIATURISATION PARFAITE
            ============================================ */
         .editor-preview {
-            background: #e2e8f0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 2rem;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            overflow: hidden;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: calc(100vh - 70px);
+            position: relative;
         }
         
         .preview-toolbar {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
             margin-bottom: 1.5rem;
-            background: white;
-            padding: 0.625rem 1.25rem;
+            background: linear-gradient(135deg, white 0%, #f8fafc 100%);
+            padding: 0.75rem 1.5rem;
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 100;
+            border: 2px solid var(--border);
         }
         
         #zoom-level {
-            font-weight: 600;
+            font-weight: 700;
             min-width: 50px;
             text-align: center;
             font-size: 0.9rem;
+            color: var(--primary);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .preview-container {
@@ -457,16 +564,24 @@
             padding-bottom: 2rem;
         }
         
+        /* Wrapper pour la miniaturisation */
+        .document-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        
         .document-canvas {
-            transform-origin: top center;
-            transition: transform 0.3s;
             background: white;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            transform-origin: top center;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border);
         }
         
         /* ============================================
-           LOADING & ERROR
+           LOADING & ERROR PREMIUM
            ============================================ */
         .loading-overlay,
         .error-overlay {
@@ -475,7 +590,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg-light);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -486,17 +601,21 @@
         .error-content {
             text-align: center;
             max-width: 500px;
-            padding: 2rem;
+            padding: 3rem;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
         }
         
         .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid var(--border);
+            width: 70px;
+            height: 70px;
+            border: 5px solid var(--border);
             border-top-color: var(--accent);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 1.5rem;
+            margin: 0 auto 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         
         @keyframes spin {
@@ -506,7 +625,8 @@
         .error-content h2 {
             color: var(--primary);
             margin-bottom: 1rem;
-            font-size: 1.75rem;
+            font-size: 2rem;
+            font-weight: 800;
         }
         
         .error-content p {
@@ -516,7 +636,7 @@
         }
         
         /* ============================================
-           MODAL PAIEMENT
+           MODAL PAIEMENT PREMIUM
            ============================================ */
         .modal {
             position: fixed;
@@ -524,69 +644,89 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 23, 42, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(8px);
             padding: 1rem;
+            animation: fadeIn 0.3s ease;
         }
         
         .modal-content {
-            background: white;
-            padding: 2rem;
+            background: linear-gradient(180deg, white 0%, #f8fafc 100%);
+            padding: 2.5rem;
             border-radius: var(--radius-lg);
             max-width: 500px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            border: 2px solid var(--border);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .modal-close {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: var(--bg-light);
-            border: none;
-            width: 36px;
-            height: 36px;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: linear-gradient(135deg, var(--bg-light) 0%, white 100%);
+            border: 2px solid var(--border);
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
             color: var(--text-light);
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
         }
         
         .modal-close:hover {
-            background: var(--border);
-            color: var(--primary);
+            background: white;
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: rotate(90deg);
         }
         
         .modal-content h2 {
             color: var(--primary);
             margin-bottom: 0.5rem;
-            font-size: 1.5rem;
+            font-size: 1.75rem;
+            font-weight: 800;
         }
         
         .payment-amount {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 800;
-            color: var(--accent);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-align: center;
-            margin: 1.5rem 0;
+            margin: 2rem 0;
         }
         
         .payment-methods {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
-            margin-top: 0.5rem;
+            margin-top: 1rem;
         }
         
         .payment-option {
@@ -599,13 +739,14 @@
         .payment-badge-mtn,
         .payment-badge-airtel {
             display: block;
-            padding: 1rem;
-            border: 2px solid var(--border);
+            padding: 1.25rem;
+            border: 3px solid var(--border);
             border-radius: var(--radius);
             text-align: center;
             font-weight: 700;
-            transition: all 0.2s;
+            transition: all 0.3s;
             font-size: 0.9rem;
+            background: white;
         }
         
         .payment-badge-mtn {
@@ -621,31 +762,31 @@
         .payment-option input:checked + .payment-badge-mtn,
         .payment-option input:checked + .payment-badge-airtel {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
-            transform: scale(1.02);
+            box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.2);
+            transform: scale(1.05);
         }
         
         .form-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+            margin-bottom: 0.6rem;
+            font-weight: 700;
             color: var(--primary);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
         
         .form-group input[type="text"],
         .form-group input[type="email"],
         .form-group input[type="tel"] {
             width: 100%;
-            padding: 0.85rem;
-            border: 1px solid var(--border);
+            padding: 1rem;
+            border: 2px solid var(--border);
             border-radius: var(--radius);
-            font-size: 0.95rem;
-            background: var(--bg-light);
+            font-size: 1rem;
+            background: white;
             transition: all 0.2s;
             font-family: inherit;
         }
@@ -654,11 +795,11 @@
             outline: none;
             border-color: var(--accent);
             background: white;
-            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+            box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.1);
         }
         
         /* ============================================
-           OVERLAY MOBILE (Sidebar)
+           OVERLAY MOBILE
            ============================================ */
         .sidebar-overlay {
             display: none;
@@ -667,9 +808,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             z-index: 90;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
         }
         
         .sidebar-overlay.active {
@@ -677,11 +819,11 @@
         }
         
         /* ============================================
-           RESPONSIVE TABLETTE (768px - 1024px)
+           RESPONSIVE TABLETTE
            ============================================ */
         @media (max-width: 1024px) {
             .editor-layout {
-                grid-template-columns: 320px 1fr;
+                grid-template-columns: 350px 1fr;
             }
             
             .editor-sidebar {
@@ -689,16 +831,20 @@
             }
             
             .editor-preview {
-                padding: 1.5rem;
+                padding: 1rem;
             }
         }
         
         /* ============================================
-           RESPONSIVE MOBILE (< 768px)
+           RESPONSIVE MOBILE - MINIATURISATION PARFAITE
            ============================================ */
         @media (max-width: 768px) {
             .editor-nav .nav-container {
                 padding: 0 1rem;
+            }
+            
+            .editor-nav .logo {
+                font-size: 1.3rem;
             }
             
             .nav-back span {
@@ -707,8 +853,6 @@
             
             .sidebar-toggle {
                 display: flex;
-                align-items: center;
-                justify-content: center;
             }
             
             .editor-actions .btn span {
@@ -716,7 +860,7 @@
             }
             
             .editor-actions .btn {
-                padding: 0.5rem 0.75rem;
+                padding: 0.6rem 0.875rem;
             }
             
             .editor-layout {
@@ -727,14 +871,15 @@
                 position: fixed;
                 top: 0;
                 left: -100%;
-                width: 85%;
-                max-width: 360px;
+                width: 90%;
+                max-width: 380px;
                 height: 100vh;
                 max-height: 100vh;
                 z-index: 95;
-                transition: left 0.3s ease;
-                border-right: 1px solid var(--border);
-                box-shadow: var(--shadow-lg);
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                border-right: 2px solid var(--border);
+                box-shadow: 10px 0 40px rgba(0,0,0,0.2);
+                padding: 1.25rem;
             }
             
             .editor-sidebar.open {
@@ -742,37 +887,54 @@
             }
             
             .editor-preview {
-                padding: 1rem;
+                padding: 0.75rem;
                 min-height: auto;
             }
             
             .preview-toolbar {
-                position: relative;
-                top: auto;
+                position: sticky;
+                top: 0;
+                z-index: 100;
                 margin-bottom: 1rem;
                 width: 100%;
                 justify-content: center;
+                padding: 0.75rem 1rem;
             }
             
-            /* DOCUMENT MINIATURE SUR MOBILE */
+            /* Container pour la miniaturisation */
+            .preview-container {
+                width: 100%;
+                overflow-x: auto;
+                overflow-y: hidden;
+                display: block !important;
+                padding: 0.5rem 0;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .document-wrapper {
+                width: auto;
+                min-width: 100%;
+                display: inline-block;
+                margin: 0 auto;
+            }
+            
+            /* Le document est scaled mais garde sa taille réelle */
             .document-canvas {
-                width: 100% !important;
-                max-width: 100% !important;
-                transform: none !important;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                transform-origin: top left !important;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                min-width: 210mm;
             }
             
-            /* Ajustement du zoom sur mobile */
             #zoom-level {
-                display: none;
+                display: inline-block !important;
+                font-size: 0.85rem;
             }
             
             .btn-icon {
-                display: none;
-            }
-            
-            .color-presets {
-                grid-template-columns: repeat(6, 1fr);
+                display: flex !important;
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
             }
             
             .payment-methods {
@@ -780,20 +942,20 @@
             }
             
             .modal-content {
-                padding: 1.5rem;
+                padding: 1.75rem;
             }
             
             .payment-amount {
-                font-size: 1.75rem;
+                font-size: 2rem;
             }
         }
         
         /* ============================================
-           RESPONSIVE TRÈS PETIT ÉCRAN (< 480px)
+           RESPONSIVE TRÈS PETIT ÉCRAN
            ============================================ */
         @media (max-width: 480px) {
             .editor-nav .logo {
-                font-size: 1.25rem;
+                font-size: 1.2rem;
             }
             
             .editor-sidebar {
@@ -806,79 +968,34 @@
             }
             
             .price-value {
-                font-size: 1.25rem;
+                font-size: 1.5rem;
             }
             
             .preview-toolbar {
-                padding: 0.5rem 1rem;
+                padding: 0.625rem 0.875rem;
             }
             
             .btn-icon {
-                width: 32px;
-                height: 32px;
-                font-size: 0.9rem;
+                width: 34px;
+                height: 34px;
+                font-size: 0.85rem;
             }
             
             #zoom-level {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
                 min-width: 45px;
             }
         }
         
-        /* ============================================
-           ANIMATIONS
-           ============================================ */
+        /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
         
         .editor-interface {
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.4s ease;
         }
-
-        /* ============================================
-   MINIATURISATION MOBILE
-   ============================================ */
-@media (max-width: 768px) {
-    .editor-preview {
-        padding: 0.5rem;
-        overflow-x: hidden;
-    }
-    
-    .preview-container {
-        overflow-x: hidden;
-        overflow-y: auto;
-        padding: 0.5rem;
-    }
-    
-    .preview-toolbar {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        padding: 0.5rem 1rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    #zoom-level {
-        display: inline-block;
-        font-size: 0.85rem;
-        min-width: 50px;
-    }
-    
-    .document-canvas {
-        margin: 0 auto;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    /* Cacher boutons zoom in/out sur mobile */
-    #btn-zoom-in,
-    #btn-zoom-out {
-        display: none !important;
-    }
-}
-
-
     </style>
 </head>
 <body>
@@ -916,16 +1033,18 @@
     <div id="editor-loading" class="loading-overlay">
         <div class="loading-content">
             <div class="spinner"></div>
-            <p style="color: var(--text-light); font-size: 1.1rem;">Chargement du document...</p>
+            <p style="color: var(--text-light); font-size: 1.2rem; font-weight: 600;">Chargement du document...</p>
         </div>
     </div>
 
     <!-- Erreur -->
     <div id="editor-error" class="error-overlay" style="display: none;">
         <div class="error-content">
-            <h2>Document introuvable</h2>
+            <h2><i class="fas fa-exclamation-triangle" style="color: var(--accent); margin-right: 0.5rem;"></i> Document introuvable</h2>
             <p>Le document demandé n'existe pas ou n'est plus disponible.</p>
-            <a href="index.html" class="btn btn-primary">Retour à l'accueil</a>
+            <a href="index.html" class="btn btn-primary">
+                <i class="fas fa-home"></i> Retour à l'accueil
+            </a>
         </div>
     </div>
 
@@ -993,20 +1112,22 @@
         <!-- PANNEAU DROIT : Aperçu du document -->
         <main class="editor-preview">
             <div class="preview-toolbar">
-                <button id="btn-zoom-out" class="btn-icon" title="Zoom arrière">
+                <button id="btn-zoom-out" class="btn-icon" title="Zoom arrière (-)">
                     <i class="fas fa-minus"></i>
                 </button>
                 <span id="zoom-level">100%</span>
-                <button id="btn-zoom-in" class="btn-icon" title="Zoom avant">
+                <button id="btn-zoom-in" class="btn-icon" title="Zoom avant (+)">
                     <i class="fas fa-plus"></i>
                 </button>
                 <button id="btn-zoom-reset" class="btn-icon" title="Reset zoom" style="margin-left: 0.5rem;">
                     <i class="fas fa-expand"></i>
                 </button>
             </div>
-            <div class="preview-container">
-                <div id="document-canvas" class="document-canvas">
-                    <!-- Le document sera injecté ici par JS -->
+            <div class="preview-container" id="previewContainer">
+                <div class="document-wrapper" id="documentWrapper">
+                    <div id="document-canvas" class="document-canvas">
+                        <!-- Le document sera injecté ici par JS -->
+                    </div>
                 </div>
             </div>
         </main>
@@ -1018,36 +1139,36 @@
             <button class="modal-close" id="modal-close">
                 <i class="fas fa-times"></i>
             </button>
-            <h2>Finaliser votre achat</h2>
-            <p id="payment-doc-name" style="color: var(--text-light); margin-bottom: 1rem;">Document</p>
+            <h2><i class="fas fa-lock" style="color: var(--accent); margin-right: 0.5rem;"></i> Finaliser votre achat</h2>
+            <p id="payment-doc-name" style="color: var(--text-light); margin-bottom: 1rem; font-size: 1.1rem;">Document</p>
             <div class="payment-amount" id="payment-amount">0 FCFA</div>
             
             <form id="payment-form">
                 <div class="form-group">
-                    <label>Mode de paiement</label>
+                    <label><i class="fas fa-wallet" style="margin-right: 0.5rem; color: var(--accent);"></i>Mode de paiement</label>
                     <div class="payment-methods">
                         <label class="payment-option">
                             <input type="radio" name="payment_method" value="MTN_MOMO" checked>
-                            <span class="payment-badge-mtn">MTN MoMo</span>
+                            <span class="payment-badge-mtn"><i class="fas fa-mobile-alt"></i> MTN MoMo</span>
                         </label>
                         <label class="payment-option">
                             <input type="radio" name="payment_method" value="AIRTEL_MONEY">
-                            <span class="payment-badge-airtel">Airtel Money</span>
+                            <span class="payment-badge-airtel"><i class="fas fa-mobile-alt"></i> Airtel Money</span>
                         </label>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="pay-phone">Numéro de téléphone *</label>
+                    <label for="pay-phone"><i class="fas fa-phone" style="margin-right: 0.5rem; color: var(--accent);"></i>Numéro de téléphone *</label>
                     <input type="tel" id="pay-phone" placeholder="06 00 00 00" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="pay-email">Email (pour le reçu) *</label>
+                    <label for="pay-email"><i class="fas fa-envelope" style="margin-right: 0.5rem; color: var(--accent);"></i>Email (pour le reçu) *</label>
                     <input type="email" id="pay-email" placeholder="votre@email.com" required>
                 </div>
                 
-                <button type="submit" class="btn btn-primary btn-full">
+                <button type="submit" class="btn btn-primary btn-full" style="margin-top: 1rem;">
                     <i class="fas fa-lock"></i> Confirmer le paiement
                 </button>
             </form>
@@ -1059,120 +1180,174 @@
     <script type="module" src="js/templates-registry.js"></script>
     <script type="module" src="js/editor.js"></script>
     
-    <!-- Script pour la responsivité de la sidebar -->
+    <!-- Script pour la responsivité et miniaturisation -->
     <script>
-        // Gestion de la sidebar mobile
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const editorSidebar = document.getElementById('editorSidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        
-        if (sidebarToggle && editorSidebar) {
-            sidebarToggle.addEventListener('click', () => {
-                editorSidebar.classList.toggle('open');
-                sidebarOverlay.classList.toggle('active');
-            });
-            
-            sidebarOverlay.addEventListener('click', () => {
-                editorSidebar.classList.remove('open');
-                sidebarOverlay.classList.remove('active');
-            });
-        }
-        
-        // Fermer la sidebar au redimensionnement vers desktop
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 768 && editorSidebar) {
-                editorSidebar.classList.remove('open');
-                sidebarOverlay.classList.remove('active');
-            }
+    // Gestion de la sidebar mobile
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const editorSidebar = document.getElementById('editorSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    
+    if (sidebarToggle && editorSidebar) {
+        sidebarToggle.addEventListener('click', () => {
+            editorSidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('active');
+            document.body.style.overflow = editorSidebar.classList.contains('open') ? 'hidden' : '';
         });
         
-        // ============================================
-        // ZOOM AUTO SUR MOBILE
-        // ============================================
-        function adjustDocumentForMobile() {
-            const canvas = document.getElementById('document-canvas');
-            if (!canvas) return;
-            
-            const isMobile = window.innerWidth <= 768;
-            const containerWidth = document.querySelector('.preview-container').clientWidth;
-            const documentWidth = 210; // Largeur A4 en mm
-            
-            if (isMobile) {
-                // Calculer le facteur de zoom pour que le document tienne dans l'écran
-                const scaleFactor = (containerWidth - 32) / (documentWidth * 3.78); // 3.78 = px par mm
-                canvas.style.transform = `scale(${scaleFactor})`;
-                canvas.style.width = `${documentWidth}mm`;
-                document.getElementById('zoom-level').textContent = `${Math.round(scaleFactor * 100)}%`;
-            }
-        }
-        
-        // Ajuster au chargement et au redimensionnement
-        window.addEventListener('load', adjustDocumentForMobile);
-        window.addEventListener('resize', adjustDocumentForMobile);
-        
-        // Ajuster aussi quand le document est généré
-        document.addEventListener('DOMContentLoaded', () => {
-            const observer = new MutationObserver(adjustDocumentForMobile);
-            const canvas = document.getElementById('document-canvas');
-            if (canvas) {
-                observer.observe(canvas, { childList: true, subtree: true });
-            }
+        sidebarOverlay.addEventListener('click', () => {
+            editorSidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
         });
-
-        // ============================================
-// MINIATURISATION AUTO DU DOCUMENT SUR MOBILE
-// ============================================
-function miniaturizeDocument() {
-    const canvas = document.getElementById('document-canvas');
-    const container = document.querySelector('.preview-container');
-    const zoomLevelEl = document.getElementById('zoom-level');
-    
-    if (!canvas || !container) return;
-    
-    const isMobile = window.innerWidth <= 768;
-    const containerWidth = container.clientWidth - 32; // Marge de 32px
-    const documentWidthMm = 210; // Largeur A4 en mm
-    const mmToPx = 3.78; // Facteur de conversion
-    
-    if (isMobile) {
-        // Calculer le facteur de réduction pour que le document tienne dans l'écran
-        const actualDocWidthPx = documentWidthMm * mmToPx;
-        const scaleFactor = containerWidth / actualDocWidthPx;
-        
-        // Appliquer la miniaturisation
-        canvas.style.transform = `scale(${scaleFactor})`;
-        canvas.style.transformOrigin = 'top center';
-        canvas.style.width = `${documentWidthMm}mm`;
-        
-        // Mettre à jour l'affichage du zoom
-        if (zoomLevelEl) {
-            zoomLevelEl.textContent = `${Math.round(scaleFactor * 100)}%`;
-        }
-        
-        // Cacher les boutons zoom in/out sur mobile (inutiles)
-        document.getElementById('btn-zoom-in').style.display = 'none';
-        document.getElementById('btn-zoom-out').style.display = 'none';
-    } else {
-        // Sur desktop, zoom normal
-        canvas.style.transform = 'scale(1)';
-        if (zoomLevelEl) {
-            zoomLevelEl.textContent = '100%';
-        }
-        document.getElementById('btn-zoom-in').style.display = 'flex';
-        document.getElementById('btn-zoom-out').style.display = 'flex';
     }
-}
-
-// Appliquer au chargement et au redimensionnement
-window.addEventListener('load', miniaturizeDocument);
-window.addEventListener('resize', miniaturizeDocument);
-
-// Observer les changements du document
-const canvas = document.getElementById('document-canvas');
-if (canvas) {
-    const observer = new MutationObserver(miniaturizeDocument);
-    observer.observe(canvas, { childList: true, subtree: true });
-}
+    
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && editorSidebar) {
+            editorSidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+    
+    // ============================================
+    // ZOOM INTELLIGENT - SYSTÈME ROBUSTE
+    // ============================================
+    let currentZoom = window.innerWidth <= 768 ? 0.45 : 1;
+    let isZooming = false;
+    
+    function applyZoom() {
+        const canvas = document.getElementById('document-canvas');
+        const wrapper = document.getElementById('documentWrapper');
+        const zoomLevelEl = document.getElementById('zoom-level');
+        
+        if (!canvas || !wrapper) return;
+        
+        const isMobile = window.innerWidth <= 768;
+        const docWidthMm = 210;
+        const docHeightMm = 297;
+        const mmToPx = 3.78;
+        
+        const docWidthPx = docWidthMm * mmToPx;
+        const docHeightPx = docHeightMm * mmToPx;
+        
+        // Appliquer le transform avec transition fluide
+        if (!isZooming) {
+            canvas.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        }
+        
+        canvas.style.transform = `scale(${currentZoom})`;
+        canvas.style.transformOrigin = isMobile ? 'top left' : 'top center';
+        
+        if (isMobile) {
+            wrapper.style.width = `${docWidthPx}px`;
+            wrapper.style.height = `${docHeightPx * currentZoom}px`;
+            wrapper.style.overflowX = 'auto';
+            wrapper.style.overflowY = 'hidden';
+        } else {
+            wrapper.style.width = 'auto';
+            wrapper.style.height = 'auto';
+            wrapper.style.overflowX = 'visible';
+            wrapper.style.overflowY = 'visible';
+        }
+        
+        if (zoomLevelEl) {
+            zoomLevelEl.textContent = `${Math.round(currentZoom * 100)}%`;
+        }
+        
+        // Sauvegarder le zoom dans localStorage
+        localStorage.setItem('takidoc_zoom', currentZoom);
+    }
+    
+    // ============================================
+    // BOUTON ZOOM OUT (-) - DIMINUER LE ZOOM
+    // ============================================
+    const btnZoomOut = document.getElementById('btn-zoom-out');
+    if (btnZoomOut) {
+        btnZoomOut.addEventListener('click', () => {
+            isZooming = true;
+            const newZoom = parseFloat((currentZoom - 0.1).toFixed(2));
+            if (newZoom >= 0.2) {
+                currentZoom = newZoom;
+                applyZoom();
+                setTimeout(() => { isZooming = false; }, 300);
+            }
+        });
+    }
+    
+    // ============================================
+    // BOUTON ZOOM IN (+) - AUGMENTER LE ZOOM
+    // ============================================
+    const btnZoomIn = document.getElementById('btn-zoom-in');
+    if (btnZoomIn) {
+        btnZoomIn.addEventListener('click', () => {
+            isZooming = true;
+            const newZoom = parseFloat((currentZoom + 0.1).toFixed(2));
+            if (newZoom <= 2.0) {
+                currentZoom = newZoom;
+                applyZoom();
+                setTimeout(() => { isZooming = false; }, 300);
+            }
+        });
+    }
+    
+    // ============================================
+    // BOUTON RESET ZOOM
+    // ============================================
+    const btnZoomReset = document.getElementById('btn-zoom-reset');
+    if (btnZoomReset) {
+        btnZoomReset.addEventListener('click', () => {
+            isZooming = true;
+            currentZoom = window.innerWidth <= 768 ? 0.45 : 1;
+            applyZoom();
+            setTimeout(() => { isZooming = false; }, 300);
+        });
+    }
+    
+    // Appliquer au chargement
+    window.addEventListener('load', () => {
+        // Essayer de restaurer le zoom sauvegardé
+        const savedZoom = localStorage.getItem('takidoc_zoom');
+        if (savedZoom) {
+            currentZoom = parseFloat(savedZoom);
+        } else {
+            currentZoom = window.innerWidth <= 768 ? 0.45 : 1;
+        }
+        
+        setTimeout(() => {
+            applyZoom();
+        }, 300);
+    });
+    
+    // Observer les changements du document
+    const canvas = document.getElementById('document-canvas');
+    if (canvas) {
+        const observer = new MutationObserver(() => {
+            setTimeout(applyZoom, 100);
+        });
+        observer.observe(canvas, { childList: true, subtree: true });
+    }
+    
+    // Ajuster au redimensionnement
+    window.addEventListener('resize', () => {
+        currentZoom = window.innerWidth <= 768 ? 0.45 : 1;
+        applyZoom();
+    });
+    
+    // Support du clavier pour le zoom
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+            if (e.key === '+' || e.key === '=') {
+                e.preventDefault();
+                btnZoomIn?.click();
+            } else if (e.key === '-') {
+                e.preventDefault();
+                btnZoomOut?.click();
+            } else if (e.key === '0') {
+                e.preventDefault();
+                btnZoomReset?.click();
+            }
+        }
+    });
     </script>
 </body>
 </html>
