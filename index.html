@@ -3,107 +3,1322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TakiDoc | Documents Professionnels par L'équipe Meurphy</title>
-    <meta name="description" content="Créez, personnalisez et téléchargez des CV, lettres et attestations professionnelles. Paiement MTN/Airtel Money.">
-    <link rel="stylesheet" href="css/style.css">
+    <title>TakiDoc - Documents Professionnels au Congo</title>
+    <meta name="description" content="CV, factures, attestations, lettres et modèles professionnels prêts à télécharger et à personnaliser. Paiement MTN/Airtel Money.">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/header.css">
+    
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ffffff;
+            color: #1e293b;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* HEADER */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #1e293b;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #f97316;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav a:hover, .nav a.active {
+            color: #f97316;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-icon {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #f97316;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            display: inline-block;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #e2e8f0;
+            color: #1e293b;
+        }
+
+        .btn-outline:hover {
+            border-color: #f97316;
+            color: #f97316;
+        }
+
+        .btn-primary {
+            background: #f97316;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ea580c;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            padding: 4rem 0;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200&auto=format&fit=crop') center/cover;
+            opacity: 0.08;
+            z-index: 0;
+        }
+
+        .hero-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+
+        .hero-content h1 span {
+            color: #f97316;
+        }
+
+        .hero-content p {
+            font-size: 1.125rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .hero-buttons .btn {
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        .hero-visual {
+            position: relative;
+            height: 450px;
+        }
+
+        .docs-showcase {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Documents flottants réalistes */
+        .doc-float {
+            position: absolute;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            padding: 1.5rem;
+            width: 240px;
+            transition: transform 0.3s;
+            overflow: hidden;
+        }
+
+        .doc-float:hover {
+            transform: translateY(-10px);
+        }
+
+        .doc-float-1 {
+            top: 0;
+            left: 0;
+            transform: rotate(-5deg);
+            z-index: 4;
+        }
+
+        .doc-float-2 {
+            top: 20px;
+            left: 180px;
+            transform: rotate(3deg);
+            z-index: 3;
+        }
+
+        .doc-float-3 {
+            top: 60px;
+            left: 340px;
+            transform: rotate(-2deg);
+            z-index: 2;
+        }
+
+        .doc-float-4 {
+            top: 100px;
+            left: 480px;
+            transform: rotate(4deg);
+            z-index: 1;
+        }
+
+        /* CV Float Design */
+        .doc-cv-preview {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .doc-cv-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .doc-cv-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .doc-cv-info h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .doc-cv-info p {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .doc-cv-section {
+            margin-bottom: 0.75rem;
+        }
+
+        .doc-cv-section-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .doc-cv-line {
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            margin-bottom: 0.4rem;
+        }
+
+        .doc-cv-line.short { width: 60%; }
+        .doc-cv-line.medium { width: 80%; }
+
+        /* Facture Float Design */
+        .doc-facture-preview {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .doc-facture-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f97316;
+        }
+
+        .doc-facture-company {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 0.9rem;
+        }
+
+        .doc-facture-title {
+            background: #f97316;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .doc-facture-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+        }
+
+        .doc-facture-table th {
+            background: #f8fafc;
+            padding: 0.4rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .doc-facture-table td {
+            padding: 0.4rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .doc-facture-total {
+            background: #f97316;
+            color: white;
+            padding: 0.5rem;
+            text-align: right;
+            font-weight: 700;
+            border-radius: 4px;
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        /* Attestation Float Design */
+        .doc-attestation-preview {
+            background: white;
+            border: 2px solid #1e293b;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .doc-attestation-header {
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #1e293b;
+        }
+
+        .doc-attestation-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1e293b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .doc-attestation-seal {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #f97316;
+            border-radius: 50%;
+            margin: 1rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f97316;
+            font-size: 1.5rem;
+        }
+
+        .doc-attestation-line {
+            height: 6px;
+            background: #f1f5f9;
+            border-radius: 3px;
+            margin: 0.5rem auto;
+        }
+
+        .doc-attestation-line.short { width: 60%; }
+        .doc-attestation-line.medium { width: 80%; }
+
+        /* Lettre Float Design */
+        .doc-lettre-preview {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Georgia', serif;
+        }
+
+        .doc-lettre-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.7rem;
+        }
+
+        .doc-lettre-date {
+            text-align: right;
+            color: #64748b;
+            font-style: italic;
+            font-size: 0.7rem;
+            margin-bottom: 1rem;
+        }
+
+        .doc-lettre-objet {
+            font-weight: 700;
+            color: #f97316;
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #f97316;
+            padding-bottom: 0.4rem;
+        }
+
+        .doc-lettre-line {
+            height: 5px;
+            background: #f1f5f9;
+            border-radius: 2px;
+            margin: 0.4rem 0;
+        }
+
+        .doc-lettre-line.short { width: 60%; }
+        .doc-lettre-line.medium { width: 80%; }
+        .doc-lettre-line.long { width: 90%; }
+
+        .doc-lettre-signature {
+            margin-top: 1rem;
+            text-align: right;
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+
+        /* FEATURES BAR */
+        .features-bar {
+            background: #f8fafc;
+            padding: 2rem 0;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .features-grid {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: #fff7ed;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f97316;
+            font-size: 1.125rem;
+            flex-shrink: 0;
+        }
+
+        .feature-text h3 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #1e293b;
+        }
+
+        .feature-text p {
+            font-size: 0.8125rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* POPULAR DOCUMENTS */
+        .popular {
+            padding: 4rem 0;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .view-all {
+            color: #f97316;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1.5rem;
+        }
+
+        .doc-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .doc-item:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transform: translateY(-4px);
+            border-color: #f97316;
+        }
+
+        .doc-icon {
+            width: 80px;
+            height: 80px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #cbd5e1;
+        }
+
+        .doc-item h3 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .doc-item p {
+            font-size: 0.8125rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .doc-price {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #f97316;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn-doc {
+            width: 100%;
+            padding: 0.625rem;
+            background: transparent;
+            border: 1.5px solid #f97316;
+            color: #f97316;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-doc:hover {
+            background: #f97316;
+            color: white;
+        }
+
+        /* CATEGORIES */
+        .categories {
+            padding: 4rem 0;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1.5rem;
+        }
+
+        .category-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .category-item:hover {
+            border-color: #f97316;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transform: translateY(-4px);
+        }
+
+        .category-icon {
+            width: 64px;
+            height: 64px;
+            background: #fff7ed;
+            border-radius: 12px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #f97316;
+        }
+
+        .category-item h3 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #1e293b;
+        }
+
+        .category-item p {
+            font-size: 0.8125rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* HOW IT WORKS */
+        .how-it-works {
+            padding: 4rem 0;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+            position: relative;
+        }
+
+        .step {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: #f97316;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .step-content p {
+            font-size: 0.875rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .step-arrow {
+            position: absolute;
+            top: 24px;
+            color: #cbd5e1;
+            font-size: 1.5rem;
+        }
+
+        .step-arrow-1 {
+            left: 33%;
+        }
+
+        .step-arrow-2 {
+            left: 66%;
+        }
+
+        /* CTA BANNER */
+        .cta-banner {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 3rem 0;
+            margin: 4rem 0;
+        }
+
+        .cta-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cta-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .cta-content p {
+            color: #94a3b8;
+            font-size: 0.9375rem;
+            margin: 0;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 2fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand .logo {
+            color: white;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .footer-brand p {
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .footer-social a {
+            width: 36px;
+            height: 36px;
+            background: #334155;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            transition: all 0.3s;
+        }
+
+        .footer-social a:hover {
+            background: #f97316;
+            color: white;
+        }
+
+        .footer-col h4 {
+            color: white;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-col a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: #f97316;
+        }
+
+        .footer-contact p {
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #334155;
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8125rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #f97316;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-visual {
+                display: none;
+            }
+            
+            .docs-grid,
+            .categories-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                display: none;
+            }
+            
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .docs-grid,
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .step-arrow {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container nav-container">
-            <div class="logo">
-                Taki<span>Doc</span>
-                <span class="badge">by L'équipe Meurphy</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#catalogue">Catalogue</a></li>
-                <li><a href="#how-it-works">Comment ça marche</a></li>
-                <li><a href="#" class="btn-login">Connexion</a></li>
-            </ul>
-        </div>
-    </nav>
+    <!-- Header -->
+    <div id="header-container"></div>
 
     <!-- Hero Section -->
-    <header class="hero">
-        <div class="container hero-content">
-            <h1>Vos documents professionnels,<br> <span class="highlight">sublimés en un instant.</span></h1>
-            <p>CV, lettres de motivation, attestations. Personnalisez les couleurs, ajoutez votre photo et téléchargez en PDF. Paiement sécurisé par MTN & Airtel Money.</p>
-            <div class="hero-buttons">
-                <a href="#catalogue" class="btn btn-primary">Explorer les modèles</a>
-                <a href="#how-it-works" class="btn btn-secondary">Voir une démo</a>
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Les documents professionnels dont vous avez besoin, <span>prêts en quelques clics.</span></h1>
+                <p>CV, factures, attestations, lettres et modèles professionnels prêts à télécharger et à personnaliser.</p>
+                
+                <div class="hero-buttons">
+                    <a href="documents.html" class="btn btn-primary">
+                        Découvrir les documents <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="documents.html#categories" class="btn btn-outline">
+                        Voir les catégories
+                    </a>
+                </div>
             </div>
-        </div>
-    </header>
+            
+            <div class="hero-visual">
+                <div class="docs-showcase">
+                    <!-- CV Document -->
+                    <div class="doc-float doc-float-1">
+                        <div class="doc-cv-preview">
+                            <div class="doc-cv-header">
+                                <div class="doc-cv-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="doc-cv-info">
+                                    <h3>CV</h3>
+                                    <p>Professionnel</p>
+                                </div>
+                            </div>
+                            <div class="doc-cv-section">
+                                <div class="doc-cv-section-title">Expérience</div>
+                                <div class="doc-cv-line medium"></div>
+                                <div class="doc-cv-line short"></div>
+                            </div>
+                            <div class="doc-cv-section">
+                                <div class="doc-cv-section-title">Formation</div>
+                                <div class="doc-cv-line medium"></div>
+                            </div>
+                        </div>
+                    </div>
 
-    <!-- How It Works -->
-    <section id="how-it-works" class="section">
-        <div class="container">
-            <h2 class="section-title">Comment ça marche ?</h2>
-            <div class="steps-grid">
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <h3>Choisissez un modèle</h3>
-                    <p>Parcourez notre catalogue de documents professionnels et sélectionnez celui qui vous correspond.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <h3>Personnalisez</h3>
-                    <p>Modifiez les couleurs, ajoutez votre photo et remplissez vos informations en temps réel.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <h3>Payez & Téléchargez</h3>
-                    <p>Payez par MTN ou Airtel Money. Téléchargez votre document PDF instantanément.</p>
+                    <!-- Facture Document -->
+                    <div class="doc-float doc-float-2">
+                        <div class="doc-facture-preview">
+                            <div class="doc-facture-header">
+                                <div class="doc-facture-company">ENTREPRISE</div>
+                                <div class="doc-facture-title">FACTURE</div>
+                            </div>
+                            <table class="doc-facture-table">
+                                <tr>
+                                    <th>Article</th>
+                                    <th>Qté</th>
+                                    <th>Total</th>
+                                </tr>
+                                <tr>
+                                    <td>Prestation 1</td>
+                                    <td>1</td>
+                                    <td>500K</td>
+                                </tr>
+                                <tr>
+                                    <td>Prestation 2</td>
+                                    <td>2</td>
+                                    <td>300K</td>
+                                </tr>
+                            </table>
+                            <div class="doc-facture-total">Total: 1 534 000 FCFA</div>
+                        </div>
+                    </div>
+
+                    <!-- Attestation Document -->
+                    <div class="doc-float doc-float-3">
+                        <div class="doc-attestation-preview">
+                            <div class="doc-attestation-header">
+                                ENTREPRISE XYZ<br>
+                                Brazzaville, Congo
+                            </div>
+                            <div class="doc-attestation-title">Attestation de Travail</div>
+                            <div class="doc-attestation-seal">
+                                <i class="fas fa-stamp"></i>
+                            </div>
+                            <div class="doc-attestation-line medium"></div>
+                            <div class="doc-attestation-line short"></div>
+                            <div class="doc-attestation-line medium"></div>
+                        </div>
+                    </div>
+
+                    <!-- Lettre Document -->
+                    <div class="doc-float doc-float-4">
+                        <div class="doc-lettre-preview">
+                            <div class="doc-lettre-header">
+                                <div>Meurphy TALAMIO</div>
+                                <div>Destinataire</div>
+                            </div>
+                            <div class="doc-lettre-date">Brazzaville, le 04/10/2026</div>
+                            <div class="doc-lettre-objet">Objet : Lettre de motivation</div>
+                            <div class="doc-lettre-line long"></div>
+                            <div class="doc-lettre-line medium"></div>
+                            <div class="doc-lettre-line short"></div>
+                            <div class="doc-lettre-line medium"></div>
+                            <div class="doc-lettre-signature">Cordialement</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Catalogue -->
-    <!-- Catalogue -->
-<section id="catalogue" class="section bg-light">
-    <div class="container">
-        <h2 class="section-title">Nos documents professionnels</h2>
-        
-        <!-- Filtres par catégorie -->
-        <div id="categories-filter" class="categories-filter">
-            <!-- Les boutons seront injectés par main.js -->
-        </div>
-        
-        <div class="templates-grid" id="templates-grid">
-            <div class="loading-text">Chargement des documents...</div>
-        </div>
-    </div>
-</section>
-
-    <!-- Payment Methods -->
-    <section class="section">
-        <div class="container text-center">
-            <h2 class="section-title">Paiement 100% Africain</h2>
-            <div class="payment-logos">
-                <div class="payment-badge mtn">MTN Mobile Money</div>
-                <div class="payment-badge airtel">Airtel Money</div>
+    <!-- Features Bar -->
+    <section class="features-bar">
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="feature-text">
+                    <h3>Documents professionnels</h3>
+                    <p>Des modèles fiables et de qualité</p>
+                </div>
             </div>
-            <p class="payment-text">Paiement sécurisé via OpenPay. Rapide, simple et adapté au Congo.</p>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="feature-text">
+                    <h3>Téléchargement rapide</h3>
+                    <p>Accédez à vos documents en quelques secondes</p>
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <div class="feature-text">
+                    <h3>Modèles faciles à personnaliser</h3>
+                    <p>Adaptez le contenu à vos besoins</p>
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="feature-text">
+                    <h3>Paiement sécurisé</h3>
+                    <p>Vos transactions sont protégées</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Documents -->
+    <section class="popular" id="documents">
+        <div class="section-header">
+            <h2>Nos documents les plus populaires</h2>
+            <a href="documents.html" class="view-all">Voir tous les documents <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="docs-grid" id="popular-docs">
+            <!-- Les documents seront injectés ici par JavaScript -->
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories" id="categories">
+        <div class="section-header">
+            <h2>Nos catégories</h2>
+        </div>
+        
+        <div class="categories-grid">
+            <a href="documents.html?category=cv" class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <h3>CV & Emploi</h3>
+                <p>25 documents</p>
+            </a>
+            
+            <a href="documents.html?category=lettre" class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3>Lettres</h3>
+                <p>18 documents</p>
+            </a>
+            
+            <a href="documents.html?category=attestation" class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <h3>Attestations</h3>
+                <p>22 documents</p>
+            </a>
+            
+            <a href="documents.html?category=contrat" class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <h3>Contrats</h3>
+                <p>28 documents</p>
+            </a>
+            
+            <a href="documents.html?category=commercial" class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <h3>Commercial</h3>
+                <p>20 documents</p>
+            </a>
+            
+            <a href="documents.html?category=administratif" class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h3>Administratif</h3>
+                <p>30 documents</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-header">
+            <h2>Comment ça marche ?</h2>
+        </div>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Choisissez votre document</h3>
+                    <p>Parcourez notre catalogue et sélectionnez le document qui vous convient.</p>
+                </div>
+            </div>
+            
+            <i class="fas fa-arrow-right step-arrow step-arrow-1"></i>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Personnalisez vos informations</h3>
+                    <p>Modifiez les champs selon vos besoins et téléchargez votre document.</p>
+                </div>
+            </div>
+            
+            <i class="fas fa-arrow-right step-arrow step-arrow-2"></i>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Téléchargez votre document</h3>
+                    <p>Recevez votre fichier immédiatement et utilisez-le en toute simplicité.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <section class="cta-banner">
+        <div class="cta-container">
+            <div class="cta-content">
+                <h2>Gagnez du temps sur vos démarches professionnelles</h2>
+                <p>TakiDoc, votre allié pour des documents fiables, rapides et accessibles.</p>
+            </div>
+            <a href="documents.html" class="btn btn-primary">Explorer TakiDoc <i class="fas fa-arrow-right"></i></a>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 TakiDoc. Une création de <strong>L'équipe Meurphy</strong>.</p>
-            <p class="owner">Propriétaire : Meurphy TALAMIO</p>
-            <p class="payment-methods">Paiements sécurisés via MTN Mobile Money & Airtel Money</p>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">Taki<span>Doc</span></a>
+                    <p>Votre plateforme de documents professionnels au Congo. Rapide, simple et sécurisé.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Liens utiles</h4>
+                    <ul>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="documents.html">Documents</a></li>
+                        <li><a href="documents.html#categories">Catégories</a></li>
+                        <li><a href="#how-it-works">Comment ça marche ?</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Catégories</h4>
+                    <ul>
+                        <li><a href="documents.html?category=cv">CV & Emploi</a></li>
+                        <li><a href="documents.html?category=commercial">Facturation</a></li>
+                        <li><a href="documents.html?category=attestation">Attestations</a></li>
+                        <li><a href="documents.html?category=lettre">Lettres</a></li>
+                        <li><a href="documents.html?category=contrat">Contrats</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>À propos</h4>
+                    <ul>
+                        <li><a href="#">Notre mission</a></li>
+                        <li><a href="#">Pourquoi TakiDoc ?</a></li>
+                        <li><a href="#">Nous contacter</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col footer-contact">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-envelope"></i> contact@takidoc.com</p>
+                    <p><i class="fas fa-phone"></i> +242 06 12 34 56 78</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Brazzaville, Congo</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 TakiDoc. Tous droits réservés.</p>
+                <div class="footer-links">
+                    <a href="#">Conditions d'utilisation</a>
+                    <a href="#">Politique de confidentialité</a>
+                </div>
+            </div>
         </div>
     </footer>
 
-     <!-- Supabase JS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="js/main.js"></script>
-   
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/header.js"></script>
+    <script type="module">
+        import { templatesRegistry } from './js/templates-registry.js';
+        
+        // Afficher les documents populaires (6 premiers)
+        const popularDocs = templatesRegistry.slice(0, 6);
+        const popularDocsContainer = document.getElementById('popular-docs');
+        
+        popularDocsContainer.innerHTML = popularDocs.map(doc => `
+            <div class="doc-item" onclick="window.location.href='editor.html?id=${doc.id}'">
+                <div class="doc-icon">
+                    <i class="fas ${getIconForCategory(doc.category)}"></i>
+                </div>
+                <h3>${doc.name}</h3>
+                <p>${doc.description}</p>
+                <div class="doc-price">${doc.price.toLocaleString()} FCFA</div>
+                <button class="btn-doc">Voir le document</button>
+            </div>
+        `).join('');
+        
+        function getIconForCategory(category) {
+            const icons = {
+                'cv': 'fa-user',
+                'lettre': 'fa-envelope-open-text',
+                'attestation': 'fa-certificate',
+                'contrat': 'fa-file-contract',
+                'commercial': 'fa-file-invoice-dollar',
+                'administratif': 'fa-building'
+            };
+            return icons[category] || 'fa-file-alt';
+        }
+    </script>
 </body>
 </html>

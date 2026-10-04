@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tous les Documents - TakiDoc</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #1e293b; line-height: 1.6; }
+        
+        .header { background: white; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 1000; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; max-width: 1280px; margin: 0 auto; }
+        .logo { font-size: 1.75rem; font-weight: 800; color: #1e293b; text-decoration: none; }
+        .logo span { color: #f97316; }
+        .nav { display: flex; gap: 2rem; list-style: none; }
+        .nav a { text-decoration: none; color: #64748b; font-weight: 500; }
+        .nav a:hover, .nav a.active { color: #f97316; }
+        .header-actions { display: flex; align-items: center; gap: 1rem; }
+        .btn { padding: 0.625rem 1.25rem; border-radius: 8px; font-weight: 600; font-size: 0.875rem; text-decoration: none; cursor: pointer; border: none; display: inline-block; }
+        .btn-outline { background: transparent; border: 1.5px solid #e2e8f0; color: #1e293b; }
+        .btn-primary { background: #f97316; color: white; }
+        
+        .page-header { background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); padding: 3rem 0; text-align: center; }
+        .page-header h1 { font-size: 2.5rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem; }
+        .page-header p { font-size: 1.125rem; color: #64748b; max-width: 600px; margin: 0 auto; }
+        
+        .docs-page { max-width: 1280px; margin: 0 auto; padding: 4rem 2rem; }
+        .section-title { font-size: 2rem; font-weight: 700; margin-bottom: 2rem; color: #1e293b; }
+        
+        .category-section { margin-bottom: 4rem; }
+        .category-title { font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid #e2e8f0; display: flex; align-items: center; gap: 0.75rem; }
+        .category-title i { color: #f97316; }
+        
+        .docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .doc-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; transition: all 0.3s; cursor: pointer; }
+        .doc-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.08); transform: translateY(-4px); border-color: #f97316; }
+        .doc-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem; color: #1e293b; }
+        .doc-card p { font-size: 0.9rem; color: #64748b; margin-bottom: 1rem; line-height: 1.5; }
+        .doc-price { font-size: 1.25rem; font-weight: 700; color: #f97316; margin-bottom: 1rem; }
+        .btn-doc { width: 100%; padding: 0.75rem; background: #f97316; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        .btn-doc:hover { background: #ea580c; }
+        
+        .footer { background: #1e293b; color: #94a3b8; padding: 3rem 0 2rem; margin-top: 4rem; }
+        .footer-container { max-width: 1280px; margin: 0 auto; padding: 0 2rem; text-align: center; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">Taki<span>Doc</span></a>
+            <nav>
+                <ul class="nav">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="documents.html" class="active">Documents</a></li>
+                    <li><a href="#categories">Catégories</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="index.html" class="btn btn-outline">Retour à l'accueil</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-header">
+        <h1>Tous nos documents professionnels</h1>
+        <p>Plus de 200 modèles de documents prêts à l'emploi pour tous vos besoins professionnels et personnels.</p>
+    </div>
+
+    <main class="docs-page" id="all-documents">
+        <!-- Les documents seront injectés ici par JavaScript -->
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2026 TakiDoc. Tous droits réservés. Développé par L'équipe Meurphy.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { templatesRegistry } from './js/templates-registry.js';
+        
+        // Grouper les documents par catégorie
+        const categories = {
+            'cv': { name: 'CV & Emploi', icon: 'fa-briefcase', docs: [] },
+            'lettre': { name: 'Lettres', icon: 'fa-envelope', docs: [] },
+            'attestation': { name: 'Attestations', icon: 'fa-certificate', docs: [] },
+            'contrat': { name: 'Contrats', icon: 'fa-file-contract', docs: [] },
+            'commercial': { name: 'Commercial', icon: 'fa-file-invoice', docs: [] },
+            'administratif': { name: 'Administratif', icon: 'fa-building', docs: [] }
+        };
+        
+        // Trier les documents par catégorie
+        templatesRegistry.forEach(doc => {
+            if (categories[doc.category]) {
+                categories[doc.category].docs.push(doc);
+            }
+        });
+        
+        // Afficher les documents par catégorie
+        const container = document.getElementById('all-documents');
+        let html = '';
+        
+        for (const [key, cat] of Object.entries(categories)) {
+            if (cat.docs.length > 0) {
+                html += `
+                    <section class="category-section" id="category-${key}">
+                        <h2 class="category-title"><i class="fas ${cat.icon}"></i> ${cat.name} (${cat.docs.length} documents)</h2>
+                        <div class="docs-grid">
+                            ${cat.docs.map(doc => `
+                                <div class="doc-card" onclick="window.location.href='editor.html?id=${doc.id}'">
+                                    <h3>${doc.name}</h3>
+                                    <p>${doc.description}</p>
+                                    <div class="doc-price">${doc.price.toLocaleString()} FCFA</div>
+                                    <button class="btn-doc">Personnaliser ce document</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </section>
+                `;
+            }
+        }
+        
+        container.innerHTML = html;
+        
+        // Filtrer par catégorie si paramètre URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryFilter = urlParams.get('category');
+        if (categoryFilter && categories[categoryFilter]) {
+            document.getElementById(`category-${categoryFilter}`).scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

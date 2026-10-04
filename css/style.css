@@ -1,31 +1,20 @@
 /* ============================================
-   TAKIDOC - DESIGN SYSTEM
+   TAKIDOC - DESIGN SYSTEM UNIFIÉ & PROFESSIONNEL
    L'équipe Meurphy
    ============================================ */
 
-/* --- Variables CSS --- */
 :root {
-    /* Couleurs principales */
-    --primary: #0F172A;           /* Bleu nuit profond */
-    --primary-light: #1E293B;     /* Bleu gris */
-    --accent: #D97706;            /* Or ambre */
-    --accent-hover: #B45309;      /* Or foncé */
-    --accent-light: #F59E0B;      /* Or clair */
-    
-    /* Couleurs neutres */
+    --primary: #0F172A;
+    --primary-light: #1E293B;
+    --accent: #D97706;
+    --accent-hover: #B45309;
+    --accent-light: #F59E0B;
     --bg-light: #F8FAFC;
     --bg-white: #FFFFFF;
     --text-dark: #1E293B;
     --text-medium: #475569;
     --text-light: #64748B;
     --border: #E2E8F0;
-    
-    /* Paiement */
-    --mtn-yellow: #FFCC00;
-    --mtn-blue: #003399;
-    --airtel-red: #FF0000;
-    
-    /* Espacements & Bordures */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -33,12 +22,7 @@
     --radius-lg: 12px;
 }
 
-/* --- Reset & Base --- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: 'Inter', sans-serif;
@@ -49,16 +33,19 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 1.5rem;
 }
 
-/* --- Navigation --- */
+/* =========================================
+   1. NAVIGATION UNIFIÉE
+   ========================================= */
 .navbar {
-    background: var(--bg-white);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
-    padding: 1.2rem 0;
+    padding: 1rem 0;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -72,31 +59,21 @@ body {
 }
 
 .logo {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 800;
     color: var(--primary);
-    letter-spacing: -0.5px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.logo span {
-    color: var(--accent);
-}
-
-.badge {
-    font-size: 0.75rem;
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-    color: var(--bg-white);
-    padding: 3px 10px;
-    border-radius: 20px;
-    margin-left: 10px;
-    font-weight: 600;
-    vertical-align: middle;
-}
+.logo span { color: var(--accent); }
 
 .nav-links {
     list-style: none;
     display: flex;
-    gap: 2.5rem;
+    gap: 2rem;
     align-items: center;
 }
 
@@ -108,27 +85,57 @@ body {
     transition: color 0.3s ease;
 }
 
-.nav-links a:hover {
+.nav-links a:hover { color: var(--accent); }
+
+.nav-actions { display: flex; gap: 1rem; align-items: center; }
+
+/* =========================================
+   2. BOUTONS & COMPOSANTS
+   ========================================= */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--border);
+    color: var(--primary);
+}
+
+.btn-outline:hover {
+    border-color: var(--accent);
     color: var(--accent);
 }
 
-.btn-login {
-    border: 2px solid var(--primary);
-    padding: 0.6rem 1.5rem !important;
-    border-radius: var(--radius);
-    color: var(--primary) !important;
-}
-
-.btn-login:hover {
-    background: var(--primary);
-    color: var(--bg-white) !important;
-}
-
-/* --- Hero Section --- */
+/* =========================================
+   3. HERO SECTION
+   ========================================= */
 .hero {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-    color: var(--bg-white);
-    padding: 6rem 0;
+    color: white;
+    padding: 6rem 0 8rem;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -145,225 +152,259 @@ body {
     border-radius: 50%;
 }
 
-.hero-content {
-    position: relative;
-    z-index: 1;
-}
+.hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
 
 .hero h1 {
-    font-size: 3.2rem;
+    font-size: 3rem;
     margin-bottom: 1.5rem;
     line-height: 1.2;
     font-weight: 800;
 }
 
-.highlight {
-    color: var(--accent-light);
-}
+.hero h1 span { color: var(--accent-light); }
 
 .hero p {
     font-size: 1.25rem;
     color: #CBD5E1;
-    max-width: 650px;
-    margin: 0 auto 2.5rem;
+    margin-bottom: 2.5rem;
     line-height: 1.7;
 }
 
-.hero-buttons {
-    display: flex;
-    gap: 1.2rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
+.hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
-.btn {
-    display: inline-block;
-    padding: 1rem 2.2rem;
-    border-radius: var(--radius);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-    color: var(--bg-white);
-    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
-}
-
-.btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4);
-}
-
-.btn-secondary {
-    background: transparent;
-    border: 2px solid var(--bg-white);
-    color: var(--bg-white);
-}
-
-.btn-secondary:hover {
-    background: var(--bg-white);
-    color: var(--primary);
-}
-
-/* --- Sections --- */
-.section {
-    padding: 5rem 0;
-}
-
-.section.bg-light {
-    background: var(--bg-white);
-}
+/* =========================================
+   4. SECTIONS GÉNÉRALES
+   ========================================= */
+.section { padding: 5rem 0; }
+.section.bg-white { background: var(--bg-white); }
 
 .section-title {
     text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 3rem;
+    font-size: 2.25rem;
+    margin-bottom: 1rem;
     color: var(--primary);
     font-weight: 700;
 }
 
-.text-center {
+.section-subtitle {
     text-align: center;
+    color: var(--text-medium);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto 3rem;
 }
 
-/* --- Steps Grid --- */
-.steps-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2.5rem;
-    margin-top: 2rem;
-}
-
-.step-card {
-    background: var(--bg-white);
-    padding: 2.5rem;
-    border-radius: var(--radius-lg);
-    text-align: center;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.step-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-}
-
-.step-number {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-    color: var(--bg-white);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.8rem;
-    font-weight: 800;
-    margin: 0 auto 1.5rem;
-}
-
-.step-card h3 {
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
-    color: var(--primary);
-}
-
-.step-card p {
-    color: var(--text-light);
-    line-height: 1.7;
-}
-
-/* --- Templates Grid --- */
-.templates-grid {
+/* =========================================
+   5. GRILLE DE DOCUMENTS (CŒUR DU SITE)
+   ========================================= */
+.docs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
 }
 
-.template-card {
+.doc-card {
     background: var(--bg-white);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     overflow: hidden;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
-.template-card:hover {
+.doc-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
+    border-color: var(--accent);
 }
 
-.card-preview {
+.doc-preview {
     height: 220px;
-    background: linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%);
+    background: var(--bg-light);
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-light);
-    font-size: 1.1rem;
+    overflow: hidden;
+    padding: 1rem;
 }
 
-.card-body {
-    padding: 1.8rem;
+/* ASTUCE : Réduit parfaitement la miniature réaliste pour qu'elle tienne dans la carte */
+.preview-scaler {
+    transform: scale(0.65);
+    transform-origin: center center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.card-title {
-    font-size: 1.3rem;
+.doc-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--accent);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
     font-weight: 700;
-    margin-bottom: 0.8rem;
+    z-index: 10;
+}
+
+.doc-info { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+
+.doc-category {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.doc-title {
+    font-size: 1.15rem;
+    font-weight: 700;
     color: var(--primary);
+    margin-bottom: 0.5rem;
 }
 
-.card-description {
-    color: var(--text-light);
-    font-size: 0.95rem;
+.doc-desc {
+    color: var(--text-medium);
+    font-size: 0.9rem;
     margin-bottom: 1.5rem;
-    line-height: 1.6;
+    line-height: 1.5;
+    flex: 1;
 }
 
-.card-footer {
+.doc-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 1.2rem;
+    padding-top: 1rem;
     border-top: 1px solid var(--border);
 }
 
-.card-price {
-    color: var(--accent);
+.doc-price {
+    font-size: 1.25rem;
     font-weight: 800;
-    font-size: 1.4rem;
+    color: var(--primary);
 }
 
-.card-price span {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    font-weight: 500;
+.doc-price span { font-size: 0.85rem; font-weight: 500; color: var(--text-light); }
+
+.btn-doc {
+    padding: 0.6rem 1.2rem;
+    background: var(--primary);
+    color: white;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
 }
 
-.btn-customize {
-    padding: 0.7rem 1.5rem;
-    font-size: 0.95rem;
+.btn-doc:hover { background: var(--accent); }
+
+/* =========================================
+   6. MINIATURES RÉALISTES (NETTOYÉES)
+   ========================================= */
+.real-preview-cv, .real-preview-letter, .real-preview-contract, 
+.real-preview-attestation, .real-preview-invoice, .real-preview-generic {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+    font-size: 0.6rem;
+    line-height: 1.3;
+    color: var(--text-dark);
 }
 
-.loading-text {
-    grid-column: 1 / -1;
+/* CV Réaliste */
+.real-preview-cv { padding: 8px; display: grid; grid-template-columns: 30% 70%; gap: 8px; }
+.cv-header-real { grid-column: 1 / -1; border-bottom: 2px solid var(--primary); padding-bottom: 4px; margin-bottom: 6px; }
+.cv-name { font-size: 0.8rem; font-weight: 800; color: var(--primary); }
+.cv-title { font-size: 0.6rem; color: var(--text-medium); }
+.cv-section-title { font-size: 0.55rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin: 6px 0 3px; border-bottom: 1px solid var(--accent); }
+.cv-text { font-size: 0.55rem; color: var(--text-medium); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Lettre Réaliste */
+.real-preview-letter { padding: 10px; }
+.letter-real-name { font-weight: 800; font-size: 0.7rem; color: var(--primary); }
+.letter-real-objet { font-weight: 700; color: var(--accent); font-size: 0.6rem; margin: 6px 0; border-bottom: 1px solid var(--accent); }
+.letter-real-body p { font-size: 0.55rem; color: var(--text-medium); margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Contrat Réaliste */
+.real-preview-contract { padding: 10px; }
+.contract-real-title { text-align: center; font-weight: 800; font-size: 0.65rem; color: var(--primary); text-transform: uppercase; border-bottom: 2px solid var(--primary); padding-bottom: 4px; margin-bottom: 6px; }
+.contract-real-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+.contract-party { background: var(--bg-light); padding: 4px; border-radius: 3px; border-left: 2px solid var(--primary); font-size: 0.55rem; }
+.contract-party strong { color: var(--primary); display: block; margin-bottom: 2px; }
+
+/* Attestation Réaliste */
+.real-preview-attestation { padding: 10px; text-align: center; }
+.attestation-real-header { font-weight: 800; font-size: 0.7rem; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 4px; margin-bottom: 6px; }
+.attestation-real-title { font-weight: 800; font-size: 0.65rem; color: var(--accent); text-transform: uppercase; margin-bottom: 6px; }
+.attestation-real-body { text-align: left; }
+.attestation-real-body p { font-size: 0.55rem; color: var(--text-medium); margin-bottom: 4px; }
+
+/* Facture/Devis Réaliste */
+.real-preview-invoice { padding: 10px; }
+.invoice-real-header { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+.invoice-real-company, .invoice-real-client { background: var(--bg-light); padding: 4px; border-radius: 3px; font-size: 0.55rem; }
+.invoice-real-company strong, .invoice-real-client strong { display: block; margin-bottom: 2px; }
+.invoice-real-title { text-align: center; font-weight: 800; font-size: 0.65rem; color: white; background: var(--primary); padding: 3px; border-radius: 3px; margin-bottom: 6px; }
+.invoice-real-table { width: 100%; border-collapse: collapse; font-size: 0.5rem; margin-bottom: 6px; }
+.invoice-real-table th { background: var(--bg-light); padding: 3px; text-align: left; border-bottom: 1px solid var(--primary); }
+.invoice-real-table td { padding: 3px; border-bottom: 1px solid var(--border); }
+.invoice-real-total { text-align: right; font-size: 0.6rem; font-weight: 700; color: white; background: var(--accent); padding: 3px 6px; border-radius: 3px; float: right; }
+
+/* Générique Réaliste */
+.real-preview-generic { padding: 10px; }
+.generic-real-title { text-align: center; font-weight: 800; font-size: 0.65rem; color: var(--primary); text-transform: uppercase; border-bottom: 2px solid var(--primary); padding-bottom: 4px; margin-bottom: 6px; }
+.generic-real-body p { font-size: 0.55rem; color: var(--text-medium); margin-bottom: 4px; }
+
+/* =========================================
+   7. STEPS & PAIEMENT
+   ========================================= */
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.step-card {
+    background: var(--bg-white);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
     text-align: center;
-    color: var(--text-light);
-    font-size: 1.1rem;
-    padding: 3rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    transition: transform 0.3s ease;
 }
 
-/* --- Payment Section --- */
+.step-card:hover { transform: translateY(-5px); }
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0 auto 1.5rem;
+}
+
 .payment-logos {
     display: flex;
-    gap: 2rem;
+    gap: 1.5rem;
     justify-content: center;
     margin: 2rem 0;
     flex-wrap: wrap;
@@ -375,105 +416,46 @@ body {
     font-weight: 700;
     font-size: 1.1rem;
     box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
-.payment-badge.mtn {
-    background: linear-gradient(135deg, var(--mtn-yellow) 0%, var(--mtn-blue) 100%);
-    color: var(--mtn-blue);
-}
+.payment-badge.mtn { background: linear-gradient(135deg, #FFCC00 0%, #003399 100%); color: #003399; }
+.payment-badge.airtel { background: linear-gradient(135deg, #FF0000 0%, #990000 100%); color: white; }
 
-.payment-badge.airtel {
-    background: linear-gradient(135deg, var(--airtel-red) 0%, #990000 100%);
-    color: var(--bg-white);
-}
-
-.payment-text {
-    color: var(--text-light);
-    font-size: 1.1rem;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-/* --- Footer --- */
+/* =========================================
+   8. FOOTER
+   ========================================= */
 .footer {
     background: var(--primary);
     color: #94A3B8;
     text-align: center;
     padding: 3rem 0;
-    margin-top: 4rem;
 }
 
-.footer p {
-    margin: 0.5rem 0;
+.footer strong { color: var(--accent-light); }
+.owner { color: var(--accent); font-weight: 600; margin-top: 0.5rem; }
+
+/* =========================================
+   9. RESPONSIVE ABSOLU
+   ========================================= */
+@media (max-width: 1024px) {
+    .nav-links { display: none; } /* Simplifié pour mobile, à remplacer par un vrai menu burger si besoin */
+    .hero h1 { font-size: 2.5rem; }
 }
 
-.footer strong {
-    color: var(--accent-light);
-}
-
-.owner {
-    color: var(--accent);
-    font-weight: 600;
-    margin-top: 0.8rem;
-}
-
-.payment-methods {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: var(--text-light);
-}
-
-/* --- Responsive --- */
 @media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2.2rem;
-    }
+    .hero { padding: 4rem 0 6rem; }
+    .hero h1 { font-size: 2rem; }
+    .hero p { font-size: 1.1rem; }
+    .section-title { font-size: 1.75rem; }
     
-    .hero p {
-        font-size: 1.1rem;
-    }
+    /* Grille en 1 colonne sur mobile */
+    .docs-grid { grid-template-columns: 1fr; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .payment-logos { flex-direction: column; align-items: center; }
     
-    .nav-links {
-        gap: 1.5rem;
-    }
-    
-    .section-title {
-        font-size: 2rem;
-    }
-    
-    .steps-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* --- Filtres de catégories --- */
-.categories-filter {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 3rem;
-}
-
-.filter-btn {
-    padding: 0.7rem 1.5rem;
-    border: 2px solid var(--border);
-    background: var(--bg-white);
-    border-radius: 30px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: var(--text-medium);
-}
-
-.filter-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-}
-
-.filter-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--bg-white);
+    /* Ajustement des miniatures sur petit écran */
+    .preview-scaler { transform: scale(0.55); }
 }
