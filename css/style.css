@@ -459,3 +459,24 @@ body {
     /* Ajustement des miniatures sur petit écran */
     .preview-scaler { transform: scale(0.55); }
 }
+
+
+
+
+
+/* Supprimez le hero::after ou réduisez l'opacité */
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%); /* Réduit de 0.95 à 0.3 */
+    z-index: 0;
+}
+
+/* Et augmentez l'opacité de l'image */
+.hero::before {
+    opacity: 0.25; /* Augmenté de 0.15 à 0.25 */
+}
