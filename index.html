@@ -2,1760 +2,1876 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TakiDoc - Documents Professionnels au Congo</title>
-    <meta name="description" content="CV, factures, attestations, lettres et modèles professionnels prêts à télécharger et à personnaliser. Paiement MTN/Airtel Money.">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>TakiDoc - Le Pinterest des Documents Professionnels</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/header.css">
-    
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E85A2D;
+            --primary-light: #FFF5F0;
+            --secondary: #004E89;
+            --dark: #1A1A2E;
+            --bg-body: #F5F5F7;
+            --bg-card: #FFFFFF;
+            --text-main: #1A1A2E;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-full: 9999px;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        html { scroll-behavior: smooth; }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background: #ffffff;
-            color: #1e293b;
-            line-height: 1.6;
-            overflow-x: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            padding-bottom: 90px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* HEADER */
-        .header {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
+        /* ============================================
+           HEADER PROFESSIONNEL
+           ============================================ */
+        .app-header {
             position: sticky;
             top: 0;
-            z-index: 1000;
-        }
-
-        .header-container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 12px 20px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
-            max-width: 1280px;
-            margin: 0 auto;
+            gap: 16px;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
         }
 
         .logo {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: #1e293b;
+            font-size: 1.6rem;
+            font-weight: 900;
             text-decoration: none;
-        }
-
-        .logo span {
-            color: #f97316;
-        }
-
-        .nav {
+            letter-spacing: -1px;
+            flex-shrink: 0;
             display: flex;
-            gap: 2rem;
-            list-style: none;
+            align-items: center;
         }
 
-        .nav a {
-            text-decoration: none;
-            color: #64748b;
-            font-weight: 500;
-            transition: color 0.3s;
+        .logo-taki { color: var(--primary); }
+        .logo-doc { color: var(--dark); }
+
+        .search-bar {
+            flex: 1;
+            max-width: 700px;
+            background: #F3F4F6;
+            border-radius: var(--radius-full);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 2px solid transparent;
+            transition: all 0.2s;
         }
 
-        .nav a:hover, .nav a.active {
-            color: #f97316;
+        .search-bar:focus-within {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255,107,53,0.1);
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            flex: 1;
+            font-size: 0.95rem;
+            outline: none;
+            font-family: inherit;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 1rem;
-        }
-
-        .cart-icon {
-            position: relative;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #64748b;
-        }
-
-        .cart-badge {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: #f97316;
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 700;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn {
-            padding: 0.625rem 1.25rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            text-decoration: none;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
-            display: inline-block;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1.5px solid #e2e8f0;
-            color: #1e293b;
-        }
-
-        .btn-outline:hover {
-            border-color: #f97316;
-            color: #f97316;
-        }
-
-        .btn-primary {
-            background: #f97316;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #ea580c;
-        }
-
-        /* HERO SECTION - MODIFICATION 1 : Image de fond plus visible */
-        .hero {
-            padding: 4rem 0;
-            background: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 60%;
-            height: 100%;
-            background: url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200&auto=format&fit=crop') center/cover;
-            opacity: 0.25; /* Augmenté de 0.08 à 0.25 pour plus de visibilité */
-            z-index: 0;
-        }
-
-        .hero-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-content h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 1rem;
-            color: #1e293b;
-        }
-
-        .hero-content h1 span {
-            color: #f97316;
-        }
-
-        .hero-content p {
-            font-size: 1.125rem;
-            color: #64748b;
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 3rem;
-        }
-
-        .hero-buttons .btn {
-            padding: 0.875rem 1.5rem;
-            font-size: 1rem;
-        }
-
-        .hero-visual {
-            position: relative;
-            height: 450px;
-        }
-
-        .docs-showcase {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Documents flottants réalistes */
-        .doc-float {
-            position: absolute;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            padding: 1.5rem;
-            width: 240px;
-            transition: transform 0.3s;
-            overflow: hidden;
-        }
-
-        .doc-float:hover {
-            transform: translateY(-10px);
-        }
-
-        .doc-float-1 {
-            top: 0;
-            left: 0;
-            transform: rotate(-5deg);
-            z-index: 4;
-        }
-
-        .doc-float-2 {
-            top: 20px;
-            left: 180px;
-            transform: rotate(3deg);
-            z-index: 3;
-        }
-
-        .doc-float-3 {
-            top: 60px;
-            left: 340px;
-            transform: rotate(-2deg);
-            z-index: 2;
-        }
-
-        .doc-float-4 {
-            top: 100px;
-            left: 480px;
-            transform: rotate(4deg);
-            z-index: 1;
-        }
-
-        /* CV Float Design */
-        .doc-cv-preview {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-        }
-
-        .doc-cv-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .doc-cv-avatar {
-            width: 50px;
-            height: 50px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .doc-cv-info h3 {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-        }
-
-        .doc-cv-info p {
-            font-size: 0.75rem;
-            opacity: 0.8;
-        }
-
-        .doc-cv-section {
-            margin-bottom: 0.75rem;
-        }
-
-        .doc-cv-section-title {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
-            opacity: 0.9;
-        }
-
-        .doc-cv-line {
-            height: 6px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 3px;
-            margin-bottom: 0.4rem;
-        }
-
-        .doc-cv-line.short { width: 60%; }
-        .doc-cv-line.medium { width: 80%; }
-
-        /* Facture Float Design */
-        .doc-facture-preview {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1.5rem;
-        }
-
-        .doc-facture-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid #f97316;
-        }
-
-        .doc-facture-company {
-            font-weight: 700;
-            color: #1e293b;
-            font-size: 0.9rem;
-        }
-
-        .doc-facture-title {
-            background: #f97316;
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .doc-facture-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.7rem;
-        }
-
-        .doc-facture-table th {
-            background: #f8fafc;
-            padding: 0.4rem;
-            text-align: left;
-            font-weight: 600;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .doc-facture-table td {
-            padding: 0.4rem;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .doc-facture-total {
-            background: #f97316;
-            color: white;
-            padding: 0.5rem;
-            text-align: right;
-            font-weight: 700;
-            border-radius: 4px;
-            margin-top: 0.75rem;
-            font-size: 0.75rem;
-        }
-
-        /* Attestation Float Design */
-        .doc-attestation-preview {
-            background: white;
-            border: 2px solid #1e293b;
-            border-radius: 8px;
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .doc-attestation-header {
-            font-size: 0.7rem;
-            color: #64748b;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid #1e293b;
-        }
-
-        .doc-attestation-title {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #1e293b;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-        }
-
-        .doc-attestation-seal {
-            width: 60px;
-            height: 60px;
-            border: 3px solid #f97316;
-            border-radius: 50%;
-            margin: 1rem auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #f97316;
-            font-size: 1.5rem;
-        }
-
-        .doc-attestation-line {
-            height: 6px;
-            background: #f1f5f9;
-            border-radius: 3px;
-            margin: 0.5rem auto;
-        }
-
-        .doc-attestation-line.short { width: 60%; }
-        .doc-attestation-line.medium { width: 80%; }
-
-        /* Lettre Float Design */
-        .doc-lettre-preview {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1.5rem;
-            font-family: 'Georgia', serif;
-        }
-
-        .doc-lettre-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            font-size: 0.7rem;
-        }
-
-        .doc-lettre-date {
-            text-align: right;
-            color: #64748b;
-            font-style: italic;
-            font-size: 0.7rem;
-            margin-bottom: 1rem;
-        }
-
-        .doc-lettre-objet {
-            font-weight: 700;
-            color: #f97316;
-            font-size: 0.75rem;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid #f97316;
-            padding-bottom: 0.4rem;
-        }
-
-        .doc-lettre-line {
-            height: 5px;
-            background: #f1f5f9;
-            border-radius: 2px;
-            margin: 0.4rem 0;
-        }
-
-        .doc-lettre-line.short { width: 60%; }
-        .doc-lettre-line.medium { width: 80%; }
-        .doc-lettre-line.long { width: 90%; }
-
-        .doc-lettre-signature {
-            margin-top: 1rem;
-            text-align: right;
-            font-size: 0.7rem;
-            color: #64748b;
-        }
-
-        /* FEATURES BAR */
-        .features-bar {
-            background: #f8fafc;
-            padding: 2rem 0;
-            border-top: 1px solid #e2e8f0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .features-grid {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-        }
-
-        .feature-item {
-            display: flex;
-            gap: 1rem;
-            align-items: flex-start;
-        }
-
-        .feature-icon {
-            width: 40px;
-            height: 40px;
-            background: #fff7ed;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #f97316;
-            font-size: 1.125rem;
+            gap: 8px;
             flex-shrink: 0;
         }
 
-        .feature-text h3 {
-            font-size: 0.9375rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-            color: #1e293b;
-        }
-
-        .feature-text p {
-            font-size: 0.8125rem;
-            color: #64748b;
-            margin: 0;
-        }
-
-        /* POPULAR DOCUMENTS - MODIFICATION 2 : Miniatures réalistes comme l'image */
-        .popular {
-            padding: 4rem 0;
-            max-width: 1280px;
-            margin: 0 auto;
-            padding-left: 2rem;
-            padding-right: 2rem;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .section-header h2 {
-            font-size: 1.75rem;
+        .btn-auth {
+            padding: 10px 18px;
+            border-radius: var(--radius-full);
             font-weight: 700;
-            color: #1e293b;
-        }
-
-        .view-all {
-            color: #f97316;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-
-        .docs-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 1.5rem;
-        }
-
-        .doc-item {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.3s;
+            font-size: 0.9rem;
             cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            font-family: inherit;
         }
 
-        .doc-item:hover {
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            transform: translateY(-4px);
-            border-color: #f97316;
+        .btn-signup {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
         }
 
-        /* Miniature de document réaliste */
-        .doc-thumbnail {
-            width: 100%;
-            height: 140px;
-            background: #f8fafc;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+        .btn-signup:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .btn-login {
+            background: var(--primary);
+            color: white;
+            border: 2px solid var(--primary);
+        }
+
+        .btn-login:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .icon-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            transition: all 0.2s;
             position: relative;
         }
 
-        .doc-thumbnail-inner {
-            width: 90%;
-            height: 90%;
-            background: white;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 12px;
+        .icon-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #EF4444;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 800;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
             display: flex;
-            flex-direction: column;
-            gap: 6px;
-            transform: scale(0.85);
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid white;
         }
 
-        .doc-thumb-line {
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 2px;
+        /* ============================================
+           NOTIFICATIONS DROPDOWN
+           ============================================ */
+        .dropdown-menu {
+            position: absolute;
+            top: 55px;
+            right: 80px;
+            background: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            width: 360px;
+            max-height: 420px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1001;
+            border: 1px solid var(--border);
+            animation: slideDown 0.2s ease-out;
         }
 
-        .doc-thumb-line.short { width: 60%; }
-        .doc-thumb-line.medium { width: 80%; }
-        .doc-thumb-line.long { width: 100%; }
+        .dropdown-menu.active { display: block; }
 
-        .doc-thumb-header {
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+        }
+
+        .dropdown-header h3 { font-size: 1.05rem; font-weight: 800; }
+
+        .mark-read {
+            color: var(--primary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 700;
+            font-family: inherit;
+        }
+
+        .notif-item {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .notif-item:hover { background: var(--primary-light); }
+        .notif-item.unread { background: #FFF8F5; border-left: 3px solid var(--primary); }
+
+        .notif-title { font-weight: 700; margin-bottom: 4px; font-size: 0.9rem; }
+        .notif-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+        .notif-time { font-size: 0.75rem; color: #9CA3AF; margin-top: 6px; font-weight: 500; }
+
+        /* ============================================
+           CATEGORIES (59 catégories)
+           ============================================ */
+        .categories-wrapper {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 66px;
+            z-index: 999;
+        }
+
+        .categories-nav {
+            padding: 12px 20px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            scroll-snap-type: x mandatory;
+        }
+        .categories-nav::-webkit-scrollbar { display: none; }
+
+        .cat-pill {
+            padding: 8px 18px;
+            background: var(--bg-body);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            scroll-snap-align: start;
+            font-family: inherit;
+        }
+
+        .cat-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .cat-pill.active {
+            background: var(--dark);
+            color: white;
+            border-color: var(--dark);
+        }
+
+        /* ============================================
+           MASONRY GRID - STYLE PINTEREST
+           ============================================ */
+        .feed-container {
+            padding: 20px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* VRAI MASONRY avec column-count */
+        .masonry-grid {
+            column-count: 2;
+            column-gap: 12px;
+        }
+
+        @media (min-width: 640px) {
+            .masonry-grid { column-count: 3; column-gap: 16px; }
+        }
+        
+        @media (min-width: 1024px) {
+            .masonry-grid { column-count: 4; column-gap: 20px; }
+        }
+        
+        @media (min-width: 1400px) {
+            .masonry-grid { column-count: 5; column-gap: 24px; }
+        }
+
+        /* ============================================
+           PIN CARD - COMME PINTEREST
+           ============================================ */
+        .pin-card {
+            break-inside: avoid;
+            margin-bottom: 12px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .pin-card { margin-bottom: 16px; }
+        }
+
+        .pin-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Container de l'aperçu - hauteur VARIABLE selon le type */
+        .document-preview {
+            width: 100%;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Le document réel réduit */
+        .doc-thumbnail-wrapper {
+            width: 100%;
+            transform-origin: top center;
+            pointer-events: none;
+            background: white;
+        }
+
+        /* Overlay au survol */
+        .pin-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.7) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 12px;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .pin-card:hover .pin-overlay { opacity: 1; }
+
+        .overlay-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .overlay-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-main);
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .overlay-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .overlay-btn.saved {
+            background: #EF4444;
+            color: white;
+        }
+
+        .overlay-bottom {
+            background: white;
+            padding: 12px 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .overlay-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .overlay-price {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--primary);
             margin-bottom: 8px;
         }
 
-        .doc-thumb-title {
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: #1e293b;
-        }
-
-        .doc-thumb-badge {
-            background: #f97316;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 0.55rem;
-            font-weight: 700;
-        }
-
-        .doc-item h3 {
-            font-size: 0.9375rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #1e293b;
-        }
-
-        .doc-item p {
-            font-size: 0.8125rem;
-            color: #64748b;
-            margin-bottom: 1rem;
-            line-height: 1.5;
-        }
-
-        .doc-price {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: #f97316;
-            margin-bottom: 0.75rem;
-        }
-
-        .btn-doc {
+        .btn-customize-overlay {
             width: 100%;
-            padding: 0.625rem;
-            background: transparent;
-            border: 1.5px solid #f97316;
-            color: #f97316;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.8125rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-doc:hover {
-            background: #f97316;
+            padding: 10px;
+            background: var(--dark);
             color: white;
+            border: none;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
         }
 
-        /* CATEGORIES */
-        .categories {
-            padding: 4rem 0;
-            max-width: 1280px;
-            margin: 0 auto;
-            padding-left: 2rem;
-            padding-right: 2rem;
+        .btn-customize-overlay:hover {
+            background: var(--primary);
         }
 
-        .categories-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 1.5rem;
-        }
-
-        .category-item {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 1.5rem;
+        /* ============================================
+           EMPTY STATE
+           ============================================ */
+        .empty-state {
             text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
+            padding: 80px 20px;
+            color: var(--text-muted);
+            column-span: all;
         }
 
-        .category-item:hover {
-            border-color: #f97316;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            transform: translateY(-4px);
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 16px;
+            color: var(--border);
         }
 
-        .category-icon {
-            width: 64px;
-            height: 64px;
-            background: #fff7ed;
-            border-radius: 12px;
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: #f97316;
-        }
-
-        .category-item h3 {
-            font-size: 0.9375rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-            color: #1e293b;
-        }
-
-        .category-item p {
-            font-size: 0.8125rem;
-            color: #64748b;
-            margin: 0;
-        }
-
-        /* HOW IT WORKS */
-        .how-it-works {
-            padding: 4rem 0;
-            max-width: 1280px;
-            margin: 0 auto;
-            padding-left: 2rem;
-            padding-right: 2rem;
-        }
-
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            margin-top: 3rem;
-            position: relative;
-        }
-
-        .step {
-            display: flex;
-            gap: 1.5rem;
-            align-items: flex-start;
-        }
-
-        .step-number {
-            width: 48px;
-            height: 48px;
-            background: #f97316;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .empty-state h3 {
+            font-size: 1.2rem;
             font-weight: 700;
-            font-size: 1.25rem;
-            flex-shrink: 0;
+            margin-bottom: 8px;
+            color: var(--text-main);
         }
 
-        .step-content h3 {
-            font-size: 1.0625rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #1e293b;
-        }
-
-        .step-content p {
-            font-size: 0.875rem;
-            color: #64748b;
-            line-height: 1.6;
-            margin: 0;
-        }
-
-        .step-arrow {
-            position: absolute;
-            top: 24px;
-            color: #cbd5e1;
-            font-size: 1.5rem;
-        }
-
-        .step-arrow-1 {
-            left: 33%;
-        }
-
-        .step-arrow-2 {
-            left: 66%;
-        }
-
-        /* CTA BANNER */
-        .cta-banner {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            padding: 3rem 0;
-            margin: 4rem 0;
-        }
-
-        .cta-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cta-content h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .app-footer {
+            background: var(--dark);
             color: white;
-            margin-bottom: 0.5rem;
+            padding: 50px 24px 100px;
+            margin-top: 40px;
         }
 
-        .cta-content p {
-            color: #94a3b8;
-            font-size: 0.9375rem;
-            margin: 0;
-        }
-
-        /* FOOTER */
-        .footer {
-            background: #1e293b;
-            color: #94a3b8;
-            padding: 4rem 0 2rem;
+        @media (min-width: 768px) {
+            .app-footer { padding-bottom: 50px; }
         }
 
         .footer-container {
-            max-width: 1280px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .footer-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 2fr;
-            gap: 3rem;
-            margin-bottom: 3rem;
+            grid-template-columns: 1fr;
+            gap: 32px;
         }
 
-        .footer-brand .logo {
-            color: white;
-            margin-bottom: 1rem;
-            display: inline-block;
+        @media (min-width: 768px) {
+            .footer-container { grid-template-columns: 2fr 1fr 1fr 1.5fr; }
         }
+
+        .footer-brand .logo { margin-bottom: 12px; }
+        .footer-brand .logo-taki { color: var(--primary); }
+        .footer-brand .logo-doc { color: white; }
 
         .footer-brand p {
-            font-size: 0.875rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.7;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
         }
 
-        .footer-social {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .footer-social a {
-            width: 36px;
-            height: 36px;
-            background: #334155;
-            border-radius: 8px;
-            display: flex;
+        .footer-team {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            color: #94a3b8;
-            transition: all 0.3s;
-        }
-
-        .footer-social a:hover {
-            background: #f97316;
-            color: white;
+            gap: 8px;
+            background: rgba(255,107,53,0.15);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(255,107,53,0.3);
         }
 
         .footer-col h4 {
             color: white;
-            font-size: 0.9375rem;
-            font-weight: 600;
-            margin-bottom: 1.25rem;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
         }
 
-        .footer-col ul {
-            list-style: none;
-        }
-
-        .footer-col li {
-            margin-bottom: 0.75rem;
-        }
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 10px; }
 
         .footer-col a {
-            color: #94a3b8;
+            color: rgba(255,255,255,0.7);
             text-decoration: none;
-            font-size: 0.875rem;
-            transition: color 0.3s;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: inline-block;
         }
 
         .footer-col a:hover {
-            color: #f97316;
+            color: var(--primary);
+            transform: translateX(3px);
         }
 
-        .footer-contact p {
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
+        .footer-contact-item {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+
+        .footer-contact-item i {
+            color: var(--primary);
+            width: 18px;
+            text-align: center;
         }
 
         .footer-bottom {
-            border-top: 1px solid #334155;
-            padding-top: 2rem;
+            max-width: 1400px;
+            margin: 32px auto 0;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+        }
+
+        /* ============================================
+           BOTTOM NAV MOBILE - LOGIQUE PINTEREST
+           ============================================ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0;
+            z-index: 1000;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            padding: 4px 12px;
+            flex: 1;
+        }
+
+        .nav-item i { font-size: 1.3rem; transition: transform 0.2s; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active i { transform: scale(1.1); }
+        .nav-item:hover { color: var(--primary); }
+
+        /* Bouton central "Créer" proéminent comme Pinterest */
+        .nav-item-create {
+            position: relative;
+            top: -12px;
+        }
+
+        .nav-item-create .create-btn {
+            width: 52px;
+            height: 52px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(255,107,53,0.4);
+            transition: all 0.2s;
+        }
+
+        .nav-item-create:hover .create-btn {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(255,107,53,0.5);
+        }
+
+        .nav-item-create span {
+            color: var(--primary);
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        @media (min-width: 768px) {
+            .bottom-nav { display: none; }
+            body { padding-bottom: 0; }
+        }
+
+        /* ============================================
+           RESPONSIVE MOBILE
+           ============================================ */
+        @media (max-width: 640px) {
+            .app-header { padding: 10px 12px; gap: 10px; }
+            .logo { font-size: 1.3rem; }
+            .search-bar { padding: 10px 14px; }
+            .search-bar input { font-size: 0.9rem; }
+            .btn-auth { padding: 8px 12px; font-size: 0.8rem; }
+            .btn-auth span { display: none; }
+            .btn-auth i { font-size: 1rem; }
+            .categories-wrapper { top: 58px; }
+            .categories-nav { padding: 10px 12px; gap: 6px; }
+            .cat-pill { padding: 6px 14px; font-size: 0.8rem; }
+            .feed-container { padding: 12px; }
+            .masonry-grid { column-gap: 10px; }
+            .pin-card { margin-bottom: 10px; border-radius: 12px; }
+            .dropdown-menu { 
+                width: calc(100% - 24px); 
+                right: 12px; 
+                left: 12px;
+            }
+        }
+
+        /* ============================================
+           STYLES POUR LES MINIATURES DE DOCUMENTS
+           ============================================ */
+        .mini-doc {
+            background: white;
+            padding: 8px;
+            font-family: 'Georgia', serif;
+            color: #1e293b;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        /* CV Exécutif Moderne - 2 colonnes */
+        .mini-cv-exec {
+            display: grid;
+            grid-template-columns: 35% 65%;
+            min-height: 280px;
+        }
+        .mini-cv-exec .sidebar {
+            background: #0F172A;
+            color: white;
+            padding: 10px 8px;
+        }
+        .mini-cv-exec .sidebar .photo {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            margin: 0 auto 8px;
+        }
+        .mini-cv-exec .sidebar .section-title {
+            font-size: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 8px 0 4px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        .mini-cv-exec .sidebar .item {
+            font-size: 0.45rem;
+            margin-bottom: 3px;
+            opacity: 0.9;
+        }
+        .mini-cv-exec .sidebar .skill-bar {
+            height: 3px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin: 2px 0 6px;
+            overflow: hidden;
+        }
+        .mini-cv-exec .sidebar .skill-fill {
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+        }
+        .mini-cv-exec .main {
+            padding: 10px 12px;
+        }
+        .mini-cv-exec .main .name {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #0F172A;
+            line-height: 1;
+        }
+        .mini-cv-exec .main .title {
+            font-size: 0.55rem;
+            color: #64748b;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid #0F172A;
+        }
+        .mini-cv-exec .main .section-title {
+            font-size: 0.55rem;
+            font-weight: 700;
+            color: #0F172A;
+            text-transform: uppercase;
+            margin: 8px 0 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .mini-cv-exec .main .section-title::before {
+            content: '';
+            width: 2px;
+            height: 8px;
+            background: #0F172A;
+        }
+        .mini-cv-exec .main .text {
+            font-size: 0.45rem;
+            color: #475569;
+            line-height: 1.4;
+        }
+        .mini-cv-exec .main .exp-item {
+            margin-bottom: 6px;
+            padding-left: 6px;
+            border-left: 1px solid #e2e8f0;
+        }
+        .mini-cv-exec .main .exp-title {
+            font-size: 0.5rem;
+            font-weight: 700;
+        }
+        .mini-cv-exec .main .exp-company {
+            font-size: 0.45rem;
+            color: #0F172A;
+            font-weight: 600;
+        }
+
+        /* Lettre - format lettre classique */
+        .mini-lettre {
+            padding: 12px 14px;
+            min-height: 320px;
+        }
+        .mini-lettre .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.45rem;
+        }
+        .mini-lettre .date {
+            text-align: right;
+            font-size: 0.45rem;
+            font-style: italic;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        .mini-lettre .objet {
+            font-size: 0.5rem;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 8px;
+        }
+        .mini-lettre .corps p {
+            font-size: 0.45rem;
+            line-height: 1.5;
+            margin-bottom: 6px;
+            text-align: justify;
+        }
+        .mini-lettre .signature {
+            text-align: right;
+            font-size: 0.5rem;
+            font-weight: 700;
+            margin-top: 10px;
+            color: #0F172A;
+        }
+
+        /* Contrat - format long */
+        .mini-contrat {
+            padding: 10px 12px;
+            min-height: 380px;
+        }
+        .mini-contrat .header {
+            text-align: center;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #0F172A;
+            margin-bottom: 8px;
+        }
+        .mini-contrat .entreprise {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #0F172A;
+            text-transform: uppercase;
+        }
+        .mini-contrat .titre {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #0F172A;
+            text-transform: uppercase;
+            text-align: center;
+            margin: 8px 0;
+            text-decoration: underline;
+        }
+        .mini-contrat .motif {
+            background: #fef3c7;
+            border-left: 2px solid #d97706;
+            padding: 4px 6px;
+            font-size: 0.4rem;
+            margin-bottom: 6px;
+        }
+        .mini-contrat .duree-box {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            padding: 6px;
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 0.45rem;
+            font-weight: 700;
+            color: #1e40af;
+        }
+        .mini-contrat .partie {
+            background: #f8fafc;
+            border-left: 2px solid #0F172A;
+            padding: 5px 6px;
+            margin-bottom: 6px;
+            font-size: 0.4rem;
+        }
+        .mini-contrat .partie-title {
+            font-weight: 700;
+            color: #0F172A;
+            font-size: 0.45rem;
+            margin-bottom: 3px;
+        }
+        .mini-contrat .article {
+            margin-bottom: 6px;
+        }
+        .mini-contrat .article-title {
+            font-size: 0.45rem;
+            font-weight: 700;
+            color: #0F172A;
+            text-transform: uppercase;
+        }
+        .mini-contrat .article-content {
+            font-size: 0.4rem;
+            line-height: 1.4;
+        }
+        .mini-contrat .signatures {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 0.4rem;
+            text-align: center;
+        }
+        .mini-contrat .sig-line {
+            border-top: 1px solid #0F172A;
+            padding-top: 3px;
+            font-weight: 700;
+        }
+
+        /* Attestation */
+        .mini-attestation {
+            padding: 12px 14px;
+            min-height: 340px;
+        }
+        .mini-attestation .header {
+            text-align: center;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #0F172A;
+            margin-bottom: 8px;
+        }
+        .mini-attestation .republique {
+            font-size: 0.5rem;
+            font-weight: 700;
+            color: #0F172A;
+            text-transform: uppercase;
+        }
+        .mini-attestation .devise {
+            font-size: 0.4rem;
+            font-style: italic;
+            color: #64748b;
+        }
+        .mini-attestation .titre {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #0F172A;
+            text-transform: uppercase;
+            text-align: center;
+            margin: 10px 0;
+            text-decoration: underline;
+        }
+        .mini-attestation .corps p {
+            font-size: 0.45rem;
+            line-height: 1.6;
+            margin-bottom: 6px;
+            text-align: justify;
+            text-indent: 12px;
+        }
+        .mini-attestation .info {
+            font-weight: 700;
+            color: #0F172A;
+        }
+        .mini-attestation .box {
+            background: #f8fafc;
+            border-left: 2px solid #0F172A;
+            padding: 6px 8px;
+            margin: 8px 0;
+            font-size: 0.4rem;
+        }
+        .mini-attestation .box-title {
+            font-weight: 700;
+            color: #0F172A;
+            font-size: 0.45rem;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        .mini-attestation .signature {
+            text-align: right;
+            margin-top: 12px;
+            font-size: 0.45rem;
+        }
+        .mini-attestation .sig-name {
+            font-weight: 700;
+            color: #0F172A;
+            border-top: 1px solid #0F172A;
+            display: inline-block;
+            padding-top: 3px;
+            min-width: 80px;
+        }
+
+        /* Commercial (Facture/Devis) */
+        .mini-commercial {
+            padding: 10px 12px;
+            min-height: 300px;
+        }
+        .mini-commercial .header {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #0F172A;
+            margin-bottom: 8px;
+        }
+        .mini-commercial .entreprise-nom {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #0F172A;
+        }
+        .mini-commercial .entreprise-info {
+            font-size: 0.4rem;
+            color: #64748b;
+        }
+        .mini-commercial .client-box {
+            text-align: right;
+            font-size: 0.4rem;
+        }
+        .mini-commercial .client-label {
+            font-size: 0.35rem;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .mini-commercial .client-nom {
+            font-weight: 700;
+            font-size: 0.5rem;
+        }
+        .mini-commercial .titre-box {
+            background: #0F172A;
+            color: white;
+            padding: 6px 10px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.8125rem;
         }
-
-        .footer-links {
+        .mini-commercial .titre {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .mini-commercial .numero {
+            font-size: 0.45rem;
+        }
+        .mini-commercial table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+            font-size: 0.4rem;
+        }
+        .mini-commercial th {
+            background: #0F172A;
+            color: white;
+            padding: 3px 4px;
+            text-align: left;
+            font-size: 0.35rem;
+            text-transform: uppercase;
+        }
+        .mini-commercial td {
+            padding: 3px 4px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .mini-commercial .total-row {
             display: flex;
-            gap: 2rem;
+            justify-content: space-between;
+            padding: 3px 0;
+            font-size: 0.4rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .mini-commercial .total-final {
+            background: #0F172A;
+            color: white;
+            padding: 4px 6px;
+            font-weight: 700;
+            font-size: 0.5rem;
+            margin-top: 4px;
         }
 
-        .footer-links a {
-            color: #94a3b8;
-            text-decoration: none;
-            transition: color 0.3s;
+        /* Administratif */
+        .mini-admin {
+            padding: 12px 14px;
+            min-height: 320px;
+        }
+        .mini-admin .titre {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0F172A;
+            text-transform: uppercase;
+            text-align: center;
+            margin: 8px 0;
+            text-decoration: underline;
+        }
+        .mini-admin .corps p {
+            font-size: 0.45rem;
+            line-height: 1.6;
+            margin-bottom: 6px;
+            text-align: justify;
+            text-indent: 12px;
+        }
+        .mini-admin .info {
+            font-weight: 700;
+            color: #0F172A;
+        }
+        .mini-admin .objet-box {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            padding: 6px 8px;
+            margin: 8px 0;
+            text-align: center;
+            font-size: 0.45rem;
+        }
+        .mini-admin .objet-title {
+            font-weight: 700;
+            color: #0369a1;
+            font-size: 0.4rem;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        .mini-admin .mention {
+            background: #fef2f2;
+            border-left: 2px solid #ef4444;
+            padding: 5px 6px;
+            font-size: 0.4rem;
+            color: #991b1b;
+            font-style: italic;
+            margin: 8px 0;
+        }
+        .mini-admin .signatures {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 0.4rem;
+            text-align: center;
+        }
+        .mini-admin .sig-label {
+            color: #64748b;
+            margin-bottom: 20px;
+            font-size: 0.35rem;
+        }
+        .mini-admin .sig-line {
+            border-top: 1px solid #0F172A;
+            padding-top: 3px;
+            font-weight: 700;
+            color: #0F172A;
         }
 
-        .footer-links a:hover {
-            color: #f97316;
+        /* Category badge sur la carte */
+        .category-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(255,255,255,0.95);
+            padding: 3px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--dark);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 2;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 1024px) {
-            .hero-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .hero-visual {
-                display: none;
-            }
-            
-            .docs-grid,
-            .categories-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .features-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .footer-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
+        .pin-card:hover .category-badge { opacity: 1; }
 
-        @media (max-width: 768px) {
-            .nav {
-                display: none;
-            }
-            
-            .hero-content h1 {
-                font-size: 2rem;
-            }
-            
-            .docs-grid,
-            .categories-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .steps {
-                grid-template-columns: 1fr;
-            }
-            
-            .step-arrow {
-                display: none;
-            }
-        }
-
-        /* POPULAR DOCUMENTS - MODIFIÉ */
-.popular {
-    padding: 4rem 0;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding-left: 2rem;
-    padding-right: 2rem;
+        /* Feedback tactile sur mobile */
+.nav-item:active {
+    transform: scale(0.9);
 }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+.nav-item i {
+    transition: transform 0.2s ease;
 }
 
-.section-header h2 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #1e293b;
+.nav-item.active i {
+    transform: scale(1.15);
+    color: var(--primary);
 }
 
-.view-all {
-    color: #f97316;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.875rem;
+/* Indicateur visuel pour le bouton Rechercher */
+#nav-search:active i {
+    animation: pulse-search 0.4s ease;
 }
 
-.docs-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* MODIFIÉ : 3 colonnes au lieu de 6 */
-    gap: 1.5rem;
-}
-
-.doc-item {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.25rem; /* Réduit de 1.5rem */
-    transition: all 0.3s;
-    cursor: pointer;
-}
-
-.doc-item:hover {
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    transform: translateY(-4px);
-    border-color: #f97316;
-}
-
-/* Miniature de document réaliste */
-.doc-thumbnail {
-    width: 100%;
-    height: 120px; /* Réduit de 140px */
-    background: #f8fafc;
-    border-radius: 8px;
-    margin-bottom: 0.875rem; /* Réduit */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-}
-
-.doc-thumbnail-inner {
-    width: 90%;
-    height: 90%;
-    background: white;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    padding: 10px; /* Réduit de 12px */
-    display: flex;
-    flex-direction: column;
-    gap: 5px; /* Réduit de 6px */
-    transform: scale(0.85);
-}
-
-.doc-thumb-line {
-    height: 5px; /* Réduit de 6px */
-    background: #e2e8f0;
-    border-radius: 2px;
-}
-
-.doc-thumb-line.short { width: 60%; }
-.doc-thumb-line.medium { width: 80%; }
-.doc-thumb-line.long { width: 100%; }
-
-.doc-thumb-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px; /* Réduit de 8px */
-}
-
-.doc-thumb-title {
-    font-size: 0.6rem; /* Réduit de 0.65rem */
-    font-weight: 700;
-    color: #1e293b;
-}
-
-.doc-thumb-badge {
-    background: #f97316;
-    color: white;
-    padding: 2px 5px; /* Réduit */
-    border-radius: 3px;
-    font-size: 0.5rem; /* Réduit de 0.55rem */
-    font-weight: 700;
-}
-
-.doc-item h3 {
-    font-size: 0.875rem; /* Réduit de 0.9375rem */
-    font-weight: 600;
-    margin-bottom: 0.4rem; /* Réduit de 0.5rem */
-    color: #1e293b;
-    line-height: 1.3;
-}
-
-.doc-item p {
-    font-size: 0.75rem; /* Réduit de 0.8125rem */
-    color: #64748b;
-    margin-bottom: 0.875rem; /* Réduit de 1rem */
-    line-height: 1.4; /* Réduit de 1.5 */
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.doc-price {
-    font-size: 1rem; /* Réduit de 1.125rem */
-    font-weight: 700;
-    color: #f97316;
-    margin-bottom: 0.625rem; /* Réduit de 0.75rem */
-}
-
-.btn-doc {
-    width: 100%;
-    padding: 0.5rem 0.875rem; /* Réduit de 0.625rem */
-    background: transparent;
-    border: 1.5px solid #f97316;
-    color: #f97316;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.75rem; /* Réduit de 0.8125rem */
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.btn-doc:hover {
-    background: #f97316;
-    color: white;
-}
-
-/* RESPONSIVE TABLETTE */
-@media (max-width: 1024px) {
-    .docs-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 colonnes sur tablette */
-    }
-}
-
-/* RESPONSIVE MOBILE */
-@media (max-width: 768px) {
-    .popular {
-        padding: 2.5rem 0; /* Réduit */
-    }
-    
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .section-header h2 {
-        font-size: 1.375rem; /* Réduit pour mobile */
-    }
-    
-    .docs-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 colonnes sur mobile */
-        gap: 0.875rem; /* Réduit de 1.5rem */
-    }
-    
-    .doc-item {
-        padding: 0.875rem; /* Réduit pour mobile */
-        border-radius: 8px;
-    }
-    
-    .doc-thumbnail {
-        height: 90px; /* Plus petit sur mobile */
-        margin-bottom: 0.625rem;
-    }
-    
-    .doc-thumbnail-inner {
-        padding: 6px;
-        gap: 4px;
-        transform: scale(0.8); /* Plus petit */
-    }
-    
-    .doc-thumb-line {
-        height: 4px;
-    }
-    
-    .doc-thumb-title {
-        font-size: 0.55rem;
-    }
-    
-    .doc-thumb-badge {
-        padding: 1px 4px;
-        font-size: 0.45rem;
-    }
-    
-    .doc-item h3 {
-        font-size: 0.8125rem; /* 13px - plus petit */
-        margin-bottom: 0.35rem;
-    }
-    
-    .doc-item p {
-        font-size: 0.6875rem; /* 11px - plus petit */
-        margin-bottom: 0.625rem;
-        line-height: 1.35;
-        -webkit-line-clamp: 2; /* Limite à 2 lignes */
-    }
-    
-    .doc-price {
-        font-size: 0.9375rem; /* 15px - plus petit */
-        margin-bottom: 0.5rem;
-    }
-    
-    .btn-doc {
-        padding: 0.4375rem 0.75rem; /* Plus petit */
-        font-size: 0.6875rem; /* 11px - plus petit */
-        border-radius: 6px;
-    }
-}
-
-/* MOBILE TRÈS PETIT */
-@media (max-width: 480px) {
-    .popular {
-        padding: 2rem 0;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    
-    .section-header h2 {
-        font-size: 1.25rem; /* Encore plus petit */
-    }
-    
-    .docs-grid {
-        gap: 0.75rem;
-    }
-    
-    .doc-item {
-        padding: 0.75rem;
-    }
-    
-    .doc-thumbnail {
-        height: 80px;
-    }
-    
-    .doc-thumbnail-inner {
-        transform: scale(0.75);
-        padding: 5px;
-    }
-    
-    .doc-item h3 {
-        font-size: 0.75rem; /* 12px */
-    }
-    
-    .doc-item p {
-        font-size: 0.625rem; /* 10px */
-        -webkit-line-clamp: 2;
-    }
-    
-    .doc-price {
-        font-size: 0.875rem; /* 14px */
-    }
-    
-    .btn-doc {
-        padding: 0.375rem 0.625rem;
-        font-size: 0.625rem; /* 10px */
-    }
+@keyframes pulse-search {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); color: var(--primary); }
+    100% { transform: scale(1.15); }
 }
     </style>
 </head>
 <body>
 
     <!-- Header -->
-    <div id="header-container"></div>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1>Les documents professionnels dont vous avez besoin, <span>prêts en quelques clics.</span></h1>
-                <p>CV, factures, attestations, lettres et modèles professionnels prêts à télécharger et à personnaliser.</p>
-                
-                <div class="hero-buttons">
-                    <a href="documents.html" class="btn btn-primary">
-                        Découvrir les documents <i class="fas fa-arrow-right"></i>
-                    </a>
-                    <a href="documents.html#categories" class="btn btn-outline">
-                        Voir les catégories
-                    </a>
-                </div>
-            </div>
-            
-            <div class="hero-visual">
-                <div class="docs-showcase">
-                    <!-- CV Document -->
-                    <div class="doc-float doc-float-1">
-                        <div class="doc-cv-preview">
-                            <div class="doc-cv-header">
-                                <div class="doc-cv-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="doc-cv-info">
-                                    <h3>CV</h3>
-                                    <p>Professionnel</p>
-                                </div>
-                            </div>
-                            <div class="doc-cv-section">
-                                <div class="doc-cv-section-title">Expérience</div>
-                                <div class="doc-cv-line medium"></div>
-                                <div class="doc-cv-line short"></div>
-                            </div>
-                            <div class="doc-cv-section">
-                                <div class="doc-cv-section-title">Formation</div>
-                                <div class="doc-cv-line medium"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Facture Document -->
-                    <div class="doc-float doc-float-2">
-                        <div class="doc-facture-preview">
-                            <div class="doc-facture-header">
-                                <div class="doc-facture-company">ENTREPRISE</div>
-                                <div class="doc-facture-title">FACTURE</div>
-                            </div>
-                            <table class="doc-facture-table">
-                                <tr>
-                                    <th>Article</th>
-                                    <th>Qté</th>
-                                    <th>Total</th>
-                                </tr>
-                                <tr>
-                                    <td>Prestation 1</td>
-                                    <td>1</td>
-                                    <td>500K</td>
-                                </tr>
-                                <tr>
-                                    <td>Prestation 2</td>
-                                    <td>2</td>
-                                    <td>300K</td>
-                                </tr>
-                            </table>
-                            <div class="doc-facture-total">Total: 1 534 000 FCFA</div>
-                        </div>
-                    </div>
-
-                    <!-- Attestation Document -->
-                    <div class="doc-float doc-float-3">
-                        <div class="doc-attestation-preview">
-                            <div class="doc-attestation-header">
-                                ENTREPRISE XYZ<br>
-                                Brazzaville, Congo
-                            </div>
-                            <div class="doc-attestation-title">Attestation de Travail</div>
-                            <div class="doc-attestation-seal">
-                                <i class="fas fa-stamp"></i>
-                            </div>
-                            <div class="doc-attestation-line medium"></div>
-                            <div class="doc-attestation-line short"></div>
-                            <div class="doc-attestation-line medium"></div>
-                        </div>
-                    </div>
-
-                    <!-- Lettre Document -->
-                    <div class="doc-float doc-float-4">
-                        <div class="doc-lettre-preview">
-                            <div class="doc-lettre-header">
-                                <div>Meurphy TALAMIO</div>
-                                <div>Destinataire</div>
-                            </div>
-                            <div class="doc-lettre-date">Brazzaville, le 04/10/2026</div>
-                            <div class="doc-lettre-objet">Objet : Lettre de motivation</div>
-                            <div class="doc-lettre-line long"></div>
-                            <div class="doc-lettre-line medium"></div>
-                            <div class="doc-lettre-line short"></div>
-                            <div class="doc-lettre-line medium"></div>
-                            <div class="doc-lettre-signature">Cordialement</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Bar -->
-    <section class="features-bar">
-        <div class="features-grid">
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <div class="feature-text">
-                    <h3>Documents professionnels</h3>
-                    <p>Des modèles fiables et de qualité</p>
-                </div>
-            </div>
-            
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-bolt"></i>
-                </div>
-                <div class="feature-text">
-                    <h3>Téléchargement rapide</h3>
-                    <p>Accédez à vos documents en quelques secondes</p>
-                </div>
-            </div>
-            
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-edit"></i>
-                </div>
-                <div class="feature-text">
-                    <h3>Modèles faciles à personnaliser</h3>
-                    <p>Adaptez le contenu à vos besoins</p>
-                </div>
-            </div>
-            
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <div class="feature-text">
-                    <h3>Paiement sécurisé</h3>
-                    <p>Vos transactions sont protégées</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Popular Documents - MODIFICATION 2 : Miniatures réalistes -->
-    <section class="popular" id="documents">
-        <div class="section-header">
-            <h2>Nos documents les plus populaires</h2>
-            <a href="documents.html" class="view-all">Voir tous les documents <i class="fas fa-arrow-right"></i></a>
+    <header class="app-header">
+        <a href="/" class="logo">
+            <span class="logo-taki">Taki</span><span class="logo-doc">Doc</span>
+        </a>
+        
+        <div class="search-bar">
+            <i class="fas fa-search" style="color: var(--text-muted); font-size: 0.9rem;"></i>
+            <input type="text" id="searchInput" placeholder="Rechercher un CV, un contrat, une facture...">
         </div>
         
-        <div class="docs-grid" id="popular-docs">
-            <!-- Les documents seront injectés ici par JavaScript -->
-        </div>
-    </section>
-
-    <!-- Categories -->
-    <section class="categories" id="categories">
-        <div class="section-header">
-            <h2>Nos catégories</h2>
+        <div class="header-actions">
+            <button class="icon-btn" id="notifBtn" aria-label="Notifications">
+                <i class="far fa-bell"></i>
+                <span class="badge" id="notifCount">3</span>
+            </button>
+            <a href="auth.html?action=signup" class="btn-auth btn-signup">
+                <i class="fas fa-user-plus"></i>
+                <span>S'inscrire</span>
+            </a>
+            <a href="auth.html?action=login" class="btn-auth btn-login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Connexion</span>
+            </a>
         </div>
         
-        <div class="categories-grid">
-            <a href="documents.html?category=cv" class="category-item">
-                <div class="category-icon">
-                    <i class="fas fa-briefcase"></i>
-                </div>
-                <h3>CV & Emploi</h3>
-                <p>25 documents</p>
-            </a>
-            
-            <a href="documents.html?category=lettre" class="category-item">
-                <div class="category-icon">
-                    <i class="fas fa-envelope"></i>
-                </div>
-                <h3>Lettres</h3>
-                <p>18 documents</p>
-            </a>
-            
-            <a href="documents.html?category=attestation" class="category-item">
-                <div class="category-icon">
-                    <i class="fas fa-certificate"></i>
-                </div>
-                <h3>Attestations</h3>
-                <p>22 documents</p>
-            </a>
-            
-            <a href="documents.html?category=contrat" class="category-item">
-                <div class="category-icon">
-                    <i class="fas fa-file-contract"></i>
-                </div>
-                <h3>Contrats</h3>
-                <p>28 documents</p>
-            </a>
-            
-            <a href="documents.html?category=commercial" class="category-item">
-                <div class="category-icon">
-                    <i class="fas fa-file-invoice"></i>
-                </div>
-                <h3>Commercial</h3>
-                <p>20 documents</p>
-            </a>
-            
-            <a href="documents.html?category=administratif" class="category-item">
-                <div class="category-icon">
-                    <i class="fas fa-building"></i>
-                </div>
-                <h3>Administratif</h3>
-                <p>30 documents</p>
-            </a>
+        <!-- Notifications -->
+        <div class="dropdown-menu" id="notifDropdown">
+            <div class="dropdown-header">
+                <h3>Notifications</h3>
+                <button class="mark-read" onclick="markAllRead(event)">Tout marquer comme lu</button>
+            </div>
+            <div class="notif-item unread" onclick="goToDoc('cv_executif_moderne')">
+                <div class="notif-title">Nouveau modèle disponible</div>
+                <div class="notif-text">CV Exécutif Moderne - Design premium pour cadres</div>
+                <div class="notif-time">Il y a 2 heures</div>
+            </div>
+            <div class="notif-item unread" onclick="showPromo(event)">
+                <div class="notif-title">Promotion spéciale</div>
+                <div class="notif-text">-20% sur tous les contrats avec le code PROMO20</div>
+                <div class="notif-time">Il y a 5 heures</div>
+            </div>
+            <div class="notif-item">
+                <div class="notif-title">Mise à jour</div>
+                <div class="notif-text">3 nouveaux modèles administratifs ajoutés</div>
+                <div class="notif-time">Hier</div>
+            </div>
         </div>
-    </section>
+    </header>
 
-    <!-- How it Works -->
-    <section class="how-it-works" id="how-it-works">
-        <div class="section-header">
-            <h2>Comment ça marche ?</h2>
-        </div>
-        
-        <div class="steps">
-            <div class="step">
-                <div class="step-number">1</div>
-                <div class="step-content">
-                    <h3>Choisissez votre document</h3>
-                    <p>Parcourez notre catalogue et sélectionnez le document qui vous convient.</p>
-                </div>
-            </div>
-            
-            <i class="fas fa-arrow-right step-arrow step-arrow-1"></i>
-            
-            <div class="step">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                    <h3>Personnalisez vos informations</h3>
-                    <p>Modifiez les champs selon vos besoins et téléchargez votre document.</p>
-                </div>
-            </div>
-            
-            <i class="fas fa-arrow-right step-arrow step-arrow-2"></i>
-            
-            <div class="step">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                    <h3>Téléchargez votre document</h3>
-                    <p>Recevez votre fichier immédiatement et utilisez-le en toute simplicité.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- 59 Catégories -->
+    <div class="categories-wrapper">
+        <nav class="categories-nav" id="categoriesNav">
+            <button class="cat-pill active" data-cat="all">Tous</button>
+            <button class="cat-pill" data-cat="cv">CV</button>
+            <button class="cat-pill" data-cat="lettre">Lettres</button>
+            <button class="cat-pill" data-cat="contrat">Contrats</button>
+            <button class="cat-pill" data-cat="commercial">Commercial</button>
+            <button class="cat-pill" data-cat="attestation">Attestations</button>
+            <button class="cat-pill" data-cat="administratif">Administratif</button>
+            <button class="cat-pill" data-cat="facture">Factures</button>
+            <button class="cat-pill" data-cat="devis">Devis</button>
+            <button class="cat-pill" data-cat="rapport">Rapports</button>
+            <button class="cat-pill" data-cat="procuration">Procurations</button>
+            <button class="cat-pill" data-cat="declaration">Déclarations</button>
+            <button class="cat-pill" data-cat="certificat">Certificats</button>
+            <button class="cat-pill" data-cat="recu">Reçus</button>
+            <button class="cat-pill" data-cat="bon">Bons</button>
+            <button class="cat-pill" data-cat="invitation">Invitations</button>
+            <button class="cat-pill" data-cat="carte">Cartes de visite</button>
+            <button class="cat-pill" data-cat="flyer">Flyers</button>
+            <button class="cat-pill" data-cat="affiche">Affiches</button>
+            <button class="cat-pill" data-cat="brochure">Brochures</button>
+            <button class="cat-pill" data-cat="memo">Mémentos</button>
+            <button class="cat-pill" data-cat="compte-rendu">Comptes-rendus</button>
+            <button class="cat-pill" data-cat="ordre-jour">Ordres du jour</button>
+            <button class="cat-pill" data-cat="pv">Procès-verbaux</button>
+            <button class="cat-pill" data-cat="note">Notes de service</button>
+            <button class="cat-pill" data-cat="circulaire">Circulaires</button>
+            <button class="cat-pill" data-cat="communiqué">Communiqués</button>
+            <button class="cat-pill" data-cat="presse">Communiqués de presse</button>
+            <button class="cat-pill" data-cat="offre-emploi">Offres d'emploi</button>
+            <button class="cat-pill" data-cat="demande-emploi">Demandes d'emploi</button>
+            <button class="cat-pill" data-cat="stage">Demandes de stage</button>
+            <button class="cat-pill" data-cat="conge">Demandes de congé</button>
+            <button class="cat-pill" data-cat="autorisation">Autorisations</button>
+            <button class="cat-pill" data-cat="permission">Permissions</button>
+            <button class="cat-pill" data-cat="requete">Requêtes</button>
+            <button class="cat-pill" data-cat="petition">Pétitions</button>
+            <button class="cat-pill" data-cat="recours">Recours</button>
+            <button class="cat-pill" data-cat="plainte">Plaintes</button>
+            <button class="cat-pill" data-cat="main-courante">Mains courantes</button>
+            <button class="cat-pill" data-cat="constat">Constats</button>
+            <button class="cat-pill" data-cat="expertise">Expertises</button>
+            <button class="cat-pill" data-cat="evaluation">Évaluations</button>
+            <button class="cat-pill" data-cat="audit">Audits</button>
+            <button class="cat-pill" data-cat="bilan">Bilans</button>
+            <button class="cat-pill" data-cat="budget">Budgets</button>
+            <button class="cat-pill" data-cat="prevision">Prévisions</button>
+            <button class="cat-pill" data-cat="strategie">Stratégies</button>
+            <button class="cat-pill" data-cat="plan">Plans d'action</button>
+            <button class="cat-pill" data-cat="charte">Chartes</button>
+            <button class="cat-pill" data-cat="reglement">Règlements</button>
+            <button class="cat-pill" data-cat="politique">Politiques internes</button>
+            <button class="cat-pill" data-cat="procedure">Procédures</button>
+            <button class="cat-pill" data-cat="manuel">Manuels</button>
+            <button class="cat-pill" data-cat="guide">Guides</button>
+            <button class="cat-pill" data-cat="formation">Documents de formation</button>
+            <button class="cat-pill" data-cat="presentation">Présentations</button>
+            <button class="cat-pill" data-cat="diaporama">Diaporamas</button>
+            <button class="cat-pill" data-cat="etude">Études de cas</button>
+            <button class="cat-pill" data-cat="memoire">Mémoires</button>
+        </nav>
+    </div>
 
-    <!-- CTA Banner -->
-    <section class="cta-banner">
-        <div class="cta-container">
-            <div class="cta-content">
-                <h2>Gagnez du temps sur vos démarches professionnelles</h2>
-                <p>TakiDoc, votre allié pour des documents fiables, rapides et accessibles.</p>
-            </div>
-            <a href="documents.html" class="btn btn-primary">Explorer TakiDoc <i class="fas fa-arrow-right"></i></a>
-        </div>
-    </section>
+    <!-- Main Feed -->
+    <main class="feed-container">
+        <div class="masonry-grid" id="masonryGrid"></div>
+    </main>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="app-footer">
         <div class="footer-container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <a href="index.html" class="logo">Taki<span>Doc</span></a>
-                    <p>Votre plateforme de documents professionnels au Congo. Rapide, simple et sécurisé.</p>
-                    <div class="footer-social">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                
-                <div class="footer-col">
-                    <h4>Liens utiles</h4>
-                    <ul>
-                        <li><a href="index.html">Accueil</a></li>
-                        <li><a href="documents.html">Documents</a></li>
-                        <li><a href="documents.html#categories">Catégories</a></li>
-                        <li><a href="#how-it-works">Comment ça marche ?</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-col">
-                    <h4>Catégories</h4>
-                    <ul>
-                        <li><a href="documents.html?category=cv">CV & Emploi</a></li>
-                        <li><a href="documents.html?category=commercial">Facturation</a></li>
-                        <li><a href="documents.html?category=attestation">Attestations</a></li>
-                        <li><a href="documents.html?category=lettre">Lettres</a></li>
-                        <li><a href="documents.html?category=contrat">Contrats</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-col">
-                    <h4>À propos</h4>
-                    <ul>
-                        <li><a href="#">Notre mission</a></li>
-                        <li><a href="#">Pourquoi TakiDoc ?</a></li>
-                        <li><a href="#">Nous contacter</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-col footer-contact">
-                    <h4>Contact</h4>
-                    <p><i class="fas fa-envelope"></i> contact@takidoc.com</p>
-                    <p><i class="fas fa-phone"></i> +242 06 12 34 56 78</p>
-                    <p><i class="fas fa-map-marker-alt"></i> Brazzaville, Congo</p>
+            <div class="footer-brand">
+                <a href="/" class="logo">
+                    <span class="logo-taki">Taki</span><span class="logo-doc">Doc</span>
+                </a>
+                <p>La plateforme de référence au Congo pour découvrir, personnaliser et télécharger des documents professionnels en quelques clics. Simple, rapide et sécurisé.</p>
+                <div class="footer-team">
+                    <i class="fas fa-code"></i> Développé par L'équipe Meurphy
                 </div>
             </div>
-            
-            <div class="footer-bottom">
-                <p>&copy; 2026 TakiDoc. Tous droits réservés.</p>
-                <div class="footer-links">
-                    <a href="#">Conditions d'utilisation</a>
-                    <a href="#">Politique de confidentialité</a>
+            <div class="footer-col">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="/">Accueil</a></li>
+                    <li><a href="auth.html">Connexion</a></li>
+                    <li><a href="profile.html#favorites">Favoris</a></li>
+                    <li><a href="profile.html#orders">Commandes</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Légal</h4>
+                <ul>
+                    <li><a href="conditions.html">Conditions</a></li>
+                    <li><a href="confidentialite.html">Confidentialité</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <div class="footer-contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>contact.takidoc@gmail.com</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>06 518 69 67</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Brazzaville, Congo</span>
                 </div>
             </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 TakiDoc. Tous droits réservés. Propriétaire : Meurphy TALAMIO.</p>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/js/header.js"></script>
+    <!-- Bottom Navigation Mobile - Style Pinterest -->
+    <!-- Bottom Navigation Mobile - LOGIQUE MÉTIER -->
+<nav class="bottom-nav">
+    <a href="/" class="nav-item active" id="nav-accueil">
+        <i class="fas fa-home"></i>
+        <span>Accueil</span>
+    </a>
+    <a href="#search" class="nav-item" id="nav-search">
+        <i class="fas fa-search"></i>
+        <span>Rechercher</span>
+    </a>
+    <a href="profile.html#favorites" class="nav-item" id="nav-favorites">
+        <i class="fas fa-heart"></i>
+        <span>Favoris</span>
+    </a>
+    <a href="profile.html" class="nav-item" id="nav-profile">
+        <i class="fas fa-user"></i>
+        <span>Profil</span>
+    </a>
+</nav>
+
     <script type="module">
         import { templatesRegistry } from './js/templates-registry.js';
-        
-        // Afficher les documents populaires (6 premiers) avec miniatures réalistes
-        const popularDocs = templatesRegistry.slice(0, 6);
-        const popularDocsContainer = document.getElementById('popular-docs');
-        
-        popularDocsContainer.innerHTML = popularDocs.map(doc => {
-            const thumbnailHtml = generateRealisticThumbnail(doc);
+
+        const grid = document.getElementById('masonryGrid');
+        const searchInput = document.getElementById('searchInput');
+        const catPills = document.querySelectorAll('.cat-pill');
+        const notifBtn = document.getElementById('notifBtn');
+        const notifDropdown = document.getElementById('notifDropdown');
+
+        // Icônes par catégorie
+        const categoryIcons = {
+            'cv': 'fa-user-tie',
+            'lettre': 'fa-envelope-open-text',
+            'contrat': 'fa-file-signature',
+            'commercial': 'fa-file-invoice-dollar',
+            'attestation': 'fa-certificate',
+            'administratif': 'fa-building'
+        };
+
+        // Noms de catégories en français
+        const categoryNames = {
+            'cv': 'CV',
+            'lettre': 'Lettre',
+            'contrat': 'Contrat',
+            'commercial': 'Commercial',
+            'attestation': 'Attestation',
+            'administratif': 'Administratif'
+        };
+
+        // Notifications
+        notifBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notifDropdown.classList.toggle('active');
+        });
+
+        document.addEventListener('click', () => {
+            notifDropdown.classList.remove('active');
+        });
+
+        // ============================================
+        // GÉNÉRATEUR DE MINIATURES RÉALISTES
+        // Chaque type de document a son propre rendu
+        // ============================================
+        function generateMiniature(template) {
+            const name = template.name.toLowerCase();
             
-            return `
-                <div class="doc-item" onclick="window.location.href='editor.html?id=${doc.id}'">
-                    <div class="doc-thumbnail">
-                        ${thumbnailHtml}
-                    </div>
-                    <h3>${doc.name}</h3>
-                    <p>${doc.description}</p>
-                    <div class="doc-price">${doc.price.toLocaleString()} FCFA</div>
-                    <button class="btn-doc">Voir le document</button>
-                </div>
-            `;
-        }).join('');
-        
-        function generateRealisticThumbnail(doc) {
-            const name = doc.name.toLowerCase();
-            
-            // CV
-            if (name.includes('cv')) {
+            // CV Exécutif Moderne ou CV Créatif (2 colonnes)
+            if (name.includes('exécutif') || name.includes('créatif') || name.includes('ingenieur') || name.includes('tech')) {
                 return `
-                    <div class="doc-thumbnail-inner" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white;">
-                        <div class="doc-thumb-header">
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <div style="width: 24px; height: 24px; background: rgba(255,255,255,0.2); border-radius: 50%;"></div>
-                                <div style="font-size: 0.6rem; font-weight: 700;">CV</div>
-                            </div>
+                    <div class="mini-doc mini-cv-exec">
+                        <div class="sidebar">
+                            <div class="photo"></div>
+                            <div class="section-title">Contact</div>
+                            <div class="item"> email@exemple.com</div>
+                            <div class="item">☎ +242 06 00 00 00</div>
+                            <div class="item"> Brazzaville</div>
+                            <div class="section-title">Compétences</div>
+                            <div class="item">Gestion de projet</div>
+                            <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+                            <div class="item">Leadership</div>
+                            <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+                            <div class="item">Communication</div>
+                            <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+                            <div class="section-title">Langues</div>
+                            <div class="item">Français - Courant</div>
+                            <div class="item">Anglais - Pro</div>
                         </div>
-                        <div class="doc-thumb-line medium" style="background: rgba(255,255,255,0.3);"></div>
-                        <div class="doc-thumb-line short" style="background: rgba(255,255,255,0.3);"></div>
-                        <div style="margin-top: 8px;">
-                            <div style="font-size: 0.5rem; font-weight: 700; margin-bottom: 4px; opacity: 0.9;">EXPÉRIENCE</div>
-                            <div class="doc-thumb-line long" style="background: rgba(255,255,255,0.2);"></div>
-                            <div class="doc-thumb-line medium" style="background: rgba(255,255,255,0.2);"></div>
+                        <div class="main">
+                            <div class="name">PRÉNOM NOM</div>
+                            <div class="title">Poste visé / Titre professionnel</div>
+                            <div class="section-title">Profil</div>
+                            <div class="text">Professionnel expérimenté avec plus de 10 ans d'expérience. Passionné par l'innovation et la recherche de l'excellence.</div>
+                            <div class="section-title">Expériences</div>
+                            <div class="exp-item">
+                                <div class="exp-title">Directeur Général</div>
+                                <div class="exp-company">Entreprise XYZ - 2020-Présent</div>
+                                <div class="text">Direction stratégique. Management d'équipe. +30% CA.</div>
+                            </div>
+                            <div class="exp-item">
+                                <div class="exp-title">Chef de Projet</div>
+                                <div class="exp-company">Société ABC - 2015-2020</div>
+                                <div class="text">Gestion de projets majeurs. 15 projets livrés.</div>
+                            </div>
+                            <div class="section-title">Formation</div>
+                            <div class="text"><strong>Master Management</strong><br>Université Marien Ngouabi - 2013-2015</div>
                         </div>
                     </div>
                 `;
             }
             
-            // Facture/Devis
+            // CV Classique ou Étudiant
+            if (name.includes('classique') || name.includes('étudiant') || name.includes('etudiant')) {
+                return `
+                    <div class="mini-doc mini-lettre" style="min-height: 280px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:8px; border-bottom:2px solid #0F172A; margin-bottom:8px;">
+                            <div>
+                                <div style="font-size:0.9rem; font-weight:700; color:#0F172A;">Meurphy TALAMIO</div>
+                                <div style="font-size:0.5rem; color:#64748b; font-style:italic;">Directeur Général</div>
+                                <div style="font-size:0.4rem; color:#475569; margin-top:4px;">
+                                    ✉ email@exemple.com<br>
+                                    ☎ +242 06 518 69 67<br>
+                                    ⌖ Brazzaville, Congo
+                                </div>
+                            </div>
+                            <div style="width:35px; height:45px; background:#f1f5f9; border:1px solid #0F172A; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; color:#0F172A;">MT</div>
+                        </div>
+                        <div style="font-size:0.55rem; font-weight:700; color:#0F172A; text-transform:uppercase; margin:6px 0 4px; border-bottom:1px solid #0F172A; padding-bottom:3px;">Profil</div>
+                        <div style="font-size:0.45rem; line-height:1.5; color:#475569; margin-bottom:6px;">Professionnel expérimenté avec plus de 10 ans d'expérience dans mon domaine.</div>
+                        <div style="font-size:0.55rem; font-weight:700; color:#0F172A; text-transform:uppercase; margin:6px 0 4px; border-bottom:1px solid #0F172A; padding-bottom:3px;">Expériences</div>
+                        <div style="margin-bottom:6px;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.45rem;">
+                                <strong>Directeur Général</strong>
+                                <span style="color:#64748b; font-style:italic;">2020-Présent</span>
+                            </div>
+                            <div style="font-size:0.45rem; color:#0F172A; font-weight:600;">Entreprise XYZ</div>
+                            <div style="font-size:0.4rem; color:#475569;">Direction stratégique. Management.</div>
+                        </div>
+                        <div style="font-size:0.55rem; font-weight:700; color:#0F172A; text-transform:uppercase; margin:6px 0 4px; border-bottom:1px solid #0F172A; padding-bottom:3px;">Formation</div>
+                        <div style="font-size:0.45rem;">
+                            <strong>Master Management</strong><br>
+                            <span style="color:#0F172A; font-weight:600;">Université Marien Ngouabi</span><br>
+                            <span style="color:#64748b;">2013-2015</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Lettre de motivation ou Recommandation
+            if (name.includes('lettre') || name.includes('motivation') || name.includes('recommandation')) {
+                return `
+                    <div class="mini-doc mini-lettre">
+                        <div class="header">
+                            <div>
+                                <strong>Prénom NOM</strong><br>
+                                Adresse complète<br>
+                                +242 06 00 00 00<br>
+                                email@exemple.com
+                            </div>
+                            <div style="text-align:right;">
+                                <strong>Destinataire</strong><br>
+                                Fonction<br>
+                                Entreprise<br>
+                                Adresse
+                            </div>
+                        </div>
+                        <div class="date">Brazzaville, le 09 octobre 2026</div>
+                        <div class="objet">Objet : Candidature au poste de...</div>
+                        <div class="corps">
+                            <p>Madame, Monsieur,</p>
+                            <p>Par la présente, je me permets de vous adresser ma candidature pour le poste mentionné ci-dessus. Fort d'une expérience solide dans mon domaine, je suis convaincu de pouvoir apporter une contribution significative à votre entreprise.</p>
+                            <p>Au cours de mon parcours professionnel, j'ai développé des compétences clés qui correspondent parfaitement aux exigences de ce poste. Mon sens de l'initiative et ma capacité d'adaptation sont des atouts majeurs.</p>
+                            <p>Je serais honoré de pouvoir vous exposer plus en détail mes motivations lors d'un entretien. Dans l'attente de votre réponse, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.</p>
+                        </div>
+                        <div class="signature">Cordialement,<br>Prénom NOM</div>
+                    </div>
+                `;
+            }
+            
+            // Contrat (CDI, CDD, Stage)
+            if (name.includes('contrat') || name.includes('convention')) {
+                return `
+                    <div class="mini-doc mini-contrat">
+                        <div class="header">
+                            <div class="entreprise">ENTREPRISE XYZ</div>
+                            <div style="font-size:0.35rem; color:#64748b;">123 Avenue de l'Indépendance<br>Tél: +242 06 00 00 00</div>
+                        </div>
+                        <div class="titre">Contrat de Travail à Durée Indéterminée</div>
+                        <div class="motif"><strong>Motif :</strong> Accroissement temporaire d'activité</div>
+                        <div class="duree-box">Du 01/01/2027 au 30/06/2027 (6 mois)</div>
+                        <div style="text-align:right; font-size:0.4rem; font-style:italic; margin-bottom:6px;">Fait à Brazzaville, le 09/10/2026</div>
+                        <div class="partie">
+                            <div class="partie-title">ENTRE LES SOUSSIGNÉS</div>
+                            La société ENTREPRISE XYZ, immatriculée sous le n° 123456789, représentée par Monsieur le Directeur Général, ci-après dénommée "l'Employeur".
+                        </div>
+                        <div class="partie">
+                            <div class="partie-title">ET</div>
+                            Monsieur/Madame Meurphy TALAMIO, né(e) le 01/01/1990, titulaire de la CNI n° 123456789, ci-après dénommé "le Salarié".
+                        </div>
+                        <div class="article">
+                            <div class="article-title">Article 1 - Objet du contrat</div>
+                            <div class="article-content">Le présent contrat définit les conditions d'engagement du Salarié par la société dans le cadre d'un CDI.</div>
+                        </div>
+                        <div class="article">
+                            <div class="article-title">Article 2 - Fonctions</div>
+                            <div class="article-content">Le Salarié est engagé en qualité de Directeur Général. Missions : direction stratégique, management.</div>
+                        </div>
+                        <div class="article">
+                            <div class="article-title">Article 3 - Rémunération</div>
+                            <div class="article-content">Rémunération mensuelle brute de 1 500 000 FCFA.</div>
+                        </div>
+                        <div class="signatures">
+                            <div>
+                                <div style="margin-bottom:12px; font-size:0.35rem; color:#64748b;">L'Employeur</div>
+                                <div class="sig-line">Directeur Général</div>
+                            </div>
+                            <div>
+                                <div style="margin-bottom:12px; font-size:0.35rem; color:#64748b;">Le Salarié</div>
+                                <div class="sig-line">Meurphy TALAMIO</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Attestation (Travail, Salaire, Résidence) ou Certificat Médical
+            if (name.includes('attestation') || name.includes('certificat')) {
+                return `
+                    <div class="mini-doc mini-attestation">
+                        <div class="header">
+                            <div class="republique">République du Congo</div>
+                            <div class="devise">Unité - Travail - Progrès</div>
+                            <div style="font-size:0.55rem; font-weight:700; margin-top:4px;">Mairie de Brazzaville</div>
+                        </div>
+                        <div class="titre">Attestation de Résidence</div>
+                        <div class="corps">
+                            <p>Je soussigné(e), <span class="info">Monsieur le Maire</span>, agissant en qualité de Maire de la commune de Brazzaville,</p>
+                            <p>Certifie par la présente que <span class="info">Meurphy TALAMIO</span>, né(e) le 01/01/1990 à Brazzaville, titulaire de la CNI n° 123456789,</p>
+                            <p>Demeure effectivement au <span class="info">123 Quartier Poto-Poto, Brazzaville</span> depuis le 01/01/2020, soit depuis 6 ans.</p>
+                        </div>
+                        <div class="box">
+                            <div class="box-title">Informations complémentaires</div>
+                            <div><strong>Quartier :</strong> Poto-Poto</div>
+                            <div><strong>Arrondissement :</strong> 3ème</div>
+                            <div><strong>Téléphone :</strong> +242 06 518 69 67</div>
+                        </div>
+                        <div class="corps">
+                            <p>Cette attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit.</p>
+                        </div>
+                        <div style="text-align:right; font-size:0.45rem; font-style:italic; margin:8px 0;">Fait à Brazzaville, le 09 octobre 2026</div>
+                        <div class="signature">
+                            <div style="color:#64748b; margin-bottom:20px; font-size:0.4rem;">Le Maire</div>
+                            <div class="sig-name">Monsieur le Maire</div>
+                            <div style="font-size:0.4rem; color:#64748b; margin-top:3px;">Maire de la commune</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Commercial (Facture, Devis)
             if (name.includes('facture') || name.includes('devis')) {
+                const isFacture = name.includes('facture');
                 return `
-                    <div class="doc-thumbnail-inner">
-                        <div class="doc-thumb-header">
-                            <div style="font-size: 0.6rem; font-weight: 700;">ENTREPRISE</div>
-                            <div class="doc-thumb-badge">FACTURE</div>
-                        </div>
-                        <div style="margin-top: 8px;">
-                            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 4px; font-size: 0.5rem; margin-bottom: 4px;">
-                                <div style="font-weight: 600;">Article</div>
-                                <div style="text-align: center;">Qté</div>
-                                <div style="text-align: right;">Total</div>
+                    <div class="mini-doc mini-commercial">
+                        <div class="header">
+                            <div>
+                                <div class="entreprise-nom">ENTREPRISE XYZ</div>
+                                <div class="entreprise-info">
+                                    123 Avenue de l'Indépendance<br>
+                                    Tél: +242 06 00 00 00<br>
+                                    Email: contact@entreprise.com
+                                </div>
                             </div>
-                            <div class="doc-thumb-line long" style="background: #f1f5f9;"></div>
-                            <div class="doc-thumb-line long" style="background: #f1f5f9;"></div>
-                        </div>
-                        <div style="margin-top: auto; background: #f97316; color: white; padding: 4px; border-radius: 3px; text-align: right; font-size: 0.55rem; font-weight: 700;">
-                            Total: 1 534 000 FCFA
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Attestation
-            if (name.includes('attestation')) {
-                return `
-                    <div class="doc-thumbnail-inner" style="border: 2px solid #1e293b;">
-                        <div style="text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 6px; margin-bottom: 8px;">
-                            <div style="font-size: 0.55rem; font-weight: 700;">ENTREPRISE XYZ</div>
-                        </div>
-                        <div style="text-align: center; font-size: 0.6rem; font-weight: 700; color: #f97316; margin-bottom: 8px;">ATTESTATION</div>
-                        <div style="width: 24px; height: 24px; border: 2px solid #f97316; border-radius: 50%; margin: 8px auto; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #f97316;">
-                            <i class="fas fa-stamp"></i>
-                        </div>
-                        <div class="doc-thumb-line medium" style="background: #f1f5f9;"></div>
-                        <div class="doc-thumb-line short" style="background: #f1f5f9;"></div>
-                    </div>
-                `;
-            }
-            
-            // Lettre
-            if (name.includes('lettre')) {
-                return `
-                    <div class="doc-thumbnail-inner" style="font-family: Georgia, serif;">
-                        <div class="doc-thumb-header">
-                            <div style="font-size: 0.55rem; font-weight: 700;">Meurphy TALAMIO</div>
-                            <div style="font-size: 0.5rem; color: #64748b;">Destinataire</div>
-                        </div>
-                        <div style="font-size: 0.5rem; color: #f97316; font-weight: 700; border-bottom: 1px solid #f97316; padding-bottom: 3px; margin-bottom: 6px;">Objet : Candidature</div>
-                        <div class="doc-thumb-line long" style="background: #f1f5f9;"></div>
-                        <div class="doc-thumb-line medium" style="background: #f1f5f9;"></div>
-                        <div class="doc-thumb-line short" style="background: #f1f5f9;"></div>
-                    </div>
-                `;
-            }
-            
-            // Contrat
-            if (name.includes('contrat')) {
-                return `
-                    <div class="doc-thumbnail-inner">
-                        <div style="text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 6px; margin-bottom: 8px;">
-                            <div style="font-size: 0.55rem; font-weight: 700; text-transform: uppercase;">Contrat de Travail</div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
-                            <div style="background: #f8fafc; padding: 4px; border-left: 2px solid #1e293b; font-size: 0.5rem;">
-                                <div style="font-weight: 700;">ENTREPRISE</div>
-                            </div>
-                            <div style="background: #f8fafc; padding: 4px; border-left: 2px solid #1e293b; font-size: 0.5rem;">
-                                <div style="font-weight: 700;">SALARIÉ</div>
+                            <div class="client-box">
+                                <div class="client-label">${isFacture ? 'Facturé à' : 'Client'}</div>
+                                <div class="client-nom">Monsieur le Client</div>
+                                <div>Adresse du client</div>
+                                <div>Tél: +242 06 00 00 00</div>
                             </div>
                         </div>
-                        <div style="font-size: 0.5rem; margin-bottom: 4px;"><strong style="color: #f97316;">Article 1</strong> - Objet du contrat</div>
-                        <div class="doc-thumb-line long" style="background: #f1f5f9;"></div>
-                        <div class="doc-thumb-line medium" style="background: #f1f5f9;"></div>
+                        <div class="titre-box">
+                            <div class="titre">${isFacture ? 'FACTURE' : 'DEVIS'}</div>
+                            <div class="numero">N° ${isFacture ? 'FAC-2026-001' : 'DEV-2026-001'}</div>
+                        </div>
+                        <div style="display:flex; gap:8px; margin-bottom:8px; padding:4px 6px; background:#f8fafc; border-radius:4px; font-size:0.4rem;">
+                            <div style="flex:1;">
+                                <div style="color:#64748b; font-size:0.35rem; text-transform:uppercase;">${isFacture ? 'Date émission' : 'Date'}</div>
+                                <div style="font-weight:600;">09/10/2026</div>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="color:#64748b; font-size:0.35rem; text-transform:uppercase;">${isFacture ? 'Échéance' : 'Validité'}</div>
+                                <div style="font-weight:600;">${isFacture ? '09/11/2026' : '30 jours'}</div>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Désignation</th>
+                                    <th style="text-align:center;">Qté</th>
+                                    <th style="text-align:right;">P.U.</th>
+                                    <th style="text-align:right;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Prestation 1</td>
+                                    <td style="text-align:center;">1</td>
+                                    <td style="text-align:right;">500 000</td>
+                                    <td style="text-align:right;">500 000</td>
+                                </tr>
+                                <tr>
+                                    <td>Prestation 2</td>
+                                    <td style="text-align:center;">2</td>
+                                    <td style="text-align:right;">300 000</td>
+                                    <td style="text-align:right;">600 000</td>
+                                </tr>
+                                <tr>
+                                    <td>Prestation 3</td>
+                                    <td style="text-align:center;">1</td>
+                                    <td style="text-align:right;">200 000</td>
+                                    <td style="text-align:right;">200 000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="display:flex; justify-content:flex-end;">
+                            <div style="width:140px;">
+                                <div class="total-row"><span>Total HT</span><span>1 300 000</span></div>
+                                <div class="total-row"><span>TVA (18%)</span><span>234 000</span></div>
+                                <div class="total-final"><span>TOTAL TTC</span><span>1 534 000 FCFA</span></div>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
             
-            // Document générique
+            // Administratif (Rapport, Procuration, Déclaration)
             return `
-                <div class="doc-thumbnail-inner">
-                    <div style="text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 6px; margin-bottom: 8px;">
-                        <div style="font-size: 0.6rem; font-weight: 700; text-transform: uppercase;">${doc.name.substring(0, 20)}</div>
+                <div class="mini-doc mini-admin">
+                    <div class="titre">${template.name}</div>
+                    <div class="corps">
+                        <p>Je soussigné(e), <span class="info">Meurphy TALAMIO</span>, né(e) le 01/01/1990 à Brazzaville, titulaire de la CNI n° 123456789, demeurant au 123 Quartier Poto-Poto, Brazzaville,</p>
                     </div>
-                    <div class="doc-thumb-line long" style="background: #f1f5f9;"></div>
-                    <div class="doc-thumb-line medium" style="background: #f1f5f9;"></div>
-                    <div class="doc-thumb-line short" style="background: #f1f5f9;"></div>
+                    <div class="objet-box">
+                        <div class="objet-title">Objet de la demande</div>
+                        <div style="font-weight:600; color:#0c4a6e;">Déclaration officielle pour démarches administratives</div>
+                    </div>
+                    <div class="corps">
+                        <p>Cette déclaration est établie pour servir et valoir ce que de droit, notamment dans le cadre de mes démarches administratives.</p>
+                    </div>
+                    <div class="mention">
+                        J'ai pris connaissance que cette fausse déclaration m'expose aux sanctions pénales prévues par l'article 441-7 du Code pénal.
+                    </div>
+                    <div style="text-align:right; font-size:0.45rem; font-style:italic; margin:8px 0;">Fait à Brazzaville, le 09 octobre 2026</div>
+                    <div class="signatures">
+                        <div>
+                            <div class="sig-label">Le Mandant</div>
+                            <div class="sig-line">Meurphy TALAMIO</div>
+                        </div>
+                        <div>
+                            <div class="sig-label">Le Mandataire</div>
+                            <div class="sig-line">Jean DUPONT</div>
+                        </div>
+                    </div>
                 </div>
             `;
         }
+
+        // ============================================
+        // RENDU DES PINS (STYLE PINTEREST)
+        // ============================================
+        function renderPins(docs) {
+            grid.innerHTML = '';
+            
+            if (docs.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <h3>Aucun document trouvé</h3>
+                        <p>Essayez une autre recherche ou catégorie</p>
+                    </div>`;
+                return;
+            }
+
+            docs.forEach(template => {
+                const card = document.createElement('div');
+                card.className = 'pin-card';
+                
+                const categoryName = categoryNames[template.category] || template.category;
+                const isSaved = localStorage.getItem('takidoc_favorites')?.includes(template.id);
+                
+                card.innerHTML = `
+                    <div class="document-preview">
+                        <div class="category-badge">${categoryName}</div>
+                        <div class="doc-thumbnail-wrapper">
+                            ${generateMiniature(template)}
+                        </div>
+                        <div class="pin-overlay">
+                            <div class="overlay-top">
+                                <button class="overlay-btn save ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSave('${template.id}', this)" title="Favoris">
+                                    <i class="${isSaved ? 'fas' : 'far'} fa-heart"></i>
+                                </button>
+                                <button class="overlay-btn" onclick="event.stopPropagation(); shareDoc('${template.id}', '${template.name}')" title="Partager">
+                                    <i class="fas fa-share"></i>
+                                </button>
+                            </div>
+                            <div class="overlay-bottom">
+                                <h3 class="overlay-title">${template.name}</h3>
+                                <div class="overlay-price">${template.price.toLocaleString()} FCFA</div>
+                                <button class="btn-customize-overlay" onclick="event.stopPropagation(); window.location.href='editor.html?id=${template.id}'">
+                                    Personnaliser
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    window.location.href = `editor.html?id=${template.id}`;
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Filtrage par catégorie
+        let currentCat = 'all';
+        catPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                catPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                currentCat = pill.dataset.cat;
+                filterAndRender();
+            });
+        });
+
+        searchInput.addEventListener('input', filterAndRender);
+
+        function filterAndRender() {
+            const query = searchInput.value.toLowerCase().trim();
+            const filtered = templatesRegistry.filter(doc => {
+                const matchCat = currentCat === 'all' || doc.category === currentCat;
+                const matchSearch = !query || doc.name.toLowerCase().includes(query) || doc.description.toLowerCase().includes(query);
+                return matchCat && matchSearch;
+            });
+            renderPins(filtered);
+        }
+
+        // Fonctions globales
+        window.toggleSave = function(docId, btn) {
+            const icon = btn.querySelector('i');
+            let favorites = JSON.parse(localStorage.getItem('takidoc_favorites') || '[]');
+            
+            if (btn.classList.contains('saved')) {
+                btn.classList.remove('saved');
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                favorites = favorites.filter(id => id !== docId);
+            } else {
+                btn.classList.add('saved');
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                if (!favorites.includes(docId)) favorites.push(docId);
+                btn.style.transform = 'scale(1.3)';
+                setTimeout(() => btn.style.transform = '', 200);
+            }
+            localStorage.setItem('takidoc_favorites', JSON.stringify(favorites));
+        };
+
+        window.shareDoc = function(id, name) {
+            const url = window.location.origin + '/editor.html?id=' + id;
+            if (navigator.share) {
+                navigator.share({ title: name + ' - TakiDoc', text: 'Découvrez ce document sur TakiDoc !', url }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(url).then(() => alert('Lien copié !'));
+            }
+        };
+
+        window.markAllRead = function(e) {
+            e.stopPropagation();
+            document.querySelectorAll('.notif-item.unread').forEach(item => item.classList.remove('unread'));
+            document.getElementById('notifCount').style.display = 'none';
+        };
+
+        window.goToDoc = function(id) {
+            window.location.href = '/editor.html?id=' + id;
+        };
+
+        window.showPromo = function(e) {
+            e.stopPropagation();
+            alert('🎉 -20% sur tous les contrats avec le code PROMO20');
+        };
+
+        // Initialisation
+        renderPins(templatesRegistry);
+
+        // ============================================
+// LOGIQUE DE LA BOTTOM NAV MOBILE
+// ============================================
+
+// 1. Bouton "Rechercher" : scroll en haut + focus barre de recherche
+document.getElementById('nav-search').addEventListener('click', (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => {
+        document.getElementById('searchInput').focus();
+    }, 300);
+});
+
+// 2. Gestion de l'état "active" selon la page
+function updateActiveNav() {
+    const currentPath = window.location.pathname;
+    const hash = window.location.hash;
+    
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    
+    if (currentPath.endsWith('/') || currentPath.endsWith('index.html')) {
+        if (hash === '#favorites') {
+            document.getElementById('nav-favorites').classList.add('active');
+        } else {
+            document.getElementById('nav-accueil').classList.add('active');
+        }
+    } else if (currentPath.includes('profile.html')) {
+        document.getElementById('nav-profile').classList.add('active');
+    }
+}
+
+updateActiveNav();
+window.addEventListener('hashchange', updateActiveNav);
     </script>
 </body>
 </html>

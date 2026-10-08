@@ -11,1025 +11,195 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- html2canvas pour capturer le document -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- jsPDF pour générer le PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #0F172A;
-            --accent: #D97706;
-            --accent-hover: #B45309;
-            --accent-light: #F59E0B;
-            --bg-light: #F8FAFC;
-            --bg-white: #FFFFFF;
-            --text-dark: #1E293B;
-            --text-medium: #475569;
-            --text-light: #64748B;
-            --border: #E2E8F0;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --radius: 8px;
-            --radius-lg: 12px;
+            --primary: #0F172A; --accent: #D97706; --accent-hover: #B45309; --accent-light: #F59E0B;
+            --bg-light: #F8FAFC; --bg-white: #FFFFFF; --text-dark: #1E293B; --text-medium: #475569;
+            --text-light: #64748B; --border: #E2E8F0; --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 8px; --radius-lg: 12px;
         }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); overflow-x: hidden; touch-action: manipulation; }
         
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-light);
-            color: var(--text-dark);
-            overflow-x: hidden;
-            touch-action: manipulation;
-            -webkit-font-smoothing: antialiased;
-        }
+        /* HEADER ULTRA-RESPONSIVE */
+        .editor-nav { background: linear-gradient(135deg, white 0%, #f8fafc 100%); border-bottom: 2px solid var(--border); padding: 0.75rem 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.08); backdrop-filter: blur(10px); }
+        .editor-nav .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+        .editor-nav .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .editor-nav .logo span { color: var(--accent); }
+        .nav-back { display: flex; align-items: center; gap: 0.5rem; color: var(--text-medium); text-decoration: none; font-weight: 600; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: var(--radius); background: var(--bg-light); border: 1px solid var(--border); transition: all 0.2s; }
+        .nav-back:hover { color: var(--accent); background: white; border-color: var(--accent); }
+        .editor-actions { display: flex; gap: 0.75rem; align-items: center; }
+        .sidebar-toggle { display: none; background: var(--bg-light); border: 2px solid var(--border); width: 42px; height: 42px; border-radius: var(--radius); cursor: pointer; font-size: 1.1rem; color: var(--text-dark); align-items: center; justify-content: center; }
         
-        /* ============================================
-           NAVIGATION ÉDITEUR ULTRA-MODERNE
-           ============================================ */
-        .editor-nav {
-            background: linear-gradient(135deg, white 0%, #f8fafc 100%);
-            border-bottom: 2px solid var(--border);
-            padding: 0.75rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            backdrop-filter: blur(10px);
-        }
+        /* BOUTONS */
+        .btn { padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 600; font-size: 0.9rem; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-family: inherit; }
+        .btn-sm { padding: 0.6rem 1rem; font-size: 0.85rem; }
+        .btn-primary { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%); color: white; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(217, 119, 6, 0.4); }
+        .btn-secondary { background: white; color: var(--primary); border: 2px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-full { width: 100%; padding: 1rem; font-size: 1rem; }
+        .btn-icon { background: white; border: 2px solid var(--border); width: 40px; height: 40px; border-radius: var(--radius); cursor: pointer; font-size: 1.1rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .btn-icon:hover { background: var(--bg-light); border-color: var(--accent); color: var(--accent); transform: scale(1.1); }
+        .btn-icon:active { transform: scale(0.95); }
         
-        .editor-nav .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
+        /* LAYOUT */
+        .editor-layout { display: grid; grid-template-columns: 400px 1fr; min-height: calc(100vh - 70px); background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); }
+        .editor-sidebar { background: linear-gradient(180deg, white 0%, #f8fafc 100%); border-right: 2px solid var(--border); overflow-y: auto; overflow-x: hidden; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; max-height: calc(100vh - 70px); position: sticky; top: 70px; }
+        .sidebar-header { padding-bottom: 1rem; border-bottom: 2px solid var(--border); }
+        .sidebar-header h2 { font-size: 1.25rem; color: var(--primary); margin-bottom: 0.5rem; font-weight: 800; }
+        .category-badge { display: inline-block; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%); color: white; padding: 0.35rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+        .sidebar-section { padding: 1.25rem; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 1rem; }
+        .sidebar-section h3 { font-size: 1rem; color: var(--primary); margin-bottom: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem; }
+        .sidebar-section h3 i { color: var(--accent); }
         
-        .editor-nav .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            white-space: nowrap;
-            transition: transform 0.2s;
-        }
+        .photo-upload-btn { display: flex; align-items: center; justify-content: center; padding: 1.5rem; border: 3px dashed var(--border); border-radius: var(--radius-lg); cursor: pointer; transition: all 0.3s; color: var(--text-light); font-weight: 600; background: var(--bg-light); gap: 0.6rem; }
+        .photo-upload-btn:hover { border-color: var(--accent); color: var(--accent); background: #fff7ed; }
+        .btn-remove { background: #fee2e2; color: #dc2626; border: none; padding: 0.6rem 1rem; border-radius: var(--radius); cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-top: 0.5rem; }
         
-        .editor-nav .logo:hover {
-            transform: scale(1.05);
-        }
+        .color-picker-wrapper { display: flex; flex-direction: column; gap: 1rem; }
+        #color-picker { width: 100%; height: 50px; border: 3px solid var(--border); border-radius: var(--radius); cursor: pointer; padding: 4px; background: white; }
+        .color-presets { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.6rem; }
+        .color-preset { width: 100%; aspect-ratio: 1; border: 3px solid white; border-radius: 50%; cursor: pointer; transition: all 0.3s; box-shadow: var(--shadow-sm); }
+        .color-preset:hover { transform: scale(1.2); box-shadow: var(--shadow-lg); }
         
-        .editor-nav .logo span { 
-            color: var(--accent);
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .form-field { margin-bottom: 1rem; }
+        .form-field label { display: block; font-size: 0.85rem; color: var(--text-medium); margin-bottom: 0.5rem; font-weight: 600; }
+        .form-field input, .form-field textarea { width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: 0.9rem; transition: all 0.2s; background: white; }
+        .form-field input:focus, .form-field textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.1); }
+        .form-field textarea { resize: vertical; min-height: 80px; }
         
-        .nav-back {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-medium);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius);
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-        }
+        .sidebar-footer { margin-top: auto; padding-top: 1.5rem; border-top: 3px solid var(--border); }
+        .price-display { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 1rem; background: white; border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+        .price-label { color: var(--text-light); font-weight: 600; font-size: 0.9rem; }
+        .price-value { font-size: 1.75rem; font-weight: 800; color: var(--accent); }
         
-        .nav-back:hover { 
-            color: var(--accent);
-            background: white;
-            border-color: var(--accent);
-            transform: translateX(-2px);
-        }
+        /* PREVIEW & ZOOM CENTRÉ PARFAIT */
+        .editor-preview { background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); padding: 1.5rem; display: flex; flex-direction: column; align-items: center; min-height: calc(100vh - 70px); position: relative; }
+        .preview-toolbar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; background: white; padding: 0.75rem 1.5rem; border-radius: var(--radius-lg); box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; border: 2px solid var(--border); }
+        #zoom-level { font-weight: 700; min-width: 50px; text-align: center; font-size: 0.9rem; color: var(--primary); }
         
-        .editor-actions {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
-        
-        .sidebar-toggle {
-            display: none;
-            background: linear-gradient(135deg, var(--bg-light) 0%, white 100%);
-            border: 2px solid var(--border);
-            width: 42px;
-            height: 42px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: 1.1rem;
-            color: var(--text-dark);
-            transition: all 0.2s;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .sidebar-toggle:hover {
-            border-color: var(--accent);
-            transform: scale(1.05);
-        }
-        
-        /* ============================================
-           BOUTONS PREMIUM
-           ============================================ */
-        .btn {
-            padding: 0.75rem 1.25rem;
-            border-radius: var(--radius);
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-family: inherit;
-            white-space: nowrap;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-        
-        .btn:hover::before {
-            left: 100%;
-        }
-        
-        .btn-sm {
-            padding: 0.6rem 1rem;
-            font-size: 0.85rem;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(217, 119, 6, 0.4);
-        }
-        
-        .btn-secondary {
-            background: white;
-            color: var(--primary);
-            border: 2px solid var(--border);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .btn-secondary:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            transform: translateY(-1px);
-        }
-        
-        .btn-full {
-            width: 100%;
+        .preview-container { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; /* Centre horizontalement */
+            align-items: flex-start; /* Commence en haut */
+            width: 100%; 
+            overflow: auto; 
             padding: 1rem;
-            font-size: 1rem;
+            -webkit-overflow-scrolling: touch;
         }
         
-        .btn-icon {
-            background: linear-gradient(135deg, white 0%, #f8fafc 100%);
-            border: 2px solid var(--border);
-            width: 38px;
-            height: 38px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .btn-icon:hover {
+        .document-canvas { 
+            width: 210mm; 
+            min-height: 297mm; 
             background: white;
-            border-color: var(--accent);
-            color: var(--accent);
-            transform: scale(1.1);
-            box-shadow: var(--shadow);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            transform-origin: top center; /* LE SECRET DU ZOOM CENTRÉ */
+            transition: transform 0.2s ease-out;
         }
         
-        .btn-icon:active {
-            transform: scale(0.95);
-        }
+        .loading-overlay, .error-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .loading-content, .error-content { text-align: center; max-width: 500px; padding: 3rem; background: white; border-radius: var(--radius-lg); box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
+        .spinner { width: 70px; height: 70px; border: 5px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 2rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* ============================================
-           LAYOUT ÉDITEUR PREMIUM
-           ============================================ */
-        .editor-layout {
-            display: grid;
-            grid-template-columns: 400px 1fr;
-            min-height: calc(100vh - 70px);
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        }
-        
-        /* ============================================
-           SIDEBAR GAUCHE PREMIUM
-           ============================================ */
-        .editor-sidebar {
-            background: linear-gradient(180deg, white 0%, #f8fafc 100%);
-            border-right: 2px solid var(--border);
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            max-height: calc(100vh - 70px);
-            position: sticky;
-            top: 70px;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.05);
-        }
-        
-        .sidebar-header {
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border);
-            background: linear-gradient(135deg, rgba(249, 115, 22, 0.05) 0%, transparent 100%);
-            margin: -1.5rem -1.5rem 0 -1.5rem;
-            padding: 1.5rem 1.5rem 1rem;
-        }
-        
-        .sidebar-header h2 {
-            font-size: 1.25rem;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-            font-weight: 800;
-            line-height: 1.3;
-        }
-        
-        .category-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-            color: white;
-            padding: 0.35rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            box-shadow: 0 2px 10px rgba(217, 119, 6, 0.3);
-        }
-        
-        .sidebar-section {
-            padding-bottom: 1.25rem;
-            border-bottom: 2px solid var(--border);
-            background: white;
-            padding: 1.25rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .sidebar-section:last-of-type {
-            border-bottom: none;
-        }
-        
-        .sidebar-section h3 {
-            font-size: 1rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-        
-        .sidebar-section h3 i {
-            color: var(--accent);
-            font-size: 1.1rem;
-        }
-        
-        /* Upload photo premium */
-        .photo-upload {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        
-        .photo-upload-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            border: 3px dashed var(--border);
-            border-radius: var(--radius-lg);
-            cursor: pointer;
-            transition: all 0.3s;
-            color: var(--text-light);
-            font-weight: 600;
-            background: linear-gradient(135deg, #f8fafc 0%, white 100%);
-            gap: 0.6rem;
-            font-size: 0.95rem;
-        }
-        
-        .photo-upload-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: linear-gradient(135deg, #fff7ed 0%, white 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.2);
-        }
-        
-        .btn-remove {
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-            color: #dc2626;
-            border: none;
-            padding: 0.6rem 1rem;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .btn-remove:hover { 
-            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
-            transform: translateY(-1px);
-        }
-        
-        /* Color picker premium */
-        .color-picker-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        
-        #color-picker {
-            width: 100%;
-            height: 50px;
-            border: 3px solid var(--border);
-            border-radius: var(--radius);
-            cursor: pointer;
-            padding: 4px;
-            background: white;
-            transition: all 0.2s;
-        }
-        
-        #color-picker:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
-        }
-        
-        .color-presets {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 0.6rem;
-        }
-        
-        .color-preset {
-            width: 100%;
-            aspect-ratio: 1;
-            border: 3px solid white;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: var(--shadow-sm);
-            position: relative;
-        }
-        
-        .color-preset::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            transition: all 0.2s;
-        }
-        
-        .color-preset:hover {
-            transform: scale(1.2);
-            box-shadow: var(--shadow-lg);
-            z-index: 10;
-        }
-        
-        .color-preset:hover::after {
-            border-color: var(--accent);
-        }
-        
-        /* Champs de formulaire premium */
-        .form-field {
-            margin-bottom: 1rem;
-        }
-        
-        .form-field label {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--text-medium);
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .form-field input,
-        .form-field textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            font-family: inherit;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            background: white;
-        }
-        
-        .form-field input:focus,
-        .form-field textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.1);
-            transform: translateY(-1px);
-        }
-        
-        .form-field textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        
-        /* Prix et bouton d'achat premium */
-        .sidebar-footer {
-            margin-top: auto;
-            padding-top: 1.5rem;
-            border-top: 3px solid var(--border);
-            background: linear-gradient(135deg, rgba(249, 115, 22, 0.05) 0%, transparent 100%);
-            margin: 1.5rem -1.5rem -1.5rem -1.5rem;
-            padding: 1.5rem;
-        }
-        
-        .price-display {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding: 1rem;
-            background: white;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .price-label {
-            color: var(--text-light);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .price-value {
-            font-size: 1.75rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        /* ============================================
-           PREVIEW DROITE - MINIATURISATION PARFAITE
-           ============================================ */
-        .editor-preview {
-            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-            overflow: hidden;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: calc(100vh - 70px);
-            position: relative;
-        }
-        
-        .preview-toolbar {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, white 0%, #f8fafc 100%);
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius-lg);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border: 2px solid var(--border);
-        }
-        
-        #zoom-level {
-            font-weight: 700;
-            min-width: 50px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--primary);
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .preview-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            overflow: auto;
-            padding-bottom: 2rem;
-        }
-        
-        /* Wrapper pour la miniaturisation */
-        .document-wrapper {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-        
-        .document-canvas {
-            background: white;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-            border-radius: 8px;
-            transform-origin: top center;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid var(--border);
-        }
-        
-        /* ============================================
-           LOADING & ERROR PREMIUM
-           ============================================ */
-        .loading-overlay,
-        .error-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        
-        .loading-content,
-        .error-content {
-            text-align: center;
-            max-width: 500px;
-            padding: 3rem;
-            background: white;
-            border-radius: var(--radius-lg);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-        }
-        
-        .spinner {
-            width: 70px;
-            height: 70px;
-            border: 5px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .error-content h2 {
-            color: var(--primary);
-            margin-bottom: 1rem;
-            font-size: 2rem;
-            font-weight: 800;
-        }
-        
-        .error-content p {
-            color: var(--text-light);
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-        }
-        
-        /* ============================================
-           MODAL PAIEMENT PREMIUM
-           ============================================ */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            backdrop-filter: blur(8px);
-            padding: 1rem;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .modal-content {
-            background: linear-gradient(180deg, white 0%, #f8fafc 100%);
-            padding: 2.5rem;
-            border-radius: var(--radius-lg);
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
-            border: 2px solid var(--border);
-            animation: slideUp 0.3s ease;
-        }
-        
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .modal-close {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: linear-gradient(135deg, var(--bg-light) 0%, white 100%);
-            border: 2px solid var(--border);
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            font-size: 1.1rem;
-            cursor: pointer;
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .modal-close:hover {
-            background: white;
-            border-color: var(--accent);
-            color: var(--accent);
-            transform: rotate(90deg);
-        }
-        
-        .modal-content h2 {
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-            font-size: 1.75rem;
-            font-weight: 800;
-        }
-        
-        .payment-amount {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin: 2rem 0;
-        }
-        
-        .payment-methods {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .payment-option {
-            display: block;
-            cursor: pointer;
-        }
-        
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(8px); padding: 1rem; }
+        .modal-content { background: white; padding: 2.5rem; border-radius: var(--radius-lg); max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 30px 80px rgba(0,0,0,0.3); border: 2px solid var(--border); }
+        .modal-close { position: absolute; top: 1.5rem; right: 1.5rem; background: var(--bg-light); border: 2px solid var(--border); width: 38px; height: 38px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; color: var(--text-light); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .modal-close:hover { background: white; border-color: var(--accent); color: var(--accent); transform: rotate(90deg); }
+        .payment-amount { font-size: 2.5rem; font-weight: 800; color: var(--accent); text-align: center; margin: 2rem 0; }
+        .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+        .payment-option { display: block; cursor: pointer; }
         .payment-option input { display: none; }
+        .payment-badge-mtn, .payment-badge-airtel { display: block; padding: 1.25rem; border: 3px solid var(--border); border-radius: var(--radius); text-align: center; font-weight: 700; transition: all 0.3s; font-size: 0.9rem; background: white; }
+        .payment-badge-mtn { background: linear-gradient(135deg, #ffcc00 0%, #003399 100%); color: #003399; }
+        .payment-badge-airtel { background: linear-gradient(135deg, #ff0000 0%, #990000 100%); color: white; }
+        .payment-option input:checked + .payment-badge-mtn, .payment-option input:checked + .payment-badge-airtel { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.2); transform: scale(1.05); }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.6rem; font-weight: 700; color: var(--primary); font-size: 0.95rem; }
+        .form-group input { width: 100%; padding: 1rem; border: 2px solid var(--border); border-radius: var(--radius); font-size: 1rem; background: white; transition: all 0.2s; font-family: inherit; }
+        .form-group input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.1); }
         
-        .payment-badge-mtn,
-        .payment-badge-airtel {
-            display: block;
-            padding: 1.25rem;
-            border: 3px solid var(--border);
-            border-radius: var(--radius);
-            text-align: center;
-            font-weight: 700;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            background: white;
-        }
-        
-        .payment-badge-mtn {
-            background: linear-gradient(135deg, #ffcc00 0%, #003399 100%);
-            color: #003399;
-        }
-        
-        .payment-badge-airtel {
-            background: linear-gradient(135deg, #ff0000 0%, #990000 100%);
-            color: white;
-        }
-        
-        .payment-option input:checked + .payment-badge-mtn,
-        .payment-option input:checked + .payment-badge-airtel {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.2);
-            transform: scale(1.05);
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.6rem;
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 0.95rem;
-        }
-        
-        .form-group input[type="text"],
-        .form-group input[type="email"],
-        .form-group input[type="tel"] {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 1rem;
-            background: white;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--accent);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.1);
-        }
-        
-        /* ============================================
-           OVERLAY MOBILE
-           ============================================ */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 90;
-            backdrop-filter: blur(4px);
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .sidebar-overlay.active {
-            display: block;
-        }
-        
-        /* ============================================
-           RESPONSIVE TABLETTE
-           ============================================ */
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 90; backdrop-filter: blur(4px); }
+        .sidebar-overlay.active { display: block; }
+
+        /* RESPONSIVE TABLETTE */
         @media (max-width: 1024px) {
-            .editor-layout {
-                grid-template-columns: 350px 1fr;
-            }
-            
-            .editor-sidebar {
-                padding: 1.25rem;
-            }
-            
-            .editor-preview {
-                padding: 1rem;
-            }
+            .editor-layout { grid-template-columns: 350px 1fr; }
+            .editor-sidebar { padding: 1.25rem; }
+            .editor-preview { padding: 1rem; }
         }
         
-        /* ============================================
-           RESPONSIVE MOBILE - MINIATURISATION PARFAITE
-           ============================================ */
+        /* RESPONSIVE MOBILE PARFAIT */
         @media (max-width: 768px) {
-            .editor-nav .nav-container {
-                padding: 0 1rem;
+            .editor-nav .nav-container { padding: 0 0.75rem; gap: 0.5rem; }
+            .editor-nav .logo { font-size: 1.1rem; }
+            .nav-back span { display: none; }
+            .nav-back { padding: 0.5rem; }
+            .sidebar-toggle { display: flex; }
+            .editor-actions .btn span { display: none; }
+            .editor-actions .btn { padding: 0.5rem; }
+            .editor-actions { gap: 0.5rem; }
+            
+            .editor-layout { grid-template-columns: 1fr; }
+            .editor-sidebar { 
+                position: fixed; top: 0; left: -100%; width: 90%; max-width: 380px; height: 100vh; 
+                z-index: 95; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+                border-right: 2px solid var(--border); box-shadow: 10px 0 40px rgba(0,0,0,0.2); padding: 1.25rem; 
+            }
+            .editor-sidebar.open { left: 0; }
+            
+            .editor-preview { padding: 0.5rem; min-height: auto; }
+            .preview-toolbar { 
+                position: sticky; top: 0; z-index: 100; margin-bottom: 0.75rem; 
+                width: 100%; justify-content: center; padding: 0.5rem; gap: 0.5rem; 
             }
             
-            .editor-nav .logo {
-                font-size: 1.3rem;
+            .preview-container { 
+                padding: 0.5rem; 
+                justify-content: center; 
+                align-items: flex-start;
             }
             
-            .nav-back span {
-                display: none;
-            }
-            
-            .sidebar-toggle {
-                display: flex;
-            }
-            
-            .editor-actions .btn span {
-                display: none;
-            }
-            
-            .editor-actions .btn {
-                padding: 0.6rem 0.875rem;
-            }
-            
-            .editor-layout {
-                grid-template-columns: 1fr;
-            }
-            
-            .editor-sidebar {
-                position: fixed;
-                top: 0;
-                left: -100%;
-                width: 90%;
-                max-width: 380px;
-                height: 100vh;
-                max-height: 100vh;
-                z-index: 95;
-                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                border-right: 2px solid var(--border);
-                box-shadow: 10px 0 40px rgba(0,0,0,0.2);
-                padding: 1.25rem;
-            }
-            
-            .editor-sidebar.open {
-                left: 0;
-            }
-            
-            .editor-preview {
-                padding: 0.75rem;
-                min-height: auto;
-            }
-            
-            .preview-toolbar {
-                position: sticky;
-                top: 0;
-                z-index: 100;
-                margin-bottom: 1rem;
-                width: 100%;
-                justify-content: center;
-                padding: 0.75rem 1rem;
-            }
-            
-            /* Container pour la miniaturisation */
-            .preview-container {
-                width: 100%;
-                overflow-x: auto;
-                overflow-y: hidden;
-                display: block !important;
-                padding: 0.5rem 0;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .document-wrapper {
-                width: auto;
-                min-width: 100%;
-                display: inline-block;
-                margin: 0 auto;
-            }
-            
-            /* Le document est scaled mais garde sa taille réelle */
-            .document-canvas {
-                transform-origin: top left !important;
+            .document-canvas { 
+                transform-origin: top center !important; /* Reste centré même sur mobile */
                 box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-                min-width: 210mm;
             }
             
-            #zoom-level {
-                display: inline-block !important;
-                font-size: 0.85rem;
-            }
+            #zoom-level { display: inline-block !important; font-size: 0.8rem; min-width: 40px; }
+            .btn-icon { display: flex !important; width: 38px; height: 38px; font-size: 1rem; }
             
-            .btn-icon {
-                display: flex !important;
-                width: 36px;
-                height: 36px;
-                font-size: 0.9rem;
-            }
-            
-            .payment-methods {
-                grid-template-columns: 1fr;
-            }
-            
-            .modal-content {
-                padding: 1.75rem;
-            }
-            
-            .payment-amount {
-                font-size: 2rem;
-            }
-        }
-        
-        /* ============================================
-           RESPONSIVE TRÈS PETIT ÉCRAN
-           ============================================ */
-        @media (max-width: 480px) {
-            .editor-nav .logo {
-                font-size: 1.2rem;
-            }
-            
-            .editor-sidebar {
-                width: 100%;
-                max-width: 100%;
-            }
-            
-            .sidebar-header h2 {
-                font-size: 1.1rem;
-            }
-            
-            .price-value {
-                font-size: 1.5rem;
-            }
-            
-            .preview-toolbar {
-                padding: 0.625rem 0.875rem;
-            }
-            
-            .btn-icon {
-                width: 34px;
-                height: 34px;
-                font-size: 0.85rem;
-            }
-            
-            #zoom-level {
-                font-size: 0.8rem;
-                min-width: 45px;
-            }
-        }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .editor-interface {
-            animation: fadeIn 0.4s ease;
+            .payment-methods { grid-template-columns: 1fr; }
+            .modal-content { padding: 1.5rem; }
+            .payment-amount { font-size: 1.75rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Navigation éditeur -->
     <nav class="editor-nav">
         <div class="nav-container">
             <div style="display: flex; align-items: center; gap: 1rem;">
-                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu">
-                    <i class="fas fa-sliders-h"></i>
-                </button>
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu"><i class="fas fa-sliders-h"></i></button>
                 <a href="index.html" class="logo">Taki<span>Doc</span></a>
-                <a href="documents.html" class="nav-back">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>Documents</span>
-                </a>
+                <a href="documents.html" class="nav-back"><i class="fas fa-arrow-left"></i> <span>Documents</span></a>
             </div>
             <div class="editor-actions">
-                <button id="btn-download" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-download"></i>
-                    <span>Télécharger</span>
-                </button>
-                <button id="btn-buy" class="btn btn-primary btn-sm">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Acheter</span>
-                </button>
+                <button id="btn-download" class="btn btn-secondary btn-sm"><i class="fas fa-download"></i> <span>Télécharger</span></button>
+                <button id="btn-buy" class="btn btn-primary btn-sm"><i class="fas fa-shopping-cart"></i> <span>Acheter</span></button>
             </div>
         </div>
     </nav>
 
-    <!-- Overlay mobile pour fermer la sidebar -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- Loading State -->
     <div id="editor-loading" class="loading-overlay">
         <div class="loading-content">
             <div class="spinner"></div>
@@ -1037,317 +207,124 @@
         </div>
     </div>
 
-    <!-- Erreur -->
     <div id="editor-error" class="error-overlay" style="display: none;">
         <div class="error-content">
             <h2><i class="fas fa-exclamation-triangle" style="color: var(--accent); margin-right: 0.5rem;"></i> Document introuvable</h2>
             <p>Le document demandé n'existe pas ou n'est plus disponible.</p>
-            <a href="index.html" class="btn btn-primary">
-                <i class="fas fa-home"></i> Retour à l'accueil
-            </a>
+            <a href="index.html" class="btn btn-primary"><i class="fas fa-home"></i> Retour à l'accueil</a>
         </div>
     </div>
 
-    <!-- Interface de l'éditeur -->
     <div id="editor-interface" class="editor-layout" style="display: none;">
-        
-        <!-- PANNEAU GAUCHE : Contrôles de personnalisation -->
         <aside class="editor-sidebar" id="editorSidebar">
             <div class="sidebar-header">
                 <h2 id="doc-title">Personnalisation</h2>
                 <p id="doc-category" class="category-badge">Catégorie</p>
             </div>
-
-            <!-- Section Photo (si applicable) -->
             <div id="photo-section" class="sidebar-section" style="display: none;">
                 <h3><i class="fas fa-camera"></i> Photo de profil</h3>
                 <div class="photo-upload">
                     <input type="file" id="photo-input" accept="image/*" hidden>
-                    <label for="photo-input" class="photo-upload-btn">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <span id="photo-label">Ajouter une photo</span>
-                    </label>
-                    <button id="photo-remove" class="btn-remove" style="display: none;">
-                        <i class="fas fa-times"></i> Retirer
-                    </button>
+                    <label for="photo-input" class="photo-upload-btn"><i class="fas fa-cloud-upload-alt"></i> <span id="photo-label">Ajouter une photo</span></label>
+                    <button id="photo-remove" class="btn-remove" style="display: none;"><i class="fas fa-times"></i> Retirer</button>
                 </div>
             </div>
-
-            <!-- Section Couleur (si applicable) -->
             <div id="color-section" class="sidebar-section" style="display: none;">
                 <h3><i class="fas fa-palette"></i> Couleur principale</h3>
                 <div class="color-picker-wrapper">
                     <input type="color" id="color-picker" value="#0F172A">
                     <div class="color-presets">
-                        <button class="color-preset" data-color="#0F172A" style="background: #0F172A;" title="Bleu nuit"></button>
-                        <button class="color-preset" data-color="#D97706" style="background: #D97706;" title="Orange"></button>
-                        <button class="color-preset" data-color="#059669" style="background: #059669;" title="Vert"></button>
-                        <button class="color-preset" data-color="#DC2626" style="background: #DC2626;" title="Rouge"></button>
-                        <button class="color-preset" data-color="#2563EB" style="background: #2563EB;" title="Bleu"></button>
-                        <button class="color-preset" data-color="#7C3AED" style="background: #7C3AED;" title="Violet"></button>
+                        <button class="color-preset" data-color="#0F172A" style="background: #0F172A;"></button>
+                        <button class="color-preset" data-color="#D97706" style="background: #D97706;"></button>
+                        <button class="color-preset" data-color="#059669" style="background: #059669;"></button>
+                        <button class="color-preset" data-color="#DC2626" style="background: #DC2626;"></button>
+                        <button class="color-preset" data-color="#2563EB" style="background: #2563EB;"></button>
+                        <button class="color-preset" data-color="#7C3AED" style="background: #7C3AED;"></button>
                     </div>
                 </div>
             </div>
-
-            <!-- Section Champs de texte -->
             <div id="fields-section" class="sidebar-section">
                 <h3><i class="fas fa-edit"></i> Vos informations</h3>
-                <div id="fields-container">
-                    <!-- Les champs seront injectés dynamiquement par JS -->
-                </div>
+                <div id="fields-container"></div>
             </div>
-
-            <!-- Prix et achat -->
             <div class="sidebar-footer">
                 <div class="price-display">
                     <span class="price-label">Prix :</span>
                     <span id="doc-price" class="price-value">0 FCFA</span>
                 </div>
-                <button id="btn-buy-sidebar" class="btn btn-primary btn-full">
-                    <i class="fas fa-shopping-cart"></i> Acheter et télécharger
-                </button>
+                <button id="btn-buy-sidebar" class="btn btn-primary btn-full"><i class="fas fa-shopping-cart"></i> Acheter et télécharger</button>
             </div>
         </aside>
 
-        <!-- PANNEAU DROIT : Aperçu du document -->
         <main class="editor-preview">
             <div class="preview-toolbar">
-                <button id="btn-zoom-out" class="btn-icon" title="Zoom arrière (-)">
-                    <i class="fas fa-minus"></i>
-                </button>
+                <button id="btn-zoom-out" class="btn-icon" title="Réduire"><i class="fas fa-minus"></i></button>
                 <span id="zoom-level">100%</span>
-                <button id="btn-zoom-in" class="btn-icon" title="Zoom avant (+)">
-                    <i class="fas fa-plus"></i>
-                </button>
-                <button id="btn-zoom-reset" class="btn-icon" title="Reset zoom" style="margin-left: 0.5rem;">
-                    <i class="fas fa-expand"></i>
-                </button>
+                <button id="btn-zoom-in" class="btn-icon" title="Agrandir"><i class="fas fa-plus"></i></button>
+                <button id="btn-zoom-reset" class="btn-icon" title="Taille normale"><i class="fas fa-expand"></i></button>
             </div>
             <div class="preview-container" id="previewContainer">
-                <div class="document-wrapper" id="documentWrapper">
-                    <div id="document-canvas" class="document-canvas">
-                        <!-- Le document sera injecté ici par JS -->
-                    </div>
-                </div>
+                <div id="document-canvas" class="document-canvas"></div>
             </div>
         </main>
     </div>
 
-    <!-- Modal de paiement -->
     <div id="payment-modal" class="modal" style="display: none;">
         <div class="modal-content">
-            <button class="modal-close" id="modal-close">
-                <i class="fas fa-times"></i>
-            </button>
+            <button class="modal-close" id="modal-close"><i class="fas fa-times"></i></button>
             <h2><i class="fas fa-lock" style="color: var(--accent); margin-right: 0.5rem;"></i> Finaliser votre achat</h2>
             <p id="payment-doc-name" style="color: var(--text-light); margin-bottom: 1rem; font-size: 1.1rem;">Document</p>
             <div class="payment-amount" id="payment-amount">0 FCFA</div>
-            
             <form id="payment-form">
                 <div class="form-group">
                     <label><i class="fas fa-wallet" style="margin-right: 0.5rem; color: var(--accent);"></i>Mode de paiement</label>
                     <div class="payment-methods">
-                        <label class="payment-option">
-                            <input type="radio" name="payment_method" value="MTN_MOMO" checked>
-                            <span class="payment-badge-mtn"><i class="fas fa-mobile-alt"></i> MTN MoMo</span>
-                        </label>
-                        <label class="payment-option">
-                            <input type="radio" name="payment_method" value="AIRTEL_MONEY">
-                            <span class="payment-badge-airtel"><i class="fas fa-mobile-alt"></i> Airtel Money</span>
-                        </label>
+                        <label class="payment-option"><input type="radio" name="payment_method" value="MTN_MOMO" checked><span class="payment-badge-mtn"><i class="fas fa-mobile-alt"></i> MTN MoMo</span></label>
+                        <label class="payment-option"><input type="radio" name="payment_method" value="AIRTEL_MONEY"><span class="payment-badge-airtel"><i class="fas fa-mobile-alt"></i> Airtel Money</span></label>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <label for="pay-phone"><i class="fas fa-phone" style="margin-right: 0.5rem; color: var(--accent);"></i>Numéro de téléphone *</label>
                     <input type="tel" id="pay-phone" placeholder="06 00 00 00" required>
                 </div>
-                
                 <div class="form-group">
                     <label for="pay-email"><i class="fas fa-envelope" style="margin-right: 0.5rem; color: var(--accent);"></i>Email (pour le reçu) *</label>
                     <input type="email" id="pay-email" placeholder="votre@email.com" required>
                 </div>
-                
-                <button type="submit" class="btn btn-primary btn-full" style="margin-top: 1rem;">
-                    <i class="fas fa-lock"></i> Confirmer le paiement
-                </button>
+                <button type="submit" class="btn btn-primary btn-full" style="margin-top: 1rem;"><i class="fas fa-lock"></i> Confirmer le paiement</button>
             </form>
         </div>
     </div>
 
-    <!-- Scripts -->
     <script type="module" src="js/supabase-config.js"></script>
     <script type="module" src="js/templates-registry.js"></script>
     <script type="module" src="js/editor.js"></script>
     
-    <!-- Script pour la responsivité et miniaturisation -->
     <script>
-    // Gestion de la sidebar mobile
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const editorSidebar = document.getElementById('editorSidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    
-    if (sidebarToggle && editorSidebar) {
-        sidebarToggle.addEventListener('click', () => {
-            editorSidebar.classList.toggle('open');
-            sidebarOverlay.classList.toggle('active');
-            document.body.style.overflow = editorSidebar.classList.contains('open') ? 'hidden' : '';
-        });
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const editorSidebar = document.getElementById('editorSidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
         
-        sidebarOverlay.addEventListener('click', () => {
-            editorSidebar.classList.remove('open');
-            sidebarOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        });
-    }
-    
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 768 && editorSidebar) {
-            editorSidebar.classList.remove('open');
-            sidebarOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-    });
-    
-    // ============================================
-    // ZOOM INTELLIGENT - SYSTÈME ROBUSTE
-    // ============================================
-    let currentZoom = window.innerWidth <= 768 ? 0.45 : 1;
-    let isZooming = false;
-    
-    function applyZoom() {
-        const canvas = document.getElementById('document-canvas');
-        const wrapper = document.getElementById('documentWrapper');
-        const zoomLevelEl = document.getElementById('zoom-level');
-        
-        if (!canvas || !wrapper) return;
-        
-        const isMobile = window.innerWidth <= 768;
-        const docWidthMm = 210;
-        const docHeightMm = 297;
-        const mmToPx = 3.78;
-        
-        const docWidthPx = docWidthMm * mmToPx;
-        const docHeightPx = docHeightMm * mmToPx;
-        
-        // Appliquer le transform avec transition fluide
-        if (!isZooming) {
-            canvas.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        if (sidebarToggle && editorSidebar) {
+            sidebarToggle.addEventListener('click', () => {
+                editorSidebar.classList.toggle('open');
+                sidebarOverlay.classList.toggle('active');
+                document.body.style.overflow = editorSidebar.classList.contains('open') ? 'hidden' : '';
+            });
+            sidebarOverlay.addEventListener('click', () => {
+                editorSidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
         }
         
-        canvas.style.transform = `scale(${currentZoom})`;
-        canvas.style.transformOrigin = isMobile ? 'top left' : 'top center';
-        
-        if (isMobile) {
-            wrapper.style.width = `${docWidthPx}px`;
-            wrapper.style.height = `${docHeightPx * currentZoom}px`;
-            wrapper.style.overflowX = 'auto';
-            wrapper.style.overflowY = 'hidden';
-        } else {
-            wrapper.style.width = 'auto';
-            wrapper.style.height = 'auto';
-            wrapper.style.overflowX = 'visible';
-            wrapper.style.overflowY = 'visible';
-        }
-        
-        if (zoomLevelEl) {
-            zoomLevelEl.textContent = `${Math.round(currentZoom * 100)}%`;
-        }
-        
-        // Sauvegarder le zoom dans localStorage
-        localStorage.setItem('takidoc_zoom', currentZoom);
-    }
-    
-    // ============================================
-    // BOUTON ZOOM OUT (-) - DIMINUER LE ZOOM
-    // ============================================
-    const btnZoomOut = document.getElementById('btn-zoom-out');
-    if (btnZoomOut) {
-        btnZoomOut.addEventListener('click', () => {
-            isZooming = true;
-            const newZoom = parseFloat((currentZoom - 0.1).toFixed(2));
-            if (newZoom >= 0.2) {
-                currentZoom = newZoom;
-                applyZoom();
-                setTimeout(() => { isZooming = false; }, 300);
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768 && editorSidebar) {
+                editorSidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
             }
         });
-    }
-    
-    // ============================================
-    // BOUTON ZOOM IN (+) - AUGMENTER LE ZOOM
-    // ============================================
-    const btnZoomIn = document.getElementById('btn-zoom-in');
-    if (btnZoomIn) {
-        btnZoomIn.addEventListener('click', () => {
-            isZooming = true;
-            const newZoom = parseFloat((currentZoom + 0.1).toFixed(2));
-            if (newZoom <= 2.0) {
-                currentZoom = newZoom;
-                applyZoom();
-                setTimeout(() => { isZooming = false; }, 300);
-            }
-        });
-    }
-    
-    // ============================================
-    // BOUTON RESET ZOOM
-    // ============================================
-    const btnZoomReset = document.getElementById('btn-zoom-reset');
-    if (btnZoomReset) {
-        btnZoomReset.addEventListener('click', () => {
-            isZooming = true;
-            currentZoom = window.innerWidth <= 768 ? 0.45 : 1;
-            applyZoom();
-            setTimeout(() => { isZooming = false; }, 300);
-        });
-    }
-    
-    // Appliquer au chargement
-    window.addEventListener('load', () => {
-        // Essayer de restaurer le zoom sauvegardé
-        const savedZoom = localStorage.getItem('takidoc_zoom');
-        if (savedZoom) {
-            currentZoom = parseFloat(savedZoom);
-        } else {
-            currentZoom = window.innerWidth <= 768 ? 0.45 : 1;
-        }
-        
-        setTimeout(() => {
-            applyZoom();
-        }, 300);
-    });
-    
-    // Observer les changements du document
-    const canvas = document.getElementById('document-canvas');
-    if (canvas) {
-        const observer = new MutationObserver(() => {
-            setTimeout(applyZoom, 100);
-        });
-        observer.observe(canvas, { childList: true, subtree: true });
-    }
-    
-    // Ajuster au redimensionnement
-    window.addEventListener('resize', () => {
-        currentZoom = window.innerWidth <= 768 ? 0.45 : 1;
-        applyZoom();
-    });
-    
-    // Support du clavier pour le zoom
-    document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey || e.metaKey) {
-            if (e.key === '+' || e.key === '=') {
-                e.preventDefault();
-                btnZoomIn?.click();
-            } else if (e.key === '-') {
-                e.preventDefault();
-                btnZoomOut?.click();
-            } else if (e.key === '0') {
-                e.preventDefault();
-                btnZoomReset?.click();
-            }
-        }
-    });
     </script>
 </body>
 </html>
