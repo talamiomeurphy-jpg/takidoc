@@ -259,52 +259,109 @@ function applyPrimaryColor() {
 // ============================================
 // ZOOM (LOGIQUE ROBUSTE ET UNIQUE)
 // ============================================
+
+function ensureDocumentStage() {
+    const canvas = document.getElementById('document-canvas');
+    if (!canvas) return null;
+
+    let stage = document.getElementById('document-stage');
+
+    if (!stage) {
+        stage = document.createElement('div');
+        stage.id = 'document-stage';
+        stage.className = 'document-stage';
+
+        canvas.parentNode.insertBefore(stage, canvas);
+        stage.appendChild(canvas);
+    }
+
+    return stage;
+}
+
 function updateZoomDisplay() {
     const canvas = document.getElementById('document-canvas');
-    const zoomLevelEl = document.getElementById('zoom-level');
-    if (!canvas) return;
+    const stage = ensureDocumentStage();
+    const container = document.getElementById('previewContainer');
 
-    // Le secret : transform-origin: top center garde le document centré horizontalement
-    canvas.style.transform = `scale(${editorState.zoom})`;
-    canvas.style.transformOrigin = 'top center';
+    if (!canvas || !stage || !container) return;
 
-    if (zoomLevelEl) {
-        zoomLevelEl.textContent = `${Math.round(editorState.zoom * 100)}%`;
+    const width = canvas.offsetWidth;
+    const height = canvas.offsetHeight;
+    const zoom = editorState.zoom;
+
+    if (!width || !height) return;
+
+    canvas.style.transformOrigin = 'top left';
+    canvas.style.transform = `scale(${zoom})`;
+
+    stage.style.width = `${width * zoom}px`;
+    stage.style.height = `${height * zoom}px`;
+
+    const fits = (
+        width * zoom <= container.clientWidth &&
+        height * zoom <= container.clientHeight
+    );
+
+    container.classList.toggle('is-zoomed', !fits);
+
+    const label = document.getElementById('zoom-level');
+    if (label) {
+        label.textContent = `${Math.round(zoom * 100)}%`;
     }
+}
+
+function fitDocumentToView() {
+    const canvas = document.getElementById('document-canvas');
+    const container = document.getElementById('previewContainer');
+
+    if (!canvas || !container) return;
+
+    const width = canvas.offsetWidth;
+    const height = canvas.offsetHeight;
+
+    if (!width || !height) return;
+
+    const availableWidth = container.clientWidth - 24;
+    const availableHeight = container.clientHeight - 24;
+
+    editorState.zoom = Math.max(
+        0.1,
+        Math.min(
+            availableWidth / width,
+            availableHeight / height
+        )
+    );
+
+    updateZoomDisplay();
+
+    container.scrollTop = 0;
+    container.scrollLeft = 0;
 }
 
 function setupZoomControls() {
     const btnIn = document.getElementById('btn-zoom-in');
     const btnOut = document.getElementById('btn-zoom-out');
-    const btnReset = document.getElementById('btn-zoom-reset');
+    const btnFit = document.getElementById('btn-zoom-reset');
 
-    if (btnIn) {
-        btnIn.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (editorState.zoom < 2.0) {
-                editorState.zoom = parseFloat((editorState.zoom + 0.1).toFixed(2));
-                updateZoomDisplay();
-            }
-        });
-    }
+    btnIn?.addEventListener('click', () => {
+        editorState.zoom = Math.min(
+            2,
+            +(editorState.zoom + 0.1).toFixed(2)
+        );
+        updateZoomDisplay();
+    });
 
-    if (btnOut) {
-        btnOut.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (editorState.zoom > 0.2) { // ← MINIMUM 20% GARANTI
-                editorState.zoom = parseFloat((editorState.zoom - 0.1).toFixed(2));
-                updateZoomDisplay();
-            }
-        });
-    }
+    btnOut?.addEventListener('click', () => {
+        editorState.zoom = Math.max(
+            0.1,
+            +(editorState.zoom - 0.1).toFixed(2)
+        );
+        updateZoomDisplay();
+    });
 
-    if (btnReset) {
-        btnReset.addEventListener('click', (e) => {
-            e.preventDefault();
-            editorState.zoom = window.innerWidth <= 768 ? 0.20 : 1.0;
-            updateZoomDisplay();
-        });
-    }
+    btnFit?.addEventListener('click', fitDocumentToView);
+
+    window.addEventListener('resize', fitDocumentToView);
 }
 
 // ============================================

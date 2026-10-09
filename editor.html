@@ -470,83 +470,306 @@
         .form-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255,107,53,0.1); }
 
         /* ============================================
-           7. RESPONSIVE PROFESSIONNEL (CORRECTIF APPLIQUÉ)
+           7. RESPONSIVE — DESKTOP + MOBILE BOTTOM SHEET
            ============================================ */
-        @media (max-width: 1024px) {
-            .editor-layout { grid-template-columns: 320px 1fr; }
+        .document-stage {
+            position: relative;
+            display: block;
+            flex: 0 0 auto;
+            margin: 0 auto;
+        }
+
+        .document-canvas {
+            flex: 0 0 auto;
+            width: 210mm;
+            min-width: 210mm;
+            max-width: none;
+            min-height: 297mm;
+            margin: 0;
+            background: #fff;
+            transform-origin: top left;
+        }
+
+        .preview-container {
+            min-width: 0;
+            min-height: 0;
+            width: 100%;
+            flex: 1 1 auto;
+            padding: 12px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Le défilement n'est activé que si l'utilisateur zoome au-delà du cadre */
+        .preview-container.is-zoomed {
+            display: block;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mobile-edit-toggle {
+            display: none;
+        }
+
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .editor-layout { grid-template-columns: 320px minmax(0, 1fr); }
             .editor-sidebar { padding: 20px; }
+            .editor-preview { padding: 16px; }
         }
 
         @media (max-width: 768px) {
-            /* Header Grid pour mobile */
-            .editor-nav { padding: 10px 16px; }
-            .nav-container {
-                display: grid;
-                grid-template-columns: minmax(0, 1fr) auto;
-                gap: 8px;
+            html, body {
+                width: 100%;
+                min-height: 100%;
+                overflow-x: hidden;
             }
-            .nav-left { grid-column: 1; grid-row: 1; gap: 12px; }
-            .logo { font-size: 1.3rem; }
-            .nav-back { display: none; } /* On garde juste le bouton retour du navigateur ou on l'adapte */
-            .editor-actions { grid-column: 2; grid-row: 1; gap: 4px; }
-            
-            .sidebar-toggle { display: flex; }
-            .btn span { display: none; } /* Cache le texte des boutons sur mobile */
-            .btn { padding: 10px; }
-            .btn-sm { padding: 10px; }
 
-            /* Layout 1 colonne + Sidebar Drawer */
-            .editor-layout { grid-template-columns: 1fr; }
-            
+            .editor-nav {
+                position: sticky;
+                top: 0;
+                padding: 8px 12px;
+                min-height: 60px;
+            }
+
+            .nav-container {
+                display: flex;
+                gap: 8px;
+                min-width: 0;
+            }
+
+            .nav-left { gap: 8px; min-width: 0; }
+            .logo { font-size: 1.25rem; }
+            .sidebar-toggle { display: flex; width: 34px; height: 34px; font-size: 1rem; }
+            .nav-back { display: none; }
+            .editor-actions { gap: 6px; }
+            .editor-actions .btn { width: 38px; height: 38px; padding: 0; }
+            .editor-actions .btn span { display: none; }
+
+            #editor-interface.editor-layout {
+                display: flex !important;
+                flex-direction: column;
+                width: 100%;
+                height: calc(100dvh - 60px);
+                min-height: 0;
+                overflow: hidden;
+            }
+
+            .editor-preview {
+                order: 1;
+                flex: 1 1 auto;
+                width: 100%;
+                height: auto;
+                min-height: 0;
+                padding: 8px 8px 76px;
+                box-sizing: border-box;
+                overflow: hidden;
+                align-items: stretch;
+                transition: height .25s ease, flex-basis .25s ease;
+            }
+
+            .preview-toolbar {
+                flex: 0 0 auto;
+                align-self: center;
+                width: max-content;
+                max-width: 100%;
+                gap: 8px;
+                padding: 5px 10px;
+                margin: 0 auto 8px;
+                position: relative;
+                top: auto;
+            }
+
+            .btn-icon { width: 34px; height: 34px; font-size: .9rem; }
+            #zoom-level { display: inline-block; min-width: 40px; font-size: .8rem; }
+
+            .preview-container {
+                flex: 1 1 auto;
+                width: 100%;
+                min-width: 0;
+                min-height: 0;
+                padding: 4px;
+                justify-content: center;
+                align-items: center;
+                overflow: hidden;
+            }
+
+            .preview-container.is-zoomed {
+                display: block;
+                overflow: auto;
+            }
+
+            /* Le formulaire est un bottom sheet : masqué au départ */
             .editor-sidebar {
                 position: fixed;
-                top: 0; left: -100%;
-                width: 85%;
-                max-width: 360px;
-                height: 100vh;
-                z-index: 950;
-                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                border-right: 1px solid var(--border);
-                box-shadow: var(--shadow-lg);
-                padding: 20px;
-            }
-            .editor-sidebar.open { left: 0; }
-
-            /* Preview Mobile Optimisée */
-            .editor-preview {
-                height: auto;
-                min-height: calc(100vh - 60px);
-                padding: 12px;
-            }
-            .preview-toolbar {
+                top: auto;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 1200;
                 width: 100%;
+                max-width: none;
+                height: 54dvh;
+                max-height: 78dvh;
+                padding: 22px 16px calc(18px + env(safe-area-inset-bottom));
+                gap: 16px;
+                border: 0;
+                border-radius: 22px 22px 0 0;
+                box-shadow: 0 -10px 36px rgba(15, 23, 42, .2);
+                background: #fff;
+                overflow-x: hidden;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                -webkit-overflow-scrolling: touch;
+                transform: translateY(105%);
+                visibility: hidden;
+                transition: transform .28s cubic-bezier(.2,.8,.2,1), visibility .28s ease;
+                top: auto;
+            }
+
+            .editor-sidebar::before {
+                content: "";
+                display: block;
+                width: 42px;
+                height: 5px;
+                min-height: 5px;
+                margin: -10px auto 2px;
+                border-radius: 99px;
+                background: #d1d5db;
+            }
+
+            .editor-sidebar.open {
+                left: 0;
+                transform: translateY(0);
+                visibility: visible;
+            }
+
+            .sidebar-header { flex: 0 0 auto; padding-bottom: 12px; }
+            .sidebar-header h2 { font-size: 1.1rem; }
+            .sidebar-section { padding: 14px; }
+            .sidebar-footer { flex: 0 0 auto; margin-top: 0; padding-top: 14px; }
+            .price-display { padding: 12px; margin-bottom: 12px; }
+            .price-value { font-size: 1.2rem; }
+
+            /* Overlay limité à la zone d'aperçu : la page reste visible en haut */
+            .sidebar-overlay {
+                display: block;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                bottom: 54dvh;
+                z-index: 1100;
+                background: rgba(15, 23, 42, .12);
+                backdrop-filter: none;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transition: opacity .25s ease, visibility .25s ease;
+            }
+
+            .sidebar-overlay.active {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+            }
+
+            .mobile-edit-toggle {
+                display: inline-flex;
+                align-items: center;
                 justify-content: center;
-                margin-bottom: 12px;
-                padding: 8px;
+                gap: 10px;
+                position: fixed;
+                left: 50%;
+                bottom: calc(12px + env(safe-area-inset-bottom));
+                transform: translateX(-50%);
+                z-index: 1300;
+                width: max-content;
+                max-width: calc(100vw - 28px);
+                padding: 13px 20px;
+                border: 0;
+                border-radius: 999px;
+                background: var(--primary);
+                color: #fff;
+                box-shadow: 0 6px 22px rgba(255, 107, 53, .32);
+                font: inherit;
+                font-size: .9rem;
+                font-weight: 800;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: bottom .25s ease, background .2s ease, transform .2s ease;
             }
-            .preview-container {
-                padding: 0;
-                justify-content: center;
-                align-items: flex-start;
+
+            .mobile-edit-toggle:active { transform: translateX(-50%) scale(.98); }
+            .mobile-edit-toggle .mobile-edit-chevron { transition: transform .25s ease; }
+            .mobile-edit-toggle.active {
+                bottom: calc(54dvh + 8px);
+                background: var(--dark);
+                box-shadow: var(--shadow-md);
             }
-            .document-canvas {
-                /* Laisse le navigateur gérer le scale, mais empêche le débordement horizontal brutal */
-                max-width: 100%;
-                transform-origin: top center;
+            .mobile-edit-toggle.active .mobile-edit-chevron { transform: rotate(180deg); }
+
+            /* Quand le formulaire est ouvert, réserver la moitié supérieure à l'aperçu */
+            body.mobile-sheet-open #editor-interface .editor-preview {
+                flex: 0 0 calc(46dvh - 60px);
+                height: calc(46dvh - 60px);
+                min-height: 120px;
+                padding-bottom: 8px;
             }
-            
+
+            body.mobile-sheet-open #editor-interface .preview-toolbar {
+                margin-bottom: 4px;
+                padding: 3px 8px;
+            }
+
+            body.mobile-sheet-open #editor-interface .btn-icon {
+                width: 30px;
+                height: 30px;
+            }
+
             .payment-methods { grid-template-columns: 1fr; }
             .modal-content { padding: 24px; }
         }
 
-        @media (max-width: 480px) {
-            .logo { font-size: 1.2rem; }
-            .btn-icon { width: 36px; height: 36px; font-size: 0.9rem; }
-            #zoom-level { font-size: 0.8rem; min-width: 40px; }
-            .document-canvas {
-                /* Sur très petit écran, on s'assure que ça reste lisible */
-                transform-origin: top center;
+        @media (max-width: 380px) {
+            .editor-nav { padding-left: 8px; padding-right: 8px; }
+            .logo { font-size: 1.12rem; }
+            .editor-actions { gap: 4px; }
+            .editor-actions .btn { width: 34px; height: 34px; }
+            .mobile-edit-toggle { padding: 12px 16px; font-size: .84rem; }
+            .editor-sidebar { padding-left: 12px; padding-right: 12px; }
+        }
+
+        @media (max-width: 768px) and (orientation: landscape) {
+            .editor-sidebar { height: 68dvh; max-height: 82dvh; }
+            .sidebar-overlay { bottom: 68dvh; }
+            .mobile-edit-toggle.active { bottom: calc(68dvh + 8px); }
+            body.mobile-sheet-open #editor-interface .editor-preview {
+                flex-basis: calc(30dvh - 60px);
+                height: calc(30dvh - 60px);
             }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-edit-toggle { display: none !important; }
+            .sidebar-overlay { display: none !important; }
+            .editor-sidebar {
+                position: sticky;
+                top: 65px;
+                left: auto;
+                bottom: auto;
+                width: auto;
+                max-width: none;
+                height: calc(100vh - 65px);
+                max-height: none;
+                transform: none;
+                visibility: visible;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .editor-sidebar::before { display: none; }
         }
     </style>
 </head>
@@ -651,6 +874,14 @@
         </main>
     </div>
 
+    <!-- Bouton de personnalisation mobile : ouvre le panneau inférieur -->
+    <button id="mobile-edit-toggle" class="mobile-edit-toggle" type="button"
+            aria-controls="editorSidebar" aria-expanded="false">
+        <i class="fas fa-sliders-h" aria-hidden="true"></i>
+        <span>Modifier mon document</span>
+        <i class="fas fa-chevron-up mobile-edit-chevron" aria-hidden="true"></i>
+    </button>
+
     <!-- Modal de paiement -->
     <div id="payment-modal" class="modal" style="display: none;">
         <div class="modal-content">
@@ -695,29 +926,66 @@
     <script type="module" src="js/editor.js"></script>
     
     <script>
-        // Gestion de la sidebar mobile (propre et fluide)
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const editorSidebar = document.getElementById('editorSidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        
-        function toggleSidebar() {
-            editorSidebar.classList.toggle('open');
-            sidebarOverlay.classList.toggle('active');
-            document.body.style.overflow = editorSidebar.classList.contains('open') ? 'hidden' : '';
-        }
+        // Panneau inférieur mobile. Le formulaire et ses champs restent les mêmes.
+        (() => {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const editorSidebar = document.getElementById('editorSidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const mobileEditToggle = document.getElementById('mobile-edit-toggle');
+            const mobileQuery = window.matchMedia('(max-width: 768px)');
 
-        if (sidebarToggle && editorSidebar) {
-            sidebarToggle.addEventListener('click', toggleSidebar);
-            sidebarOverlay.addEventListener('click', toggleSidebar);
-        }
-        
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 768 && editorSidebar) {
-                editorSidebar.classList.remove('open');
-                sidebarOverlay.classList.remove('active');
-                document.body.style.overflow = '';
+            if (!editorSidebar || !sidebarOverlay || !mobileEditToggle) return;
+
+            function isMobile() {
+                return mobileQuery.matches;
             }
-        });
+
+            function setSheetOpen(open) {
+                if (!isMobile()) {
+                    editorSidebar.classList.remove('open');
+                    sidebarOverlay.classList.remove('active');
+                    mobileEditToggle.classList.remove('active');
+                    document.body.classList.remove('mobile-sheet-open');
+                    document.body.style.overflow = '';
+                    mobileEditToggle.setAttribute('aria-expanded', 'false');
+                    return;
+                }
+
+                editorSidebar.classList.toggle('open', open);
+                sidebarOverlay.classList.toggle('active', open);
+                mobileEditToggle.classList.toggle('active', open);
+                document.body.classList.toggle('mobile-sheet-open', open);
+                document.body.style.overflow = '';
+                mobileEditToggle.setAttribute('aria-expanded', String(open));
+
+                const label = mobileEditToggle.querySelector('span');
+                if (label) label.textContent = open ? 'Fermer les modifications' : 'Modifier mon document';
+
+                // Recalcule l'aperçu pour la nouvelle hauteur disponible.
+                window.dispatchEvent(new Event('resize'));
+            }
+
+            function toggleSheet() {
+                setSheetOpen(!editorSidebar.classList.contains('open'));
+            }
+
+            mobileEditToggle.addEventListener('click', toggleSheet);
+            sidebarToggle?.addEventListener('click', () => {
+                if (isMobile()) toggleSheet();
+            });
+            sidebarOverlay.addEventListener('click', () => setSheetOpen(false));
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && editorSidebar.classList.contains('open')) {
+                    setSheetOpen(false);
+                }
+            });
+
+            mobileQuery.addEventListener?.('change', () => setSheetOpen(false));
+            window.addEventListener('resize', () => {
+                if (!isMobile()) setSheetOpen(false);
+            });
+        })();
     </script>
 </body>
 </html>
