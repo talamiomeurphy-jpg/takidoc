@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion / Inscription - TakiDoc</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E85A2D;
+            --primary-light: #FFF5F0;
+            --secondary: #004E89;
+            --dark: #1A1A2E;
+            --bg-body: #F5F5F7;
+            --bg-card: #FFFFFF;
+            --text-main: #1A1A2E;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --success: #10B981;
+            --error: #EF4444;
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-full: 9999px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .auth-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            min-height: 600px;
+        }
+
+        .auth-visual {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-visual::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-20px, -20px); }
+        }
+
+        .auth-visual .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-visual .logo-taki { color: white; }
+        .auth-visual .logo-doc { color: rgba(255,255,255,0.8); }
+
+        .auth-visual-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-visual h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .auth-visual p {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .auth-visual-features {
+            position: relative;
+            z-index: 1;
+            margin-top: 32px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+
+        .feature-item i {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .auth-form-panel {
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-form-header {
+            margin-bottom: 32px;
+        }
+
+        .auth-form-header h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .auth-form-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: var(--bg-body);
+            padding: 4px;
+            border-radius: var(--radius-full);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .auth-tab.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .form-group label .required {
+            color: var(--error);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255,107,53,0.1);
+        }
+
+        .form-group input.error {
+            border-color: var(--error);
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.8rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 16px 0 24px;
+            font-size: 0.85rem;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-submit .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .btn-submit.loading .spinner { display: block; }
+        .btn-submit.loading .btn-text { display: none; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-message {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auth-message.show { display: flex; }
+        .auth-message.success {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #10B981;
+        }
+        .auth-message.error {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #EF4444;
+        }
+
+        .back-home {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+
+        .back-home:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 0; }
+            .auth-container {
+                grid-template-columns: 1fr;
+                border-radius: 0;
+                min-height: 100vh;
+                box-shadow: none;
+            }
+            .auth-visual {
+                padding: 32px 24px;
+                min-height: 200px;
+            }
+            .auth-visual h1 { font-size: 1.5rem; }
+            .auth-visual-features { display: none; }
+            .auth-form-panel { padding: 32px 24px; }
+            .back-home { top: 16px; right: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-home">
+        <i class="fas fa-arrow-left"></i>
+        <span>Accueil</span>
+    </a>
+
+    <div class="auth-container">
+        <div class="auth-visual">
+            <div class="logo">
+                <span class="logo-taki">Taki</span><span class="logo-doc">Doc</span>
+            </div>
+            
+            <div class="auth-visual-content">
+                <h1 id="visual-title">Bienvenue sur TakiDoc</h1>
+                <p id="visual-text">La plateforme de référence au Congo pour vos documents professionnels.</p>
+                
+                <div class="auth-visual-features">
+                    <div class="feature-item">
+                        <i class="fas fa-bolt"></i>
+                        <span>Téléchargement instantané</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Paiement 100% sécurisé</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-edit"></i>
+                        <span>Personnalisation facile</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="position: relative; z-index: 1; font-size: 0.85rem; opacity: 0.8;">
+                © 2026 TakiDoc - L'équipe Meurphy
+            </div>
+        </div>
+
+        <div class="auth-form-panel">
+            <div class="auth-form-header">
+                <h2 id="form-title">Connexion</h2>
+                <p id="form-subtitle">Accédez à votre espace personnel</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-mode="login">Connexion</button>
+                <button class="auth-tab" data-mode="signup">Inscription</button>
+            </div>
+
+            <div class="auth-message" id="authMessage">
+                <i class="fas fa-check-circle"></i>
+                <span id="authMessageText"></span>
+            </div>
+
+            <!-- Formulaire de Connexion -->
+            <form class="auth-form active" id="loginForm" novalidate>
+                <div class="form-group">
+                    <label for="login-email">Adresse email <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="login-email" placeholder="vous@exemple.com" required>
+                    </div>
+                    <div class="error-message" id="login-email-error">Veuillez entrer un email valide</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Mot de passe <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="login-password" placeholder="••••••••" required>
+                    </div>
+                    <div class="error-message" id="login-password-error">Le mot de passe est requis</div>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="remember-me">
+                        <span>Se souvenir de moi</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-submit" id="loginBtn">
+                    <span class="spinner"></span>
+                    <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Se connecter</span>
+                </button>
+
+                <div class="auth-footer" style="text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-muted);">
+                    Pas encore de compte ? <a href="#" id="switchToSignup" style="color: var(--primary); font-weight: 700;">S'inscrire</a>
+                </div>
+            </form>
+
+            <!-- Formulaire d'Inscription -->
+            <form class="auth-form" id="signupForm" novalidate>
+                <div class="form-group">
+                    <label for="signup-name">Nom complet <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="signup-name" placeholder="Meurphy TALAMIO" required>
+                    </div>
+                    <div class="error-message" id="signup-name-error">Le nom est requis (min. 2 caractères)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-email">Adresse email <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="signup-email" placeholder="vous@exemple.com" required>
+                    </div>
+                    <div class="error-message" id="signup-email-error">Veuillez entrer un email valide</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-phone">Téléphone <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="signup-phone" placeholder="06 518 69 67" required>
+                    </div>
+                    <div class="error-message" id="signup-phone-error">Numéro invalide (format: 06 XX XX XX XX)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-password">Mot de passe <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signup-password" placeholder="Min. 6 caractères" required minlength="6">
+                    </div>
+                    <div class="error-message" id="signup-password-error">Min. 6 caractères requis</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-password-confirm">Confirmer le mot de passe <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signup-password-confirm" placeholder="Retapez le mot de passe" required>
+                    </div>
+                    <div class="error-message" id="signup-confirm-error">Les mots de passe ne correspondent pas</div>
+                </div>
+
+                <div class="form-options" style="justify-content: flex-start;">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="accept-terms" required>
+                        <span>J'accepte les <a href="conditions.html" style="color: var(--primary);">conditions d'utilisation</a></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-submit" id="signupBtn">
+                    <span class="spinner"></span>
+                    <span class="btn-text"><i class="fas fa-user-plus"></i> Créer mon compte</span>
+                </button>
+
+                <div class="auth-footer" style="text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-muted);">
+                    Déjà un compte ? <a href="#" id="switchToLogin" style="color: var(--primary); font-weight: 700;">Se connecter</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script type="module">
+        // ============================================
+        // CONFIGURATION SUPABASE
+        // ============================================
+        const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ============================================
+        // ÉLÉMENTS DU DOM
+        // ============================================
+        const authMessage = document.getElementById('authMessage');
+        const authMessageText = document.getElementById('authMessageText');
+        const tabs = document.querySelectorAll('.auth-tab');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const formTitle = document.getElementById('form-title');
+        const formSubtitle = document.getElementById('form-subtitle');
+        const visualTitle = document.getElementById('visual-title');
+        const visualText = document.getElementById('visual-text');
+
+        // ============================================
+        // FONCTIONS MESSAGES
+        // ============================================
+        function showMessage(type, text) {
+            authMessage.className = `auth-message show ${type}`;
+            authMessageText.textContent = text;
+            authMessage.querySelector('i').className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+        }
+
+        function hideMessage() {
+            authMessage.classList.remove('show');
+        }
+
+        // ============================================
+        // GESTION DES TABS
+        // ============================================
+        function setMode(mode) {
+            tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.mode === mode));
+            
+            if (mode === 'login') {
+                loginForm.classList.add('active');
+                signupForm.classList.remove('active');
+                formTitle.textContent = 'Connexion';
+                formSubtitle.textContent = 'Accédez à votre espace personnel';
+                visualTitle.textContent = 'Bon retour parmi nous !';
+                visualText.textContent = 'Retrouvez vos documents favoris et votre historique d\'achats.';
+                history.replaceState(null, '', 'auth.html?action=login');
+            } else {
+                signupForm.classList.add('active');
+                loginForm.classList.remove('active');
+                formTitle.textContent = 'Inscription';
+                formSubtitle.textContent = 'Créez votre compte en 30 secondes';
+                visualTitle.textContent = 'Rejoignez TakiDoc';
+                visualText.textContent = 'Accédez à des centaines de documents professionnels au Congo.';
+                history.replaceState(null, '', 'auth.html?action=signup');
+            }
+            
+            hideMessage();
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => setMode(tab.dataset.mode));
+        });
+
+        document.getElementById('switchToSignup').addEventListener('click', (e) => {
+            e.preventDefault();
+            setMode('signup');
+        });
+
+        document.getElementById('switchToLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            setMode('login');
+        });
+
+        // Détecter le mode depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialMode = urlParams.get('action') === 'signup' ? 'signup' : 'login';
+        setMode(initialMode);
+
+        // ============================================
+        // VALIDATION
+        // ============================================
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validatePhone(phone) {
+            return /^(\+242|0)[0-9\s]{8,12}$/.test(phone.replace(/\s/g, ''));
+        }
+
+        function showError(inputId, errorId) {
+            document.getElementById(inputId).classList.add('error');
+            document.getElementById(errorId).classList.add('show');
+        }
+
+        function clearError(inputId, errorId) {
+            document.getElementById(inputId).classList.remove('error');
+            document.getElementById(errorId).classList.remove('show');
+        }
+
+        function clearAllErrors() {
+            document.querySelectorAll('.form-group input').forEach(input => input.classList.remove('error'));
+            document.querySelectorAll('.error-message').forEach(msg => msg.classList.remove('show'));
+        }
+
+        // ============================================
+        // CONNEXION AVEC SUPABASE
+        // ============================================
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearAllErrors();
+            
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            let hasError = false;
+
+            if (!validateEmail(email)) {
+                showError('login-email', 'login-email-error');
+                hasError = true;
+            }
+            if (!password) {
+                showError('login-password', 'login-password-error');
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            const btn = document.getElementById('loginBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                // Connexion réussie
+                showMessage('success', `Bienvenue ! Redirection...`);
+                setTimeout(() => {
+                    window.location.href = 'profile.html';
+                }, 1000);
+
+            } catch (error) {
+                showMessage('error', error.message || 'Email ou mot de passe incorrect');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================
+        // INSCRIPTION AVEC SUPABASE (CONNEXION AUTO)
+        // ============================================
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearAllErrors();
+            
+            const name = document.getElementById('signup-name').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const phone = document.getElementById('signup-phone').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const passwordConfirm = document.getElementById('signup-password-confirm').value;
+            const acceptTerms = document.getElementById('accept-terms').checked;
+            
+            let hasError = false;
+
+            if (name.length < 2) {
+                showError('signup-name', 'signup-name-error');
+                hasError = true;
+            }
+            if (!validateEmail(email)) {
+                showError('signup-email', 'signup-email-error');
+                hasError = true;
+            }
+            if (!validatePhone(phone)) {
+                showError('signup-phone', 'signup-phone-error');
+                hasError = true;
+            }
+            if (password.length < 6) {
+                showError('signup-password', 'signup-password-error');
+                hasError = true;
+            }
+            if (password !== passwordConfirm) {
+                showError('signup-password-confirm', 'signup-confirm-error');
+                hasError = true;
+            }
+            if (!acceptTerms) {
+                showMessage('error', 'Vous devez accepter les conditions d\'utilisation');
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            const btn = document.getElementById('signupBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                // 1. Créer l'utilisateur dans auth.users
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: name,
+                            phone_number: phone
+                        }
+                    }
+                });
+
+                if (authError) throw authError;
+
+                // 2. Créer le profil dans public.profiles
+                if (authData.user) {
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .upsert({
+                            id: authData.user.id,
+                            email: email,
+                            full_name: name,
+                            phone_number: phone,
+                            updated_at: new Date().toISOString()
+                        });
+
+                    if (profileError) throw profileError;
+                }
+
+                // 3. Connecter automatiquement l'utilisateur (PAS DE REDIRECTION VERS LOGIN)
+                showMessage('success', 'Compte créé avec succès ! Bienvenue...');
+                
+                setTimeout(() => {
+                    window.location.href = 'profile.html';
+                }, 1200);
+
+            } catch (error) {
+                showMessage('error', error.message || 'Erreur lors de la création du compte');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+
+        // Validation en temps réel
+        document.querySelectorAll('.form-group input').forEach(input => {
+            input.addEventListener('input', () => {
+                const errorId = input.id + '-error';
+                const errorEl = document.getElementById(errorId);
+                if (errorEl) {
+                    input.classList.remove('error');
+                    errorEl.classList.remove('show');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
