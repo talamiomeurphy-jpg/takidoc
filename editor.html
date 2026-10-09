@@ -926,6 +926,86 @@
     <script type="module" src="js/editor.js"></script>
     
     <script>
+        // Compatibilité photo : certains modèles exposent leur zone photo
+        // dans le HTML rendu même si la métadonnée hasPhoto est absente.
+        // Dans ce cas, on réactive le contrôle sans toucher à editor.js.
+        (() => {
+            const section = document.getElementById('photo-section');
+            const canvas = document.getElementById('document-canvas');
+            const input = document.getElementById('photo-input');
+            const label = document.getElementById('photo-label');
+            const removeButton = document.getElementById('photo-remove');
+            if (!section || !canvas || !input || !label || !removeButton) return;
+
+            let fallbackEnabled = false;
+            let currentPhotoUrl = null;
+
+            function getInitials() {
+                const nameInput = document.getElementById('input-field-nom');
+                const nameField = document.getElementById('field-nom');
+                const name = (nameInput?.value || nameField?.textContent || '').trim();
+                const words = name.split(/\s+/).filter(Boolean);
+                if (words.length >= 2) return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+                return words.length ? words[0].slice(0, 2).toUpperCase() : 'TD';
+            }
+
+            function enablePhotoFallback() {
+                const photo = canvas.querySelector('#doc-photo');
+                if (!photo || section.style.display !== 'none' || fallbackEnabled) return;
+
+                fallbackEnabled = true;
+                section.style.display = 'block';
+
+                input.addEventListener('change', () => {
+                    const file = input.files && input.files[0];
+                    if (!file) return;
+                    if (!file.type.startsWith('image/')) {
+                        input.value = '';
+                        label.textContent = 'Choisir une image valide';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = event => {
+                        currentPhotoUrl = event.target.result;
+                        const target = canvas.querySelector('#doc-photo');
+                        if (!target) return;
+                        target.innerHTML = '';
+                        const image = document.createElement('img');
+                        image.src = currentPhotoUrl;
+                        image.alt = 'Photo de profil';
+                        image.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+                        target.appendChild(image);
+                        label.textContent = '✓ Photo ajoutée';
+                        removeButton.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                removeButton.addEventListener('click', () => {
+                    currentPhotoUrl = null;
+                    input.value = '';
+                    const target = canvas.querySelector('#doc-photo');
+                    if (target) {
+                        target.innerHTML = '';
+                        const initials = document.createElement('span');
+                        initials.className = 'cv-photo-placeholder';
+                        initials.textContent = getInitials();
+                        initials.style.cssText = 'font-size:2rem;font-weight:700;color:white;';
+                        target.appendChild(initials);
+                    }
+                    label.textContent = 'Ajouter une photo';
+                    removeButton.style.display = 'none';
+                });
+            }
+
+            const observer = new MutationObserver(enablePhotoFallback);
+            observer.observe(canvas, { childList: true, subtree: true });
+            enablePhotoFallback();
+        })();
+    </script>
+
+    <script>
         // Panneau inférieur mobile. Le formulaire et ses champs restent les mêmes.
         (() => {
             const sidebarToggle = document.getElementById('sidebarToggle');
