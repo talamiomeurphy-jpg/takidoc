@@ -1539,6 +1539,791 @@
     font-size: 0.7rem;
   }
 }
+    
+
+        /* =====================================================
+           TAKIDOC HOME — PREMIUM EDITION
+           Styles additionnels : les comportements JS existants
+           et les identifiants des composants sont conservés.
+           ===================================================== */
+        :root {
+            --primary: #ff6b35;
+            --primary-dark: #e95625;
+            --dark: #17172b;
+            --bg-body: #f7f8fc;
+            --text-main: #202238;
+            --text-muted: #6c7185;
+            --border: #e8eaf2;
+            --shadow-sm: 0 5px 18px rgba(28, 31, 55, .045);
+            --shadow-md: 0 12px 32px rgba(28, 31, 55, .085);
+            --shadow-lg: 0 24px 60px rgba(28, 31, 55, .14);
+        }
+
+        body { background: #f7f8fc; }
+        body::before {
+            background-image: radial-gradient(circle at 10% 12%, rgba(255,107,53,.12), transparent 27%), radial-gradient(circle at 88% 35%, rgba(0,78,137,.06), transparent 25%);
+            opacity: 1;
+        }
+        .app-header {
+            padding: 14px clamp(16px, 3vw, 42px);
+            gap: clamp(12px, 2vw, 28px);
+            background: rgba(255,255,255,.9);
+            border-bottom-color: rgba(228,231,240,.9);
+            box-shadow: 0 4px 24px rgba(25,28,52,.035);
+        }
+        .logo { font-size: 1.75rem; letter-spacing: -1.25px; flex-shrink: 0; }
+        .logo-taki { color: #ff6b35; }
+        .logo-doc { color: #17172b; }
+        .search-bar {
+            max-width: 760px; min-height: 48px; padding: 11px 20px;
+            background: #f5f6fa; border: 1px solid transparent; border-radius: 16px;
+        }
+        .search-bar:focus-within { border-color: rgba(255,107,53,.55); box-shadow: 0 0 0 4px rgba(255,107,53,.09); }
+        .search-bar input::placeholder { color: #8a8ea0; }
+        .btn-auth { min-height: 44px; padding: 10px 18px; }
+        .btn-signup { border-width: 1.5px; }
+        .btn-login { box-shadow: 0 7px 18px rgba(255,107,53,.22); }
+        .icon-btn { background: #f7f8fc; border: 1px solid #eef0f6; }
+
+        .categories-wrapper {
+            top: 76px; background: rgba(255,255,255,.91);
+            border-bottom: 1px solid rgba(228,231,240,.85);
+        }
+        .categories-nav {
+            max-width: 1600px; margin: 0 auto; padding: 13px clamp(16px, 3vw, 42px);
+            gap: 9px;
+        }
+        .cat-pill {
+            padding: 9px 18px; border: 1px solid #e6e8f0; background: #fff;
+            color: #656a7d; font-size: .84rem; font-weight: 650;
+            box-shadow: 0 1px 2px rgba(22,24,44,.02);
+        }
+        .cat-pill:hover { background: #fff8f4; border-color: #ffc7b2; color: #e95625; }
+        .cat-pill.active { background: #19192e; border-color: #19192e; color: white; box-shadow: 0 5px 12px rgba(25,25,46,.13); }
+
+        .home-hero {
+            max-width: 1510px; margin: 26px auto 0; padding: clamp(28px, 4.8vw, 68px) clamp(24px, 5vw, 76px) 42px;
+            position: relative; isolation: isolate; overflow: hidden; display: grid;
+            grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr); align-items: center; gap: clamp(20px, 4vw, 70px);
+            border: 1px solid rgba(255,255,255,.9); border-radius: 30px;
+            background: linear-gradient(115deg, #fff 0%, #fff 49%, #fff8f4 100%);
+            box-shadow: 0 16px 50px rgba(32,34,56,.055);
+        }
+        .hero-copy { position: relative; z-index: 2; max-width: 680px; }
+        .hero-eyebrow { display: inline-flex; align-items: center; gap: 9px; margin-bottom: 22px; color: #e85c2b; font-size: .73rem; font-weight: 850; letter-spacing: 1.35px; }
+        .eyebrow-dot { width: 8px; height: 8px; background: #ff6b35; border-radius: 50%; box-shadow: 0 0 0 5px rgba(255,107,53,.12); }
+        .hero-copy h1 { color: #17172b; font-size: clamp(2.45rem, 4.5vw, 4.6rem); line-height: 1.045; letter-spacing: -.065em; font-weight: 850; margin-bottom: 22px; }
+        .hero-copy h1 span { color: #ff6b35; }
+        .hero-description { max-width: 570px; color: #6c7185; font-size: clamp(.98rem, 1.2vw, 1.12rem); line-height: 1.8; margin-bottom: 30px; }
+        .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+        .hero-primary, .hero-secondary { min-height: 50px; padding: 0 22px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 14px; font-weight: 750; font-size: .92rem; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+        .hero-primary { background: #ff6b35; color: white; box-shadow: 0 10px 22px rgba(255,107,53,.25); }
+        .hero-primary:hover { background: #e95625; transform: translateY(-2px); box-shadow: 0 14px 26px rgba(255,107,53,.3); }
+        .hero-secondary { background: white; color: #27283d; border: 1px solid #e7e8ef; }
+        .hero-secondary:hover { border-color: #ffc3ad; color: #e95625; transform: translateY(-2px); }
+        .hero-proof { display: flex; align-items: center; gap: 13px; margin-top: 32px; }
+        .proof-avatars { display: flex; padding-left: 4px; }
+        .proof-avatars span { width: 34px; height: 34px; display: grid; place-items: center; margin-left: -4px; border: 3px solid white; border-radius: 50%; background: #fce3d9; color: #db5d32; font-size: .72rem; }
+        .proof-avatars span:nth-child(2) { background: #e5edf8; color: #315f91; }
+        .proof-avatars span:nth-child(3) { background: #e8e8f4; color: #34344e; }
+        .hero-proof p { color: #33354b; font-size: .8rem; line-height: 1.5; }
+        .hero-proof strong { font-size: .84rem; }
+        .hero-proof p span { color: #85899a; }
+
+        .hero-visual { min-height: 390px; position: relative; display: flex; align-items: center; justify-content: center; isolation: isolate; }
+        .hero-visual::before { content: ''; position: absolute; width: 350px; height: 350px; border-radius: 50%; background: radial-gradient(circle, rgba(255,107,53,.16), rgba(255,107,53,.025) 68%, transparent 70%); z-index: -2; }
+        .hero-orbit { position: absolute; border: 1px solid rgba(255,107,53,.16); border-radius: 50%; z-index: -1; }
+        .orbit-one { width: 390px; height: 260px; transform: rotate(-24deg); }
+        .orbit-two { width: 310px; height: 360px; transform: rotate(25deg); border-color: rgba(0,78,137,.1); }
+        .hero-float-card { position: absolute; background: #fff; border: 1px solid rgba(226,228,237,.9); border-radius: 13px; box-shadow: 0 20px 48px rgba(29,31,54,.15); overflow: hidden; }
+        .float-back { width: 215px; height: 286px; right: 6%; top: 35px; padding: 20px 18px; transform: rotate(8deg); opacity: .92; }
+        .float-front { width: 245px; height: 330px; left: 10%; top: 22px; padding: 21px 19px; transform: rotate(-5deg); z-index: 2; }
+        .mini-doc-top { display: flex; align-items: center; gap: 10px; margin-bottom: 27px; }
+        .mini-mark { display: block; width: 28px; height: 28px; border-radius: 8px; }
+        .orange-mark { background: linear-gradient(135deg,#ff8a5d,#ff6b35); }
+        .mini-lines { flex: 1; display: grid; gap: 5px; }
+        .mini-lines i, .mini-paragraph i, .cv-heading-lines i, .cv-content i, .cv-content b, .cv-sidebar i { display: block; border-radius: 5px; background: #e7e9f0; }
+        .mini-lines i:first-child { width: 75%; height: 6px; background: #33364b; }
+        .mini-lines i:last-child { width: 48%; height: 4px; }
+        .mini-doc-title { font-size: 8px; font-weight: 900; text-align: center; color: #25273c; letter-spacing: .6px; margin-bottom: 10px; }
+        .mini-rule { height: 2px; background: #303247; margin-bottom: 15px; }
+        .mini-paragraph { display: grid; gap: 6px; margin-bottom: 15px; }
+        .mini-paragraph i { height: 4px; width: 100%; }
+        .mini-paragraph i.short { width: 65%; }
+        .mini-stamp { display: inline-flex; gap: 5px; align-items: center; margin-top: 7px; padding: 6px 8px; border-radius: 7px; background: #fff0e9; color: #e65c2c; font-size: 8px; font-weight: 800; }
+        .cv-topline { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+        .cv-avatar { width: 51px; height: 51px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; background: #ffe7dd; color: #f06b3c; font-size: 18px; }
+        .cv-heading-lines { flex: 1; display: grid; gap: 7px; }
+        .cv-heading-lines i:first-child { height: 9px; width: 88%; background: #25273b; }
+        .cv-heading-lines i:nth-child(2) { height: 5px; width: 55%; background: #a6aabc; }
+        .cv-heading-lines i:nth-child(3) { height: 3px; width: 100%; background: #25273b; margin-top: 4px; }
+        .cv-columns { display: grid; grid-template-columns: 66px 1fr; gap: 13px; height: 180px; }
+        .cv-sidebar { background: #17172b; padding: 13px 8px; display: grid; align-content: start; gap: 12px; border-radius: 3px; }
+        .cv-sidebar i { height: 3px; background: rgba(255,255,255,.65); width: 100%; }
+        .cv-sidebar i:nth-child(even) { width: 68%; }
+        .cv-content { display: grid; align-content: start; gap: 7px; }
+        .cv-content b { width: 74%; height: 6px; background: #25273b; margin-top: 3px; }
+        .cv-content i { width: 100%; height: 4px; }
+        .cv-content i.short { width: 60%; }
+        .cv-chip { position: absolute; bottom: 14px; right: 13px; padding: 8px 11px; background: #fff; color: #303249; border: 1px solid #edeef4; border-radius: 9px; box-shadow: 0 5px 14px rgba(20,22,45,.08); font-size: 9px; font-weight: 800; }
+        .cv-chip i { color: #ff6b35; margin-right: 4px; }
+        .hero-floating-note { position: absolute; z-index: 4; bottom: 11px; right: 1%; display: flex; align-items: center; gap: 10px; padding: 12px 15px; border-radius: 13px; background: rgba(255,255,255,.96); border: 1px solid #eeeef4; box-shadow: 0 12px 30px rgba(29,31,54,.12); }
+        .note-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: #ff6b35; background: #fff0e9; }
+        .hero-floating-note strong, .hero-floating-note small { display: block; }
+        .hero-floating-note strong { font-size: .76rem; color: #25273c; }
+        .hero-floating-note small { font-size: .66rem; color: #85899a; margin-top: 2px; }
+        .hero-bottom-glow { position: absolute; width: 300px; height: 120px; right: 5%; bottom: -90px; background: #ff6b35; filter: blur(90px); opacity: .12; z-index: -1; }
+
+        .benefit-strip { max-width: 1510px; margin: 18px auto 0; padding: 20px clamp(20px, 4vw, 58px); display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; background: rgba(255,255,255,.78); border: 1px solid rgba(231,233,241,.9); border-radius: 18px; box-shadow: 0 8px 28px rgba(32,34,56,.025); }
+        .benefit-item { display: flex; align-items: center; gap: 13px; min-width: 0; }
+        .benefit-icon { display: grid; place-items: center; width: 43px; height: 43px; flex-shrink: 0; border-radius: 13px; background: #fff0e9; color: #f06432; font-size: 1rem; }
+        .benefit-item strong, .benefit-item small { display: block; }
+        .benefit-item strong { font-size: .82rem; color: #282a40; margin-bottom: 3px; }
+        .benefit-item small { color: #818598; font-size: .72rem; line-height: 1.4; }
+
+        .feed-container { max-width: 1580px; padding: 56px clamp(18px, 3vw, 42px) 30px; }
+        .catalogue-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 26px; }
+        .section-kicker { display: block; margin-bottom: 8px; color: #f06432; font-size: .7rem; font-weight: 850; letter-spacing: 1.5px; }
+        .catalogue-heading h2 { color: #191a30; font-size: clamp(1.5rem, 2.4vw, 2.1rem); line-height: 1.2; letter-spacing: -.045em; font-weight: 850; margin-bottom: 8px; }
+        .catalogue-heading p { color: #777c8e; font-size: .94rem; }
+        .catalogue-hint { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; color: #777c8e; font-size: .8rem; font-weight: 650; padding-bottom: 5px; }
+        .catalogue-hint i { color: #ff6b35; }
+        .masonry-grid { column-gap: 22px; }
+        .pin-card { margin-bottom: 22px; border: 1px solid rgba(227,229,238,.9); border-radius: 17px; box-shadow: 0 5px 18px rgba(28,31,55,.055); background: #fff; }
+        .pin-card:hover { transform: translateY(-5px); box-shadow: 0 18px 38px rgba(28,31,55,.13); }
+        .document-preview { background: #fff; }
+        .thumbnail-placeholder { background: linear-gradient(145deg,#fff 0%,#f7f8fc 100%); }
+        .thumbnail-placeholder::before { height: 3px; background: linear-gradient(90deg,#ff6b35,#ffb08f); }
+        .placeholder-icon { width: 54px; height: 54px; color: #ff6b35; box-shadow: 0 6px 18px rgba(255,107,53,.12); }
+        .placeholder-title { color: #25273d; letter-spacing: .65px; }
+        .pin-overlay { background: linear-gradient(to bottom,rgba(20,22,44,.03) 0%,rgba(20,22,44,.02) 38%,rgba(20,22,44,.72) 100%); }
+        .overlay-bottom { padding: 15px; border: 1px solid rgba(255,255,255,.8); }
+        .overlay-title { color: #24263b; font-size: .91rem; }
+        .overlay-price { font-size: 1.05rem; }
+        .btn-customize-overlay { padding: 11px; }
+        .category-badge { opacity: 1; transform: none; top: 12px; left: 12px; box-shadow: 0 3px 12px rgba(20,22,44,.08); }
+        .pin-card:hover .category-badge { transform: translateY(-2px); }
+        .empty-state { border: 1px dashed #dfe2ec; box-shadow: var(--shadow-sm); }
+        .app-footer { margin-top: 70px; background: #17172b; position: relative; overflow: hidden; }
+        .app-footer::before { content: ''; position: absolute; width: 360px; height: 260px; right: -80px; top: -150px; background: #ff6b35; filter: blur(110px); opacity: .12; pointer-events: none; }
+        .footer-container, .footer-bottom { position: relative; z-index: 1; }
+        .footer-team { color: #ff9a74; background: rgba(255,107,53,.1); border-color: rgba(255,107,53,.2); }
+        .bottom-nav { border-top-color: #eceef4; box-shadow: 0 -8px 28px rgba(22,24,44,.08); }
+        .nav-item.active { color: #ff6b35; }
+
+        @media (max-width: 1024px) {
+            .home-hero { grid-template-columns: minmax(0,1fr) minmax(270px,.8fr); padding: 38px 34px; gap: 15px; }
+            .hero-visual { transform: scale(.9); transform-origin: center; margin: -10px -12px; }
+            .float-front { left: 5%; }
+            .float-back { right: 0; }
+            .benefit-strip { margin-left: 18px; margin-right: 18px; }
+        }
+        @media (max-width: 768px) {
+            .app-header { padding: 10px 14px; gap: 10px; }
+            .logo { font-size: 1.38rem; }
+            .search-bar { min-height: 40px; padding: 8px 12px; border-radius: 13px; gap: 8px; }
+            .search-bar input { font-size: .8rem; }
+            .header-actions { gap: 5px; }
+            .icon-btn { width: 36px; height: 36px; font-size: .95rem; }
+            .btn-auth { min-width: 36px; min-height: 36px; padding: 8px; justify-content: center; }
+            .categories-wrapper { top: 59px; }
+            .categories-nav { padding: 10px 14px; gap: 7px; }
+            .cat-pill { padding: 8px 14px; font-size: .77rem; }
+            .home-hero { display: block; margin: 16px 12px 0; padding: 27px 22px 22px; border-radius: 23px; }
+            .hero-eyebrow { font-size: .62rem; margin-bottom: 15px; letter-spacing: 1px; }
+            .hero-copy h1 { font-size: clamp(2.15rem, 9vw, 3rem); line-height: 1.06; margin-bottom: 15px; }
+            .hero-description { font-size: .9rem; line-height: 1.65; margin-bottom: 20px; }
+            .hero-actions { display: grid; grid-template-columns: 1fr; gap: 9px; }
+            .hero-primary, .hero-secondary { width: 100%; min-height: 46px; font-size: .86rem; border-radius: 12px; }
+            .hero-proof { margin-top: 19px; }
+            .hero-visual { min-height: 275px; margin: 12px -18px -6px; transform: scale(.82); transform-origin: center top; }
+            .float-front { left: 13%; top: 10px; }
+            .float-back { right: 12%; top: 24px; }
+            .hero-floating-note { right: 6%; bottom: -1px; }
+            .orbit-one { width: 330px; height: 220px; }
+            .orbit-two { width: 270px; height: 310px; }
+            .benefit-strip { grid-template-columns: 1fr; gap: 13px; margin: 12px 12px 0; padding: 17px; border-radius: 17px; }
+            .benefit-item { gap: 11px; }
+            .benefit-icon { width: 38px; height: 38px; border-radius: 11px; }
+            .benefit-item strong { font-size: .79rem; }
+            .benefit-item small { font-size: .7rem; }
+            .feed-container { padding: 37px 12px 25px; }
+            .catalogue-heading { align-items: start; margin-bottom: 18px; }
+            .catalogue-heading h2 { font-size: 1.45rem; }
+            .catalogue-heading p { font-size: .82rem; max-width: 330px; }
+            .catalogue-hint { display: none; }
+            .masonry-grid { column-count: 2; column-gap: 11px; }
+            .pin-card { margin-bottom: 12px; border-radius: 13px; }
+            .overlay-bottom { padding: 9px; border-radius: 10px; }
+            .overlay-title { font-size: .75rem; }
+            .overlay-price { font-size: .83rem; margin-bottom: 7px; }
+            .btn-customize-overlay { font-size: .72rem; padding: 8px 5px; }
+            .overlay-btn { width: 31px; height: 31px; font-size: .82rem; }
+            .pin-overlay { padding: 8px; }
+            .category-badge { top: 7px; left: 7px; padding: 4px 7px; font-size: .61rem; }
+            .app-footer { margin-top: 42px; padding: 42px 20px 110px; }
+        }
+        @media (max-width: 420px) {
+            .home-hero { padding: 24px 18px 16px; }
+            .hero-copy h1 { font-size: 2.15rem; }
+            .hero-visual { min-height: 240px; transform: scale(.72); margin-left: -35px; margin-right: -35px; }
+            .hero-proof p { font-size: .72rem; }
+            .catalogue-heading h2 { font-size: 1.3rem; }
+            .masonry-grid { column-gap: 9px; }
+            .overlay-bottom { padding: 8px; }
+            .overlay-title { font-size: .69rem; }
+            .overlay-price { font-size: .76rem; }
+            .btn-customize-overlay { font-size: .67rem; }
+            .pin-overlay { padding: 6px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+        }
+
+
+
+        /* ============================================
+           TakiDoc UX polish: search, categories, footer
+           ============================================ */
+        #documents { scroll-margin-top: 18px; }
+        .catalogue-status-active { color: #e95625 !important; font-weight: 700; }
+        .cat-pill { cursor: pointer; }
+        .cat-pill:focus-visible, .hero-primary:focus-visible, .hero-secondary:focus-visible,
+        .footer-help-link:focus-visible { outline: 3px solid rgba(255,107,53,.35); outline-offset: 3px; }
+
+        .app-footer {
+            margin-top: 46px;
+            padding: 0 clamp(16px, 4vw, 54px) 26px;
+            background: transparent;
+            color: #17172b;
+        }
+        .app-footer::before { display: none; }
+        .footer-cta {
+            max-width: 1450px;
+            margin: 0 auto 24px;
+            padding: 26px clamp(18px, 3vw, 36px);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            border: 1px solid #f0e5df;
+            border-radius: 22px;
+            background: linear-gradient(110deg, #fff 0%, #fff7f3 100%);
+            box-shadow: 0 8px 28px rgba(25,25,46,.045);
+        }
+        .footer-cta-icon {
+            flex: 0 0 52px; width: 52px; height: 52px;
+            display: grid; place-items: center;
+            border-radius: 16px; color: #ff6b35;
+            background: #fff0e9; font-size: 1.25rem;
+        }
+        .footer-cta-copy { flex: 1; min-width: 0; }
+        .footer-cta-copy h2 { margin: 0 0 4px; font-size: clamp(1rem, 2vw, 1.22rem); letter-spacing: -.03em; }
+        .footer-cta-copy p { margin: 0; max-width: 660px; color: #73778a; font-size: .88rem; line-height: 1.6; }
+        .footer-help-link {
+            flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            min-height: 44px; padding: 0 17px; border-radius: 12px;
+            background: #ff6b35; color: white; text-decoration: none; font-size: .85rem; font-weight: 750;
+            box-shadow: 0 7px 16px rgba(255,107,53,.18); transition: transform .2s ease, background .2s ease;
+        }
+        .footer-help-link:hover { background: #e95625; transform: translateY(-1px); }
+        .footer-bottom {
+            max-width: 1450px; margin: 0 auto; padding: 18px 2px 0;
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 22px;
+            border-top: 1px solid #e8eaf1; color: #85899a; font-size: .77rem;
+        }
+        .footer-mini-logo { color: #17172b; font-size: 1.08rem; font-weight: 900; letter-spacing: -.7px; text-decoration: none; }
+        .footer-mini-logo span { color: #ff6b35; }
+        .footer-legal-links { display: flex; flex-wrap: wrap; gap: 14px; }
+        .footer-legal-links a { color: #686d80; text-decoration: none; }
+        .footer-legal-links a:hover { color: #e95625; }
+        .footer-bottom p { margin: 0; }
+
+        @media (max-width: 768px) {
+            /* Remove the phantom 55–59px offset under the two-line header. */
+            .categories-wrapper { position: relative !important; top: auto !important; margin-top: 0 !important; }
+            .categories-nav { padding-top: 8px !important; padding-bottom: 8px !important; }
+            .home-hero { margin-top: 0 !important; }
+            .app-footer { margin-top: 28px; padding: 0 12px calc(92px + env(safe-area-inset-bottom)); }
+            .footer-cta { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 12px; padding: 17px; border-radius: 17px; }
+            .footer-cta-icon { width: 44px; height: 44px; flex-basis: 44px; border-radius: 13px; font-size: 1.05rem; }
+            .footer-cta-copy h2 { font-size: 1rem; }
+            .footer-cta-copy p { font-size: .78rem; }
+            .footer-help-link { grid-column: 1 / -1; width: 100%; min-height: 43px; }
+            .footer-bottom { justify-content: center; text-align: center; gap: 12px; padding-top: 16px; }
+            .footer-legal-links { justify-content: center; gap: 12px; width: 100%; }
+            .footer-bottom p { width: 100%; font-size: .7rem; }
+            #documents { scroll-margin-top: 10px; }
+        }
+
+        
+/* ==========================================
+   TAKIDOC — FOOTER PREMIUM RESPONSIVE
+   ========================================== */
+
+.takidoc-footer-v2 {
+    --td-orange: #ff6b35;
+    --td-ink: #121629;
+    --td-muted: #aeb6ca;
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    margin-top: 76px;
+    padding: 0;
+    color: #fff;
+    background:
+        radial-gradient(
+            ellipse at 8% 10%,
+            rgba(255, 107, 53, .13),
+            transparent 34%
+        ),
+        radial-gradient(
+            ellipse at 95% 75%,
+            rgba(75, 91, 150, .13),
+            transparent 35%
+        ),
+        var(--td-ink);
+    font-family: inherit;
+}
+
+.takidoc-footer-v2 *,
+.takidoc-footer-v2 *::before,
+.takidoc-footer-v2 *::after {
+    box-sizing: border-box;
+}
+
+.td-footer-shell {
+    width: min(1240px, calc(100% - 64px));
+    margin-inline: auto;
+}
+
+/* Bandeau d'assistance */
+.td-footer-cta {
+    position: relative;
+    top: -1px;
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 22px;
+    padding: 27px 30px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-top: 3px solid var(--td-orange);
+    border-radius: 0 0 22px 22px;
+    background: linear-gradient(
+        115deg,
+        rgba(255, 255, 255, .075),
+        rgba(255, 255, 255, .025)
+    );
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .12);
+}
+
+.td-cta-icon {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    color: var(--td-orange);
+    background: rgba(255, 107, 53, .13);
+    font-size: 23px;
+}
+
+.td-cta-text {
+    min-width: 0;
+}
+
+.td-eyebrow {
+    display: block;
+    margin-bottom: 6px;
+    color: #ff9b76;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.7px;
+}
+
+.td-cta-text h2 {
+    margin: 0 0 6px;
+    color: #fff;
+    font-size: clamp(19px, 2vw, 25px);
+    font-weight: 850;
+    letter-spacing: -.7px;
+    line-height: 1.25;
+}
+
+.td-cta-text p {
+    max-width: 570px;
+    margin: 0;
+    color: var(--td-muted);
+    font-size: 13px;
+    line-height: 1.75;
+}
+
+.td-cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 48px;
+    padding: 0 20px;
+    border: 1px solid var(--td-orange);
+    border-radius: 13px;
+    color: #fff;
+    background: var(--td-orange);
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background .2s ease, transform .2s ease,
+                box-shadow .2s ease;
+}
+
+.td-cta-button:hover {
+    color: #fff;
+    background: #e95625;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(255, 107, 53, .22);
+}
+
+/* Colonnes */
+.td-footer-main {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.5fr)
+                           repeat(3, minmax(0, 1fr));
+    gap: clamp(24px, 4vw, 56px);
+    padding: 54px 0 46px;
+}
+
+.td-footer-brand {
+    min-width: 0;
+}
+
+.td-footer-logo {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 18px;
+    color: #fff;
+    font-size: 34px;
+    font-weight: 950;
+    letter-spacing: -2px;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.td-footer-logo span {
+    color: var(--td-orange);
+}
+
+.td-footer-logo strong {
+    color: #fff;
+}
+
+.td-footer-brand > p {
+    max-width: 320px;
+    margin: 0;
+    color: var(--td-muted);
+    font-size: 13px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+}
+
+.td-footer-promise {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 22px;
+    color: #e1e5ef;
+    font-size: 11px;
+    font-weight: 650;
+    line-height: 1.7;
+}
+
+.td-promise-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    color: #ff9b76;
+    background: rgba(255, 107, 53, .12);
+}
+
+/* Liens */
+.td-footer-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    min-width: 0;
+}
+
+.td-footer-column h3 {
+    position: relative;
+    margin: 2px 0 10px;
+    padding-bottom: 14px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 850;
+    line-height: 1.4;
+}
+
+.td-footer-column h3::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 30px;
+    height: 3px;
+    border-radius: 99px;
+    background: var(--td-orange);
+}
+
+.td-footer-column a {
+    position: relative;
+    max-width: 100%;
+    color: var(--td-muted);
+    font-size: 12px;
+    line-height: 1.65;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: color .18s ease, transform .18s ease;
+}
+
+.td-footer-column a:hover {
+    color: #fff;
+    transform: translateX(3px);
+}
+
+/* Barre inférieure */
+.td-footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-width: 0;
+    padding: 22px 0 calc(24px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(255, 255, 255, .11);
+}
+
+.td-footer-bottom p {
+    margin: 0;
+    color: #8992a9;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.td-footer-location {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #8992a9;
+    font-size: 11px;
+    line-height: 1.7;
+    text-align: center;
+}
+
+.td-footer-location i {
+    color: var(--td-orange);
+}
+
+.td-back-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #e3e7f1;
+    font-size: 11px;
+    font-weight: 750;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.td-back-top i {
+    display: grid;
+    place-items: center;
+    width: 29px;
+    height: 29px;
+    border: 1px solid rgba(255, 255, 255, .15);
+    border-radius: 9px;
+    color: var(--td-orange);
+    transition: background .2s ease;
+}
+
+.td-back-top:hover {
+    color: #fff;
+}
+
+.td-back-top:hover i {
+    background: rgba(255, 107, 53, .13);
+}
+
+/* Tablettes et petits ordinateurs */
+@media (max-width: 980px) {
+    .td-footer-shell {
+        width: calc(100% - 40px);
+    }
+
+    .td-footer-main {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 36px 28px;
+    }
+
+    .td-footer-brand {
+        grid-column: 1 / -1;
+        max-width: 560px;
+    }
+
+    .td-footer-brand > p {
+        max-width: 520px;
+    }
+
+    .td-footer-cta {
+        grid-template-columns: 50px minmax(0, 1fr);
+        gap: 16px;
+        padding: 24px;
+    }
+
+    .td-cta-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .td-cta-button {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    .td-footer-location {
+        display: none;
+    }
+}
+
+/* Téléphones */
+@media (max-width: 600px) {
+    .takidoc-footer-v2 {
+        margin-top: 38px;
+    }
+
+    .td-footer-shell {
+        width: calc(100% - 32px);
+    }
+
+    .td-footer-cta {
+        grid-template-columns: 42px minmax(0, 1fr);
+        gap: 13px;
+        padding: 20px 16px;
+        border-radius: 0 0 18px 18px;
+    }
+
+    .td-cta-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+        font-size: 18px;
+    }
+
+    .td-eyebrow {
+        font-size: 9px;
+        letter-spacing: 1.2px;
+    }
+
+    .td-cta-text h2 {
+        font-size: 18px;
+    }
+
+    .td-cta-text p {
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .td-cta-button {
+        grid-column: 1 / -1;
+        justify-self: stretch;
+        width: 100%;
+        min-height: 46px;
+    }
+
+    .td-footer-main {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 32px 20px;
+        padding: 38px 0 32px;
+    }
+
+    .td-footer-brand {
+        grid-column: 1 / -1;
+    }
+
+    .td-footer-logo {
+        font-size: 30px;
+        margin-bottom: 14px;
+    }
+
+    .td-footer-brand > p {
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .td-footer-promise {
+        margin-top: 16px;
+        font-size: 11px;
+    }
+
+    .td-footer-column {
+        gap: 12px;
+    }
+
+    .td-footer-column h3 {
+        margin-bottom: 5px;
+        font-size: 13px;
+    }
+
+    .td-footer-column a {
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .td-footer-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px 0 calc(100px + env(safe-area-inset-bottom));
+    }
+
+    .td-footer-bottom p {
+        font-size: 10px;
+    }
+
+    .td-back-top {
+        align-self: flex-start;
+    }
+}
+
+/* Très petits téléphones */
+@media (max-width: 360px) {
+    .td-footer-shell {
+        width: calc(100% - 24px);
+    }
+
+    .td-footer-main {
+        column-gap: 14px;
+    }
+
+    .td-footer-column h3 {
+        font-size: 12px;
+    }
+
+    .td-footer-column a {
+        font-size: 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .takidoc-footer-v2 *,
+    .takidoc-footer-v2 *::before,
+    .takidoc-footer-v2 *::after {
+        transition: none !important;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -1580,42 +2365,146 @@
         </nav>
     </div>
 
-    <main class="feed-container">
+    <section class="home-hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+            <div class="hero-eyebrow"><span class="eyebrow-dot"></span> LA BIBLIOTHÈQUE DE DOCUMENTS PRO
+            </div>
+            <h1 id="hero-title">Les bons documents.<br><span>Le bon départ.</span></h1>
+            <p class="hero-description">CV, contrats, lettres et documents administratifs prêts à personnaliser. Gagnez du temps et présentez-vous avec confiance.</p>
+            <div class="hero-actions">
+                <a href="#documents" class="hero-primary" id="heroExplore"><i class="fas fa-compass"></i> Explorer les modèles</a>
+                <a href="auth.html?action=signup" class="hero-secondary"><i class="fas fa-user-plus"></i> Créer un compte</a>
+            </div>
+            <div class="hero-proof">
+                <div class="proof-avatars" aria-hidden="true"><span><i class="fas fa-user"></i></span><span><i class="fas fa-briefcase"></i></span><span><i class="fas fa-file-alt"></i></span></div>
+                <p><strong>Des modèles pensés pour vous</strong><br><span>Professionnels, clairs et faciles à adapter</span></p>
+            </div>
+        </div>
+        <div class="hero-visual" aria-label="Aperçu de documents professionnels">
+            <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+            <div class="hero-float-card float-back">
+                <div class="mini-doc-top"><span class="mini-mark orange-mark"></span><span class="mini-lines"><i></i><i></i></span></div>
+                <div class="mini-doc-title">CONTRAT DE TRAVAIL</div><div class="mini-rule"></div>
+                <div class="mini-paragraph"><i></i><i></i><i class="short"></i></div><div class="mini-paragraph"><i></i><i class="short"></i></div>
+                <span class="mini-stamp"><i class="fas fa-check"></i> Modèle pro</span>
+            </div>
+            <div class="hero-float-card float-front">
+                <div class="cv-topline"><div class="cv-avatar"><i class="fas fa-user"></i></div><div class="cv-heading-lines"><i></i><i></i><i></i></div></div>
+                <div class="cv-columns"><div class="cv-sidebar"><i></i><i></i><i></i><i></i><i></i></div><div class="cv-content"><b></b><i></i><i></i><b></b><i></i><i class="short"></i><b></b><i></i><i></i></div></div>
+                <div class="cv-chip"><i class="fas fa-wand-magic-sparkles"></i> Personnalisable</div>
+            </div>
+            <div class="hero-floating-note"><span class="note-icon"><i class="fas fa-bolt"></i></span><span><strong>Simple & rapide</strong><small>Modifiez en quelques clics</small></span></div>
+        </div>
+        <div class="hero-bottom-glow"></div>
+    </section>
+
+    <div class="benefit-strip" aria-label="Avantages TakiDoc">
+        <div class="benefit-item"><span class="benefit-icon"><i class="fas fa-pen-to-square"></i></span><span><strong>Facile à personnaliser</strong><small>Adaptez chaque modèle à vos besoins</small></span></div>
+        <div class="benefit-item"><span class="benefit-icon"><i class="fas fa-file-pdf"></i></span><span><strong>Prêt pour le professionnel</strong><small>Des présentations soignées</small></span></div>
+        <div class="benefit-item"><span class="benefit-icon"><i class="fas fa-clock"></i></span><span><strong>Gagnez du temps</strong><small>Partez d'une bonne base</small></span></div>
+    </div>
+
+    <main class="feed-container" id="documents">
+        <div class="catalogue-heading">
+            <div><span class="section-kicker">LA SÉLECTION TAKIDOC</span><h2 id="catalogueTitle">Des modèles pour chaque étape</h2><p id="catalogueStatus" aria-live="polite">Choisissez un document et adaptez-le à votre situation.</p></div>
+            <div class="catalogue-hint"><i class="fas fa-arrow-down-wide-short"></i> Parcourez la collection</div>
+        </div>
         <div class="masonry-grid" id="masonryGrid"></div>
     </main>
 
-    <footer class="app-footer">
-        <div class="footer-container">
-            <div class="footer-brand">
-                <a href="/" class="logo"><span class="logo-taki">Taki</span><span class="logo-doc">Doc</span></a>
-                <p>La plateforme de référence au Congo pour vos documents professionnels.</p>
-                <div class="footer-team"><i class="fas fa-code"></i> Développé par L'équipe Meurphy</div>
+   
+
+<footer class="takidoc-footer-v2" id="site-footer">
+
+    <!-- Bandeau d'assistance -->
+    <div class="td-footer-shell">
+        <section class="td-footer-cta">
+            <div class="td-cta-icon">
+                <i class="fas fa-comments"></i>
             </div>
-            <div class="footer-col">
-                <h4>Navigation</h4>
-                <ul>
-                    <li><a href="/">Accueil</a></li>
-                    <li><a href="auth.html">Connexion</a></li>
-                    <li><a href="profile.html">Profil</a></li>
-                </ul>
+
+            <div class="td-cta-text">
+                <span class="td-eyebrow">NOUS SOMMES LÀ POUR VOUS</span>
+                <h2>Un document, une question ?</h2>
+                <p>Besoin d'aide pour choisir ou personnaliser un modèle ?
+                   Découvrez TakiDoc ou contactez notre équipe.</p>
             </div>
-            <div class="footer-col">
-                <h4>Légal</h4>
-                <ul>
-                    <li><a href="conditions.html">Conditions</a></li>
-                    <li><a href="confidentialite.html">Confidentialité</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
+
+            <a href="contact.html" class="td-cta-button">
+                Contacter TakiDoc
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </section>
+
+        <!-- Navigation principale -->
+        <div class="td-footer-main">
+
+            <div class="td-footer-brand">
+                <a href="index.html" class="td-footer-logo"
+                   aria-label="TakiDoc, accueil">
+                    <span>Taki</span><strong>Doc</strong>
+                </a>
+
+                <p>
+                    Les documents professionnels dont vous avez besoin,
+                    réunis au même endroit. Trouvez un modèle,
+                    personnalisez-le et avancez en toute confiance.
+                </p>
+
+                <div class="td-footer-promise">
+                    <span class="td-promise-icon">
+                        <i class="fas fa-file-circle-check"></i>
+                    </span>
+                    <span>Votre travail mérite des documents soignés.</span>
+                </div>
             </div>
-            <div class="footer-col">
-                <h4>Contact</h4>
-                <div class="footer-contact-item"><i class="fas fa-envelope"></i><span>contact.takidoc@gmail.com</span></div>
-                <div class="footer-contact-item"><i class="fas fa-phone"></i><span>06 518 69 67</span></div>
-                <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>Brazzaville, Congo</span></div>
-            </div>
+
+            <nav class="td-footer-column" aria-label="Découvrir TakiDoc">
+                <h3>Découvrir</h3>
+                <a href="index.html">Accueil</a>
+                <a href="a-propos.html">À propos de TakiDoc</a>
+                <a href="comment-ca-marche.html">Comment ça marche ?</a>
+                <a href="contact.html">Nous contacter</a>
+            </nav>
+
+            <nav class="td-footer-column" aria-label="Catégories de documents">
+                <h3>Nos documents</h3>
+                <a href="index.html#documents" data-footer-cat="cv">CV professionnels</a>
+                <a href="index.html#documents" data-footer-cat="lettre">Lettres</a>
+                <a href="index.html#documents" data-footer-cat="contrat">Contrats</a>
+                <a href="index.html#documents" data-footer-cat="attestation">Attestations</a>
+                <a href="index.html#documents" data-footer-cat="administratif">Documents administratifs</a>
+                <a href="index.html#documents" data-footer-cat="facture">Factures et devis</a>
+            </nav>
+
+            <nav class="td-footer-column" aria-label="Informations légales">
+                <h3>Informations</h3>
+                <a href="conditions.html">Conditions d'utilisation</a>
+                <a href="confidentialite.html">Politique de confidentialité</a>
+                <a href="mentions-legales.html">Mentions légales</a>
+                <a href="cookies.html">Gestion des cookies</a>
+            </nav>
+
         </div>
-        <div class="footer-bottom"><p>&copy; 2026 TakiDoc. Propriétaire : Meurphy TALAMIO.</p></div>
-    </footer>
+
+        <!-- Barre de bas de page -->
+        <div class="td-footer-bottom">
+            <p>
+                © <span id="td-footer-year"></span> TakiDoc.
+                Tous droits réservés.
+            </p>
+
+            <span class="td-footer-location">
+                <i class="fas fa-globe-africa"></i>
+                Une plateforme pensée pour vos besoins professionnels
+            </span>
+
+            <a href="#top" class="td-back-top">
+                Retour en haut <i class="fas fa-arrow-up"></i>
+            </a>
+        </div>
+    </div>
+</footer>
 
     <nav class="bottom-nav">
         <a href="/" class="nav-item active"><i class="fas fa-home"></i><span>Accueil</span></a>
@@ -1832,28 +2721,110 @@
         }
 
         // ============================================
-        // FILTRAGE ET RECHERCHE
+        // FILTRAGE, RECHERCHE ET NAVIGATION VERS LES RÉSULTATS
         // ============================================
         let currentCat = 'all';
+        let searchScrollTimer = null;
+        let lastSearchHadQuery = false;
+        const catalogueStatus = document.getElementById('catalogueStatus');
+        const catalogueTitle = document.getElementById('catalogueTitle');
+
+        const categoryAliases = {
+            cv: ['cv', 'curriculum', 'curriculum vitae', 'resume'],
+            lettre: ['lettre', 'lettres', 'motivation', 'candidature', 'demande'],
+            contrat: ['contrat', 'contrats', 'travail', 'emploi', 'accord'],
+            commercial: ['commercial', 'facture', 'devis', 'commande', 'vente', 'recu', 'reçu'],
+            attestation: ['attestation', 'certificat', 'residence', 'résidence', 'travail'],
+            administratif: ['administratif', 'administrative', 'administration', 'mairie', 'autorisation'],
+            facture: ['facture', 'factures', 'facturation'],
+            devis: ['devis', 'estimation', 'proforma'],
+            rapport: ['rapport', 'compte rendu', 'bilan'],
+            procuration: ['procuration', 'mandat'],
+            declaration: ['declaration', 'déclaration', 'déclarations'],
+            certificat: ['certificat', 'certificats']
+        };
+
+        function normalizeText(value) {
+            return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        }
+
+        function matchesCategory(doc, selectedCategory) {
+            if (selectedCategory === 'all') return true;
+            const docCategory = normalizeText(doc.category);
+            const wanted = normalizeText(selectedCategory);
+            if (docCategory === wanted || docCategory === wanted.replace(/s$/, '')) return true;
+
+            const aliases = (categoryAliases[selectedCategory] || [selectedCategory]).map(normalizeText);
+            // First match the document's explicit category/id/tags; only then use its title.
+            const metadata = normalizeText([doc.category, doc.id, ...(Array.isArray(doc.tags) ? doc.tags : [])].join(' '));
+            if (aliases.some(alias => metadata.includes(alias))) return true;
+            const title = normalizeText(doc.name);
+            return aliases.some(alias => title.includes(alias));
+        }
+
+        function scrollToResults() {
+            const target = document.getElementById('documents');
+            if (!target) return;
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
         catPills.forEach(pill => {
             pill.addEventListener('click', () => {
                 catPills.forEach(p => p.classList.remove('active'));
                 pill.classList.add('active');
-                currentCat = pill.dataset.cat;
+                currentCat = pill.dataset.cat || 'all';
                 filterAndRender();
+                scrollToResults();
             });
         });
 
-        searchInput.addEventListener('input', filterAndRender);
+        searchInput.addEventListener('input', () => {
+            filterAndRender();
+            const hasQuery = searchInput.value.trim().length > 0;
+            if (hasQuery && !lastSearchHadQuery) {
+                clearTimeout(searchScrollTimer);
+                searchScrollTimer = setTimeout(scrollToResults, 220);
+            }
+            lastSearchHadQuery = hasQuery;
+        });
+
+        searchInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                clearTimeout(searchScrollTimer);
+                filterAndRender();
+                scrollToResults();
+                searchInput.blur();
+            }
+            if (event.key === 'Escape') {
+                searchInput.value = '';
+                lastSearchHadQuery = false;
+                filterAndRender();
+            }
+        });
 
         function filterAndRender() {
-            const query = searchInput.value.toLowerCase().trim();
+            const query = normalizeText(searchInput.value);
             const filtered = templatesRegistry.filter(doc => {
-                const matchCat = currentCat === 'all' || doc.category === currentCat;
-                const matchSearch = !query || doc.name.toLowerCase().includes(query) || doc.description.toLowerCase().includes(query);
+                const matchCat = matchesCategory(doc, currentCat);
+                const searchableText = normalizeText([
+                    doc.name, doc.description, doc.category, doc.id,
+                    ...(Array.isArray(doc.tags) ? doc.tags : [])
+                ].join(' '));
+                const matchSearch = !query || searchableText.includes(query);
                 return matchCat && matchSearch;
             });
             renderPins(filtered);
+
+            if (catalogueTitle) {
+                catalogueTitle.textContent = currentCat === 'all'
+                    ? (query ? 'Résultats de recherche' : 'Des modèles pour chaque étape')
+                    : `Documents : ${catPills.length ? (document.querySelector('.cat-pill.active')?.textContent.trim() || currentCat) : currentCat}`;
+            }
+            if (catalogueStatus) {
+                catalogueStatus.textContent = `${filtered.length} document${filtered.length > 1 ? 's' : ''} trouvé${filtered.length > 1 ? 's' : ''}${query ? ` pour « ${searchInput.value.trim()} »` : ''}.`;
+                catalogueStatus.classList.toggle('catalogue-status-active', Boolean(query) || currentCat !== 'all');
+            }
         }
 
         // ============================================
@@ -1896,9 +2867,49 @@
             navSearch.addEventListener('click', (e) => {
                 e.preventDefault();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                setTimeout(() => searchInput.focus(), 300);
+                setTimeout(() => {
+                    searchInput.focus({ preventScroll: true });
+                    searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
             });
         }
+
+        const heroExplore = document.getElementById('heroExplore');
+        if (heroExplore) {
+            heroExplore.addEventListener('click', () => {
+                setTimeout(() => {
+                    const firstCategory = document.querySelector('.cat-pill[data-cat="all"]');
+                    if (firstCategory && currentCat !== 'all') firstCategory.click();
+                }, 0);
+            });
+        }
+
+        
+    // Année automatique
+    const footerYear = document.getElementById('td-footer-year');
+    if (footerYear) {
+        footerYear.textContent = new Date().getFullYear();
+    }
+
+    // Catégories du footer reliées au catalogue existant
+    document.querySelectorAll('[data-footer-cat]').forEach(link => {
+        link.addEventListener('click', event => {
+            const category = link.dataset.footerCat;
+            const categoryButton = document.querySelector(
+                `.cat-pill[data-cat="${category}"]`
+            );
+
+            // Laisse le lien fonctionner normalement si la catégorie
+            // n'existe pas dans le catalogue.
+            if (!categoryButton) return;
+
+            event.preventDefault();
+            categoryButton.click();
+
+            // Met aussi à jour le fragment de l'URL.
+            history.replaceState(null, '', '#documents');
+        });
+    });
 
         // ============================================
         // INITIALISATION
