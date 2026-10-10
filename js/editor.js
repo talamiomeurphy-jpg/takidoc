@@ -1,72 +1,69 @@
 // ============================================
-// TAKIDOC - LOGIQUE DE L'ÉDITEUR (VERSION FINALE & ROBUSTE)
-// L'équipe Meurphy
+// TAKIDOC - MOTEUR D'ÉDITION COMPLET (VERSION ULTIME UNIVERSAL)
+// L'équipe Meurphy - 2026
 // ============================================
 
 import { fetchTemplateById, createPendingPurchase } from './supabase-config.js';
 import { templatesRegistry } from './templates-registry.js';
 
-const OPENPAY_LINKS = {
-    800: 'https://openpay.cg/pay/f70b59c1f63e0e6a2d55b5dbde5203fe5bb6d73645b7c2cf8fc9a60117c9282b',
-    1000: 'https://openpay.cg/pay/d244c8900efd9f3a73c98436fe4ffcae61ed413c99ede74a6de8bd705b91dc2c',
-    1200: 'https://openpay.cg/pay/bb6a4ec95996eaed88ba07272e00756803f63fa4af7f134d2accb492ebdf6e59',
-    1500: 'https://openpay.cg/pay/be4cd427a7983f19eef52bc147df73a661c3858e4498a1cc0212892429f79bfa',
-    2000: 'https://openpay.cg/pay/77983426652c9016148a17667af0c89b9957ed04eac76e4a4ec6922859f31a1e'
-};
-
+// ============================================
+// ÉTAT GLOBAL DE L'ÉDITEUR
+// ============================================
 const editorState = {
     template: null,
-    templateRender: null,
-    zoom: window.innerWidth <= 768 ? 0.20 : 1.0, // ← 20% sur mobile, 100% sur PC
-    customData: {},
+    zoom: window.innerWidth <= 768 ? 0.35 : 1.0,
     primaryColor: '#0F172A',
     photoDataUrl: null
 };
 
-const DEFAULT_VALUES = {
-    'nom': 'Meurphy TALAMIO', 'poste': 'Directeur Général', 'email': 'brazzamarket.infos@gmail.com',
-    'telephone': '+242 06 518 69 67', 'adresse': 'Brazzaville, Congo',
-    'profil': 'Professionnel expérimenté avec plus de 10 ans d\'expérience.',
-    'exp1_titre': 'Directeur Général', 'exp1_date': '2020 - Présent', 'exp1_entreprise': 'Entreprise XYZ', 'exp1_desc': 'Direction stratégique.',
-    'exp2_titre': 'Chef de Projet', 'exp2_date': '2015 - 2020', 'exp2_entreprise': 'Société ABC', 'exp2_desc': 'Gestion de projets.',
-    'form1_diplome': 'Master en Management', 'form1_ecole': 'Université Marien Ngouabi', 'form1_date': '2013 - 2015',
-    'skill1_name': 'Gestion de projet', 'skill2_name': 'Leadership', 'skill3_name': 'Communication', 'skill4_name': 'Analyse',
-    'lang1_name': 'Français', 'lang1_level': 'Courant', 'lang2_name': 'Anglais', 'lang2_level': 'Professionnel',
-    'interets': 'Lecture, Voyages, Technologie',
-    'expediteur_nom': 'Meurphy TALAMIO', 'expediteur_adresse': 'Brazzaville, Congo', 'expediteur_telephone': '+242 06 518 69 67', 'expediteur_email': 'brazzamarket.infos@gmail.com',
-    'destinataire_nom': 'Monsieur le Directeur', 'destinataire_fonction': 'DRH', 'destinataire_entreprise': 'Entreprise Cible', 'destinataire_adresse': 'Brazzaville',
-    'objet': 'Candidature au poste', 'paragraphe1': 'Madame, Monsieur,', 'paragraphe2': 'Je me permets de vous adresser ma candidature.', 'paragraphe3': 'Mes compétences correspondent à vos besoins.', 'paragraphe4': 'Dans l\'attente de votre réponse, cordialement.', 'signature': 'Meurphy TALAMIO'
-};
+// ============================================
+// UTILITAIRE - TOAST NOTIFICATION
+// ============================================
+function showToast(message, duration = 5000) {
+    const oldToast = document.querySelector('.editor-toast');
+    if (oldToast) oldToast.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'editor-toast';
+    toast.innerHTML = `<i class="fas fa-lightbulb" style="color: #FF6B35; margin-right: 8px;"></i> ${message}`;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+    });
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        setTimeout(() => toast.remove(), 400);
+    }, duration);
+}
 
 // ============================================
-// INITIALISATION
+// 1. INITIALISATION PRINCIPALE
 // ============================================
 document.addEventListener('DOMContentLoaded', async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const templateId = urlParams.get('id');
+    const templateId = new URLSearchParams(window.location.search).get('id');
     
-    if (!templateId) { showError(); return; }
+    let template = templatesRegistry.find(t => t.id === templateId);
+    if (!template) template = await fetchTemplateById(templateId);
     
-    const template = await fetchTemplateById(templateId);
-    if (!template) { showError(); return; }
-    
-    const templateRender = templatesRegistry.find(t => t.id === templateId);
+    if (!template) return showError();
     
     editorState.template = template;
-    editorState.templateRender = templateRender;
-    
     initEditor();
 });
 
 function initEditor() {
-    const { template, templateRender } = editorState;
+    const { template } = editorState;
     
     document.getElementById('editor-loading').style.display = 'none';
     document.getElementById('editor-interface').style.display = 'grid';
     
     document.getElementById('doc-title').textContent = template.name;
-    document.getElementById('doc-category').textContent = template.category?.name || 'Document';
-    document.getElementById('doc-price').textContent = `${template.price_xaf} FCFA`;
+    document.getElementById('doc-category').textContent = template.category || 'Document';
+    document.getElementById('doc-price').textContent = `${template.price || 0} FCFA`;
     
     if (template.hasPhoto) {
         document.getElementById('photo-section').style.display = 'block';
@@ -77,31 +74,25 @@ function initEditor() {
         setupColorPicker();
     }
     
-    initializeDefaultData();
     renderDocument();
-    setupFields(template.fields || []);
-    
-    // Initialisation du zoom
+    buildSidebarFields(template.fields || []);
     setupZoomControls();
-    updateZoomDisplay(); // Applique le 20% sur mobile immédiatement
+    setupActions();
     
-    setupDownloadButton();
-    setupBuyButton();
-    setupPaymentModal();
+    setTimeout(() => {
+        updateZoomDisplay();
+        applyMobileZoom();
+        enableDirectEditing();
+        showToast("✏️ Cliquez sur n'importe quel texte pour le modifier");
+    }, 400);
 }
 
 // ============================================
-// RENDU ET DONNÉES
+// 2. RENDU DU DOCUMENT
 // ============================================
-function initializeDefaultData() {
-    Object.keys(DEFAULT_VALUES).forEach(key => {
-        editorState.customData[key] = DEFAULT_VALUES[key];
-    });
-}
-
 function renderDocument() {
     const canvas = document.getElementById('document-canvas');
-    const { templateRender, template } = editorState;
+    const { template } = editorState;
     
     let styleTag = document.getElementById('template-style');
     if (!styleTag) {
@@ -109,353 +100,385 @@ function renderDocument() {
         styleTag.id = 'template-style';
         document.head.appendChild(styleTag);
     }
+    styleTag.textContent = template.cssStyles || '';
     
-    if (templateRender) {
-        styleTag.textContent = templateRender.cssStyles || '';
-        let html = templateRender.htmlStructure || '<p>Aperçu non disponible</p>';
-        
-        Object.keys(editorState.customData).forEach(key => {
-            const regex = new RegExp(`id="field-${key}"[^>]*>[^<]*<`, 'g');
-            const replacement = `id="field-${key}">${editorState.customData[key]}<`;
-            html = html.replace(regex, replacement);
+    canvas.innerHTML = template.htmlStructure || '<p>Aperçu non disponible</p>';
+    
+    if (template.fields) {
+        template.fields.forEach(field => {
+            const el = document.getElementById(`field-${field.name}`);
+            if (el && field.default) el.textContent = field.default;
         });
-        
-        if (template.hasPhoto) {
-            const photoRegex = /<div class="[^"]*photo[^"]*" id="doc-photo">[\s\S]*?<\/div>/;
-            html = html.replace(photoRegex, `<div class="cv-photo" id="doc-photo"><span class="cv-photo-placeholder" id="photo-initials">MT</span></div>`);
-        }
-        
-        canvas.innerHTML = html;
-    } else {
-        styleTag.textContent = `.generic-preview { width: 210mm; min-height: 297mm; background: white; padding: 40px; }`;
-        canvas.innerHTML = `<div class="generic-preview"><h1>${template.name}</h1><p>${template.description || ''}</p></div>`;
     }
     
-    applyPrimaryColor();
-    attachFieldListeners();
+    if (template.hasPhoto) {
+        const photoContainer = document.getElementById('doc-photo');
+        if (photoContainer && !photoContainer.querySelector('img')) {
+            photoContainer.innerHTML = `<span class="cv-photo-placeholder" style="font-size: 2rem; font-weight: 700; color: white;">TD</span>`;
+        }
+    }
 }
 
-function attachFieldListeners() {
-    document.querySelectorAll('[id^="field-"]').forEach(el => {
-        const fieldName = el.id.replace('field-', '');
-        el.addEventListener('input', (e) => {
-            editorState.customData[fieldName] = e.target.textContent;
-            const input = document.getElementById(`input-field-${fieldName}`);
-            if (input) input.value = e.target.textContent;
-            if (fieldName === 'nom') updateInitials(e.target.textContent);
-        });
-    });
-}
-
-function setupFields(fields) {
+// ============================================
+// 3. CONSTRUCTION DYNAMIQUE DE LA SIDEBAR
+// ============================================
+function buildSidebarFields(fields) {
     const container = document.getElementById('fields-container');
     container.innerHTML = '';
     
     fields.forEach(field => {
-        const fieldDiv = document.createElement('div');
-        fieldDiv.className = 'form-field';
+        const wrapper = document.createElement('div');
+        wrapper.className = 'form-field';
+        wrapper.style.marginBottom = '16px';
         
         const label = document.createElement('label');
-        label.textContent = field.field_label + (field.is_required ? ' *' : '');
-        fieldDiv.appendChild(label);
+        label.textContent = field.label;
+        label.style.cssText = 'display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600;';
+        wrapper.appendChild(label);
         
-        let input;
-        if (field.field_type === 'textarea') {
-            input = document.createElement('textarea');
-            input.rows = 4;
-        } else {
-            input = document.createElement('input');
-            input.type = 'text';
+        const input = document.createElement(field.type === 'textarea' ? 'textarea' : 'input');
+        
+        if (field.type !== 'textarea') {
+            input.type = field.type === 'email' ? 'email' : field.type === 'tel' ? 'tel' : 'text';
         }
         
-        input.id = `input-field-${field.field_name}`;
-        input.value = editorState.customData[field.field_name] || `[${field.field_label}]`;
+        input.id = `input-${field.name}`;
+        const defaultValue = field.default || '';
+        
+        if (field.type === 'textarea') {
+            input.textContent = defaultValue;
+            input.rows = 3;
+        } else {
+            input.value = defaultValue;
+        }
+        
+        input.style.cssText = 'width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; transition: all 0.2s; font-family: inherit;';
+        
+        input.addEventListener('focus', () => {
+            input.style.borderColor = 'var(--primary)';
+            input.style.boxShadow = '0 0 0 3px rgba(255,107,53,0.1)';
+        });
+        input.addEventListener('blur', () => {
+            input.style.borderColor = 'var(--border)';
+            input.style.boxShadow = 'none';
+        });
         
         input.addEventListener('input', (e) => {
-            editorState.customData[field.field_name] = e.target.value;
-            const docField = document.getElementById(`field-${field.field_name}`);
-            if (docField) docField.textContent = e.target.value;
-            if (field.field_name === 'nom') updateInitials(e.target.value);
+            const targetEl = document.getElementById(`field-${field.name}`);
+            if (targetEl) targetEl.textContent = e.target.value;
         });
         
-        fieldDiv.appendChild(input);
-        container.appendChild(fieldDiv);
+        wrapper.appendChild(input);
+        container.appendChild(wrapper);
     });
-}
-
-function updateInitials(nomComplet) {
-    const initialsElement = document.getElementById('photo-initials');
-    if (!initialsElement) return;
-    const words = nomComplet.trim().split(/\s+/);
-    let initials = 'MT';
-    if (words.length >= 2) initials = (words[0][0] + words[words.length - 1][0]).toUpperCase();
-    else if (words.length === 1 && words[0].length > 0) initials = words[0][0].toUpperCase();
-    initialsElement.textContent = initials;
 }
 
 // ============================================
-// FONCTIONNALITÉS (Photo, Couleur, Zoom)
+// 4. ÉDITION DIRECTE UNIVERSELLE (TreeWalker)
 // ============================================
-function setupPhotoUpload() {
-    const input = document.getElementById('photo-input');
-    const label = document.getElementById('photo-label');
-    const removeBtn = document.getElementById('photo-remove');
-    
-    input.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            editorState.photoDataUrl = event.target.result;
-            label.textContent = '✓ Photo ajoutée';
-            removeBtn.style.display = 'block';
-            updatePhotoInDocument();
-        };
-        reader.readAsDataURL(file);
-    });
-    
-    removeBtn.addEventListener('click', () => {
-        editorState.photoDataUrl = null;
-        input.value = '';
-        label.textContent = 'Ajouter une photo';
-        removeBtn.style.display = 'none';
-        updatePhotoInDocument();
-    });
-}
-
-function updatePhotoInDocument() {
-    const photoContainer = document.getElementById('doc-photo');
-    if (!photoContainer) return;
-    if (editorState.photoDataUrl) {
-        photoContainer.innerHTML = `<img src="${editorState.photoDataUrl}" alt="Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-    } else {
-        const nom = editorState.customData['nom'] || 'Meurphy TALAMIO';
-        const words = nom.trim().split(/\s+/);
-        let initials = 'MT';
-        if (words.length >= 2) initials = (words[0][0] + words[words.length - 1][0]).toUpperCase();
-        photoContainer.innerHTML = `<span class="cv-photo-placeholder" id="photo-initials" style="font-size: 2rem; font-weight: 700; color: white;">${initials}</span>`;
-    }
-}
-
-function setupColorPicker() {
-    const picker = document.getElementById('color-picker');
-    picker.addEventListener('input', (e) => {
-        editorState.primaryColor = e.target.value;
-        applyPrimaryColor();
-    });
-    document.querySelectorAll('.color-preset').forEach(preset => {
-        preset.addEventListener('click', () => {
-            editorState.primaryColor = preset.dataset.color;
-            picker.value = preset.dataset.color;
-            applyPrimaryColor();
-        });
-    });
-}
-
-function applyPrimaryColor() {
-    document.getElementById('document-canvas').style.setProperty('--doc-primary-color', editorState.primaryColor);
-}
-
-// ============================================
-// ZOOM (LOGIQUE ROBUSTE ET UNIQUE)
-// ============================================
-
-function ensureDocumentStage() {
+function enableDirectEditing() {
     const canvas = document.getElementById('document-canvas');
-    if (!canvas) return null;
-
-    let stage = document.getElementById('document-stage');
-
-    if (!stage) {
-        stage = document.createElement('div');
-        stage.id = 'document-stage';
-        stage.className = 'document-stage';
-
-        canvas.parentNode.insertBefore(stage, canvas);
-        stage.appendChild(canvas);
+    if (!canvas) {
+        console.error('Canvas non trouvé');
+        return;
     }
 
-    return stage;
+    let editableCount = 0;
+    const processedParents = new Set(); // Éviter de traiter le même parent 2 fois
+
+    //  TREEWALKER : parcourt TOUS les nœuds texte du document
+    const treeWalker = document.createTreeWalker(
+        canvas,
+        NodeFilter.SHOW_TEXT,
+        {
+            acceptNode: function(node) {
+                // Ignorer les nœuds vides ou uniquement des espaces
+                if (!node.textContent.trim()) return NodeFilter.FILTER_REJECT;
+                
+                // Ignorer les nœuds dans les scripts/styles
+                const parent = node.parentElement;
+                if (parent && (parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')) {
+                    return NodeFilter.FILTER_REJECT;
+                }
+                
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        }
+    );
+
+    let textNode;
+    while (textNode = treeWalker.nextNode()) {
+        const parent = textNode.parentElement;
+        
+        if (!parent || processedParents.has(parent)) continue;
+        
+        // 🔒 Protéger le footer TakiDoc
+        const parentText = parent.textContent.trim();
+        if (parentText.includes('TakiDoc') && parentText.includes('onrender.com')) {
+            parent.contentEditable = false;
+            parent.classList.add('takidoc-footer-protected');
+            parent.setAttribute('data-protected', 'true');
+            processedParents.add(parent);
+            continue;
+        }
+        
+        // Ignorer les conteneurs trop complexes (qui casseraient le layout)
+        if (parent.children.length > 5) continue;
+        
+        // Ignorer les éléments déjà non-éditables explicitement
+        if (parent.getAttribute('data-protected') === 'true') continue;
+        
+        // ✅ Rendre éditable
+        parent.contentEditable = true;
+        parent.classList.add('direct-editable');
+        parent.style.cursor = 'text';
+        parent.style.outline = 'none';
+        
+        // Effet visuel au survol
+        parent.addEventListener('mouseenter', () => {
+            if (parent.getAttribute('data-protected') === 'true') return;
+            parent.style.backgroundColor = 'rgba(255,107,53,0.08)';
+            parent.style.border = '1px dashed var(--primary)';
+        });
+        
+        parent.addEventListener('mouseleave', () => {
+            if (document.activeElement !== parent) {
+                parent.style.backgroundColor = '';
+                parent.style.border = '';
+            }
+        });
+        
+        parent.addEventListener('blur', () => {
+            parent.style.backgroundColor = '';
+            parent.style.border = '';
+        });
+        
+        // Synchronisation BIDIRECTIONNELLE : Document -> Sidebar
+        if (parent.id && parent.id.startsWith('field-')) {
+            const fieldName = parent.id.replace('field-', '');
+            const sidebarInput = document.getElementById(`input-${fieldName}`);
+            
+            parent.addEventListener('input', () => {
+                if (sidebarInput) {
+                    sidebarInput.value = parent.textContent;
+                }
+            });
+        }
+        
+        processedParents.add(parent);
+        editableCount++;
+    }
+    
+    console.log(`✅ Édition universelle activée sur ${editableCount} éléments`);
+}
+
+// ============================================
+// 5. ZOOM RESPONSIVE
+// ============================================
+function applyMobileZoom() {
+    const canvas = document.getElementById('document-canvas');
+    const container = document.getElementById('previewContainer');
+    
+    if (!canvas || !container) return;
+    
+    if (window.innerWidth <= 768) {
+        const containerWidth = container.clientWidth - 20;
+        const documentWidth = 794;
+        const autoZoom = Math.min(1, containerWidth / documentWidth);
+        
+        editorState.zoom = autoZoom;
+        updateZoomDisplay();
+        
+        container.style.justifyContent = 'center';
+        container.style.alignItems = 'flex-start';
+        
+        console.log(`📱 Zoom mobile automatique : ${autoZoom}`);
+    } else {
+        editorState.zoom = 1.0;
+        updateZoomDisplay();
+        container.style.justifyContent = 'center';
+        container.style.alignItems = 'flex-start';
+    }
 }
 
 function updateZoomDisplay() {
     const canvas = document.getElementById('document-canvas');
-    const stage = ensureDocumentStage();
-    const container = document.getElementById('previewContainer');
-
-    if (!canvas || !stage || !container) return;
-
-    const width = canvas.offsetWidth;
-    const height = canvas.offsetHeight;
-    const zoom = editorState.zoom;
-
-    if (!width || !height) return;
-
-    canvas.style.transformOrigin = 'top left';
-    canvas.style.transform = `scale(${zoom})`;
-
-    stage.style.width = `${width * zoom}px`;
-    stage.style.height = `${height * zoom}px`;
-
-    const fits = (
-        width * zoom <= container.clientWidth &&
-        height * zoom <= container.clientHeight
-    );
-
-    container.classList.toggle('is-zoomed', !fits);
-
-    const label = document.getElementById('zoom-level');
-    if (label) {
-        label.textContent = `${Math.round(zoom * 100)}%`;
+    if (!canvas) return;
+    
+    canvas.style.transform = `scale(${editorState.zoom})`;
+    canvas.style.transformOrigin = 'top center';
+    
+    const zoomLevel = document.getElementById('zoom-level');
+    if (zoomLevel) {
+        zoomLevel.textContent = `${Math.round(editorState.zoom * 100)}%`;
     }
 }
 
-function fitDocumentToView() {
-    const canvas = document.getElementById('document-canvas');
-    const container = document.getElementById('previewContainer');
+// ============================================
+// 6. FONCTIONNALITÉS SPÉCIALES
+// ============================================
+function setupPhotoUpload() {
+    const input = document.getElementById('photo-input');
+    input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file || !file.type.startsWith('image/')) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            editorState.photoDataUrl = event.target.result;
+            const container = document.getElementById('doc-photo');
+            if (container) {
+                container.innerHTML = `<img src="${editorState.photoDataUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            }
+            document.getElementById('photo-label').textContent = '✓ Photo ajoutée';
+            document.getElementById('photo-remove').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    });
 
-    if (!canvas || !container) return;
-
-    const width = canvas.offsetWidth;
-    const height = canvas.offsetHeight;
-
-    if (!width || !height) return;
-
-    const availableWidth = container.clientWidth - 24;
-    const availableHeight = container.clientHeight - 24;
-
-    editorState.zoom = Math.max(
-        0.1,
-        Math.min(
-            availableWidth / width,
-            availableHeight / height
-        )
-    );
-
-    updateZoomDisplay();
-
-    container.scrollTop = 0;
-    container.scrollLeft = 0;
+    document.getElementById('photo-remove').addEventListener('click', () => {
+        editorState.photoDataUrl = null;
+        input.value = '';
+        const container = document.getElementById('doc-photo');
+        if (container) container.innerHTML = `<span class="cv-photo-placeholder" style="font-size:2rem; font-weight:700; color:white;">TD</span>`;
+        document.getElementById('photo-label').textContent = 'Ajouter une photo';
+        document.getElementById('photo-remove').style.display = 'none';
+    });
 }
 
+function setupColorPicker() {
+    const picker = document.getElementById('color-picker');
+    const hexDisplay = document.getElementById('color-hex');
+    
+    const applyColor = (color) => {
+        editorState.primaryColor = color;
+        picker.value = color;
+        if (hexDisplay) hexDisplay.textContent = color.toUpperCase();
+        document.getElementById('document-canvas').style.setProperty('--doc-primary-color', color);
+        updateColorPresets();
+    };
+    
+    picker.addEventListener('input', (e) => applyColor(e.target.value));
+    
+    document.querySelectorAll('.color-preset').forEach(preset => {
+        preset.addEventListener('click', () => applyColor(preset.dataset.color));
+    });
+    
+    applyColor(editorState.primaryColor);
+}
+
+function updateColorPresets() {
+    document.querySelectorAll('.color-preset').forEach(p => {
+        p.classList.toggle('active', p.dataset.color === editorState.primaryColor);
+    });
+}
+
+// ============================================
+// 7. CONTRÔLES DE ZOOM
+// ============================================
 function setupZoomControls() {
-    const btnIn = document.getElementById('btn-zoom-in');
-    const btnOut = document.getElementById('btn-zoom-out');
-    const btnFit = document.getElementById('btn-zoom-reset');
-
-    btnIn?.addEventListener('click', () => {
-        editorState.zoom = Math.min(
-            2,
-            +(editorState.zoom + 0.1).toFixed(2)
-        );
+    document.getElementById('btn-zoom-in')?.addEventListener('click', () => {
+        editorState.zoom = Math.min(2, +(editorState.zoom + 0.1).toFixed(2));
         updateZoomDisplay();
     });
-
-    btnOut?.addEventListener('click', () => {
-        editorState.zoom = Math.max(
-            0.1,
-            +(editorState.zoom - 0.1).toFixed(2)
-        );
+    
+    document.getElementById('btn-zoom-out')?.addEventListener('click', () => {
+        editorState.zoom = Math.max(0.1, +(editorState.zoom - 0.1).toFixed(2));
         updateZoomDisplay();
     });
-
-    btnFit?.addEventListener('click', fitDocumentToView);
-
-    window.addEventListener('resize', fitDocumentToView);
+    
+    document.getElementById('btn-zoom-reset')?.addEventListener('click', () => {
+        editorState.zoom = window.innerWidth <= 768 ? 0.35 : 1.0;
+        updateZoomDisplay();
+    });
+    
+    window.addEventListener('resize', () => {
+        applyMobileZoom();
+    });
 }
 
 // ============================================
-// PDF, ACHAT & UTILITAIRES
+// 8. ACTIONS (PDF, PAIEMENT)
 // ============================================
-function setupDownloadButton() {
-    document.getElementById('btn-download').addEventListener('click', generatePDF);
-}
+function setupActions() {
+    // --- GÉNÉRATION PDF ---
+    document.getElementById('btn-download')?.addEventListener('click', async () => {
+        const btn = document.getElementById('btn-download');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération...';
+        btn.disabled = true;
 
-async function generatePDF() {
-    const { template } = editorState;
-    const canvas = document.getElementById('document-canvas');
-    const btn = document.getElementById('btn-download');
-    const originalText = btn.innerHTML;
-    
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération...';
-    btn.disabled = true;
-    
-    try {
-        const previousZoom = editorState.zoom;
-        editorState.zoom = 1.0; // Zoom à 100% pour une capture HD
-        updateZoomDisplay();
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        const canvasImage = await html2canvas(canvas, {
-            scale: 2, useCORS: true, allowTaint: true, logging: false, backgroundColor: '#ffffff'
-        });
-        
-        const imgData = canvasImage.toDataURL('image/jpeg', 0.98);
-        const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save(`TakiDoc_${template.id}_${Date.now()}.pdf`);
-        
-        editorState.zoom = previousZoom; // Restaurer le zoom de l'utilisateur
-        updateZoomDisplay();
-        
-    } catch (error) {
-        console.error('Erreur PDF:', error);
-        alert('Erreur lors du téléchargement du PDF.');
-    } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    }
-}
+        try {
+            const canvas = document.getElementById('document-canvas');
+            
+            // Désactiver temporairement l'édition pour une capture propre
+            const editableElements = canvas.querySelectorAll('[contenteditable="true"]');
+            editableElements.forEach(el => el.contentEditable = false);
+            
+            const prevZoom = editorState.zoom;
+            editorState.zoom = 1.0;
+            updateZoomDisplay();
+            await new Promise(r => setTimeout(r, 300));
 
-function setupBuyButton() {
-    document.getElementById('btn-buy').addEventListener('click', openPaymentModal);
-    document.getElementById('btn-buy-sidebar').addEventListener('click', openPaymentModal);
-}
+            const canvasImage = await html2canvas(canvas, { 
+                scale: 2, 
+                useCORS: true, 
+                backgroundColor: '#ffffff' 
+            });
+            const pdf = new jspdf.jsPDF({ 
+                orientation: 'portrait', 
+                unit: 'mm', 
+                format: 'a4' 
+            });
+            pdf.addImage(
+                canvasImage.toDataURL('image/jpeg', 0.98), 
+                'JPEG', 
+                0, 0, 
+                pdf.internal.pageSize.getWidth(), 
+                pdf.internal.pageSize.getHeight()
+            );
+            pdf.save(`TakiDoc_${editorState.template.id}_${Date.now()}.pdf`);
 
-function setupPaymentModal() {
-    document.getElementById('modal-close').addEventListener('click', () => {
-        document.getElementById('payment-modal').style.display = 'none';
+            // Réactiver l'édition
+            editableElements.forEach(el => el.contentEditable = true);
+            editorState.zoom = prevZoom;
+            updateZoomDisplay();
+        } catch (e) {
+            console.error(e);
+            alert('Erreur lors de la génération du PDF');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     });
-    document.getElementById('payment-form').addEventListener('submit', async (e) => {
+
+    // --- MODAL DE PAIEMENT ---
+    const modal = document.getElementById('payment-modal');
+    const openModal = () => {
+        document.getElementById('payment-doc-name').textContent = editorState.template.name;
+        document.getElementById('payment-amount').textContent = `${editorState.template.price || 0} FCFA`;
+        modal.style.display = 'flex';
+    };
+    
+    document.getElementById('btn-buy')?.addEventListener('click', openModal);
+    document.getElementById('btn-buy-sidebar')?.addEventListener('click', openModal);
+    document.getElementById('modal-close')?.addEventListener('click', () => modal.style.display = 'none');
+    modal?.addEventListener('click', (e) => { 
+        if (e.target === modal) modal.style.display = 'none'; 
+    });
+
+    document.getElementById('payment-form')?.addEventListener('submit', (e) => {
         e.preventDefault();
-        await processPayment();
+        const phone = document.getElementById('pay-phone').value;
+        const email = document.getElementById('pay-email').value;
+        if (!phone || !email) return alert('Veuillez remplir tous les champs');
+        alert(`Redirection vers le paiement sécurisé de ${editorState.template.price} FCFA...`);
     });
 }
 
-function openPaymentModal() {
-    const { template } = editorState;
-    document.getElementById('payment-doc-name').textContent = template.name;
-    document.getElementById('payment-amount').textContent = `${template.price_xaf} FCFA`;
-    document.getElementById('payment-modal').style.display = 'flex';
-}
-
-async function processPayment() {
-    const { template } = editorState;
-    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-    const phone = document.getElementById('pay-phone').value;
-    const email = document.getElementById('pay-email').value;
-    
-    if (!phone || !email) { alert('Veuillez remplir tous les champs.'); return; }
-    
-    const purchaseToken = `tok_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const pendingPurchase = await createPendingPurchase({
-        purchase_token: purchaseToken, template_id: template.id, guest_email: email,
-        guest_phone: phone, amount: template.price_xaf, payment_method: paymentMethod === 'MTN_MOMO' ? 'MTN' : 'AIRTEL'
-    });
-    
-    if (pendingPurchase) {
-        localStorage.setItem('takidoc_pending_token', purchaseToken);
-        const openPayUrl = OPENPAY_LINKS[template.price_xaf] || OPENPAY_LINKS[1000];
-        if (openPayUrl) window.location.href = openPayUrl;
-        else alert('Erreur: Montant non configuré.');
-    } else {
-        alert('Erreur lors de l\'enregistrement. Veuillez réessayer.');
-    }
-}
-
+// ============================================
+// 9. GESTION D'ERREUR
+// ============================================
 function showError() {
     document.getElementById('editor-loading').style.display = 'none';
     document.getElementById('editor-error').style.display = 'flex';

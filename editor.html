@@ -4,20 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Éditeur - TakiDoc</title>
-    <meta name="description" content="Personnalisez votre document professionnel">
+    <meta name="description" content="Personnalisez votre document professionnel en temps réel">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
         /* ============================================
-           1. IDENTITÉ VISUELLE UNIFIÉE (Même que index.html)
+           1. IDENTITÉ VISUELLE UNIFIÉE
            ============================================ */
         :root {
             --primary: #FF6B35;
@@ -77,11 +76,7 @@
             gap: 20px;
         }
 
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+        .nav-left { display: flex; align-items: center; gap: 16px; }
 
         .logo {
             font-size: 1.6rem;
@@ -112,11 +107,7 @@
         }
         .nav-back:hover { color: var(--primary); border-color: var(--primary); background: white; }
 
-        .editor-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .editor-actions { display: flex; align-items: center; gap: 12px; }
 
         .sidebar-toggle {
             display: none;
@@ -152,24 +143,14 @@
             gap: 8px;
             font-family: inherit;
         }
-
         .btn-sm { padding: 8px 16px; font-size: 0.85rem; }
+        .btn-full { width: 100%; padding: 14px; font-size: 1rem; }
         
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
-        }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
         .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
 
-        .btn-secondary {
-            background: white;
-            color: var(--dark);
-            border: 2px solid var(--border);
-        }
+        .btn-secondary { background: white; color: var(--dark); border: 2px solid var(--border); }
         .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
-
-        .btn-full { width: 100%; padding: 14px; font-size: 1rem; }
 
         .btn-icon {
             width: 40px;
@@ -242,7 +223,7 @@
         }
         .sidebar-section h3 i { color: var(--primary); }
 
-        /* Formulaires */
+        /* Formulaires dynamiques */
         .form-field { margin-bottom: 16px; }
         .form-field label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
         .form-field input, .form-field textarea {
@@ -292,6 +273,17 @@
         }
 
         /* Color Picker */
+        .color-picker-wrapper { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        #color-picker {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 4px;
+            background: white;
+            flex-shrink: 0;
+        }
         .color-presets { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 12px; }
         .color-preset {
             width: 100%;
@@ -303,6 +295,7 @@
             box-shadow: var(--shadow-sm);
         }
         .color-preset:hover { transform: scale(1.15); box-shadow: var(--shadow-md); }
+        .color-preset.active { border: 2px solid var(--dark); transform: scale(1.1); }
 
         /* Sidebar Footer */
         .sidebar-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); }
@@ -472,48 +465,6 @@
         /* ============================================
            7. RESPONSIVE — DESKTOP + MOBILE BOTTOM SHEET
            ============================================ */
-        .document-stage {
-            position: relative;
-            display: block;
-            flex: 0 0 auto;
-            margin: 0 auto;
-        }
-
-        .document-canvas {
-            flex: 0 0 auto;
-            width: 210mm;
-            min-width: 210mm;
-            max-width: none;
-            min-height: 297mm;
-            margin: 0;
-            background: #fff;
-            transform-origin: top left;
-        }
-
-        .preview-container {
-            min-width: 0;
-            min-height: 0;
-            width: 100%;
-            flex: 1 1 auto;
-            padding: 12px;
-            box-sizing: border-box;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        /* Le défilement n'est activé que si l'utilisateur zoome au-delà du cadre */
-        .preview-container.is-zoomed {
-            display: block;
-            overflow: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .mobile-edit-toggle {
-            display: none;
-        }
-
         @media (max-width: 1024px) and (min-width: 769px) {
             .editor-layout { grid-template-columns: 320px minmax(0, 1fr); }
             .editor-sidebar { padding: 20px; }
@@ -521,25 +472,10 @@
         }
 
         @media (max-width: 768px) {
-            html, body {
-                width: 100%;
-                min-height: 100%;
-                overflow-x: hidden;
-            }
+            html, body { width: 100%; min-height: 100%; overflow-x: hidden; }
 
-            .editor-nav {
-                position: sticky;
-                top: 0;
-                padding: 8px 12px;
-                min-height: 60px;
-            }
-
-            .nav-container {
-                display: flex;
-                gap: 8px;
-                min-width: 0;
-            }
-
+            .editor-nav { position: sticky; top: 0; padding: 8px 12px; min-height: 60px; }
+            .nav-container { display: flex; gap: 8px; min-width: 0; }
             .nav-left { gap: 8px; min-width: 0; }
             .logo { font-size: 1.25rem; }
             .sidebar-toggle { display: flex; width: 34px; height: 34px; font-size: 1rem; }
@@ -596,18 +532,12 @@
                 overflow: hidden;
             }
 
-            .preview-container.is-zoomed {
-                display: block;
-                overflow: auto;
-            }
+            .preview-container.is-zoomed { display: block; overflow: auto; }
 
             /* Le formulaire est un bottom sheet : masqué au départ */
             .editor-sidebar {
                 position: fixed;
-                top: auto;
-                left: 0;
-                right: 0;
-                bottom: 0;
+                top: auto; left: 0; right: 0; bottom: 0;
                 z-index: 1200;
                 width: 100%;
                 max-width: none;
@@ -626,7 +556,6 @@
                 transform: translateY(105%);
                 visibility: hidden;
                 transition: transform .28s cubic-bezier(.2,.8,.2,1), visibility .28s ease;
-                top: auto;
             }
 
             .editor-sidebar::before {
@@ -635,16 +564,12 @@
                 width: 42px;
                 height: 5px;
                 min-height: 5px;
-                margin: -10px auto 2px;
+                margin: -10px auto 12px;
                 border-radius: 99px;
                 background: #d1d5db;
             }
 
-            .editor-sidebar.open {
-                left: 0;
-                transform: translateY(0);
-                visibility: visible;
-            }
+            .editor-sidebar.open { left: 0; transform: translateY(0); visibility: visible; }
 
             .sidebar-header { flex: 0 0 auto; padding-bottom: 12px; }
             .sidebar-header h2 { font-size: 1.1rem; }
@@ -653,14 +578,11 @@
             .price-display { padding: 12px; margin-bottom: 12px; }
             .price-value { font-size: 1.2rem; }
 
-            /* Overlay limité à la zone d'aperçu : la page reste visible en haut */
+            /* Overlay limité à la zone d'aperçu */
             .sidebar-overlay {
                 display: block;
                 position: fixed;
-                top: 60px;
-                left: 0;
-                right: 0;
-                bottom: 54dvh;
+                top: 60px; left: 0; right: 0; bottom: 54dvh;
                 z-index: 1100;
                 background: rgba(15, 23, 42, .12);
                 backdrop-filter: none;
@@ -669,12 +591,7 @@
                 pointer-events: none;
                 transition: opacity .25s ease, visibility .25s ease;
             }
-
-            .sidebar-overlay.active {
-                opacity: 1;
-                visibility: visible;
-                pointer-events: auto;
-            }
+            .sidebar-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
 
             .mobile-edit-toggle {
                 display: inline-flex;
@@ -701,7 +618,6 @@
                 white-space: nowrap;
                 transition: bottom .25s ease, background .2s ease, transform .2s ease;
             }
-
             .mobile-edit-toggle:active { transform: translateX(-50%) scale(.98); }
             .mobile-edit-toggle .mobile-edit-chevron { transition: transform .25s ease; }
             .mobile-edit-toggle.active {
@@ -711,23 +627,14 @@
             }
             .mobile-edit-toggle.active .mobile-edit-chevron { transform: rotate(180deg); }
 
-            /* Quand le formulaire est ouvert, réserver la moitié supérieure à l'aperçu */
             body.mobile-sheet-open #editor-interface .editor-preview {
                 flex: 0 0 calc(46dvh - 60px);
                 height: calc(46dvh - 60px);
                 min-height: 120px;
                 padding-bottom: 8px;
             }
-
-            body.mobile-sheet-open #editor-interface .preview-toolbar {
-                margin-bottom: 4px;
-                padding: 3px 8px;
-            }
-
-            body.mobile-sheet-open #editor-interface .btn-icon {
-                width: 30px;
-                height: 30px;
-            }
+            body.mobile-sheet-open #editor-interface .preview-toolbar { margin-bottom: 4px; padding: 3px 8px; }
+            body.mobile-sheet-open #editor-interface .btn-icon { width: 30px; height: 30px; }
 
             .payment-methods { grid-template-columns: 1fr; }
             .modal-content { padding: 24px; }
@@ -757,20 +664,310 @@
             .sidebar-overlay { display: none !important; }
             .editor-sidebar {
                 position: sticky;
-                top: 65px;
-                left: auto;
-                bottom: auto;
-                width: auto;
-                max-width: none;
-                height: calc(100vh - 65px);
-                max-height: none;
-                transform: none;
-                visibility: visible;
-                border-radius: 0;
-                box-shadow: none;
+                top: 65px; left: auto; bottom: auto;
+                width: auto; max-width: none;
+                height: calc(100vh - 65px); max-height: none;
+                transform: none; visibility: visible;
+                border-radius: 0; box-shadow: none;
             }
             .editor-sidebar::before { display: none; }
         }
+
+        /* ============================================
+   8. ÉDITION DIRECTE DU DOCUMENT (WYSIWYG)
+   ============================================ */
+.direct-editable {
+    cursor: text;
+    border: 1px dashed transparent;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    outline: none; /* Supprime le contour bleu moche du navigateur */
+    position: relative;
+}
+
+.direct-editable:hover {
+    border-color: var(--primary);
+    background-color: rgba(255, 107, 53, 0.05);
+}
+
+.direct-editable:focus {
+    border-color: var(--primary);
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+}
+
+/* Toast notification pour l'astuce */
+.editor-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--dark);
+    color: white;
+    padding: 14px 24px;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.editor-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Édition directe du document */
+.direct-editable {
+    cursor: text;
+    border: 1px dashed transparent;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    outline: none;
+    position: relative;
+}
+
+.direct-editable:hover {
+    border-color: var(--primary);
+    background-color: rgba(255, 107, 53, 0.05);
+}
+
+.direct-editable:focus {
+    border-color: var(--primary);
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+}
+
+/* Toast notification */
+.editor-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--dark);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+}
+.editor-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 🔒 PROTECTION DU FOOTER TAKIDOC */
+.takidoc-footer-protected {
+    contentEditable: false !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    pointer-events: none !important;
+    opacity: 0.7;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #94a3b8 !important;
+}
+
+.takidoc-footer-protected:hover {
+    cursor: not-allowed !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+}
+
+/* 📱 RESPONSIVE MOBILE AMÉLIORÉ */
+@media (max-width: 768px) {
+    .document-canvas {
+        transform-origin: top left !important;
+        margin: 0 auto;
+    }
+    
+    .preview-container {
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        padding: 8px !important;
+    }
+    
+    .preview-container.is-zoomed {
+        display: block;
+        overflow: auto;
+    }
+}
+/* ============================================
+   9. CORRECTIONS FINALES
+   ============================================ */
+
+/* Centrage du document */
+.preview-container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    overflow: auto !important;
+}
+
+/* Édition directe - FORCER l'interactivité */
+.direct-editable {
+    cursor: text !important;
+    border: 1px dashed transparent;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    outline: none;
+    position: relative;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+}
+
+.direct-editable:hover {
+    border-color: var(--primary) !important;
+    background-color: rgba(255, 107, 53, 0.1) !important;
+}
+
+.direct-editable:focus {
+    border-color: var(--primary) !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2) !important;
+}
+
+/* Footer TakiDoc - protégé mais visible */
+.footer.takidoc-footer,
+[class*="footer"],
+[class*="takidoc"] {
+    user-select: none !important;
+    pointer-events: none !important;
+}
+
+/* Toast */
+.editor-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--dark);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s;
+    display: flex;
+    align-items: center;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .document-canvas {
+        transform-origin: top center !important;
+        margin: 0 auto !important;
+    }
+    
+    .preview-container {
+        padding: 8px !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ============================================
+   ÉDITION DIRECTE - STYLES VISUELS
+   ============================================ */
+
+/* Centrage parfait du document */
+.preview-container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Éléments éditables - effets visuels */
+.direct-editable {
+    cursor: text !important;
+    border: 1px dashed transparent;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    outline: none;
+    position: relative;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+}
+
+.direct-editable:hover {
+    border-color: var(--primary) !important;
+    background-color: rgba(255, 107, 53, 0.08) !important;
+}
+
+.direct-editable:focus {
+    border-color: var(--primary) !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2) !important;
+}
+
+/* Footer TakiDoc protégé */
+.takidoc-footer-protected {
+    contentEditable: false !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    pointer-events: none !important;
+    opacity: 0.7;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #94a3b8 !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: not-allowed !important;
+}
+
+/* Toast notification */
+.editor-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--dark);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+    .document-canvas {
+        transform-origin: top center !important;
+        margin: 0 auto !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    
+    .preview-container {
+        padding: 8px !important;
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+    }
+}
     </style>
 </head>
 <body>
@@ -835,7 +1032,10 @@
 
             <div id="color-section" class="sidebar-section" style="display: none;">
                 <h3><i class="fas fa-palette"></i> Couleur principale</h3>
-                <input type="color" id="color-picker" value="#0F172A" style="width: 100%; height: 40px; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; padding: 4px;">
+                <div class="color-picker-wrapper">
+                    <input type="color" id="color-picker" value="#0F172A">
+                    <span id="color-hex" style="font-family: monospace; font-size: 0.9rem; color: var(--text-muted);">#0F172A</span>
+                </div>
                 <div class="color-presets">
                     <button class="color-preset" data-color="#0F172A" style="background: #0F172A;"></button>
                     <button class="color-preset" data-color="#FF6B35" style="background: #FF6B35;"></button>
@@ -874,9 +1074,8 @@
         </main>
     </div>
 
-    <!-- Bouton de personnalisation mobile : ouvre le panneau inférieur -->
-    <button id="mobile-edit-toggle" class="mobile-edit-toggle" type="button"
-            aria-controls="editorSidebar" aria-expanded="false">
+    <!-- Bouton de personnalisation mobile -->
+    <button id="mobile-edit-toggle" class="mobile-edit-toggle" type="button" aria-controls="editorSidebar" aria-expanded="false">
         <i class="fas fa-sliders-h" aria-hidden="true"></i>
         <span>Modifier mon document</span>
         <i class="fas fa-chevron-up mobile-edit-chevron" aria-hidden="true"></i>
@@ -904,109 +1103,26 @@
                         </label>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <label for="pay-phone">Numéro de téléphone *</label>
                     <input type="tel" id="pay-phone" placeholder="06 XX XX XX XX" required>
                 </div>
-                
                 <div class="form-group">
                     <label for="pay-email">Email (pour le reçu) *</label>
                     <input type="email" id="pay-email" placeholder="votre@email.com" required>
                 </div>
-                
                 <button type="submit" class="btn btn-primary btn-full"><i class="fas fa-check-circle"></i> Confirmer le paiement</button>
             </form>
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Scripts Modules -->
     <script type="module" src="js/supabase-config.js"></script>
     <script type="module" src="js/templates-registry.js"></script>
     <script type="module" src="js/editor.js"></script>
     
+    <!-- Script UI Mobile (Bottom Sheet) -->
     <script>
-        // Compatibilité photo : certains modèles exposent leur zone photo
-        // dans le HTML rendu même si la métadonnée hasPhoto est absente.
-        // Dans ce cas, on réactive le contrôle sans toucher à editor.js.
-        (() => {
-            const section = document.getElementById('photo-section');
-            const canvas = document.getElementById('document-canvas');
-            const input = document.getElementById('photo-input');
-            const label = document.getElementById('photo-label');
-            const removeButton = document.getElementById('photo-remove');
-            if (!section || !canvas || !input || !label || !removeButton) return;
-
-            let fallbackEnabled = false;
-            let currentPhotoUrl = null;
-
-            function getInitials() {
-                const nameInput = document.getElementById('input-field-nom');
-                const nameField = document.getElementById('field-nom');
-                const name = (nameInput?.value || nameField?.textContent || '').trim();
-                const words = name.split(/\s+/).filter(Boolean);
-                if (words.length >= 2) return (words[0][0] + words[words.length - 1][0]).toUpperCase();
-                return words.length ? words[0].slice(0, 2).toUpperCase() : 'TD';
-            }
-
-            function enablePhotoFallback() {
-                const photo = canvas.querySelector('#doc-photo');
-                if (!photo || section.style.display !== 'none' || fallbackEnabled) return;
-
-                fallbackEnabled = true;
-                section.style.display = 'block';
-
-                input.addEventListener('change', () => {
-                    const file = input.files && input.files[0];
-                    if (!file) return;
-                    if (!file.type.startsWith('image/')) {
-                        input.value = '';
-                        label.textContent = 'Choisir une image valide';
-                        return;
-                    }
-
-                    const reader = new FileReader();
-                    reader.onload = event => {
-                        currentPhotoUrl = event.target.result;
-                        const target = canvas.querySelector('#doc-photo');
-                        if (!target) return;
-                        target.innerHTML = '';
-                        const image = document.createElement('img');
-                        image.src = currentPhotoUrl;
-                        image.alt = 'Photo de profil';
-                        image.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
-                        target.appendChild(image);
-                        label.textContent = '✓ Photo ajoutée';
-                        removeButton.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                });
-
-                removeButton.addEventListener('click', () => {
-                    currentPhotoUrl = null;
-                    input.value = '';
-                    const target = canvas.querySelector('#doc-photo');
-                    if (target) {
-                        target.innerHTML = '';
-                        const initials = document.createElement('span');
-                        initials.className = 'cv-photo-placeholder';
-                        initials.textContent = getInitials();
-                        initials.style.cssText = 'font-size:2rem;font-weight:700;color:white;';
-                        target.appendChild(initials);
-                    }
-                    label.textContent = 'Ajouter une photo';
-                    removeButton.style.display = 'none';
-                });
-            }
-
-            const observer = new MutationObserver(enablePhotoFallback);
-            observer.observe(canvas, { childList: true, subtree: true });
-            enablePhotoFallback();
-        })();
-    </script>
-
-    <script>
-        // Panneau inférieur mobile. Le formulaire et ses champs restent les mêmes.
         (() => {
             const sidebarToggle = document.getElementById('sidebarToggle');
             const editorSidebar = document.getElementById('editorSidebar');
@@ -1016,9 +1132,7 @@
 
             if (!editorSidebar || !sidebarOverlay || !mobileEditToggle) return;
 
-            function isMobile() {
-                return mobileQuery.matches;
-            }
+            function isMobile() { return mobileQuery.matches; }
 
             function setSheetOpen(open) {
                 if (!isMobile()) {
@@ -1041,30 +1155,21 @@
                 const label = mobileEditToggle.querySelector('span');
                 if (label) label.textContent = open ? 'Fermer les modifications' : 'Modifier mon document';
 
-                // Recalcule l'aperçu pour la nouvelle hauteur disponible.
                 window.dispatchEvent(new Event('resize'));
             }
 
-            function toggleSheet() {
-                setSheetOpen(!editorSidebar.classList.contains('open'));
-            }
+            function toggleSheet() { setSheetOpen(!editorSidebar.classList.contains('open')); }
 
             mobileEditToggle.addEventListener('click', toggleSheet);
-            sidebarToggle?.addEventListener('click', () => {
-                if (isMobile()) toggleSheet();
-            });
+            sidebarToggle?.addEventListener('click', () => { if (isMobile()) toggleSheet(); });
             sidebarOverlay.addEventListener('click', () => setSheetOpen(false));
 
             document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && editorSidebar.classList.contains('open')) {
-                    setSheetOpen(false);
-                }
+                if (event.key === 'Escape' && editorSidebar.classList.contains('open')) setSheetOpen(false);
             });
 
             mobileQuery.addEventListener?.('change', () => setSheetOpen(false));
-            window.addEventListener('resize', () => {
-                if (!isMobile()) setSheetOpen(false);
-            });
+            window.addEventListener('resize', () => { if (!isMobile()) setSheetOpen(false); });
         })();
     </script>
 </body>

@@ -2337,14 +2337,6 @@
             <input type="text" id="searchInput" placeholder="Rechercher un CV, un contrat, une facture...">
         </div>
         <div class="header-actions" id="headerActions"></div>
-        <div class="dropdown-menu" id="notifDropdown">
-            <div class="dropdown-header">
-                <h3>Notifications</h3>
-                <button class="mark-read" onclick="markAllRead(event)">Tout marquer comme lu</button>
-            </div>
-            <div class="notif-item unread"><div class="notif-title">Nouveau modèle</div><div class="notif-text">CV Exécutif Moderne disponible</div><div class="notif-time">Il y a 2 heures</div></div>
-            <div class="notif-item unread"><div class="notif-title">Promotion</div><div class="notif-text">-20% sur les contrats avec PROMO20</div><div class="notif-time">Il y a 5 heures</div></div>
-        </div>
     </header>
 
     <div class="categories-wrapper">
@@ -2373,7 +2365,7 @@
             <p class="hero-description">CV, contrats, lettres et documents administratifs prêts à personnaliser. Gagnez du temps et présentez-vous avec confiance.</p>
             <div class="hero-actions">
                 <a href="#documents" class="hero-primary" id="heroExplore"><i class="fas fa-compass"></i> Explorer les modèles</a>
-                <a href="auth.html?action=signup" class="hero-secondary"><i class="fas fa-user-plus"></i> Créer un compte</a>
+                <a href="auth.html?action=signup" class="hero-secondary" id="heroAccountAction"><i class="fas fa-user-plus"></i> Créer un compte</a>
             </div>
             <div class="hero-proof">
                 <div class="proof-avatars" aria-hidden="true"><span><i class="fas fa-user"></i></span><span><i class="fas fa-briefcase"></i></span><span><i class="fas fa-file-alt"></i></span></div>
@@ -2506,11 +2498,11 @@
     </div>
 </footer>
 
-    <nav class="bottom-nav">
-        <a href="/" class="nav-item active"><i class="fas fa-home"></i><span>Accueil</span></a>
+    <nav class="bottom-nav" aria-label="Navigation principale">
+        <a href="index.html" class="nav-item active"><i class="fas fa-home"></i><span>Accueil</span></a>
         <a href="#search" class="nav-item" id="nav-search"><i class="fas fa-search"></i><span>Rechercher</span></a>
-        <a href="profile.html#favorites" class="nav-item"><i class="fas fa-heart"></i><span>Favoris</span></a>
-        <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Profil</span></a>
+        <a href="profile.html#favorites" class="nav-item" id="nav-favorites"><i class="fas fa-heart"></i><span>Favoris</span></a>
+        <a href="auth.html?action=login" class="nav-item" id="nav-account"><i class="fas fa-user"></i><span>Connexion</span></a>
     </nav>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2526,7 +2518,8 @@
         const grid = document.getElementById('masonryGrid');
         const searchInput = document.getElementById('searchInput');
         const catPills = document.querySelectorAll('.cat-pill');
-        const notifDropdown = document.getElementById('notifDropdown');
+        const heroAccountAction = document.getElementById('heroAccountAction');
+        const navAccount = document.getElementById('nav-account');
         const headerActions = document.getElementById('headerActions');
         const navSearch = document.getElementById('nav-search');
 
@@ -2536,40 +2529,61 @@
         // ============================================
         // AUTHENTIFICATION
         // ============================================
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[character]);
+        }
+
         async function checkAuth() {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error) throw error;
                 currentUser = session?.user || null;
-                updateHeaderUI();
             } catch (error) {
-                console.error('Erreur auth:', error);
+                currentUser = null;
+                console.error('Impossible de vérifier la session TakiDoc :', error);
             }
+            updateHeaderUI();
         }
 
         function updateHeaderUI() {
-            const notifBtnHTML = `<button class="icon-btn" id="notifBtn"><i class="far fa-bell"></i><span class="badge">3</span></button>`;
-            
+            if (!headerActions) return;
             if (currentUser) {
-                const fullName = currentUser.user_metadata?.full_name || currentUser.email || 'Utilisateur';
-                const initials = fullName.split('@')[0].split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                headerActions.innerHTML = notifBtnHTML + `<a href="profile.html" class="btn-profile"><span class="initials">${initials}</span><span>Profil</span></a>`;
+                const displayName = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Mon compte';
+                const initials = displayName.split(/[\s._-]+/).filter(Boolean).map(part => part[0]).join('').toUpperCase().slice(0, 2) || 'TD';
+                headerActions.innerHTML = `<a href="profile.html" class="btn-profile" aria-label="Ouvrir mon compte"><span class="initials">${escapeHTML(initials)}</span><span>Mon compte</span></a>`;
+                if (heroAccountAction) {
+                    heroAccountAction.href = 'profile.html';
+                    heroAccountAction.innerHTML = '<i class="fas fa-user"></i> Accéder à mon espace';
+                }
+                if (navAccount) {
+                    navAccount.href = 'profile.html';
+                    navAccount.innerHTML = '<i class="fas fa-user"></i><span>Mon compte</span>';
+                }
             } else {
-                headerActions.innerHTML = notifBtnHTML + `<a href="auth.html?action=signup" class="btn-auth btn-signup"><i class="fas fa-user-plus"></i><span>S'inscrire</span></a><a href="auth.html?action=login" class="btn-auth btn-login"><i class="fas fa-sign-in-alt"></i><span>Connexion</span></a>`;
-            }
-            
-            const notifBtn = document.getElementById('notifBtn');
-            if (notifBtn) {
-                notifBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    notifDropdown.classList.toggle('active');
-                });
+                headerActions.innerHTML = `<a href="auth.html?action=signup" class="btn-auth btn-signup"><i class="fas fa-user-plus"></i><span>S'inscrire</span></a><a href="auth.html?action=login" class="btn-auth btn-login"><i class="fas fa-sign-in-alt"></i><span>Connexion</span></a>`;
+                if (heroAccountAction) {
+                    heroAccountAction.href = 'auth.html?action=signup';
+                    heroAccountAction.innerHTML = '<i class="fas fa-user-plus"></i> Créer un compte';
+                }
+                if (navAccount) {
+                    navAccount.href = 'auth.html?action=login';
+                    navAccount.innerHTML = '<i class="fas fa-user"></i><span>Connexion</span>';
+                }
             }
         }
+
+        // Mettre à jour le header immédiatement après une connexion/déconnexion,
+        // sans attendre un rechargement de la page.
+        supabase.auth.onAuthStateChange((_event, session) => {
+            currentUser = session?.user || null;
+            updateHeaderUI();
+        });
 
         const categoryNames = { 'cv': 'CV', 'lettre': 'Lettre', 'contrat': 'Contrat', 'commercial': 'Commercial', 'attestation': 'Attestation', 'administratif': 'Administratif' };
         const categoryIcons = { 'cv': 'fa-user-tie', 'lettre': 'fa-envelope-open-text', 'contrat': 'fa-file-signature', 'commercial': 'fa-file-invoice-dollar', 'attestation': 'fa-certificate', 'administratif': 'fa-building' };
 
-        document.addEventListener('click', () => notifDropdown.classList.remove('active'));
 
         // ============================================
         // PLACEHOLDERS STYLISÉS

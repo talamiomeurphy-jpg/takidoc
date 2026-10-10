@@ -3,11 +3,14 @@
 // L'équipe Meurphy
 // ============================================
 
+// Importation propre via module ES (plus fiable que window.supabase)
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
 const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
 
 // Initialisation du client Supabase
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Fonction utilitaire pour récupérer tous les templates actifs
 export async function fetchTemplates() {
@@ -89,8 +92,6 @@ export async function saveUserDocument(documentData) {
     }
     return data;
 }
-
-// ... (tout le code existant reste)
 
 // Fonction pour créer une intention d'achat (pending purchase)
 export async function createPendingPurchase(pendingData) {
