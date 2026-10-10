@@ -476,6 +476,66 @@ function setupActions() {
     });
 }
 
+// Animation d'entrée des sections sidebar
+function animateSidebarSections() {
+    const sections = document.querySelectorAll('.sidebar-section');
+    sections.forEach((section, index) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            section.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+}
+
+// Effet de ripple sur les boutons
+function addRippleEffect(button) {
+    button.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+            position: absolute;
+            width: ${size}px;
+            height: ${size}px;
+            left: ${x}px;
+            top: ${y}px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s ease-out;
+            pointer-events: none;
+        `;
+        
+        this.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    });
+}
+
+// Ajoute l'animation ripple au CSS
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Applique l'effet à tous les boutons
+document.querySelectorAll('.btn').forEach(addRippleEffect);
+
+// Appel dans initEditor()
+setTimeout(() => {
+    animateSidebarSections();
+}, 100);
 // ============================================
 // 9. GESTION D'ERREUR
 // ============================================
