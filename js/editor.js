@@ -1,12 +1,9 @@
-
-
-
 // ============================================
-// TAKIDOC - ÉDITEUR PLEIN ÉCRAN
+// TAKIDOC - ÉDITEUR PLEIN ÉCRAN (VERSION CORRIGÉE)
 // L'équipe Meurphy - 2026
 // ============================================
 
-import { fetchTemplateById, createPendingPurchase } from './supabase-config.js';
+import { fetchTemplateById } from './supabase-config.js';
 import { templatesRegistry } from './templates-registry.js';
 
 const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
@@ -16,16 +13,18 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const editorState = {
     template: null,
-    zoom: window.innerWidth <= 768 ? 0.45 : 0.95, // ← 45% sur mobile, 95% sur desktop
+    zoom: window.innerWidth <= 768 ? 0.45 : 0.95,
     primaryColor: '#0F172A',
     photoDataUrl: null,
     currentUser: null
 };
+
 // ============================================
 // UTILITAIRES
 // ============================================
 function showToast(message) {
     const toast = document.getElementById('editorToast');
+    if (!toast) return;
     toast.innerHTML = `<i class="fas fa-check-circle" style="color: #10B981;"></i> ${message}`;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
@@ -38,36 +37,9 @@ async function checkAuth() {
     try {
         const { data: { session } } = await supabase.auth.getSession();
         editorState.currentUser = session?.user || null;
-        updateHeaderUI();
+        console.log('Auth status:', editorState.currentUser ? 'Connecté' : 'Non connecté');
     } catch (error) {
         console.error('Erreur auth:', error);
-    }
-}
-
-function updateHeaderUI() {
-    const authContainer = document.getElementById('headerAuth');
-    
-    if (editorState.currentUser) {
-        const metaData = editorState.currentUser.user_metadata || {};
-        const fullName = metaData.full_name || editorState.currentUser.email || 'U';
-        const initials = fullName.split('@')[0].split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-        
-        authContainer.innerHTML = `
-            <a href="profile.html" class="btn btn-secondary" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; justify-content: center;">
-                <span style="font-weight: 800; font-size: 0.85rem;">${initials}</span>
-            </a>
-        `;
-    } else {
-        authContainer.innerHTML = `
-            <a href="auth.html?action=signup" class="btn btn-secondary">
-                <i class="fas fa-user-plus"></i>
-                <span>S'inscrire</span>
-            </a>
-            <a href="auth.html?action=login" class="btn btn-primary">
-                <i class="fas fa-sign-in-alt"></i>
-                <span>Connexion</span>
-            </a>
-        `;
     }
 }
 
@@ -75,18 +47,39 @@ function updateHeaderUI() {
 // INITIALISATION
 // ============================================
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 Initialisation de l\'éditeur...');
+    
     await checkAuth();
     
     const templateId = new URLSearchParams(window.location.search).get('id');
+    console.log('Template ID:', templateId);
     
-    let template = templatesRegistry.find(t => t.id === templateId);
-    if (!template) template = await fetchTemplateById(templateId);
-    
-    if (!template) {
-        window.location.href = 'index.html';
+    if (!templateId) {
+        console.error('Aucun ID de template dans l\'URL');
+        showToast('Erreur: Aucun document spécifié');
+        setTimeout(() => window.location.href = 'index.html', 2000);
         return;
     }
     
+    let template = templatesRegistry.find(t => t.id === templateId);
+    
+    if (!template) {
+        console.warn('Template non trouvé dans le registre local, tentative de récupération Supabase...');
+        try {
+            // template = await fetchTemplateById(templateId);
+        } catch (e) {
+            console.error('Erreur fetch template:', e);
+        }
+    }
+    
+    if (!template) {
+        console.error('Template introuvable:', templateId);
+        showToast('Document introuvable');
+        setTimeout(() => window.location.href = 'index.html', 2000);
+        return;
+    }
+    
+    console.log('✅ Template chargé:', template.name);
     editorState.template = template;
     initEditor();
 });
@@ -94,22 +87,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 function initEditor() {
     const { template } = editorState;
     
-    document.getElementById('docNameText').textContent = template.name;
-    document.getElementById('docCategoryText').textContent = template.category ? `• ${template.category}` : '';
+    // Mettre à jour le titre
+    document.title = `${template.name} - Éditeur TakiDoc`;
     
+    console.log(' Rendu du document...');
     renderDocument();
+    
+    console.log(' Construction des champs...');
     buildSidebarFields(template.fields || []);
+    
+    console.log('🔍 Configuration du zoom...');
     setupZoomControls();
+    
+    console.log(' Configuration de la sidebar...');
     setupSidebar();
-    setupSearch();
+    
+    console.log('💾 Configuration du téléchargement...');
     setupDownload();
-    setupMobileFABs(); // ← NOUVEAU : Configure les boutons flottants
+    
+    console.log(' Configuration des boutons mobiles...');
+    setupMobileFABs();
     
     if (template.hasPhoto) {
+        console.log(' Configuration de la photo...');
         document.getElementById('photo-section').style.display = 'block';
         setupPhotoUpload();
     }
+    
     if (template.hasColorPicker) {
+        console.log('🎨 Configuration des couleurs...');
         document.getElementById('color-section').style.display = 'block';
         setupColorPicker();
     }
@@ -117,49 +123,8 @@ function initEditor() {
     setTimeout(() => {
         updateZoomDisplay();
         enableDirectEditing();
-        showToast("Document chargé");
-    }, 300);
-}
-
-// ============================================
-// BOUTONS FLOTTANTS MOBILE
-// ============================================
-function setupMobileFABs() {
-    const customizeBtn = document.getElementById('mobileBtnCustomize');
-    const downloadBtn = document.getElementById('mobileBtnDownload');
-    const desktopCustomizeBtn = document.getElementById('btn-customize');
-    const desktopDownloadBtn = document.getElementById('btn-download');
-    
-    // ✅ Utilise 'click' avec preventDefault pour éviter les conflits
-    if (customizeBtn && desktopCustomizeBtn) {
-        customizeBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            desktopCustomizeBtn.click();
-        });
-        
-        // ✅ Support tactile explicite
-        customizeBtn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            desktopCustomizeBtn.click();
-        });
-    }
-    
-    if (downloadBtn && desktopDownloadBtn) {
-        downloadBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            desktopDownloadBtn.click();
-        });
-        
-        // ✅ Support tactile explicite
-        downloadBtn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            desktopDownloadBtn.click();
-        });
-    }
-    
-    console.log('✅ Boutons flottants mobiles configurés');
+        showToast('Document chargé - Cliquez sur un texte pour modifier');
+    }, 500);
 }
 
 // ============================================
@@ -169,6 +134,12 @@ function renderDocument() {
     const canvas = document.getElementById('document-canvas');
     const { template } = editorState;
     
+    if (!canvas) {
+        console.error('Canvas non trouvé!');
+        return;
+    }
+    
+    // Styles
     let styleTag = document.getElementById('template-style');
     if (!styleTag) {
         styleTag = document.createElement('style');
@@ -177,58 +148,70 @@ function renderDocument() {
     }
     styleTag.textContent = template.cssStyles || '';
     
-    canvas.innerHTML = template.htmlStructure || '<p>Aperçu non disponible</p>';
+    // Contenu HTML
+    canvas.innerHTML = template.htmlStructure || '<p style="padding: 40px; text-align: center; color: #64748B;">Aperçu non disponible</p>';
     
+    // Champs par défaut
     if (template.fields) {
         template.fields.forEach(field => {
             const el = document.getElementById(`field-${field.name}`);
-            if (el && field.default) el.textContent = field.default;
+            if (el && field.default) {
+                el.textContent = field.default;
+            }
         });
     }
     
+    // Photo placeholder
     if (template.hasPhoto) {
         const photoContainer = document.getElementById('doc-photo');
         if (photoContainer && !photoContainer.querySelector('img')) {
-            photoContainer.innerHTML = `<span class="cv-photo-placeholder" style="font-size: 2rem; font-weight: 700; color: white;">TD</span>`;
+            photoContainer.innerHTML = `<span class="cv-photo-placeholder" style="font-size: 2rem; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">TD</span>`;
         }
     }
+    
+    console.log('✅ Document rendu');
 }
 
 // ============================================
 // SIDEBAR
 // ============================================
 function setupSidebar() {
-    const btn = document.getElementById('btn-customize');
     const sidebar = document.getElementById('customizationSidebar');
     const overlay = document.getElementById('sidebarOverlay');
     const close = document.getElementById('sidebarClose');
     
-    function openSidebar() {
-        sidebar.classList.add('active');
-        overlay.classList.add('active');
-        btn.innerHTML = '<i class="fas fa-times"></i><span>Fermer</span>';
-        btn.classList.remove('btn-primary');
-        btn.classList.add('btn-secondary');
+    if (!sidebar || !overlay) {
+        console.error('Sidebar ou overlay non trouvé');
+        return;
     }
     
+    // Fonction pour ouvrir
+    window.openCustomizationSidebar = function() {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        console.log('Sidebar ouverte');
+    };
+    
+    // Fonction pour fermer
     function closeSidebar() {
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
-        btn.innerHTML = '<i class="fas fa-sliders-h"></i><span>Personnaliser</span>';
-        btn.classList.remove('btn-secondary');
-        btn.classList.add('btn-primary');
     }
     
-    btn.addEventListener('click', () => {
-        if (sidebar.classList.contains('active')) {
-            closeSidebar();
-        } else {
-            openSidebar();
+    // Événement sur le bouton du header (via delegation)
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('#btn-customize, #mobileBtnCustomize');
+        if (btn) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.openCustomizationSidebar();
         }
     });
     
     overlay.addEventListener('click', closeSidebar);
-    close.addEventListener('click', closeSidebar);
+    if (close) close.addEventListener('click', closeSidebar);
+    
+    console.log('✅ Sidebar configurée');
 }
 
 // ============================================
@@ -236,7 +219,14 @@ function setupSidebar() {
 // ============================================
 function buildSidebarFields(fields) {
     const container = document.getElementById('fields-container');
+    if (!container) return;
+    
     container.innerHTML = '';
+    
+    if (!fields || fields.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">Aucun champ à modifier pour ce document</p>';
+        return;
+    }
     
     fields.forEach(field => {
         const wrapper = document.createElement('div');
@@ -264,12 +254,16 @@ function buildSidebarFields(fields) {
         
         input.addEventListener('input', (e) => {
             const targetEl = document.getElementById(`field-${field.name}`);
-            if (targetEl) targetEl.textContent = e.target.value;
+            if (targetEl) {
+                targetEl.textContent = e.target.value;
+            }
         });
         
         wrapper.appendChild(input);
         container.appendChild(wrapper);
     });
+    
+    console.log(`✅ ${fields.length} champs créés`);
 }
 
 // ============================================
@@ -287,58 +281,33 @@ function updateZoomDisplay() {
     }
 }
 
-
-
-// Dans setupZoomControls(), ajuste le reset :
 function setupZoomControls() {
-    document.getElementById('btn-zoom-in')?.addEventListener('click', () => {
-        editorState.zoom = Math.min(3, +(editorState.zoom + 0.1).toFixed(2));
-        updateZoomDisplay();
-    });
+    const zoomIn = document.getElementById('btn-zoom-in');
+    const zoomOut = document.getElementById('btn-zoom-out');
+    const zoomReset = document.getElementById('btn-zoom-reset');
     
-    document.getElementById('btn-zoom-out')?.addEventListener('click', () => {
-        editorState.zoom = Math.max(0.2, +(editorState.zoom - 0.1).toFixed(2));
-        updateZoomDisplay();
-    });
+    if (zoomIn) {
+        zoomIn.addEventListener('click', () => {
+            editorState.zoom = Math.min(3, +(editorState.zoom + 0.1).toFixed(2));
+            updateZoomDisplay();
+        });
+    }
     
-    document.getElementById('btn-zoom-reset')?.addEventListener('click', () => {
-        // Reset intelligent selon la taille d'écran
-        editorState.zoom = window.innerWidth <= 768 ? 0.45 : 0.95;
-        updateZoomDisplay();
-    });
-}
-
-// ============================================
-// RECHERCHE (REDIRECTION VERS INDEX)
-// ============================================
-function setupSearch() {
-    const form = document.getElementById('searchForm');
-    const input = document.getElementById('headerSearch');
+    if (zoomOut) {
+        zoomOut.addEventListener('click', () => {
+            editorState.zoom = Math.max(0.2, +(editorState.zoom - 0.1).toFixed(2));
+            updateZoomDisplay();
+        });
+    }
     
-    if (!form || !input) return;
+    if (zoomReset) {
+        zoomReset.addEventListener('click', () => {
+            editorState.zoom = window.innerWidth <= 768 ? 0.45 : 0.95;
+            updateZoomDisplay();
+        });
+    }
     
-    // Soumission du formulaire (Entrée)
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const query = input.value.trim();
-        if (query.length >= 2) {
-            window.location.href = `index.html?q=${encodeURIComponent(query)}`;
-        }
-    });
-    
-    // Recherche en temps réel (optionnel - affiche suggestions)
-    input.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        if (query.length < 2) return;
-        
-        const results = templatesRegistry.filter(t => 
-            t.name.toLowerCase().includes(query) || 
-            t.category.toLowerCase().includes(query)
-        );
-        
-        // Log pour debug
-        console.log('Suggestions:', results.map(r => r.name));
-    });
+    console.log('✅ Contrôles de zoom configurés');
 }
 
 // ============================================
@@ -346,21 +315,30 @@ function setupSearch() {
 // ============================================
 function setupDownload() {
     const btn = document.getElementById('btn-download');
+    if (!btn) {
+        console.warn('Bouton téléchargement non trouvé');
+        return;
+    }
     
     btn.addEventListener('click', async () => {
+        console.log('Bouton téléchargement cliqué');
+        
         if (!editorState.currentUser) {
-            // Afficher modal non-bloquante
-            document.getElementById('loginModal').classList.add('active');
-            
-            // Attendre fermeture
-            await new Promise(resolve => {
-                const closeModal = () => {
-                    document.getElementById('loginModal').classList.remove('active');
-                    document.getElementById('loginModalClose').removeEventListener('click', closeModal);
-                    resolve();
-                };
-                document.getElementById('loginModalClose').addEventListener('click', closeModal);
-            });
+            console.log('Utilisateur non connecté, affichage de la modal');
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.classList.add('active');
+                
+                // Attendre que l'utilisateur ferme la modal
+                await new Promise(resolve => {
+                    const closeModal = () => {
+                        modal.classList.remove('active');
+                        document.getElementById('loginModalClose')?.removeEventListener('click', closeModal);
+                        resolve();
+                    };
+                    document.getElementById('loginModalClose')?.addEventListener('click', closeModal);
+                });
+            }
         }
         
         await generatePDF();
@@ -369,11 +347,19 @@ function setupDownload() {
 
 async function generatePDF() {
     const canvas = document.getElementById('document-canvas');
+    if (!canvas) {
+        showToast('Erreur: Canvas non trouvé');
+        return;
+    }
     
     try {
-        const editableElements = canvas.querySelectorAll('[contenteditable="true"]');
-        editableElements.forEach(el => el.contentEditable = false);
+        showToast('Génération du PDF...');
         
+        // Désactiver l'édition temporaire
+        const editableElements = canvas.querySelectorAll('[contenteditable="true"]');
+        editableElements.forEach(el => el.contentEditable = 'false');
+        
+        // Reset zoom pour le PDF
         const prevZoom = editorState.zoom;
         editorState.zoom = 1.0;
         updateZoomDisplay();
@@ -382,10 +368,12 @@ async function generatePDF() {
         const canvasImage = await html2canvas(canvas, { 
             scale: 2, 
             useCORS: true, 
-            backgroundColor: '#ffffff' 
+            backgroundColor: '#ffffff',
+            logging: false
         });
         
-        const pdf = new jspdf.jsPDF({ 
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ 
             orientation: 'portrait', 
             unit: 'mm', 
             format: 'a4' 
@@ -399,17 +387,51 @@ async function generatePDF() {
             pdf.internal.pageSize.getHeight()
         );
         
-        pdf.save(`TakiDoc_${editorState.template.id}_${Date.now()}.pdf`);
-
-        editableElements.forEach(el => el.contentEditable = true);
+        const filename = `TakiDoc_${editorState.template.id}_${Date.now()}.pdf`;
+        pdf.save(filename);
+        
+        // Réactiver l'édition
+        editableElements.forEach(el => el.contentEditable = 'true');
         editorState.zoom = prevZoom;
         updateZoomDisplay();
         
         showToast('PDF téléchargé avec succès !');
+        console.log('✅ PDF généré:', filename);
     } catch (e) {
-        console.error(e);
-        alert('Erreur lors de la génération du PDF');
+        console.error('Erreur PDF:', e);
+        showToast('Erreur lors de la génération du PDF');
     }
+}
+
+// ============================================
+// BOUTONS FLOTTANTS MOBILE
+// ============================================
+function setupMobileFABs() {
+    const customizeBtn = document.getElementById('mobileBtnCustomize');
+    const downloadBtn = document.getElementById('mobileBtnDownload');
+    
+    if (customizeBtn) {
+        customizeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            window.openCustomizationSidebar?.();
+        });
+        
+        customizeBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            window.openCustomizationSidebar?.();
+        });
+    }
+    
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('btn-download')?.click();
+        });
+    }
+    
+    console.log('✅ Boutons mobiles configurés');
 }
 
 // ============================================
@@ -418,6 +440,9 @@ async function generatePDF() {
 function enableDirectEditing() {
     const canvas = document.getElementById('document-canvas');
     if (!canvas) return;
+
+    let editableCount = 0;
+    const protectedKeywords = ['TakiDoc', 'onrender.com', 'takidoc'];
 
     const treeWalker = document.createTreeWalker(
         canvas,
@@ -439,34 +464,43 @@ function enableDirectEditing() {
         const parent = textNode.parentElement;
         if (!parent) continue;
         
-        const parentText = parent.textContent.trim();
-        if (parentText.includes('TakiDoc') && parentText.includes('onrender.com')) {
-            parent.contentEditable = false;
+        // Vérifier si protégé
+        const parentText = parent.textContent.trim().toLowerCase();
+        if (protectedKeywords.some(keyword => parentText.includes(keyword))) {
+            parent.contentEditable = 'false';
             parent.classList.add('takidoc-footer-protected');
             continue;
         }
         
         if (parent.children.length > 5) continue;
         
-        parent.contentEditable = true;
+        parent.contentEditable = 'true';
         parent.classList.add('direct-editable');
+        editableCount++;
         
+        // Sync avec sidebar
         if (parent.id && parent.id.startsWith('field-')) {
             const fieldName = parent.id.replace('field-', '');
             const sidebarInput = document.getElementById(`input-${fieldName}`);
             
-            parent.addEventListener('input', () => {
-                if (sidebarInput) sidebarInput.value = parent.textContent;
-            });
+            if (sidebarInput) {
+                parent.addEventListener('input', () => {
+                    sidebarInput.value = parent.textContent;
+                });
+            }
         }
     }
+    
+    console.log(`✅ Édition activée sur ${editableCount} éléments`);
 }
 
 // ============================================
-// PHOTO & COULEUR
+// PHOTO
 // ============================================
 function setupPhotoUpload() {
     const input = document.getElementById('photo-input');
+    if (!input) return;
+    
     input.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file || !file.type.startsWith('image/')) return;
@@ -476,7 +510,7 @@ function setupPhotoUpload() {
             editorState.photoDataUrl = event.target.result;
             const container = document.getElementById('doc-photo');
             if (container) {
-                container.innerHTML = `<img src="${editorState.photoDataUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                container.innerHTML = `<img src="${editorState.photoDataUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" alt="Photo de profil">`;
             }
             document.getElementById('photo-label').textContent = '✓ Photo ajoutée';
             document.getElementById('photo-remove').style.display = 'block';
@@ -484,19 +518,28 @@ function setupPhotoUpload() {
         reader.readAsDataURL(file);
     });
 
-    document.getElementById('photo-remove').addEventListener('click', () => {
-        editorState.photoDataUrl = null;
-        input.value = '';
-        const container = document.getElementById('doc-photo');
-        if (container) container.innerHTML = `<span class="cv-photo-placeholder" style="font-size:2rem; font-weight:700; color:white;">TD</span>`;
-        document.getElementById('photo-label').textContent = 'Ajouter une photo';
-        document.getElementById('photo-remove').style.display = 'none';
-    });
+    const removeBtn = document.getElementById('photo-remove');
+    if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+            editorState.photoDataUrl = null;
+            input.value = '';
+            const container = document.getElementById('doc-photo');
+            if (container) {
+                container.innerHTML = `<span class="cv-photo-placeholder" style="font-size:2rem; font-weight:700; color:white; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">TD</span>`;
+            }
+            document.getElementById('photo-label').textContent = 'Ajouter une photo';
+            removeBtn.style.display = 'none';
+        });
+    }
 }
 
+// ============================================
+// COULEUR
+// ============================================
 function setupColorPicker() {
     const picker = document.getElementById('color-picker');
     const hexDisplay = document.getElementById('color-hex');
+    if (!picker) return;
     
     const applyColor = (color) => {
         editorState.primaryColor = color;
@@ -513,6 +556,7 @@ function setupColorPicker() {
     });
     
     applyColor(editorState.primaryColor);
+    console.log('✅ Sélecteur de couleur configuré');
 }
 
 function updateColorPresets() {

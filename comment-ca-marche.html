@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -211,23 +211,14 @@
       *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
     }
   </style>
+    <!-- HEADER TAKIDOC -->
+    <link rel="stylesheet" href="css/header.css">
 </head>
 <body>
-  <header class="site-header">
-    <nav class="nav container" aria-label="Navigation principale">
-      <a href="index.html" class="brand" aria-label="TakiDoc, accueil">
-        <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-file-lines"></i></span>
-        <span><span class="brand-taki">Taki</span>Doc</span>
-      </a>
-      <div class="nav-links">
-        <a href="index.html">Accueil</a>
-        <a href="comment-ca-marche.html" aria-current="page">Comment ça marche</a>
-        <a href="contact.html">Contact</a>
-        <a href="index.html#documents" class="nav-cta">Explorer les modèles <i class="fa-solid fa-arrow-right"></i></a>
-      </div>
-      <a href="index.html#documents" class="mobile-cta">Explorer <i class="fa-solid fa-arrow-right"></i></a>
-    </nav>
-  </header>
+    <!-- HEADER DYNAMIQUE TAKIDOC -->
+    <div id="td-header-container"></div>
+
+  
 
   <main>
     <section class="hero">
@@ -435,5 +426,9 @@
       });
     });
   </script>
+
+    <!-- HEADER TAKIDOC -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/header.js"></script>
 </body>
 </html>

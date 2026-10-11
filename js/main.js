@@ -1,6 +1,6 @@
 // ============================================
-// TAKIDOC - MOTEUR PRINCIPAL
-// L'équipe Meurphy
+// TAKIDOC - MOTEUR PRINCIPAL (VERSION CORRIGÉE)
+// L'équipe Meurphy - 2026
 // ============================================
 import { fetchTemplates, fetchCategories } from './supabase-config.js';
 import { templatesRegistry } from './templates-registry.js';
@@ -10,35 +10,57 @@ let allTemplates = [];
 let allCategories = [];
 
 // ============================================
-// INITIALISATION
+// INITIALISATION UNIQUE
 // ============================================
 document.addEventListener('DOMContentLoaded', async () => {
-    // Charger les données depuis Supabase
+    console.log("🚀 Démarrage du moteur TakiDoc...");
+    
+    // 1. Charger les données
     await loadData();
     
-    // Afficher les catégories (filtres)
+    // 2. Afficher les documents populaires (Page d'accueil)
+    renderPopularDocuments();
+    
+    // 3. Afficher les catégories (Filtres)
     renderCategories();
     
-    // Afficher les templates
-    renderTemplates(allTemplates);
+    // 4. Afficher TOUS les templates (Page documents.html ou section catalogue)
+    const allTemplatesGrid = document.getElementById('templates-grid') || document.getElementById('masonryGrid');
+    if (allTemplatesGrid) {
+        renderTemplates(allTemplates);
+    }
     
     console.log("✅ Moteur TakiDoc initialisé. L'équipe Meurphy est en service.");
 });
 
 // ============================================
-// CHARGEMENT DES DONNÉES
+// CHARGEMENT DES DONNÉES (Avec Fallback Local)
 // ============================================
 async function loadData() {
-    const [templates, categories] = await Promise.all([
-        fetchTemplates(),
-        fetchCategories()
-    ]);
-    
-    allTemplates = templates;
-    allCategories = categories;
-    
-    if (templates.length === 0) {
-        console.warn('Aucun template trouvé dans la base de données');
+    try {
+        const [templates, categories] = await Promise.all([
+            fetchTemplates(),
+            fetchCategories()
+        ]);
+        
+        // Si Supabase renvoie des données, on les utilise
+        if (templates && templates.length > 0) {
+            allTemplates = templates;
+            allCategories = categories || [];
+        } else {
+            console.warn("⚠️ Base de données vide. Utilisation du registre local (templatesRegistry).");
+            // Fallback sur le registre local
+            allTemplates = templatesRegistry;
+            // Extraire les catégories uniques du registre local
+            const uniqueCats = [...new Set(templatesRegistry.map(t => t.category))];
+            allCategories = uniqueCats.map(cat => ({ id: cat, name: cat.charAt(0).toUpperCase() + cat.slice(1) }));
+        }
+    } catch (error) {
+        console.error("❌ Erreur de chargement Supabase:", error);
+        console.log("🔄 Basculé sur le mode local (templatesRegistry).");
+        allTemplates = templatesRegistry;
+        const uniqueCats = [...new Set(templatesRegistry.map(t => t.category))];
+        allCategories = uniqueCats.map(cat => ({ id: cat, name: cat.charAt(0).toUpperCase() + cat.slice(1) }));
     }
 }
 
@@ -46,14 +68,14 @@ async function loadData() {
 // AFFICHAGE DES CATÉGORIES (FILTRES)
 // ============================================
 function renderCategories() {
-    const container = document.getElementById('categories-filter');
+    const container = document.getElementById('categories-filter') || document.getElementById('categoriesNav');
     if (!container) return;
     
     container.innerHTML = '';
     
     // Bouton "Tous"
     const allBtn = document.createElement('button');
-    allBtn.className = 'filter-btn active';
+    allBtn.className = 'cat-pill active'; // Utilise ta classe CSS actuelle
     allBtn.textContent = 'Tous';
     allBtn.dataset.category = 'all';
     allBtn.addEventListener('click', () => filterTemplates('all'));
@@ -62,7 +84,7 @@ function renderCategories() {
     // Boutons par catégorie
     allCategories.forEach(cat => {
         const btn = document.createElement('button');
-        btn.className = 'filter-btn';
+        btn.className = 'cat-pill';
         btn.textContent = cat.name;
         btn.dataset.category = cat.id;
         btn.addEventListener('click', () => filterTemplates(cat.id));
@@ -75,7 +97,7 @@ function renderCategories() {
 // ============================================
 function filterTemplates(categoryId) {
     // Mettre à jour les boutons actifs
-    document.querySelectorAll('.filter-btn').forEach(btn => {
+    document.querySelectorAll('.cat-pill, .filter-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.category === categoryId) {
             btn.classList.add('active');
@@ -85,149 +107,107 @@ function filterTemplates(categoryId) {
     // Filtrer les templates
     const filtered = categoryId === 'all' 
         ? allTemplates 
-        : allTemplates.filter(t => t.category_id === categoryId);
+        : allTemplates.filter(t => t.category === categoryId || t.category_id === categoryId);
     
     renderTemplates(filtered);
 }
 
 // ============================================
-// AFFICHAGE DES TEMPLATES
+// AFFICHAGE DES TEMPLATES (LA FONCTION MANQUANTE !)
 // ============================================
-
-// ============================================
-// AFFICHAGE DES DOCUMENTS POPULAIRES (PAGE D'ACCUEIL)
-// ============================================
-function renderPopularDocuments() {
-    const grid = document.getElementById('popular-docs');
+function renderTemplates(templatesToRender) {
+    // Cherche la grille principale (s'adapte à index.html ou documents.html)
+    const grid = document.getElementById('popular-docs') || document.getElementById('templates-grid') || document.getElementById('masonryGrid');
     if (!grid) return;
-    
-    // Prendre les 6 premiers documents du registre
-    const popularDocs = templatesRegistry.slice(0, 6);
     
     grid.innerHTML = '';
     
-    if (popularDocs.length === 0) {
-        grid.innerHTML = '<div class="loading-text">Chargement des documents...</div>';
+    if (!templatesToRender || templatesToRender.length === 0) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 40px;"><h3>Aucun document trouvé</h3></div>';
         return;
     }
     
-    popularDocs.forEach(template => {
+    templatesToRender.forEach(template => {
         const card = document.createElement('div');
-        card.className = 'doc-item';
+        card.className = 'pin-card';
         card.style.cursor = 'pointer';
         
-        // Générer l'aperçu réaliste du document
         const previewHtml = generateDocumentPreview(template);
+        const categoryName = template.category ? template.category.charAt(0).toUpperCase() + template.category.slice(1) : 'Document';
+        const price = template.price ? template.price.toLocaleString() : '0';
         
         card.innerHTML = `
-            <div class="template-preview" style="height: 180px; margin-bottom: 1rem; background: #f8fafc; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                <div class="preview-scaler" style="transform: scale(0.5); width: 100%; height: 100%;">
+            <div class="document-preview">
+                <div class="category-badge">${categoryName}</div>
+                <div class="preview-scaler" style="transform: scale(0.35); transform-origin: top left; width: 285%; height: 285%; overflow: hidden; pointer-events: none;">
                     ${previewHtml}
                 </div>
+                <div class="pin-overlay">
+                    <div class="overlay-bottom">
+                        <h3 class="overlay-title">${template.name}</h3>
+                        <div class="overlay-price">${price} FCFA</div>
+                        <button class="btn-customize-overlay" onclick="event.stopPropagation(); window.location.href='editor.html?id=${template.id}'">
+                            <i class="fas fa-edit"></i> Personnaliser
+                        </button>
+                    </div>
+                </div>
             </div>
-            <h3>${template.name}</h3>
-            <p>${template.description}</p>
-            <div class="doc-price">${template.price.toLocaleString()} FCFA</div>
-            <button class="btn-doc" onclick="window.location.href='editor.html?id=${template.id}'">
-                Voir le document
-            </button>
         `;
         
-        // Clic sur toute la carte
-        card.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('btn-doc')) {
-                window.location.href = `editor.html?id=${template.id}`;
-            }
+        // Clic sur toute la carte redirige vers l'éditeur
+        card.addEventListener('click', () => {
+            window.location.href = `editor.html?id=${template.id}`;
         });
         
         grid.appendChild(card);
     });
 }
 
-// Icône par catégorie
-function getCategoryIcon(category) {
-    const icons = {
-        'cv': 'fa-user',
-        'lettre': 'fa-envelope-open-text',
-        'attestation': 'fa-certificate',
-        'contrat': 'fa-file-contract',
-        'commercial': 'fa-file-invoice-dollar',
-        'administratif': 'fa-building'
-    };
-    return icons[category] || 'fa-file-alt';
+// ============================================
+// AFFICHAGE DES DOCUMENTS POPULAIRES (PAGE D'ACCUEIL)
+// ============================================
+function renderPopularDocuments() {
+    const grid = document.getElementById('popular-docs');
+    if (!grid) return; // Si on n'est pas sur la page d'accueil, on sort
+    
+    // Prendre les 6 premiers documents du registre
+    const popularDocs = allTemplates.slice(0, 6);
+    renderTemplates(popularDocs); // Réutilise la fonction principale pour éviter la duplication de code
 }
 
 // ============================================
-// INITIALISATION MODIFIÉE
-// ============================================
-document.addEventListener('DOMContentLoaded', async () => {
-    // Charger les données depuis Supabase
-    await loadData();
-    
-    // Afficher les documents populaires (page d'accueil)
-    renderPopularDocuments();
-    
-    // Afficher les catégories (filtres) - si présent sur la page
-    renderCategories();
-    
-    // Afficher TOUS les templates (si sur page documents.html)
-    const allTemplatesGrid = document.getElementById('templates-grid');
-    if (allTemplatesGrid) {
-        renderTemplates(allTemplates);
-    }
-    
-    console.log("✅ Moteur TakiDoc initialisé. L'équipe Meurphy est en service.");
-});
-// ============================================
 // GÉNÉRATEUR D'APERÇUS VISUELS PAR TYPE DE DOCUMENT
 // ============================================
-// Générer l'aperçu basé sur le type de document
 function generateDocumentPreview(template) {
     const name = template.name.toLowerCase();
     
     if (name.includes('cv')) {
         return `
-            <div class="real-preview-cv">
-                <div class="cv-header-real">
-                    <div class="cv-name">Jean-Baptiste NKOUA</div>
-                    <div class="cv-title">Directeur Général</div>
+            <div style="padding: 20px; font-family: sans-serif; font-size: 12px;">
+                <div style="display:flex; justify-content:space-between; border-bottom: 2px solid #FF6B35; padding-bottom: 10px; margin-bottom: 15px;">
+                    <div><strong style="font-size: 18px; color: #0F172A;">Meurphy TALAMIO</strong><br><span style="color: #64748B;">Directeur Général</span></div>
+                    <div style="width: 40px; height: 40px; background: #E2E8F0; border-radius: 50%;"></div>
                 </div>
-                <div class="cv-body-real">
-                    <div class="cv-section">
-                        <div class="cv-section-title">PROFIL</div>
-                        <div class="cv-text">Professionnel expérimenté...</div>
-                    </div>
-                    <div class="cv-section">
-                        <div class="cv-section-title">EXPÉRIENCES</div>
-                        <div class="cv-item">
-                            <div class="cv-item-title">Directeur Général</div>
-                            <div class="cv-item-company">Entreprise XYZ</div>
-                        </div>
-                    </div>
-                </div>
+                <div style="color: #FF6B35; font-weight: bold; margin-bottom: 5px;">PROFIL</div>
+                <div style="height: 4px; background: #E2E8F0; width: 100%; margin-bottom: 4px;"></div>
+                <div style="height: 4px; background: #E2E8F0; width: 80%; margin-bottom: 15px;"></div>
+                <div style="color: #FF6B35; font-weight: bold; margin-bottom: 5px;">EXPÉRIENCES</div>
+                <div style="height: 4px; background: #0F172A; width: 60%; margin-bottom: 4px;"></div>
+                <div style="height: 4px; background: #E2E8F0; width: 90%; margin-bottom: 4px;"></div>
             </div>
         `;
     }
     
-    if (name.includes('attestation')) {
+    if (name.includes('attestation') || name.includes('certificat')) {
         return `
-            <div class="real-preview-attestation">
-                <div class="attestation-real-header">ENTREPRISE XYZ</div>
-                <div class="attestation-real-title">ATTESTATION DE TRAVAIL</div>
-                <div class="attestation-real-body">
-                    <p>Je soussigné certifie que...</p>
-                </div>
-            </div>
-        `;
-    }
-    
-    if (name.includes('lettre')) {
-        return `
-            <div class="real-preview-letter">
-                <div class="letter-real-name">Meurphy TALAMIO</div>
-                <div class="letter-real-objet">Objet : Candidature</div>
-                <div class="letter-real-body">
-                    <p>Madame, Monsieur...</p>
+            <div style="padding: 20px; font-family: serif; text-align: center; font-size: 12px;">
+                <div style="font-weight: bold; color: #FF6B35; font-size: 16px; margin-bottom: 20px;">ENTREPRISE XYZ</div>
+                <div style="font-weight: bold; font-size: 14px; text-decoration: underline; margin-bottom: 20px;">ATTESTATION</div>
+                <div style="text-align: left; color: #334155;">
+                    <div style="height: 4px; background: #E2E8F0; width: 100%; margin-bottom: 6px;"></div>
+                    <div style="height: 4px; background: #E2E8F0; width: 90%; margin-bottom: 6px;"></div>
+                    <div style="height: 4px; background: #E2E8F0; width: 95%; margin-bottom: 20px;"></div>
+                    <div style="text-align: right; font-weight: bold; color: #FF6B35;">Signature</div>
                 </div>
             </div>
         `;
@@ -235,36 +215,32 @@ function generateDocumentPreview(template) {
     
     if (name.includes('contrat')) {
         return `
-            <div class="real-preview-contract">
-                <div class="contract-real-title">CONTRAT DE TRAVAIL</div>
-                <div class="contract-real-parties">
-                    <div class="contract-party"><strong>ENTREPRISE XYZ</strong></div>
-                    <div class="contract-party"><strong>Meurphy TALAMIO</strong></div>
+            <div style="padding: 20px; font-family: serif; font-size: 11px;">
+                <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; color: #0F172A;">CONTRAT DE TRAVAIL</div>
+                <div style="border: 1px solid #E2E8F0; padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+                    <strong>EMPLOYEUR :</strong> Entreprise XYZ
                 </div>
+                <div style="border: 1px solid #E2E8F0; padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+                    <strong>SALARIÉ :</strong> Meurphy TALAMIO
+                </div>
+                <div style="height: 4px; background: #E2E8F0; width: 100%; margin-bottom: 4px;"></div>
+                <div style="height: 4px; background: #E2E8F0; width: 80%;"></div>
             </div>
         `;
     }
     
-    if (name.includes('devis') || name.includes('facture')) {
-        return `
-            <div class="real-preview-invoice">
-                <div class="invoice-real-header">
-                    <div class="invoice-real-company"><strong>ENTREPRISE XYZ</strong></div>
-                    <div class="invoice-real-client"><strong>CLIENT</strong></div>
-                </div>
-                <div class="invoice-real-title">FACTURE</div>
-                <div class="invoice-real-total">Total: 1 534 000 FCFA</div>
-            </div>
-        `;
-    }
-    
-    // Document générique
+    // Document générique (Lettre, Devis, etc.)
     return `
-        <div class="real-preview-generic">
-            <div class="generic-real-title">${template.name.toUpperCase()}</div>
-            <div class="generic-real-body">
-                <p>Document professionnel...</p>
+        <div style="padding: 20px; font-family: sans-serif; font-size: 12px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <div style="font-weight: bold; color: #FF6B35;">TakiDoc</div>
+                <div style="color: #64748B;">${new Date().toLocaleDateString()}</div>
             </div>
+            <div style="font-weight: bold; font-size: 14px; margin-bottom: 15px; color: #0F172A;">${template.name.toUpperCase()}</div>
+            <div style="height: 4px; background: #E2E8F0; width: 100%; margin-bottom: 6px;"></div>
+            <div style="height: 4px; background: #E2E8F0; width: 90%; margin-bottom: 6px;"></div>
+            <div style="height: 4px; background: #E2E8F0; width: 95%; margin-bottom: 6px;"></div>
+            <div style="height: 4px; background: #E2E8F0; width: 70%; margin-bottom: 6px;"></div>
         </div>
     `;
 }

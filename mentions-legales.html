@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -196,21 +196,14 @@
       *,*::before,*::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
     }
   </style>
+    <!-- HEADER TAKIDOC -->
+    <link rel="stylesheet" href="css/header.css">
 </head>
 <body>
-  <header class="site-header">
-    <nav class="nav container" aria-label="Navigation principale">
-      <a href="index.html" class="logo" aria-label="TakiDoc, accueil">
-        <span class="logo-mark" aria-hidden="true">T</span>
-        <span class="logo-word"><span>Taki</span>Doc</span>
-      </a>
-      <div class="nav-right">
-        <a class="nav-link" href="index.html">Accueil</a>
-        <a class="nav-link" href="comment-ca-marche.html">Comment ça marche</a>
-        <a class="nav-link primary" href="contact.html">Contact</a>
-      </div>
-    </nav>
-  </header>
+    <!-- HEADER DYNAMIQUE TAKIDOC -->
+    <div id="td-header-container"></div>
+
+  
 
   <main>
     <section class="hero">
@@ -403,5 +396,9 @@
       sections.forEach((section) => observer.observe(section));
     }
   </script>
+
+    <!-- HEADER TAKIDOC -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/header.js"></script>
 </body>
 </html>

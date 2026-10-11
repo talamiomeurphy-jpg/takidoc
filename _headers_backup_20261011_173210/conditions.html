@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="Consultez les conditions d'utilisation de TakiDoc : accès à la plateforme, comptes, documents, paiements et responsabilités.">
+    <title>Conditions d’utilisation — TakiDoc</title>
+    <!-- FAVICONS TAKIDOC -->
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="site.webmanifest">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E85A2D;
+            --primary-soft: #FFF3ED;
+            --navy: #1A1A2E;
+            --blue: #004E89;
+            --text: #374151;
+            --muted: #6B7280;
+            --subtle: #9CA3AF;
+            --bg: #FAFAFA;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+            --shadow-sm: 0 2px 8px rgba(26, 26, 46, .04);
+            --shadow-md: 0 12px 32px rgba(26, 26, 46, .07);
+            --radius-sm: 10px;
+            --radius-md: 18px;
+            --radius-lg: 28px;
+            --content-width: 1160px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 110px; }
+        body {
+            margin: 0;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(ellipse at 8% 8%, rgba(255, 107, 53, .055), transparent 32rem),
+                var(--bg);
+            line-height: 1.75;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+        a { color: inherit; text-decoration: none; }
+        a:focus-visible, button:focus-visible {
+            outline: 3px solid rgba(255, 107, 53, .45);
+            outline-offset: 4px;
+        }
+        button { font: inherit; }
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, .91);
+            border-bottom: 1px solid rgba(229, 231, 235, .88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .nav {
+            width: min(var(--content-width), calc(100% - 48px));
+            min-height: 76px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--navy);
+            font-size: 1.55rem;
+            font-weight: 900;
+            letter-spacing: -1.3px;
+            white-space: nowrap;
+        }
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            color: #fff;
+            background: var(--primary);
+            border-radius: 12px;
+            font-size: 1rem;
+            box-shadow: 0 5px 12px rgba(255, 107, 53, .22);
+        }
+        .brand .accent { color: var(--primary); }
+        .nav-actions { display: flex; align-items: center; gap: 8px; }
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 10px 14px;
+            border-radius: 11px;
+            color: #596273;
+            font-size: .9rem;
+            font-weight: 650;
+            transition: background .2s ease, color .2s ease, transform .2s ease;
+        }
+        .nav-link:hover { color: var(--navy); background: #F3F4F6; }
+        .nav-link.primary-link { color: #fff; background: var(--navy); }
+        .nav-link.primary-link:hover { background: var(--blue); transform: translateY(-1px); }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(120deg, #fff 0%, #fff 58%, #FFF7F2 100%);
+        }
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            right: max(-70px, calc((100vw - var(--content-width)) / 2 - 30px));
+            top: -120px;
+            border: 1px solid rgba(255, 107, 53, .14);
+            border-radius: 50%;
+            box-shadow: 0 0 0 35px rgba(255, 107, 53, .025), 0 0 0 70px rgba(255, 107, 53, .02);
+            pointer-events: none;
+        }
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            width: min(var(--content-width), calc(100% - 48px));
+            margin: 0 auto;
+            padding: 70px 0 66px;
+        }
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 19px;
+            padding: 7px 12px;
+            border: 1px solid #FFE0D2;
+            border-radius: 999px;
+            background: rgba(255, 243, 237, .85);
+            color: #B94A21;
+            font-size: .76rem;
+            font-weight: 800;
+            letter-spacing: .075em;
+            text-transform: uppercase;
+        }
+        .eyebrow i { font-size: .8rem; }
+        .hero h1 {
+            max-width: 760px;
+            margin: 0;
+            color: var(--navy);
+            font-size: clamp(2.2rem, 5vw, 4rem);
+            line-height: 1.12;
+            letter-spacing: -.065em;
+            font-weight: 850;
+        }
+        .hero h1 span { color: var(--primary); }
+        .hero-copy {
+            max-width: 660px;
+            margin: 20px 0 0;
+            color: var(--muted);
+            font-size: clamp(1rem, 1.6vw, 1.12rem);
+            line-height: 1.8;
+        }
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 22px;
+            margin-top: 28px;
+            color: #737B89;
+            font-size: .86rem;
+            font-weight: 550;
+        }
+        .hero-meta span { display: inline-flex; align-items: center; gap: 8px; }
+        .hero-meta i { color: var(--primary); }
+
+        .page-wrap {
+            width: min(var(--content-width), calc(100% - 48px));
+            margin: 42px auto 86px;
+            display: grid;
+            grid-template-columns: 260px minmax(0, 1fr);
+            align-items: start;
+            gap: 32px;
+        }
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            padding: 22px 16px 18px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--white);
+            box-shadow: var(--shadow-sm);
+        }
+        .sidebar-title {
+            margin: 0 10px 13px;
+            color: var(--navy);
+            font-size: .75rem;
+            font-weight: 850;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+        }
+        .toc { display: grid; gap: 4px; }
+        .toc a {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 9px 10px;
+            border-radius: 9px;
+            color: #697386;
+            font-size: .83rem;
+            font-weight: 600;
+            line-height: 1.45;
+            transition: color .2s ease, background .2s ease;
+        }
+        .toc a span { color: #A0A7B3; font-size: .72rem; padding-top: 2px; }
+        .toc a:hover, .toc a.active { color: #C64D25; background: var(--primary-soft); }
+        .toc a.active span { color: var(--primary); }
+        .sidebar-note {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 14px 12px;
+            border-radius: 12px;
+            background: #F8FAFC;
+            color: var(--muted);
+            font-size: .78rem;
+            line-height: 1.6;
+        }
+        .sidebar-note i { margin-top: 4px; color: var(--blue); }
+        .legal-content {
+            min-width: 0;
+            padding: clamp(24px, 4vw, 48px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+        .notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            margin-bottom: 34px;
+            padding: 17px 18px;
+            border: 1px solid #FFDCCB;
+            border-radius: 14px;
+            background: #FFF8F4;
+            color: #8B482F;
+            font-size: .88rem;
+            line-height: 1.7;
+        }
+        .notice i { margin-top: 5px; color: var(--primary); }
+        .legal-section {
+            padding: 0 0 27px;
+            margin: 0 0 28px;
+            border-bottom: 1px solid #EDF0F3;
+            scroll-margin-top: 105px;
+        }
+        .legal-section:last-of-type { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+        .section-heading {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin: 0 0 14px;
+        }
+        .section-number {
+            flex: 0 0 39px;
+            display: grid;
+            place-items: center;
+            width: 39px;
+            height: 39px;
+            border-radius: 12px;
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            font-size: .85rem;
+            font-weight: 850;
+        }
+        .legal-section h2 {
+            margin: 3px 0 0;
+            color: var(--navy);
+            font-size: clamp(1.08rem, 2vw, 1.27rem);
+            font-weight: 800;
+            line-height: 1.45;
+            letter-spacing: -.025em;
+        }
+        .legal-section p { margin: 0 0 13px; font-size: .94rem; }
+        .legal-section p:last-child { margin-bottom: 0; }
+        .legal-section ul { margin: 8px 0 14px; padding-left: 23px; }
+        .legal-section li { padding-left: 4px; margin-bottom: 7px; font-size: .94rem; }
+        .legal-section li::marker { color: var(--primary); }
+        .legal-section strong { color: #252D3B; }
+        .inline-link { color: var(--primary-dark); text-decoration: underline; text-decoration-color: #F6B49B; text-underline-offset: 3px; }
+        .inline-link:hover { color: var(--blue); }
+        .contact-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-top: 32px;
+            padding: 22px;
+            border-radius: 17px;
+            background: var(--navy);
+            color: white;
+        }
+        .contact-card-copy { display: flex; gap: 13px; align-items: flex-start; }
+        .contact-icon {
+            flex: 0 0 42px;
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: rgba(255, 255, 255, .1);
+            color: #FF9B73;
+        }
+        .contact-card h2 { margin: 0 0 4px; font-size: 1rem; }
+        .contact-card p { margin: 0; color: #CBD0DB; font-size: .83rem; line-height: 1.6; }
+        .contact-button {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 11px 15px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #fff;
+            font-size: .84rem;
+            font-weight: 750;
+            transition: background .2s ease, transform .2s ease;
+        }
+        .contact-button:hover { background: var(--primary-dark); color: #fff; transform: translateY(-1px); }
+
+        .site-footer {
+            background: #171827;
+            color: #D7D9E0;
+        }
+        .footer-inner { width: min(var(--content-width), calc(100% - 48px)); margin: 0 auto; padding: 52px 0 22px; }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 42px;
+            padding-bottom: 38px;
+        }
+        .footer-brand { color: #fff; }
+        .footer-description { max-width: 330px; margin: 15px 0 0; color: #AEB2C0; font-size: .87rem; line-height: 1.8; }
+        .footer-heading { margin: 3px 0 16px; color: #fff; font-size: .8rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+        .footer-links { display: grid; justify-items: start; gap: 10px; }
+        .footer-links a { color: #B8BBC7; font-size: .85rem; transition: color .2s ease; }
+        .footer-links a:hover { color: #FF9B73; }
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,.12);
+            color: #AEB2C0;
+            font-size: .78rem;
+        }
+        .footer-bottom p { margin: 0; }
+        .back-top { display: inline-flex; align-items: center; gap: 8px; color: #E5E7EB; font-weight: 650; }
+        .back-top:hover { color: #FF9B73; }
+
+        @media (max-width: 900px) {
+            .page-wrap { grid-template-columns: 220px minmax(0, 1fr); gap: 20px; }
+            .footer-grid { grid-template-columns: 1.3fr 1fr 1fr; gap: 25px; }
+        }
+        @media (max-width: 700px) {
+            html { scroll-padding-top: 86px; }
+            .nav { width: min(100% - 32px, var(--content-width)); min-height: 66px; gap: 12px; }
+            .brand { font-size: 1.35rem; gap: 8px; }
+            .brand-mark { width: 34px; height: 34px; border-radius: 10px; }
+            .nav-link { padding: 9px 10px; font-size: .82rem; }
+            .nav-link .optional-label { display: none; }
+            .hero-inner { width: min(100% - 36px, var(--content-width)); padding: 48px 0 43px; }
+            .hero::after { width: 170px; height: 170px; right: -90px; top: -55px; }
+            .eyebrow { margin-bottom: 15px; font-size: .68rem; }
+            .hero h1 { font-size: clamp(2.05rem, 9vw, 3rem); }
+            .hero-copy { margin-top: 15px; font-size: .96rem; }
+            .hero-meta { margin-top: 20px; gap: 8px 16px; font-size: .78rem; }
+            .page-wrap { width: min(100% - 28px, 760px); margin: 22px auto 54px; display: block; }
+            .sidebar { position: static; margin-bottom: 16px; padding: 15px; }
+            .sidebar-title { margin: 0 0 10px; }
+            .toc { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px; }
+            .toc a { padding: 8px 7px; font-size: .75rem; gap: 7px; }
+            .sidebar-note { display: none; }
+            .legal-content { padding: 23px 19px; border-radius: 20px; }
+            .notice { padding: 14px; margin-bottom: 27px; font-size: .82rem; }
+            .legal-section { padding-bottom: 23px; margin-bottom: 24px; }
+            .section-heading { gap: 11px; }
+            .section-number { flex-basis: 33px; width: 33px; height: 33px; border-radius: 10px; font-size: .78rem; }
+            .legal-section p, .legal-section li { font-size: .89rem; }
+            .contact-card { align-items: stretch; flex-direction: column; padding: 18px; }
+            .contact-button { width: 100%; }
+            .footer-inner { width: min(100% - 36px, var(--content-width)); padding-top: 38px; }
+            .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 22px; }
+            .footer-brand-block { grid-column: 1 / -1; }
+            .footer-description { max-width: 440px; }
+            .footer-bottom { align-items: flex-start; flex-direction: column; gap: 10px; }
+        }
+        @media (max-width: 380px) {
+            .nav { width: calc(100% - 24px); }
+            .brand { font-size: 1.22rem; }
+            .nav-actions { gap: 2px; }
+            .nav-link { padding: 8px; font-size: .77rem; }
+            .page-wrap { width: calc(100% - 20px); }
+            .toc { grid-template-columns: 1fr; }
+            .legal-content { padding: 20px 15px; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .footer-brand-block { grid-column: auto; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+        }
+    </style>
+</head>
+<body id="top">
+    <header class="site-header">
+        <nav class="nav" aria-label="Navigation principale">
+            <a class="brand" href="index.html" aria-label="TakiDoc — Accueil">
+                <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-file-lines"></i></span>
+                <span><span class="accent">Taki</span>Doc</span>
+            </a>
+            <div class="nav-actions">
+                <a class="nav-link" href="index.html"><i class="fa-solid fa-house" aria-hidden="true"></i><span class="optional-label">Accueil</span></a>
+                <a class="nav-link primary-link" href="contact.html"><i class="fa-regular fa-paper-plane" aria-hidden="true"></i> Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" aria-labelledby="page-title">
+            <div class="hero-inner">
+                <div class="eyebrow"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Cadre d’utilisation</div>
+                <h1 id="page-title">Les règles d’utilisation<br><span>de TakiDoc.</span></h1>
+                <p class="hero-copy">Ces conditions expliquent les règles applicables à l’accès à TakiDoc et à l’utilisation de ses modèles de documents. Prenez quelques instants pour les parcourir.</p>
+                <div class="hero-meta">
+                    <span><i class="fa-regular fa-calendar" aria-hidden="true"></i> Mise à jour : octobre 2026</span>
+                    <span><i class="fa-solid fa-book-open" aria-hidden="true"></i> Lecture structurée</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="page-wrap">
+            <aside class="sidebar" aria-label="Sommaire des conditions">
+                <p class="sidebar-title">Dans cette page</p>
+                <nav class="toc" id="table-of-contents">
+                    <a href="#objet"><span>01</span> Objet des conditions</a>
+                    <a href="#editeur"><span>02</span> Éditeur de la plateforme</a>
+                    <a href="#compte"><span>03</span> Accès et compte</a>
+                    <a href="#propriete"><span>04</span> Propriété intellectuelle</a>
+                    <a href="#paiement"><span>05</span> Paiement et remboursement</a>
+                    <a href="#responsabilite"><span>06</span> Responsabilité</a>
+                    <a href="#donnees"><span>07</span> Données personnelles</a>
+                    <a href="#disponibilite"><span>08</span> Disponibilité du service</a>
+                    <a href="#modifications"><span>09</span> Modification des conditions</a>
+                    <a href="#contact"><span>10</span> Nous contacter</a>
+                </nav>
+                <div class="sidebar-note">
+                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                    <span>Une question sur ces conditions ? L’équipe TakiDoc peut être contactée par e-mail.</span>
+                </div>
+            </aside>
+
+            <article class="legal-content">
+                <div class="notice">
+                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                    <div><strong>À lire avant utilisation.</strong> Ce texte présente les conditions actuellement indiquées pour la plateforme. Les informations qui doivent être confirmées par l’éditeur sont à vérifier avant publication définitive.</div>
+                </div>
+
+                <section class="legal-section" id="objet">
+                    <div class="section-heading"><span class="section-number">01</span><h2>Objet des conditions</h2></div>
+                    <p>Les présentes Conditions Générales d’Utilisation (ci-après les « CGU ») définissent les règles d’accès et d’utilisation du site TakiDoc (ci-après la « Plateforme »), ainsi que des fonctionnalités de consultation, de personnalisation et de téléchargement de documents professionnels qui y sont proposées.</p>
+                    <p>En utilisant la Plateforme, l’utilisateur reconnaît avoir pris connaissance des présentes conditions. Si une fonctionnalité fait l’objet de conditions particulières, celles-ci ont vocation à compléter les présentes CGU.</p>
+                </section>
+
+                <section class="legal-section" id="editeur">
+                    <div class="section-heading"><span class="section-number">02</span><h2>Éditeur de la plateforme</h2></div>
+                    <p>D’après les informations fournies pour cette page, TakiDoc est édité par <strong>L’Équipe Meurphy</strong>, représentée par <strong>Meurphy TALAMIO</strong>, basée à Brazzaville, République du Congo.</p>
+                    <p>Contact : <a class="inline-link" href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a>.</p>
+                    <p>La plateforme est indiquée comme étant hébergée sur Render. Les coordonnées complètes de l’éditeur et les informations d’hébergement à faire figurer dans les mentions légales doivent être vérifiées et complétées dans la page juridique appropriée.</p>
+                </section>
+
+                <section class="legal-section" id="compte">
+                    <div class="section-heading"><span class="section-number">03</span><h2>Accès à la plateforme et compte utilisateur</h2></div>
+                    <p>La consultation des modèles peut être accessible sans compte. Certaines fonctionnalités, notamment la personnalisation, la sauvegarde ou le téléchargement, peuvent nécessiter la création d’un compte selon les modalités proposées sur la Plateforme.</p>
+                    <p>L’utilisateur s’engage à fournir des informations exactes lorsqu’il crée un compte, à les maintenir à jour et à préserver la confidentialité de ses moyens d’accès. Toute activité réalisée depuis son compte doit être signalée à l’équipe TakiDoc si elle paraît non autorisée.</p>
+                    <p>L’utilisateur doit employer la Plateforme conformément aux lois applicables et s’abstenir de perturber son fonctionnement, de tenter d’accéder aux espaces protégés sans autorisation ou d’utiliser le service à des fins frauduleuses.</p>
+                </section>
+
+                <section class="legal-section" id="propriete">
+                    <div class="section-heading"><span class="section-number">04</span><h2>Propriété intellectuelle et licence d’utilisation</h2></div>
+                    <p>Sous réserve des droits de tiers, les éléments créés pour TakiDoc — notamment son identité visuelle, son interface, son code et ses contenus — sont protégés par les règles applicables en matière de propriété intellectuelle. Les droits attachés aux modèles peuvent varier selon leur origine et leurs conditions de mise à disposition.</p>
+                    <p>Après acquisition d’un modèle payant, l’utilisateur bénéficie du droit d’utiliser le document généré pour ses besoins personnels ou professionnels, dans les limites des conditions annoncées au moment de l’achat et des droits applicables. Sauf autorisation expresse, l’achat ne transfère pas la propriété du modèle source ni le droit de le revendre ou de le redistribuer comme modèle autonome.</p>
+                    <p>L’utilisateur reste responsable de vérifier qu’il dispose des autorisations nécessaires pour les textes, images, logos et autres éléments qu’il ajoute à son document.</p>
+                </section>
+
+                <section class="legal-section" id="paiement">
+                    <div class="section-heading"><span class="section-number">05</span><h2>Prix, paiement et remboursement</h2></div>
+                    <p>Lorsque des modèles ou fonctionnalités sont payants, le prix applicable doit être présenté à l’utilisateur avant la validation de son achat. Les moyens de paiement disponibles sont ceux indiqués au moment de la transaction ; les modalités mentionnées actuellement incluent MTN MoMo et Airtel Money, sous réserve de leur disponibilité effective.</p>
+                    <p>Avant de confirmer une commande, l’utilisateur doit vérifier le modèle choisi, le prix et les informations saisies. En cas d’échec de paiement, de paiement débité sans délivrance du service ou de problème technique, il est invité à contacter l’assistance avec les éléments permettant d’identifier la transaction.</p>
+                    <p>Les conditions de remboursement doivent être communiquées clairement avant l’achat et appliquées conformément au droit applicable. Le caractère numérique d’un produit ne permet pas, à lui seul, de conclure que tout remboursement est exclu dans tous les cas.</p>
+                </section>
+
+                <section class="legal-section" id="responsabilite">
+                    <div class="section-heading"><span class="section-number">06</span><h2>Responsabilité de l’utilisateur et des documents</h2></div>
+                    <p>TakiDoc met à disposition des modèles destinés à faciliter la préparation de documents. Sauf indication expresse contraire, ces modèles constituent une aide à la rédaction et ne remplacent pas un conseil juridique, comptable, fiscal ou professionnel adapté à une situation particulière.</p>
+                    <p>L’utilisateur est responsable de vérifier le contenu du document avant son utilisation, notamment :</p>
+                    <ul>
+                        <li>l’exactitude des noms, dates, coordonnées, montants et autres informations saisies ;</li>
+                        <li>l’adéquation du modèle à son besoin et aux règles applicables à sa situation ;</li>
+                        <li>les autorisations et signatures nécessaires avant de transmettre ou d’utiliser le document.</li>
+                    </ul>
+                    <p>Dans les limites permises par la loi, l’éditeur ne garantit pas que chaque modèle conviendra à toutes les situations. Aucune disposition des présentes ne vise à exclure une responsabilité qui ne pourrait légalement l’être.</p>
+                </section>
+
+                <section class="legal-section" id="donnees">
+                    <div class="section-heading"><span class="section-number">07</span><h2>Données personnelles</h2></div>
+                    <p>La Plateforme peut traiter certaines informations nécessaires à la gestion des comptes, au fonctionnement du service et au traitement des demandes des utilisateurs. Les catégories de données, les finalités, les durées de conservation et les modalités d’exercice des droits doivent être détaillées dans la politique de confidentialité de TakiDoc.</p>
+                    <p>Pour en savoir plus, consultez la <a class="inline-link" href="confidentialite.html">politique de confidentialité</a>. Cette page doit décrire les pratiques réelles de la Plateforme et les services techniques qu’elle utilise.</p>
+                </section>
+
+                <section class="legal-section" id="disponibilite">
+                    <div class="section-heading"><span class="section-number">08</span><h2>Disponibilité et évolution du service</h2></div>
+                    <p>TakiDoc s’efforce de maintenir la Plateforme accessible et de corriger les dysfonctionnements signalés. Toutefois, un accès continu ne peut être garanti, notamment en cas de maintenance, de mise à jour, de panne réseau ou d’incident affectant un prestataire technique.</p>
+                    <p>L’éditeur peut faire évoluer, ajouter ou retirer certaines fonctionnalités. Dans la mesure du possible, les changements importants seront signalés aux utilisateurs concernés.</p>
+                </section>
+
+                <section class="legal-section" id="modifications">
+                    <div class="section-heading"><span class="section-number">09</span><h2>Modification des conditions</h2></div>
+                    <p>Les présentes CGU peuvent être mises à jour pour refléter l’évolution de la Plateforme, de ses fonctionnalités ou des règles applicables. La date de mise à jour doit être actualisée lors de toute modification substantielle.</p>
+                    <p>La poursuite de l’utilisation de la Plateforme après l’entrée en vigueur de nouvelles conditions vaut prise de connaissance de celles-ci, dans les limites prévues par le droit applicable. Lorsque le consentement exprès de l’utilisateur est requis, il sera recueilli selon les modalités appropriées.</p>
+                </section>
+
+                <section class="legal-section" id="contact">
+                    <div class="section-heading"><span class="section-number">10</span><h2>Questions et contact</h2></div>
+                    <p>Pour toute question au sujet des présentes conditions, d’un modèle ou d’un problème d’accès, vous pouvez contacter l’équipe TakiDoc à l’adresse suivante : <a class="inline-link" href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a>.</p>
+                </section>
+
+                <div class="contact-card">
+                    <div class="contact-card-copy">
+                        <span class="contact-icon"><i class="fa-regular fa-envelope" aria-hidden="true"></i></span>
+                        <div>
+                            <h2>Besoin d’une précision ?</h2>
+                            <p>Écrivez à l’équipe TakiDoc pour poser votre question.</p>
+                        </div>
+                    </div>
+                    <a class="contact-button" href="contact.html">Contacter TakiDoc <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand-block">
+                    <a class="brand footer-brand" href="index.html" aria-label="TakiDoc — Accueil">
+                        <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-file-lines"></i></span>
+                        <span><span class="accent">Taki</span>Doc</span>
+                    </a>
+                    <p class="footer-description">Des modèles de documents professionnels pour vous aider à préparer vos démarches plus simplement.</p>
+                </div>
+                <div>
+                    <h2 class="footer-heading">Découvrir</h2>
+                    <nav class="footer-links" aria-label="Découvrir TakiDoc">
+                        <a href="index.html">Accueil</a>
+                        <a href="comment-ca-marche.html">Comment ça marche</a>
+                        <a href="a-propos.html">À propos</a>
+                        <a href="contact.html">Contact</a>
+                    </nav>
+                </div>
+                <div>
+                    <h2 class="footer-heading">Informations légales</h2>
+                    <nav class="footer-links" aria-label="Informations légales">
+                        <a href="conditions.html" aria-current="page">Conditions d’utilisation</a>
+                        <a href="confidentialite.html">Confidentialité</a>
+                        <a href="mentions-legales.html">Mentions légales</a>
+                        <a href="cookies.html">Cookies</a>
+                    </nav>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© <span id="year"></span> TakiDoc. Tous droits réservés.</p>
+                <a class="back-top" href="#top">Retour en haut <i class="fa-solid fa-arrow-up" aria-hidden="true"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Indique visuellement la section correspondant à la position de lecture.
+        const tocLinks = [...document.querySelectorAll('#table-of-contents a')];
+        const sections = tocLinks
+            .map(link => document.querySelector(link.getAttribute('href')))
+            .filter(Boolean);
+
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        tocLinks.forEach(link => {
+                            const active = link.getAttribute('href') === `#${entry.target.id}`;
+                            link.classList.toggle('active', active);
+                            if (active) link.setAttribute('aria-current', 'location');
+                            else link.removeAttribute('aria-current');
+                        });
+                    }
+                });
+            }, { rootMargin: '-18% 0px -68% 0px', threshold: 0 });
+
+            sections.forEach(section => observer.observe(section));
+        }
+    </script>
+</body>
+</html>

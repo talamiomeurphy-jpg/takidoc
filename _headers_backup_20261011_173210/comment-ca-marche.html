@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Découvrez comment créer, personnaliser et télécharger vos documents professionnels avec TakiDoc, étape par étape.">
+  <title>Comment ça marche — TakiDoc</title>
+  <!-- FAVICONS TAKIDOC -->
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    :root {
+      --primary: #FF6B35;
+      --primary-dark: #E85A2D;
+      --primary-soft: #FFF1EA;
+      --navy: #172033;
+      --text: #344054;
+      --muted: #667085;
+      --subtle: #98A2B3;
+      --bg: #F7F8FA;
+      --white: #FFFFFF;
+      --border: #E7EAF0;
+      --blue: #004E89;
+      --shadow-sm: 0 2px 8px rgba(16,24,40,.04);
+      --shadow-md: 0 12px 32px rgba(16,24,40,.07);
+      --shadow-lg: 0 24px 60px rgba(16,24,40,.13);
+      --radius: 22px;
+      --radius-sm: 14px;
+      --container: 1160px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 100px; }
+    body { margin: 0; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); background: var(--bg); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+    body, button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .container { width: min(var(--container), calc(100% - 48px)); margin-inline: auto; }
+    .site-header { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,.9); border-bottom: 1px solid rgba(231,234,240,.9); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+    .nav { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+    .brand { display: inline-flex; align-items: center; flex-shrink: 0; font-size: 1.65rem; font-weight: 900; letter-spacing: -1.3px; color: var(--navy); }
+    .brand .brand-taki { color: var(--primary); }
+    .brand-mark { width: 36px; height: 36px; margin-right: 10px; display: grid; place-items: center; border-radius: 12px; color: #fff; background: linear-gradient(135deg, #FF845A, #F05B2B); box-shadow: 0 6px 14px rgba(255,107,53,.24); font-size: .95rem; }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a { font-size: .91rem; font-weight: 650; color: #596579; transition: color .2s ease, background .2s ease, transform .2s ease; }
+    .nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--primary-dark); }
+    .nav-links .nav-cta { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; border-radius: 999px; color: #fff; background: var(--primary); box-shadow: 0 7px 18px rgba(255,107,53,.2); }
+    .nav-links .nav-cta:hover { color: #fff; background: var(--primary-dark); transform: translateY(-1px); }
+    .mobile-cta { display: none; }
+    .hero { position: relative; overflow: hidden; padding: 86px 0 66px; background: radial-gradient(ellipse at 15% 5%, rgba(255,107,53,.12), transparent 34%), radial-gradient(ellipse at 88% 30%, rgba(0,78,137,.08), transparent 30%), linear-gradient(180deg, #fff 0%, #FAFBFD 100%); border-bottom: 1px solid var(--border); }
+    .hero::before, .hero::after { content: ""; position: absolute; border: 1px solid rgba(255,107,53,.12); border-radius: 50%; pointer-events: none; }
+    .hero::before { width: 360px; height: 360px; top: -220px; right: -80px; }
+    .hero::after { width: 240px; height: 240px; bottom: -190px; left: -60px; }
+    .hero-inner { position: relative; z-index: 1; max-width: 850px; margin: 0 auto; text-align: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 9px; padding: 8px 13px; margin-bottom: 22px; border: 1px solid #FFE0D2; border-radius: 999px; color: #C94B23; background: rgba(255,241,234,.85); font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .eyebrow i { font-size: .85rem; }
+    h1, h2, h3, p { margin-top: 0; }
+    .hero h1 { max-width: 800px; margin: 0 auto 22px; color: var(--navy); font-size: clamp(2.35rem, 5.2vw, 4.25rem); line-height: 1.09; letter-spacing: -.065em; font-weight: 850; }
+    .hero h1 span { color: var(--primary); }
+    .hero-copy { max-width: 690px; margin: 0 auto; color: var(--muted); font-size: clamp(1rem, 1.8vw, 1.14rem); line-height: 1.85; }
+    .hero-actions { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 30px; }
+    .btn { min-height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 13px 21px; border: 1px solid transparent; border-radius: 999px; font-size: .93rem; font-weight: 750; transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { color: #fff; background: var(--primary); box-shadow: 0 10px 22px rgba(255,107,53,.2); }
+    .btn-primary:hover { color: #fff; background: var(--primary-dark); box-shadow: 0 14px 28px rgba(255,107,53,.25); }
+    .btn-secondary { color: var(--navy); background: #fff; border-color: var(--border); box-shadow: var(--shadow-sm); }
+    .btn-secondary:hover { border-color: #FFC4AC; }
+    .trust-line { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 18px 24px; margin-top: 28px; color: var(--muted); font-size: .84rem; }
+    .trust-line span { display: inline-flex; align-items: center; gap: 8px; }
+    .trust-line i { color: #15966A; }
+    .section { padding: 82px 0; }
+    .section-heading { max-width: 690px; margin: 0 auto 42px; text-align: center; }
+    .section-kicker { margin-bottom: 10px; color: var(--primary-dark); font-size: .78rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+    .section-heading h2 { margin-bottom: 13px; color: var(--navy); font-size: clamp(1.8rem, 3.5vw, 2.65rem); line-height: 1.2; letter-spacing: -.045em; font-weight: 850; }
+    .section-heading p { margin-bottom: 0; color: var(--muted); font-size: 1rem; }
+    .steps-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; align-items: stretch; }
+    .step-card { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 30px 27px 27px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+    .step-card:hover { transform: translateY(-5px); border-color: #FFD0BE; box-shadow: var(--shadow-md); }
+    .step-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
+    .step-number { width: 47px; height: 47px; display: grid; place-items: center; border-radius: 15px; background: var(--primary-soft); color: var(--primary-dark); font-size: 1.1rem; font-weight: 900; }
+    .step-symbol { width: 53px; height: 53px; display: grid; place-items: center; border-radius: 17px; color: var(--blue); background: #EEF6FC; font-size: 1.25rem; }
+    .step-card h3 { margin-bottom: 11px; color: var(--navy); font-size: 1.17rem; line-height: 1.35; letter-spacing: -.025em; }
+    .step-card p { margin-bottom: 20px; color: var(--muted); font-size: .93rem; line-height: 1.8; }
+    .step-detail { display: flex; align-items: flex-start; gap: 9px; margin-top: auto; padding-top: 16px; border-top: 1px solid #F0F2F5; color: #475467; font-size: .82rem; font-weight: 650; }
+    .step-detail i { margin-top: 4px; color: #15966A; }
+    .process-note { display: flex; align-items: flex-start; gap: 14px; max-width: 820px; margin: 30px auto 0; padding: 18px 21px; border: 1px solid #F4D8C9; border-radius: 16px; background: #FFF9F6; color: #775243; font-size: .88rem; }
+    .process-note i { margin-top: 4px; color: var(--primary-dark); }
+    .process-note p { margin: 0; }
+    .feature-band { padding: 0 0 82px; }
+    .feature-panel { display: grid; grid-template-columns: .95fr 1.05fr; gap: 42px; align-items: center; padding: clamp(28px, 5vw, 52px); border: 1px solid var(--border); border-radius: 28px; background: #fff; box-shadow: var(--shadow-sm); }
+    .feature-copy .section-kicker { margin-bottom: 12px; }
+    .feature-copy h2 { margin-bottom: 16px; color: var(--navy); font-size: clamp(1.7rem, 3.1vw, 2.4rem); line-height: 1.18; letter-spacing: -.05em; }
+    .feature-copy p { color: var(--muted); font-size: .97rem; }
+    .feature-list { display: grid; gap: 13px; margin: 24px 0 0; padding: 0; list-style: none; }
+    .feature-list li { display: flex; gap: 11px; align-items: flex-start; color: #475467; font-size: .91rem; }
+    .feature-list i { display: grid; place-items: center; flex: 0 0 22px; width: 22px; height: 22px; margin-top: 2px; border-radius: 50%; background: #E8F7F0; color: #13865E; font-size: .72rem; }
+    .preview-illustration { position: relative; min-width: 0; padding: 18px; border-radius: 22px; background: linear-gradient(135deg, #F4F7FB, #FFF5F0); }
+    .mock-window { overflow: hidden; border: 1px solid #E4E8EF; border-radius: 16px; background: #fff; box-shadow: 0 20px 45px rgba(16,24,40,.12); }
+    .mock-bar { height: 38px; display: flex; align-items: center; gap: 6px; padding: 0 13px; border-bottom: 1px solid #EEF0F4; background: #FCFCFD; }
+    .mock-dot { width: 7px; height: 7px; border-radius: 50%; background: #D0D5DD; }
+    .mock-body { display: grid; grid-template-columns: 35% 65%; min-height: 280px; }
+    .mock-form { padding: 17px 12px; border-right: 1px solid #EEF0F4; background: #FCFCFD; }
+    .mock-label { width: 55%; height: 6px; margin-bottom: 9px; border-radius: 5px; background: #D0D5DD; }
+    .mock-input { height: 23px; margin-bottom: 15px; border: 1px solid #E4E7EC; border-radius: 5px; background: #fff; }
+    .mock-input.short { width: 72%; }
+    .mock-document-wrap { display: grid; place-items: center; padding: 15px; background: #F2F4F7; }
+    .mock-document { width: min(100%, 190px); min-height: 240px; padding: 18px 15px; background: #fff; box-shadow: 0 4px 14px rgba(16,24,40,.1); }
+    .mock-doc-head { display: flex; gap: 10px; align-items: center; margin-bottom: 17px; }
+    .mock-avatar { width: 35px; height: 35px; flex: 0 0 35px; border-radius: 50%; background: linear-gradient(135deg, #FFC5AC, #FF6B35); }
+    .mock-lines { flex: 1; }
+    .mock-line { height: 5px; margin: 6px 0; border-radius: 5px; background: #D9DEE7; }
+    .mock-line.dark { width: 68%; height: 7px; background: #344054; }
+    .mock-line.orange { width: 38%; background: #FF9A76; }
+    .mock-section-title { width: 42%; height: 6px; margin: 15px 0 8px; border-radius: 5px; background: #344054; }
+    .mock-line.full { width: 100%; }
+    .mock-line.mid { width: 78%; }
+    .mock-line.small { width: 52%; }
+    .feature-caption { margin: 12px 0 0; color: #7A8495; text-align: center; font-size: .76rem; }
+    .faq-section { padding: 0 0 84px; }
+    .faq-list { max-width: 820px; margin: 0 auto; display: grid; gap: 12px; }
+    .faq-item { overflow: hidden; border: 1px solid var(--border); border-radius: 15px; background: #fff; box-shadow: var(--shadow-sm); }
+    .faq-question { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 22px; border: 0; color: var(--navy); background: transparent; text-align: left; cursor: pointer; font-weight: 750; font-size: .96rem; }
+    .faq-question i { flex: 0 0 auto; color: var(--primary); transition: transform .2s ease; }
+    .faq-question[aria-expanded="true"] i { transform: rotate(45deg); }
+    .faq-answer { padding: 0 22px 20px; color: var(--muted); font-size: .91rem; }
+    .faq-answer p { margin: 0; }
+    .faq-answer[hidden] { display: none; }
+    .cta-section { position: relative; overflow: hidden; padding: 76px 0; color: #fff; background: var(--navy); }
+    .cta-section::before { content: ""; position: absolute; width: 400px; height: 400px; top: -260px; right: -80px; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; box-shadow: 0 0 0 40px rgba(255,255,255,.025), 0 0 0 80px rgba(255,255,255,.02); }
+    .cta-inner { position: relative; z-index: 1; max-width: 750px; margin: 0 auto; padding-inline: 24px; text-align: center; }
+    .cta-badge { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 17px; padding: 7px 12px; border: 1px solid rgba(255,255,255,.15); border-radius: 999px; color: #FFD7C8; background: rgba(255,255,255,.06); font-size: .77rem; font-weight: 750; }
+    .cta-section h2 { margin-bottom: 14px; color: #fff; font-size: clamp(1.9rem, 4vw, 3rem); line-height: 1.15; letter-spacing: -.05em; }
+    .cta-section p { max-width: 570px; margin: 0 auto 27px; color: #C3CAD5; font-size: 1rem; }
+    .cta-section .btn-primary { color: #fff; background: var(--primary); }
+    .cta-section .btn-primary:hover { background: #FF8154; }
+    .site-footer { padding: 58px 0 24px; border-top: 1px solid var(--border); background: #fff; }
+    .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 34px; padding-bottom: 38px; }
+    .footer-brand-copy { max-width: 290px; margin: 14px 0 18px; color: var(--muted); font-size: .88rem; }
+    .footer-note { display: inline-flex; align-items: center; gap: 8px; color: #7A8495; font-size: .79rem; }
+    .footer-note i { color: var(--primary); }
+    .footer-col h3 { margin: 4px 0 17px; color: var(--navy); font-size: .88rem; font-weight: 850; }
+    .footer-col ul { display: grid; gap: 11px; margin: 0; padding: 0; list-style: none; }
+    .footer-col a { color: var(--muted); font-size: .86rem; transition: color .2s ease; }
+    .footer-col a:hover { color: var(--primary-dark); }
+    .footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-top: 21px; border-top: 1px solid var(--border); color: #7A8495; font-size: .8rem; }
+    .footer-bottom p { margin: 0; }
+    .footer-legal { display: flex; flex-wrap: wrap; gap: 16px; }
+    .footer-legal a:hover { color: var(--primary-dark); }
+    a:focus-visible, button:focus-visible { outline: 3px solid rgba(255,107,53,.4); outline-offset: 3px; }
+    @media (max-width: 980px) {
+      .nav-links { gap: 17px; }
+      .nav-links a { font-size: .85rem; }
+      .steps-grid { gap: 15px; }
+      .step-card { padding: 25px 21px; }
+      .feature-panel { gap: 28px; }
+      .footer-grid { grid-template-columns: 1.5fr 1fr 1fr; }
+      .footer-brand-col { grid-column: 1 / -1; }
+    }
+    @media (max-width: 760px) {
+      .container { width: min(var(--container), calc(100% - 36px)); }
+      .nav { min-height: 68px; gap: 12px; }
+      .brand { font-size: 1.45rem; }
+      .brand-mark { width: 33px; height: 33px; border-radius: 10px; margin-right: 8px; }
+      .nav-links { display: none; }
+      .mobile-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 13px; border-radius: 999px; color: #fff; background: var(--primary); font-size: .8rem; font-weight: 800; white-space: nowrap; }
+      .hero { padding: 64px 0 52px; }
+      .hero h1 { font-size: clamp(2.2rem, 9vw, 3.25rem); }
+      .hero-copy { font-size: .98rem; }
+      .trust-line { gap: 10px 15px; font-size: .78rem; }
+      .section { padding: 61px 0; }
+      .section-heading { margin-bottom: 29px; }
+      .steps-grid { grid-template-columns: 1fr; gap: 14px; }
+      .step-card { padding: 24px; }
+      .step-top { margin-bottom: 17px; }
+      .step-card p { margin-bottom: 17px; }
+      .feature-band { padding-bottom: 62px; }
+      .feature-panel { grid-template-columns: 1fr; gap: 28px; padding: 25px 20px; border-radius: 22px; }
+      .preview-illustration { padding: 12px; }
+      .mock-body { min-height: 230px; }
+      .mock-document { min-height: 205px; padding: 14px 11px; }
+      .faq-section { padding-bottom: 62px; }
+      .faq-question { padding: 18px; font-size: .9rem; }
+      .faq-answer { padding: 0 18px 18px; }
+      .cta-section { padding: 61px 0; }
+      .site-footer { padding-top: 44px; }
+      .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 20px; }
+      .footer-brand-col { grid-column: 1 / -1; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 420px) {
+      .container { width: calc(100% - 30px); }
+      .mobile-cta { padding: 10px 11px; font-size: .75rem; }
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .hero-actions .btn { width: 100%; }
+      .trust-line { align-items: flex-start; flex-direction: column; width: fit-content; margin-inline: auto; }
+      .process-note { padding: 15px; font-size: .83rem; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 27px 15px; }
+      .footer-brand-copy { font-size: .85rem; }
+      .footer-col h3 { font-size: .84rem; }
+      .footer-col a { font-size: .82rem; overflow-wrap: anywhere; }
+      .footer-legal { gap: 10px 14px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav container" aria-label="Navigation principale">
+      <a href="index.html" class="brand" aria-label="TakiDoc, accueil">
+        <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-file-lines"></i></span>
+        <span><span class="brand-taki">Taki</span>Doc</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Accueil</a>
+        <a href="comment-ca-marche.html" aria-current="page">Comment ça marche</a>
+        <a href="contact.html">Contact</a>
+        <a href="index.html#documents" class="nav-cta">Explorer les modèles <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <a href="index.html#documents" class="mobile-cta">Explorer <i class="fa-solid fa-arrow-right"></i></a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="eyebrow"><i class="fa-solid fa-wand-magic-sparkles"></i> Simple, guidé, pratique</div>
+        <h1>Un document professionnel, <span>sans partir de zéro.</span></h1>
+        <p class="hero-copy">TakiDoc vous aide à choisir un modèle, à le personnaliser et à préparer un document prêt à être utilisé. Suivez ces quelques étapes pour commencer sereinement.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="index.html#documents">Trouver mon modèle <i class="fa-solid fa-arrow-right"></i></a>
+          <a class="btn btn-secondary" href="#etapes">Voir les étapes <i class="fa-solid fa-chevron-down"></i></a>
+        </div>
+        <div class="trust-line">
+          <span><i class="fa-solid fa-check-circle"></i> Parcours simple</span>
+          <span><i class="fa-solid fa-pen-to-square"></i> Personnalisation guidée</span>
+          <span><i class="fa-solid fa-file-pdf"></i> Document téléchargeable</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="etapes">
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-kicker">Votre parcours</div>
+          <h2>Trois étapes pour avancer plus vite</h2>
+          <p>De la sélection du modèle à la vérification finale, gardez le contrôle sur votre document à chaque étape.</p>
+        </div>
+
+        <div class="steps-grid">
+          <article class="step-card">
+            <div class="step-top">
+              <span class="step-number">01</span>
+              <span class="step-symbol"><i class="fa-solid fa-magnifying-glass"></i></span>
+            </div>
+            <h3>Choisissez un modèle adapté</h3>
+            <p>Parcourez les catégories disponibles — CV, lettres, factures ou autres documents — puis ouvrez le modèle qui correspond à votre besoin. Consultez sa description et les conditions affichées avant de continuer.</p>
+            <div class="step-detail"><i class="fa-solid fa-circle-check"></i><span>Commencez par votre objectif et le type de document recherché.</span></div>
+          </article>
+
+          <article class="step-card">
+            <div class="step-top">
+              <span class="step-number">02</span>
+              <span class="step-symbol"><i class="fa-solid fa-sliders"></i></span>
+            </div>
+            <h3>Personnalisez le contenu</h3>
+            <p>Renseignez les champs demandés et vérifiez l’aperçu de votre document. Selon le modèle, vous pourrez éventuellement ajouter une photo ou ajuster certaines couleurs et informations.</p>
+            <div class="step-detail"><i class="fa-solid fa-circle-check"></i><span>Relisez les champs et corrigez les informations avant de valider.</span></div>
+          </article>
+
+          <article class="step-card">
+            <div class="step-top">
+              <span class="step-number">03</span>
+              <span class="step-symbol"><i class="fa-solid fa-file-arrow-down"></i></span>
+            </div>
+            <h3>Vérifiez puis téléchargez</h3>
+            <p>Relisez la mise en page et les informations saisies. Suivez ensuite les instructions proposées sur la plateforme pour obtenir le fichier disponible pour le modèle choisi.</p>
+            <div class="step-detail"><i class="fa-solid fa-circle-check"></i><span>Vérifiez notamment les noms, dates, montants et coordonnées.</span></div>
+          </article>
+        </div>
+
+        <div class="process-note">
+          <i class="fa-solid fa-circle-info"></i>
+          <p><strong>À garder en tête :</strong> les options, le prix éventuel, le mode de paiement et le format de téléchargement dépendent des fonctionnalités réellement proposées pour chaque modèle. Consultez les informations affichées sur TakiDoc avant de confirmer une action.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="feature-band">
+      <div class="container">
+        <div class="feature-panel">
+          <div class="feature-copy">
+            <div class="section-kicker">Pensé pour vous simplifier la tâche</div>
+            <h2>Vous voyez votre document prendre forme</h2>
+            <p>L’éditeur est conçu pour vous permettre de saisir vos informations tout en contrôlant le résultat. Prenez le temps de vérifier chaque détail : un document clair commence par des données exactes.</p>
+            <ul class="feature-list">
+              <li><i class="fa-solid fa-check"></i><span>Un formulaire pour renseigner les informations nécessaires.</span></li>
+              <li><i class="fa-solid fa-check"></i><span>Un aperçu pour contrôler la présentation au fil de la personnalisation.</span></li>
+              <li><i class="fa-solid fa-check"></i><span>Des options qui peuvent varier selon le modèle sélectionné.</span></li>
+              <li><i class="fa-solid fa-check"></i><span>Une dernière relecture avant de télécharger ou d’utiliser le document.</span></li>
+            </ul>
+          </div>
+          <div class="preview-illustration" aria-label="Illustration d'un formulaire de personnalisation à côté d'un aperçu de document" role="img">
+            <div class="mock-window">
+              <div class="mock-bar"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span></div>
+              <div class="mock-body">
+                <div class="mock-form" aria-hidden="true">
+                  <div class="mock-label"></div><div class="mock-input"></div>
+                  <div class="mock-label"></div><div class="mock-input short"></div>
+                  <div class="mock-label"></div><div class="mock-input"></div>
+                  <div class="mock-label"></div><div class="mock-input short"></div>
+                </div>
+                <div class="mock-document-wrap" aria-hidden="true">
+                  <div class="mock-document">
+                    <div class="mock-doc-head"><div class="mock-avatar"></div><div class="mock-lines"><div class="mock-line dark"></div><div class="mock-line orange"></div><div class="mock-line"></div></div></div>
+                    <div class="mock-section-title"></div><div class="mock-line full"></div><div class="mock-line mid"></div><div class="mock-line small"></div>
+                    <div class="mock-section-title"></div><div class="mock-line full"></div><div class="mock-line mid"></div><div class="mock-line full"></div>
+                    <div class="mock-section-title"></div><div class="mock-line full"></div><div class="mock-line small"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="feature-caption">Illustration indicative de l’éditeur — les écrans peuvent varier selon le modèle.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section">
+      <div class="container">
+        <div class="section-heading">
+          <div class="section-kicker">Questions fréquentes</div>
+          <h2>Avant de commencer</h2>
+          <p>Quelques repères utiles pour utiliser TakiDoc dans de bonnes conditions.</p>
+        </div>
+        <div class="faq-list">
+          <article class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-1" id="faq-button-1">Dois-je remplir toutes les informations ? <i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+            <div class="faq-answer" id="faq-1" role="region" aria-labelledby="faq-button-1" hidden><p>Renseignez tous les champs nécessaires à votre situation. Si un champ est facultatif, l’éditeur devrait vous permettre de le laisser vide. Vérifiez le résultat avant de continuer.</p></div>
+          </article>
+          <article class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-2" id="faq-button-2">Puis-je modifier le document après avoir choisi un modèle ? <i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+            <div class="faq-answer" id="faq-2" role="region" aria-labelledby="faq-button-2" hidden><p>Vous pouvez modifier les informations et les options proposées dans l’éditeur. Les possibilités de personnalisation dépendent du modèle sélectionné.</p></div>
+          </article>
+          <article class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-3" id="faq-button-3">Les documents sont-ils automatiquement conformes à toutes les règles ? <i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+            <div class="faq-answer" id="faq-3" role="region" aria-labelledby="faq-button-3" hidden><p>Un modèle peut vous aider à structurer un document, mais il ne remplace pas une vérification adaptée à votre situation. Pour un document juridique, fiscal ou administratif important, faites vérifier son contenu par une personne compétente avant de l’utiliser.</p></div>
+          </article>
+          <article class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false" aria-controls="faq-4" id="faq-button-4">Que faire si je remarque une erreur ? <i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+            <div class="faq-answer" id="faq-4" role="region" aria-labelledby="faq-button-4" hidden><p>Revenez aux champs concernés, corrigez les informations puis vérifiez à nouveau l’aperçu. Si un problème technique vous empêche de continuer, utilisez la page Contact pour demander de l’aide.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="cta-inner">
+        <div class="cta-badge"><i class="fa-solid fa-rocket"></i> À vous de jouer</div>
+        <h2>Votre prochain document commence ici.</h2>
+        <p>Parcourez les modèles disponibles et choisissez celui qui répond le mieux à votre besoin.</p>
+        <a href="index.html#documents" class="btn btn-primary">Explorer les modèles <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand-col">
+          <a href="index.html" class="brand" aria-label="TakiDoc, accueil">
+            <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-file-lines"></i></span>
+            <span><span class="brand-taki">Taki</span>Doc</span>
+          </a>
+          <p class="footer-brand-copy">Des modèles de documents professionnels réunis au même endroit pour vous aider à gagner du temps et à avancer avec confiance.</p>
+          <span class="footer-note"><i class="fa-solid fa-location-dot"></i> Créé avec soin à Brazzaville</span>
+        </div>
+        <div class="footer-col">
+          <h3>Découvrir</h3>
+          <ul>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="index.html#documents">Explorer les modèles</a></li>
+            <li><a href="comment-ca-marche.html" aria-current="page">Comment ça marche</a></li>
+            <li><a href="a-propos.html">À propos</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Catégories</h3>
+          <ul>
+            <li><a href="index.html#documents">CV et candidatures</a></li>
+            <li><a href="index.html#documents">Lettres professionnelles</a></li>
+            <li><a href="index.html#documents">Factures et gestion</a></li>
+            <li><a href="index.html#documents">Autres modèles</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Informations légales</h3>
+          <ul>
+            <li><a href="conditions.html">Conditions d’utilisation</a></li>
+            <li><a href="confidentialite.html">Confidentialité</a></li>
+            <li><a href="mentions-legales.html">Mentions légales</a></li>
+            <li><a href="cookies.html">Politique des cookies</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© <span id="current-year"></span> TakiDoc. Tous droits réservés.</p>
+        <div class="footer-legal">
+          <a href="confidentialite.html">Vie privée</a>
+          <a href="conditions.html">Conditions d’utilisation</a>
+          <a href="#top" id="back-to-top">Retour en haut ↑</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+
+    document.querySelectorAll('.faq-question').forEach((button) => {
+      button.addEventListener('click', () => {
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        const answer = document.getElementById(button.getAttribute('aria-controls'));
+        button.setAttribute('aria-expanded', String(!isExpanded));
+        answer.hidden = isExpanded;
+      });
+    });
+  </script>
+</body>
+</html>

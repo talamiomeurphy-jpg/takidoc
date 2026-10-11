@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -1340,7 +1340,6 @@
     }
 }
 
-
 /* ==========================================
    TAKIDOC — CORRECTIF RESPONSIVE MOBILE
    À placer à la fin du CSS
@@ -1785,8 +1784,6 @@
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
         }
-
-
 
         /* ============================================
            TakiDoc UX polish: search, categories, footer
@@ -2534,24 +2531,20 @@
 .pin-card:nth-child(7) { animation-delay: 0.35s; }
 .pin-card:nth-child(8) { animation-delay: 0.4s; }
     </style>
+    <!-- HEADER TAKIDOC -->
+    <link rel="stylesheet" href="css/header.css">
 </head>
 <body>
+    <!-- HEADER DYNAMIQUE TAKIDOC -->
+    <div id="td-header-container"></div>
+
 
     <!-- Background Premium -->
     <div class="takidoc-bg"></div>
     <div class="takidoc-blob takidoc-blob-1"></div>
     <div class="takidoc-blob takidoc-blob-2"></div>
     <div class="takidoc-blob takidoc-blob-3"></div>
-    <header class="app-header">
-        <a href="/" class="logo">
-            <span class="logo-taki">Taki</span><span class="logo-doc">Doc</span>
-        </a>
-        <div class="search-bar">
-            <i class="fas fa-search" style="color: var(--text-muted);"></i>
-            <input type="text" id="searchInput" placeholder="Rechercher un CV, un contrat, une facture...">
-        </div>
-        <div class="header-actions" id="headerActions"></div>
-    </header>
+    
 
     <div class="categories-wrapper">
         <nav class="categories-nav" id="categoriesNav">
@@ -2719,85 +2712,56 @@
         <a href="auth.html?action=login" class="nav-item" id="nav-account"><i class="fas fa-user"></i><span>Connexion</span></a>
     </nav>
 
+        <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <script type="module">
         import { templatesRegistry } from './js/templates-registry.js';
 
-        const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+        // ============================================
+        // ÉLÉMENTS DU DOM
+        // ============================================
         const grid = document.getElementById('masonryGrid');
-        const searchInput = document.getElementById('searchInput');
         const catPills = document.querySelectorAll('.cat-pill');
-        const heroAccountAction = document.getElementById('heroAccountAction');
-        const navAccount = document.getElementById('nav-account');
-        const headerActions = document.getElementById('headerActions');
-        const navSearch = document.getElementById('nav-search');
+        const catalogueStatus = document.getElementById('catalogueStatus');
+        const catalogueTitle = document.getElementById('catalogueTitle');
 
-        let currentUser = null;
+        let currentCat = 'all';
         let thumbnailsCache = {};
 
         // ============================================
-        // AUTHENTIFICATION
+        // CONSTANTES
         // ============================================
-        function escapeHTML(value) {
-            return String(value ?? '').replace(/[&<>"']/g, character => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-            })[character]);
-        }
-
-        async function checkAuth() {
-            try {
-                const { data: { session }, error } = await supabase.auth.getSession();
-                if (error) throw error;
-                currentUser = session?.user || null;
-            } catch (error) {
-                currentUser = null;
-                console.error('Impossible de vérifier la session TakiDoc :', error);
-            }
-            updateHeaderUI();
-        }
-
-        function updateHeaderUI() {
-            if (!headerActions) return;
-            if (currentUser) {
-                const displayName = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Mon compte';
-                const initials = displayName.split(/[\s._-]+/).filter(Boolean).map(part => part[0]).join('').toUpperCase().slice(0, 2) || 'TD';
-                headerActions.innerHTML = `<a href="profile.html" class="btn-profile" aria-label="Ouvrir mon compte"><span class="initials">${escapeHTML(initials)}</span><span>Mon compte</span></a>`;
-                if (heroAccountAction) {
-                    heroAccountAction.href = 'profile.html';
-                    heroAccountAction.innerHTML = '<i class="fas fa-user"></i> Accéder à mon espace';
-                }
-                if (navAccount) {
-                    navAccount.href = 'profile.html';
-                    navAccount.innerHTML = '<i class="fas fa-user"></i><span>Mon compte</span>';
-                }
-            } else {
-                headerActions.innerHTML = `<a href="auth.html?action=signup" class="btn-auth btn-signup"><i class="fas fa-user-plus"></i><span>S'inscrire</span></a><a href="auth.html?action=login" class="btn-auth btn-login"><i class="fas fa-sign-in-alt"></i><span>Connexion</span></a>`;
-                if (heroAccountAction) {
-                    heroAccountAction.href = 'auth.html?action=signup';
-                    heroAccountAction.innerHTML = '<i class="fas fa-user-plus"></i> Créer un compte';
-                }
-                if (navAccount) {
-                    navAccount.href = 'auth.html?action=login';
-                    navAccount.innerHTML = '<i class="fas fa-user"></i><span>Connexion</span>';
-                }
-            }
-        }
-
-        // Mettre à jour le header immédiatement après une connexion/déconnexion,
-        // sans attendre un rechargement de la page.
-        supabase.auth.onAuthStateChange((_event, session) => {
-            currentUser = session?.user || null;
-            updateHeaderUI();
-        });
-
-        const categoryNames = { 'cv': 'CV', 'lettre': 'Lettre', 'contrat': 'Contrat', 'commercial': 'Commercial', 'attestation': 'Attestation', 'administratif': 'Administratif' };
-        const categoryIcons = { 'cv': 'fa-user-tie', 'lettre': 'fa-envelope-open-text', 'contrat': 'fa-file-signature', 'commercial': 'fa-file-invoice-dollar', 'attestation': 'fa-certificate', 'administratif': 'fa-building' };
-
+        const categoryNames = { 
+            'cv': 'CV', 
+            'lettre': 'Lettre', 
+            'contrat': 'Contrat', 
+            'commercial': 'Commercial', 
+            'attestation': 'Attestation', 
+            'administratif': 'Administratif',
+            'facture': 'Facture',
+            'devis': 'Devis',
+            'rapport': 'Rapport',
+            'procuration': 'Procuration',
+            'declaration': 'Déclaration',
+            'certificat': 'Certificat'
+        };
+        
+        const categoryIcons = { 
+            'cv': 'fa-user-tie', 
+            'lettre': 'fa-envelope-open-text', 
+            'contrat': 'fa-file-contract', 
+            'commercial': 'fa-file-invoice', 
+            'attestation': 'fa-certificate', 
+            'administratif': 'fa-building',
+            'facture': 'fa-file-invoice-dollar',
+            'devis': 'fa-file-invoice',
+            'rapport': 'fa-file-alt',
+            'procuration': 'fa-handshake',
+            'declaration': 'fa-file-signature',
+            'certificat': 'fa-certificate'
+        };
 
         // ============================================
         // PLACEHOLDERS STYLISÉS
@@ -2877,21 +2841,25 @@
         // AFFICHAGE DES CARTES
         // ============================================
         function renderPins(docs) {
+            if (!grid) return;
+            
             grid.innerHTML = '';
             
             if (docs.length === 0) {
-                grid.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i><h3>Aucun document trouvé</h3><p>Essayez une autre recherche</p></div>`;
+                grid.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i><h3>Aucun document trouvé</h3><p>Essayez une autre recherche ou une autre catégorie</p></div>`;
                 return;
             }
 
-            docs.forEach(template => {
+            docs.forEach((template, index) => {
                 const card = document.createElement('div');
                 card.className = 'pin-card';
                 card.dataset.templateId = template.id;
+                card.style.animationDelay = `${index * 0.05}s`;
                 
                 const categoryName = categoryNames[template.category] || template.category;
                 const isSaved = localStorage.getItem('takidoc_favorites')?.includes(template.id);
                 const cachedThumb = thumbnailsCache[template.id];
+                const price = template.price ? template.price.toLocaleString() : '0';
                 
                 card.innerHTML = `
                     <div class="document-preview">
@@ -2902,13 +2870,19 @@
                         }
                         <div class="pin-overlay">
                             <div class="overlay-top">
-                                <button class="overlay-btn save ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSave('${template.id}', this)"><i class="${isSaved ? 'fas' : 'far'} fa-heart"></i></button>
-                                <button class="overlay-btn" onclick="event.stopPropagation(); shareDoc('${template.id}', '${template.name.replace(/'/g, "\\'")}')" title="Partager"><i class="fas fa-share"></i></button>
+                                <button class="overlay-btn save ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSave('${template.id}', this)" title="${isSaved ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
+                                    <i class="${isSaved ? 'fas' : 'far'} fa-heart"></i>
+                                </button>
+                                <button class="overlay-btn" onclick="event.stopPropagation(); shareDoc('${template.id}', '${template.name.replace(/'/g, "\\'")}')" title="Partager">
+                                    <i class="fas fa-share"></i>
+                                </button>
                             </div>
                             <div class="overlay-bottom">
                                 <h3 class="overlay-title">${template.name}</h3>
-                                <div class="overlay-price">${template.price.toLocaleString()} FCFA</div>
-                                <button class="btn-customize-overlay" onclick="event.stopPropagation(); window.location.href='editor.html?id=${template.id}'"><i class="fas fa-edit"></i> Personnaliser</button>
+                                <div class="overlay-price">${price} FCFA</div>
+                                <button class="btn-customize-overlay" onclick="event.stopPropagation(); window.location.href='editor.html?id=${template.id}'">
+                                    <i class="fas fa-edit"></i> Personnaliser
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -2921,151 +2895,95 @@
             generateThumbnailsInBackground(docs);
         }
 
+        // ============================================
+        // GÉNÉRATION DES MINIATURES EN ARRIÈRE-PLAN
+        // ============================================
         async function generateThumbnailsInBackground(docs) {
             for (const template of docs) {
                 if (thumbnailsCache[template.id]) continue;
                 
-                const thumbnail = await generateThumbnail(template);
-                if (thumbnail) {
-                    thumbnailsCache[template.id] = thumbnail;
-                    
-                    const card = document.querySelector(`.pin-card[data-template-id="${template.id}"]`);
-                    if (card) {
-                        const preview = card.querySelector('.document-preview');
-                        const placeholder = preview.querySelector('.thumbnail-placeholder');
-                        if (placeholder) {
-                            const img = document.createElement('img');
-                            img.src = thumbnail;
-                            img.alt = template.name;
-                            img.className = 'thumbnail-image';
-                            img.style.opacity = '0';
-                            img.style.transition = 'opacity 0.5s ease';
-                            placeholder.replaceWith(img);
-                            setTimeout(() => { img.style.opacity = '1'; }, 50);
+                try {
+                    const thumbnail = await generateThumbnail(template);
+                    if (thumbnail) {
+                        thumbnailsCache[template.id] = thumbnail;
+                        
+                        const card = document.querySelector(`.pin-card[data-template-id="${template.id}"]`);
+                        if (card) {
+                            const preview = card.querySelector('.document-preview');
+                            const placeholder = preview.querySelector('.thumbnail-placeholder');
+                            if (placeholder) {
+                                const img = document.createElement('img');
+                                img.src = thumbnail;
+                                img.alt = template.name;
+                                img.className = 'thumbnail-image';
+                                img.style.opacity = '0';
+                                img.style.transition = 'opacity 0.5s ease';
+                                placeholder.replaceWith(img);
+                                setTimeout(() => { img.style.opacity = '1'; }, 50);
+                            }
                         }
                     }
+                } catch (e) {
+                    console.warn(`Erreur thumbnail ${template.id}:`, e);
                 }
             }
         }
 
         // ============================================
-        // FILTRAGE, RECHERCHE ET NAVIGATION VERS LES RÉSULTATS
+        // FILTRAGE PAR CATÉGORIE
         // ============================================
-        let currentCat = 'all';
-        let searchScrollTimer = null;
-        let lastSearchHadQuery = false;
-        const catalogueStatus = document.getElementById('catalogueStatus');
-        const catalogueTitle = document.getElementById('catalogueTitle');
+        function filterAndRender() {
+            if (!grid) return;
+            
+            const filtered = currentCat === 'all' 
+                ? templatesRegistry 
+                : templatesRegistry.filter(doc => doc.category === currentCat);
+            
+            renderPins(filtered);
 
-        const categoryAliases = {
-            cv: ['cv', 'curriculum', 'curriculum vitae', 'resume'],
-            lettre: ['lettre', 'lettres', 'motivation', 'candidature', 'demande'],
-            contrat: ['contrat', 'contrats', 'travail', 'emploi', 'accord'],
-            commercial: ['commercial', 'facture', 'devis', 'commande', 'vente', 'recu', 'reçu'],
-            attestation: ['attestation', 'certificat', 'residence', 'résidence', 'travail'],
-            administratif: ['administratif', 'administrative', 'administration', 'mairie', 'autorisation'],
-            facture: ['facture', 'factures', 'facturation'],
-            devis: ['devis', 'estimation', 'proforma'],
-            rapport: ['rapport', 'compte rendu', 'bilan'],
-            procuration: ['procuration', 'mandat'],
-            declaration: ['declaration', 'déclaration', 'déclarations'],
-            certificat: ['certificat', 'certificats']
-        };
-
-        function normalizeText(value) {
-            return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+            if (catalogueTitle) {
+                const catName = currentCat === 'all' ? 'Tous' : (categoryNames[currentCat] || currentCat);
+                catalogueTitle.textContent = `${catName} - ${filtered.length} document${filtered.length > 1 ? 's' : ''}`;
+            }
+            
+            if (catalogueStatus) {
+                catalogueStatus.textContent = `Choisissez un document et personnalisez-le selon vos besoins.`;
+            }
         }
 
-        function matchesCategory(doc, selectedCategory) {
-            if (selectedCategory === 'all') return true;
-            const docCategory = normalizeText(doc.category);
-            const wanted = normalizeText(selectedCategory);
-            if (docCategory === wanted || docCategory === wanted.replace(/s$/, '')) return true;
-
-            const aliases = (categoryAliases[selectedCategory] || [selectedCategory]).map(normalizeText);
-            // First match the document's explicit category/id/tags; only then use its title.
-            const metadata = normalizeText([doc.category, doc.id, ...(Array.isArray(doc.tags) ? doc.tags : [])].join(' '));
-            if (aliases.some(alias => metadata.includes(alias))) return true;
-            const title = normalizeText(doc.name);
-            return aliases.some(alias => title.includes(alias));
-        }
-
-        function scrollToResults() {
-            const target = document.getElementById('documents');
-            if (!target) return;
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
+        // ============================================
+        // GESTIONNAIRES D'ÉVÉNEMENTS
+        // ============================================
+        
+        // Filtres par catégorie
         catPills.forEach(pill => {
             pill.addEventListener('click', () => {
                 catPills.forEach(p => p.classList.remove('active'));
                 pill.classList.add('active');
                 currentCat = pill.dataset.cat || 'all';
                 filterAndRender();
-                scrollToResults();
+                
+                // Scroll vers les documents
+                const documentsSection = document.getElementById('documents');
+                if (documentsSection) {
+                    documentsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             });
         });
-
-        searchInput.addEventListener('input', () => {
-            filterAndRender();
-            const hasQuery = searchInput.value.trim().length > 0;
-            if (hasQuery && !lastSearchHadQuery) {
-                clearTimeout(searchScrollTimer);
-                searchScrollTimer = setTimeout(scrollToResults, 220);
-            }
-            lastSearchHadQuery = hasQuery;
-        });
-
-        searchInput.addEventListener('keydown', event => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                clearTimeout(searchScrollTimer);
-                filterAndRender();
-                scrollToResults();
-                searchInput.blur();
-            }
-            if (event.key === 'Escape') {
-                searchInput.value = '';
-                lastSearchHadQuery = false;
-                filterAndRender();
-            }
-        });
-
-        function filterAndRender() {
-            const query = normalizeText(searchInput.value);
-            const filtered = templatesRegistry.filter(doc => {
-                const matchCat = matchesCategory(doc, currentCat);
-                const searchableText = normalizeText([
-                    doc.name, doc.description, doc.category, doc.id,
-                    ...(Array.isArray(doc.tags) ? doc.tags : [])
-                ].join(' '));
-                const matchSearch = !query || searchableText.includes(query);
-                return matchCat && matchSearch;
-            });
-            renderPins(filtered);
-
-            if (catalogueTitle) {
-                catalogueTitle.textContent = currentCat === 'all'
-                    ? (query ? 'Résultats de recherche' : 'Des modèles pour chaque étape')
-                    : `Documents : ${catPills.length ? (document.querySelector('.cat-pill.active')?.textContent.trim() || currentCat) : currentCat}`;
-            }
-            if (catalogueStatus) {
-                catalogueStatus.textContent = `${filtered.length} document${filtered.length > 1 ? 's' : ''} trouvé${filtered.length > 1 ? 's' : ''}${query ? ` pour « ${searchInput.value.trim()} »` : ''}.`;
-                catalogueStatus.classList.toggle('catalogue-status-active', Boolean(query) || currentCat !== 'all');
-            }
-        }
 
         // ============================================
-        // ACTIONS GLOBALES
+        // ACTIONS GLOBALES (window)
         // ============================================
         window.toggleSave = function(docId, btn) {
             const icon = btn.querySelector('i');
             let favorites = JSON.parse(localStorage.getItem('takidoc_favorites') || '[]');
+            
             if (btn.classList.contains('saved')) {
                 btn.classList.remove('saved');
                 icon.classList.remove('fas');
                 icon.classList.add('far');
                 favorites = favorites.filter(id => id !== docId);
+                showToast('Retiré des favoris');
             } else {
                 btn.classList.add('saved');
                 icon.classList.remove('far');
@@ -3073,6 +2991,7 @@
                 if (!favorites.includes(docId)) favorites.push(docId);
                 btn.style.transform = 'scale(1.3)';
                 setTimeout(() => btn.style.transform = '', 200);
+                showToast('Ajouté aux favoris');
             }
             localStorage.setItem('takidoc_favorites', JSON.stringify(favorites));
         };
@@ -3082,133 +3001,74 @@
             if (navigator.share) {
                 navigator.share({ title: name + ' - TakiDoc', url }).catch(() => {});
             } else {
-                navigator.clipboard.writeText(url).then(() => alert('Lien copié !'));
+                navigator.clipboard.writeText(url).then(() => showToast('Lien copié dans le presse-papier !'));
             }
         };
 
-        window.markAllRead = function(e) {
-            e.stopPropagation();
-            document.querySelectorAll('.notif-item.unread').forEach(item => item.classList.remove('unread'));
-        };
-
-        if (navSearch) {
-            navSearch.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                setTimeout(() => {
-                    searchInput.focus({ preventScroll: true });
-                    searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
-            });
+        // ============================================
+        // NOTIFICATION TOAST
+        // ============================================
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%) translateY(20px);
+                background: #0F172A;
+                color: white;
+                padding: 14px 24px;
+                border-radius: 12px;
+                font-size: 0.9rem;
+                font-weight: 500;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                z-index: 9999;
+                opacity: 0;
+                transition: all 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+            }, 10);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
-
-        const heroExplore = document.getElementById('heroExplore');
-        if (heroExplore) {
-            heroExplore.addEventListener('click', () => {
-                setTimeout(() => {
-                    const firstCategory = document.querySelector('.cat-pill[data-cat="all"]');
-                    if (firstCategory && currentCat !== 'all') firstCategory.click();
-                }, 0);
-            });
-        }
-
-        
-    // Année automatique
-    const footerYear = document.getElementById('td-footer-year');
-    if (footerYear) {
-        footerYear.textContent = new Date().getFullYear();
-    }
-
-    // Catégories du footer reliées au catalogue existant
-    document.querySelectorAll('[data-footer-cat]').forEach(link => {
-        link.addEventListener('click', event => {
-            const category = link.dataset.footerCat;
-            const categoryButton = document.querySelector(
-                `.cat-pill[data-cat="${category}"]`
-            );
-
-            // Laisse le lien fonctionner normalement si la catégorie
-            // n'existe pas dans le catalogue.
-            if (!categoryButton) return;
-
-            event.preventDefault();
-            categoryButton.click();
-
-            // Met aussi à jour le fragment de l'URL.
-            history.replaceState(null, '', '#documents');
-        });
-    });
 
         // ============================================
         // INITIALISATION
         // ============================================
-        document.addEventListener('DOMContentLoaded', async () => {
-            await checkAuth();
-            renderPins(templatesRegistry);
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("🚀 TakiDoc initialisé - L'équipe Meurphy est en service");
+            
+            // Afficher tous les documents au démarrage
+            filterAndRender();
+            
+            // Gérer les paramètres d'URL (recherche)
+            const params = new URLSearchParams(window.location.search);
+            const query = params.get('q');
+            
+            if (query) {
+                const filtered = templatesRegistry.filter(t => 
+                    t.name.toLowerCase().includes(query.toLowerCase()) ||
+                    t.category.toLowerCase().includes(query.toLowerCase())
+                );
+                renderPins(filtered);
+                
+                if (catalogueTitle) {
+                    catalogueTitle.textContent = `Résultats pour "${query}"`;
+                }
+            }
         });
-
-        // Dans index.html, au chargement
-document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const query = params.get('q');
-    
-    if (query) {
-        // Filtrer les templates
-        const filtered = templatesRegistry.filter(t => 
-            t.name.toLowerCase().includes(query.toLowerCase()) ||
-            t.category.toLowerCase().includes(query.toLowerCase())
-        );
-        
-        // Afficher les résultats filtrés
-        displayTemplates(filtered);
-        
-        // Afficher le message de recherche
-        document.getElementById('search-query').textContent = `Résultats pour "${query}"`;
-    }
-});
-
-// ============================================
-// RECHERCHE (REDIRECTION VERS INDEX)
-// ============================================
-function setupSearch() {
-    const form = document.getElementById('searchForm');
-    const input = document.getElementById('headerSearch');
-    
-    if (!form || !input) return;
-    
-    // Soumission du formulaire (Entrée)
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const query = input.value.trim();
-        if (query.length >= 2) {
-            // Redirection vers index.html avec le paramètre de recherche
-            window.location.href = `index.html?q=${encodeURIComponent(query)}`;
-        }
-    });
-    
-    // Recherche en temps réel (optionnel - affiche suggestions)
-    input.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        if (query.length < 2) return;
-        
-        const results = templatesRegistry.filter(t => 
-            t.name.toLowerCase().includes(query) || 
-            t.category.toLowerCase().includes(query)
-        );
-        
-        // Log pour debug
-        console.log('Suggestions:', results.map(r => r.name));
-    });
-    
-    // Touche Échap pour effacer
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            input.value = '';
-            input.blur();
-        }
-    });
-}
-
     </script>
+    
+    <!-- HEADER DYNAMIQUE -->
+    <script src="js/header.js"></script>
 </body>
 </html>

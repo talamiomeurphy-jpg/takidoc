@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -555,8 +555,13 @@
             to { transform: rotate(360deg); }
         }
     </style>
+    <!-- HEADER TAKIDOC -->
+    <link rel="stylesheet" href="css/header.css">
 </head>
 <body>
+    <!-- HEADER DYNAMIQUE TAKIDOC -->
+    <div id="td-header-container"></div>
+
 
     <!-- Loading overlay -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -564,18 +569,7 @@
     </div>
 
     <!-- Header -->
-    <header class="profile-header">
-        <div class="profile-header-left">
-            <a href="index.html" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <h1>Mon Profil</h1>
-        </div>
-        <button class="btn-logout" id="logoutBtn">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Déconnexion</span>
-        </button>
-    </header>
+    
 
     <!-- Contenu -->
     <div class="profile-container">
@@ -979,5 +973,9 @@
             document.getElementById('loadingOverlay').classList.add('hidden');
         });
     </script>
+
+    <!-- HEADER TAKIDOC -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/header.js"></script>
 </body>
 </html>

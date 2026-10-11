@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8">
@@ -29,17 +29,14 @@
     @media(max-width:480px){.container{width:calc(100% - 28px)}.logo{font-size:1.48rem}.hero{padding-top:42px}.eyebrow{font-size:.69rem}.hero h1{font-size:2.15rem}.hero-pills{flex-direction:column;align-items:center;gap:7px}.form-grid{grid-template-columns:1fr;gap:15px}.field.full{grid-column:auto}.field textarea{min-height:145px}.form-card{padding:22px 17px;border-radius:19px}.info-card{padding:25px 20px;border-radius:19px}.submit-btn{width:100%}.form-actions{gap:10px}.privacy-hint{width:100%}.footer-links{gap:12px 16px}.footer-links a{font-size:.79rem}.footer-bottom{font-size:.74rem}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
   </style>
+    <!-- HEADER TAKIDOC -->
+    <link rel="stylesheet" href="css/header.css">
 </head>
 <body>
-  <header class="header">
-    <nav class="nav container" aria-label="Navigation principale">
-      <a class="logo" href="index.html" aria-label="TakiDoc — Accueil"><span>Taki</span>Doc</a>
-      <div class="nav-links">
-        <a href="index.html">Accueil</a><a href="a-propos.html">À propos</a><a href="comment-ca-marche.html">Comment ça marche</a><a href="contact.html" class="active" aria-current="page">Contact</a><a href="conditions.html">Conditions</a><a href="confidentialite.html">Confidentialité</a><a href="mentions-legales.html">Mentions légales</a><a href="cookies.html">Cookies</a><a class="nav-cta" href="index.html#documents">Explorer les modèles <span aria-hidden="true">↗</span></a>
-      </div>
-      <a class="mobile-cta" href="index.html#documents">Explorer <span aria-hidden="true">↗</span></a>
-    </nav>
-  </header>
+    <!-- HEADER DYNAMIQUE TAKIDOC -->
+    <div id="td-header-container"></div>
+
+  
 
   <main>
     <section class="hero">
@@ -218,5 +215,9 @@
       });
     })();
   </script>
+
+    <!-- HEADER TAKIDOC -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/header.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -899,31 +899,15 @@
       }
     }
   </style>
+    <!-- HEADER TAKIDOC -->
+    <link rel="stylesheet" href="css/header.css">
 </head>
 
 <body>
-  <header class="site-header">
-    <nav class="nav container" aria-label="Navigation principale">
-      <a class="logo" href="index.html" aria-label="TakiDoc, accueil">
-        <span class="logo-mark" aria-hidden="true">T</span>
-        <span><span class="brand-orange">Taki</span>Doc</span>
-      </a>
+    <!-- HEADER DYNAMIQUE TAKIDOC -->
+    <div id="td-header-container"></div>
 
-      <div class="nav-right">
-        <a class="nav-link" href="index.html">Accueil</a>
-        <a class="nav-link" href="a-propos.html">À propos</a>
-        <a class="nav-link" href="comment-ca-marche.html">Comment ça marche</a>
-        <a class="nav-link" href="contact.html">Contact</a>
-        <a class="nav-link" href="conditions.html" aria-current="page">Conditions</a>
-        <a class="nav-link" href="confidentialite.html">Confidentialité</a>
-        <a class="nav-link" href="mentions-legales.html">Mentions légales</a>
-        <a class="nav-link" href="cookies.html">Cookies</a>
-        <a class="nav-link cta" href="index.html#documents">
-          Explorer les modèles <span aria-hidden="true">↗</span>
-        </a>
-      </div>
-    </nav>
-  </header>
+  
 
   <main>
     <section class="hero">
@@ -1429,5 +1413,9 @@
       sections.forEach((section) => observer.observe(section));
     }
   </script>
+
+    <!-- HEADER TAKIDOC -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/header.js"></script>
 </body>
 </html>

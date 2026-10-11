@@ -15,9 +15,9 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "  TAKIDOC - MISE À JOUR DES HEADERS" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "📁 Dossier du projet : $projectRoot" -ForegroundColor Yellow
-Write-Host "📂 Sauvegarde dans   : $backupFolder" -ForegroundColor Yellow
-Write-Host "📄 Fichiers trouvés  : $($htmlFiles.Count)" -ForegroundColor Yellow
+Write-Host "Dossier du projet : $projectRoot" -ForegroundColor Yellow
+Write-Host "Sauvegarde dans   : $backupFolder" -ForegroundColor Yellow
+Write-Host "Fichiers trouvés  : $($htmlFiles.Count)" -ForegroundColor Yellow
 Write-Host ""
 
 $modifiedCount = 0
@@ -25,7 +25,7 @@ $skippedCount = 0
 $errorCount = 0
 
 foreach ($file in $htmlFiles) {
-    Write-Host "🔍 Traitement : $($file.Name)" -ForegroundColor White
+    Write-Host "Traitement : $($file.Name)" -ForegroundColor White
     
     try {
         # Lire le contenu
@@ -42,19 +42,19 @@ foreach ($file in $htmlFiles) {
         # ÉTAPE 1 : Supprimer les anciens headers
         # ============================================
         
-        # Pattern 1 : <header class="app-header">...</header>
+        # Pattern 1 : header class="app-header"
         $content = $content -replace '(?s)<header\s+class="app-header".*?</header>', ''
         
-        # Pattern 2 : <header class="editor-header">...</header>
+        # Pattern 2 : header class="editor-header"
         $content = $content -replace '(?s)<header\s+class="editor-header".*?</header>', ''
         
-        # Pattern 3 : <header class="td-top">...</header>
+        # Pattern 3 : header class="td-top"
         $content = $content -replace '(?s)<header\s+class="td-top".*?</header>', ''
         
-        # Pattern 4 : Tout <header>...</header> restant (attrape tout)
+        # Pattern 4 : Tout header restant
         $content = $content -replace '(?s)<header\s[^>]*>.*?</header>', ''
         
-        # Pattern 5 : <header>...</header> sans attributs
+        # Pattern 5 : header sans attributs
         $content = $content -replace '(?s)<header>.*?</header>', ''
         
         # Nettoyer les lignes vides multiples
@@ -64,7 +64,7 @@ foreach ($file in $htmlFiles) {
         # ÉTAPE 2 : Insérer le nouveau conteneur
         # ============================================
         
-        # Chercher la position après <body> ou après le premier élément du body
+        # Chercher la position après <body>
         $bodyTagPattern = '(?i)<body[^>]*>'
         
         if ($content -match $bodyTagPattern) {
@@ -72,19 +72,19 @@ foreach ($file in $htmlFiles) {
             $bodyIndex = $content.IndexOf($bodyMatch)
             $afterBody = $bodyIndex + $bodyMatch.Length
             
-            # Insérer juste après <body>
-            $newHeader = "`r`n    <!-- HEADER DYNAMIQUE TAKIDOC -->`r`n    <div id=`"td-header-container`"></div>`r`n"
+            # Insérer juste après <body> - Utilisation de [Environment]::NewLine
+            $newHeader = [Environment]::NewLine + "    <!-- HEADER DYNAMIQUE TAKIDOC -->" + [Environment]::NewLine + "    <div id=`"td-header-container`"></div>" + [Environment]::NewLine
             $content = $content.Insert($afterBody, $newHeader)
             $fileModified = $true
         } else {
-            Write-Host "   ⚠️  Balise <body> non trouvée !" -ForegroundColor Yellow
+            Write-Host "   Balise body non trouvee !" -ForegroundColor Yellow
         }
         
         # ============================================
         # ÉTAPE 3 : Ajouter le lien CSS dans le <head>
         # ============================================
         
-        $cssLink = '    <!-- HEADER TAKIDOC -->`r`n    <link rel="stylesheet" href="css/header.css">'
+        $cssLink = '    <!-- HEADER TAKIDOC -->' + [Environment]::NewLine + '    <link rel="stylesheet" href="css/header.css">'
         
         # Chercher la balise fermante </head>
         $headClosePattern = '(?i)</head>'
@@ -94,13 +94,13 @@ foreach ($file in $htmlFiles) {
             
             # Vérifier si le lien existe déjà
             if ($content -notmatch 'css/header\.css') {
-                $content = $content.Insert($headCloseIndex, $cssLink + "`r`n")
+                $content = $content.Insert($headCloseIndex, $cssLink + [Environment]::NewLine)
                 $fileModified = $true
             } else {
-                Write-Host "   ℹ️  Lien CSS déjà présent" -ForegroundColor DarkGray
+                Write-Host "   Lien CSS deja present" -ForegroundColor DarkGray
             }
         } else {
-            Write-Host "   ⚠️  Balise </head> non trouvée !" -ForegroundColor Yellow
+            Write-Host "   Balise /head non trouvee !" -ForegroundColor Yellow
         }
         
         # ============================================
@@ -109,15 +109,15 @@ foreach ($file in $htmlFiles) {
         
         if ($fileModified -and $content -ne $originalContent) {
             Set-Content -Path $file.FullName -Value $content -Encoding UTF8 -NoNewline
-            Write-Host "   ✅ Modifié avec succès" -ForegroundColor Green
+            Write-Host "   Modifie avec succes" -ForegroundColor Green
             $modifiedCount++
         } else {
-            Write-Host "   ⏭️  Aucun changement nécessaire" -ForegroundColor DarkGray
+            Write-Host "   Aucun changement necessaire" -ForegroundColor DarkGray
             $skippedCount++
         }
         
     } catch {
-        Write-Host "   ❌ Erreur : $_" -ForegroundColor Red
+        Write-Host "   Erreur : $_" -ForegroundColor Red
         $errorCount++
     }
     
@@ -131,20 +131,20 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "  RAPPORT FINAL" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "✅ Fichiers modifiés : $modifiedCount" -ForegroundColor Green
-Write-Host "️  Fichiers ignorés  : $skippedCount" -ForegroundColor Yellow
-Write-Host "❌ Erreurs           : $errorCount" -ForegroundColor $(if ($errorCount -gt 0) { 'Red' } else { 'Green' })
+Write-Host "Fichiers modifies : $modifiedCount" -ForegroundColor Green
+Write-Host "Fichiers ignores  : $skippedCount" -ForegroundColor Yellow
+Write-Host "Erreurs           : $errorCount" -ForegroundColor $(if ($errorCount -gt 0) { 'Red' } else { 'Green' })
 Write-Host ""
-Write-Host "💾 Sauvegarde des originaux : $backupFolder" -ForegroundColor Blue
+Write-Host "Sauvegarde des originaux : $backupFolder" -ForegroundColor Blue
 Write-Host ""
 
 if ($errorCount -eq 0) {
-    Write-Host "🎉 TOUT EST PARFAIT ! Tu peux tester ton site." -ForegroundColor Green
+    Write-Host "TOUT EST PARFAIT ! Tu peux tester ton site." -ForegroundColor Green
 } else {
-    Write-Host "⚠️  Il y a eu des erreurs. Vérifie les fichiers concernés." -ForegroundColor Yellow
-    Write-Host "   Tu peux restaurer depuis : $backupFolder" -ForegroundColor Yellow
+    Write-Host "Il y a eu des erreurs. Verifie les fichiers concernes." -ForegroundColor Yellow
+    Write-Host "Tu peux restaurer depuis : $backupFolder" -ForegroundColor Yellow
 }
 
 Write-Host ""
-Write-Host "Appuie sur Entrée pour fermer..." -ForegroundColor DarkGray
+Write-Host "Appuie sur Entree pour fermer..." -ForegroundColor DarkGray
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
