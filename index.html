@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>TakiDoc - Plateforme de Documents Professionnels au Congo</title>
+
+    <!-- FAVICONS TAKIDOC -->
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="site.webmanifest">
     <meta name="description" content="Découvrez, personnalisez et téléchargez des documents professionnels. CV, Contrats, Factures, Attestations. Par L'équipe Meurphy.">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2324,10 +2330,218 @@
     }
 }
 
+/* ============================================
+   BACKGROUND PREMIUM TAKIDOC - MESH GRADIENT
+   ============================================ */
+
+/* Conteneur d'arrière-plan dédié (ne touche pas au body) */
+.takidoc-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    pointer-events: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    overflow: hidden;
+}
+
+/* GROS POINTILLÉS bien visibles */
+.takidoc-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.35) 12px, transparent 12px);
+    background-size: 80px 80px;
+    background-position: 0 0;
+    opacity: 0.6;
+}
+
+/* Deuxième couche de points plus petits pour la profondeur */
+.takidoc-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.15) 4px, transparent 4px);
+    background-size: 40px 40px;
+    background-position: 40px 40px;
+    opacity: 0.8;
+}
+
+/* Blobs animés flottants */
+.takidoc-blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    z-index: -1;
+    pointer-events: none;
+    animation: blobFloat 20s ease-in-out infinite;
+}
+
+.takidoc-blob-1 {
+    width: 500px;
+    height: 500px;
+    background: #FF6B35;
+    top: -10%;
+    right: -10%;
+    animation-delay: 0s;
+}
+
+.takidoc-blob-2 {
+    width: 600px;
+    height: 600px;
+    background: #004E89;
+    bottom: -15%;
+    left: -10%;
+    animation-delay: -7s;
+}
+
+.takidoc-blob-3 {
+    width: 400px;
+    height: 400px;
+    background: #f093fb;
+    top: 40%;
+    left: 30%;
+    animation-delay: -14s;
+    opacity: 0.25;
+}
+
+@keyframes blobFloat {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    25% {
+        transform: translate(50px, -50px) scale(1.1);
+    }
+    50% {
+        transform: translate(-30px, 30px) scale(0.95);
+    }
+    75% {
+        transform: translate(20px, 40px) scale(1.05);
+    }
+}
+
+/* ============================================
+   HEADER GLASSMORPHISM RENFORCÉ
+   ============================================ */
+.app-header {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.4) !important;
+}
+
+/* ============================================
+   HERO SECTION GLASS
+   ============================================ */
+.home-hero {
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.2) inset !important;
+}
+
+/* ============================================
+   CATÉGORIES GLASS
+   ============================================ */
+.categories-wrapper {
+    background: rgba(255, 255, 255, 0.88) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.3) !important;
+}
+
+.cat-pill {
+    background: rgba(255,255,255,0.7) !important;
+    backdrop-filter: blur(10px);
+    border: 1.5px solid rgba(255,255,255,0.5) !important;
+    transition: all 0.3s ease;
+}
+
+.cat-pill:hover {
+    background: rgba(255,255,255,0.95) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255,107,53,0.25);
+}
+
+.cat-pill.active {
+    background: linear-gradient(135deg, #FF6B35 0%, #E85A2D 100%) !important;
+    color: white !important;
+    border-color: transparent !important;
+    box-shadow: 0 8px 24px rgba(255,107,53,0.4);
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   BENEFIT STRIP GLASS
+   ============================================ */
+.benefit-strip {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+}
+
+/* ============================================
+   CARTES DE DOCUMENTS PREMIUM
+   ============================================ */
+.pin-card {
+    background: rgba(255,255,255,0.95) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.12) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pin-card:hover {
+    transform: translateY(-8px) scale(1.02) !important;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,107,53,0.3) !important;
+}
+
+/* ============================================
+   ANIMATION D'ENTRÉE DES CARTES
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pin-card {
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.pin-card:nth-child(1) { animation-delay: 0.05s; }
+.pin-card:nth-child(2) { animation-delay: 0.1s; }
+.pin-card:nth-child(3) { animation-delay: 0.15s; }
+.pin-card:nth-child(4) { animation-delay: 0.2s; }
+.pin-card:nth-child(5) { animation-delay: 0.25s; }
+.pin-card:nth-child(6) { animation-delay: 0.3s; }
+.pin-card:nth-child(7) { animation-delay: 0.35s; }
+.pin-card:nth-child(8) { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
 
+    <!-- Background Premium -->
+    <div class="takidoc-bg"></div>
+    <div class="takidoc-blob takidoc-blob-1"></div>
+    <div class="takidoc-blob takidoc-blob-2"></div>
+    <div class="takidoc-blob takidoc-blob-3"></div>
     <header class="app-header">
         <a href="/" class="logo">
             <span class="logo-taki">Taki</span><span class="logo-doc">Doc</span>
@@ -2994,6 +3208,7 @@ function setupSearch() {
         }
     });
 }
+
     </script>
 </body>
 </html>
