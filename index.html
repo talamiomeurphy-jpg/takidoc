@@ -2932,6 +2932,68 @@
             await checkAuth();
             renderPins(templatesRegistry);
         });
+
+        // Dans index.html, au chargement
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get('q');
+    
+    if (query) {
+        // Filtrer les templates
+        const filtered = templatesRegistry.filter(t => 
+            t.name.toLowerCase().includes(query.toLowerCase()) ||
+            t.category.toLowerCase().includes(query.toLowerCase())
+        );
+        
+        // Afficher les résultats filtrés
+        displayTemplates(filtered);
+        
+        // Afficher le message de recherche
+        document.getElementById('search-query').textContent = `Résultats pour "${query}"`;
+    }
+});
+
+// ============================================
+// RECHERCHE (REDIRECTION VERS INDEX)
+// ============================================
+function setupSearch() {
+    const form = document.getElementById('searchForm');
+    const input = document.getElementById('headerSearch');
+    
+    if (!form || !input) return;
+    
+    // Soumission du formulaire (Entrée)
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = input.value.trim();
+        if (query.length >= 2) {
+            // Redirection vers index.html avec le paramètre de recherche
+            window.location.href = `index.html?q=${encodeURIComponent(query)}`;
+        }
+    });
+    
+    // Recherche en temps réel (optionnel - affiche suggestions)
+    input.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (query.length < 2) return;
+        
+        const results = templatesRegistry.filter(t => 
+            t.name.toLowerCase().includes(query) || 
+            t.category.toLowerCase().includes(query)
+        );
+        
+        // Log pour debug
+        console.log('Suggestions:', results.map(r => r.name));
+    });
+    
+    // Touche Échap pour effacer
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            input.value = '';
+            input.blur();
+        }
+    });
+}
     </script>
 </body>
 </html>

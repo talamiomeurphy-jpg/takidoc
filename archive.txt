@@ -3,133 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>TakiDoc - Plateforme de Documents Professionnels au Congo</title>
-    <meta name="description" content="Découvrez, personnalisez et téléchargez des documents professionnels. CV, Contrats, Factures, Attestations. Par L'équipe Meurphy.">
+    <title>Éditeur - TakiDoc</title>
+    <meta name="description" content="Personnalisez votre document professionnel">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700;900&family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
         :root {
             --primary: #FF6B35;
             --primary-dark: #E85A2D;
             --primary-light: #FFF5F0;
-            --secondary: #004E89;
-            --dark: #1A1A2E;
-            --bg-body: #FAFAFA;
-            --bg-card: #FFFFFF;
-            --text-main: #1A1A2E;
-            --text-muted: #6B7280;
-            --text-light: #9CA3AF;
-            --border: #E5E7EB;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-            --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
-            --shadow-hover: 0 20px 40px rgba(0,0,0,0.15);
+            --dark: #0F172A;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --bg-body: #F8FAFC;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
             --radius-sm: 8px;
-            --radius-md: 16px;
-            --radius-lg: 24px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
             --radius-full: 9999px;
-            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-body);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-body);
             color: var(--text-main);
-            padding-bottom: 90px;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
         }
 
-        body::before {
-            content: '';
+        /* ============================================
+           HEADER À 2 LIGNES
+           ============================================ */
+        .editor-header {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            opacity: 0.04;
-            z-index: -1;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
         }
 
-        /* HEADER */
-        .app-header {
-            position: sticky;
-            top: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 12px 24px;
+        /* Ligne 1 : Logo + Recherche + Auth */
+        .header-top {
             display: flex;
             align-items: center;
+            padding: 12px 24px;
             gap: 20px;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(229, 231, 235, 0.5);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border-bottom: 1px solid var(--border-light);
         }
 
-        .logo {
-            font-size: 1.6rem;
+        .header-logo {
+            font-size: 1.5rem;
             font-weight: 900;
             text-decoration: none;
             letter-spacing: -1px;
-            display: flex;
-            align-items: center;
-            transition: var(--transition);
+            flex-shrink: 0;
         }
 
-        .logo:hover { transform: scale(1.02); }
-        .logo-taki { color: var(--primary); }
-        .logo-doc { color: var(--dark); }
+        .header-logo .taki { color: var(--primary); }
+        .header-logo .doc { color: var(--dark); }
 
-        .search-bar {
+        .header-search {
             flex: 1;
-            max-width: 700px;
-            background: #F3F4F6;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .header-search input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border: 1.5px solid var(--border);
             border-radius: var(--radius-full);
-            padding: 12px 24px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: var(--transition);
+            background: var(--bg-body);
+        }
+
+        .header-search input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.1);
+            background: white;
+        }
+
+        .header-search i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .header-auth {
             display: flex;
             align-items: center;
-            gap: 12px;
-            border: 2px solid transparent;
-            transition: var(--transition);
+            gap: 10px;
+            margin-left: auto;
         }
 
-        .search-bar:focus-within {
+        /* Ligne 2 : Zoom + Actions */
+        .header-bottom {
+            display: flex;
+            align-items: center;
+            padding: 10px 24px;
+            gap: 16px;
+            background: rgba(248, 250, 252, 0.5);
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             background: white;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(255,107,53,0.1);
+            padding: 6px 12px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border);
         }
 
-        .search-bar input {
+        .zoom-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-body);
             border: none;
-            background: transparent;
-            flex: 1;
-            font-size: 0.95rem;
-            outline: none;
-            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            color: var(--text-main);
+            font-size: 0.85rem;
+        }
+
+        .zoom-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .zoom-level {
+            font-weight: 700;
+            min-width: 50px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--dark);
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            margin-left: auto;
         }
 
-        .btn-auth {
+        /* ============================================
+           BOUTONS
+           ============================================ */
+        .btn {
             padding: 10px 20px;
             border-radius: var(--radius-full);
             font-weight: 700;
             font-size: 0.9rem;
             cursor: pointer;
+            border: none;
             transition: var(--transition);
             text-decoration: none;
             display: inline-flex;
@@ -138,919 +189,1085 @@
             font-family: inherit;
         }
 
-        .btn-signup {
-            background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-
-        .btn-signup:hover {
+        .btn-primary {
             background: var(--primary);
             color: white;
-            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
         }
 
-        .btn-login {
-            background: var(--primary);
-            color: white;
-            border: 2px solid var(--primary);
-        }
-
-        .btn-login:hover {
+        .btn-primary:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
         }
 
-        .btn-profile {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: var(--radius-full);
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
-        }
-
-        .btn-profile:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(255,107,53,0.4);
-        }
-
-        .btn-profile .initials {
-            background: rgba(255,255,255,0.25);
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            font-weight: 800;
-        }
-
-        .icon-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: transparent;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .icon-btn:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-
-        .badge {
-            position: absolute;
-            top: 2px; right: 2px;
-            background: #EF4444;
-            color: white;
-            font-size: 0.65rem;
-            font-weight: 800;
-            min-width: 18px;
-            height: 18px;
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid white;
-        }
-
-        /* NOTIFICATIONS */
-        .dropdown-menu {
-            position: absolute;
-            top: 60px; right: 20px;
+        .btn-secondary {
             background: white;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-            width: 380px;
-            max-height: 450px;
-            overflow-y: auto;
-            display: none;
-            z-index: 1001;
-            border: 1px solid var(--border);
-        }
-
-        .dropdown-menu.active { display: block; }
-
-        .dropdown-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .dropdown-header h3 { font-size: 1.05rem; font-weight: 800; }
-
-        .mark-read {
-            color: var(--primary);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 700;
-        }
-
-        .notif-item {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .notif-item:hover { background: var(--primary-light); }
-        .notif-item.unread { background: #FFF8F5; border-left: 4px solid var(--primary); }
-        .notif-title { font-weight: 700; margin-bottom: 6px; font-size: 0.9rem; }
-        .notif-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
-        .notif-time { font-size: 0.75rem; color: var(--text-light); margin-top: 8px; }
-
-        /* CATEGORIES */
-        .categories-wrapper {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 69px;
-            z-index: 999;
-        }
-
-        .categories-nav {
-            padding: 14px 24px;
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .categories-nav::-webkit-scrollbar { display: none; }
-
-        .cat-pill {
-            padding: 8px 20px;
-            background: white;
+            color: var(--dark);
             border: 1.5px solid var(--border);
-            border-radius: var(--radius-full);
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: var(--transition);
-            font-family: inherit;
         }
 
-        .cat-pill:hover {
+        .btn-secondary:hover {
             border-color: var(--primary);
             color: var(--primary);
         }
 
-        .cat-pill.active {
-            background: var(--dark);
-            color: white;
-            border-color: var(--dark);
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
         }
 
-        /* MASONRY GRID */
-        .feed-container {
-            padding: 24px;
-            max-width: 1800px;
-            margin: 0 auto;
+        .btn-ghost:hover {
+            color: var(--dark);
+            background: var(--bg-body);
         }
 
-        .masonry-grid {
-            column-count: 2;
-            column-gap: 16px;
-        }
-
-        @media (min-width: 640px) { .masonry-grid { column-count: 3; column-gap: 20px; } }
-        @media (min-width: 1024px) { .masonry-grid { column-count: 4; column-gap: 24px; } }
-        @media (min-width: 1400px) { .masonry-grid { column-count: 5; column-gap: 28px; } }
-
-        /* PIN CARD */
-        .pin-card {
-            break-inside: avoid;
-            margin-bottom: 16px;
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            border: 1px solid rgba(229, 231, 235, 0.5);
-        }
-
-        .pin-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .document-preview {
-            width: 100%;
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             background: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .thumbnail-image {
-            width: 100%;
-            height: auto;
-            display: block;
-            object-fit: cover;
-        }
-
-        /* Placeholder stylisé en attendant la vraie miniature */
-        .thumbnail-placeholder {
-            width: 100%;
-            height: 380px;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid var(--border);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 24px;
-            position: relative;
-            overflow: hidden;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            transition: var(--transition);
         }
 
-        .thumbnail-placeholder::before {
+        .btn-icon:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* ============================================
+           ZONE DOCUMENT
+           ============================================ */
+        .document-area {
+            position: fixed;
+            top: 110px; /* Hauteur du header 2 lignes */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 60px;
+        }
+
+        .document-area::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px),
+                radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px, 40px 40px;
+            background-position: 0 0, 10px 10px;
+            pointer-events: none;
         }
 
-        .placeholder-icon {
-            width: 70px;
-            height: 70px;
+        .document-wrapper {
+            position: relative;
+            z-index: 1;
+            transform-origin: top center;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .document-canvas {
+            width: 210mm;
+            min-height: 297mm;
             background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 16px;
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 8px;
         }
 
-        .placeholder-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--dark);
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
+        /* ============================================
+           SIDEBAR DE PERSONNALISATION
+           ============================================ */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
         }
 
-        .placeholder-lines {
-            width: 100%;
-            max-width: 200px;
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
         }
 
-        .placeholder-line {
-            height: 6px;
-            background: rgba(0,0,0,0.08);
-            border-radius: 3px;
-            margin: 6px 0;
-        }
-
-        .placeholder-line.short { width: 60%; }
-        .placeholder-line.medium { width: 80%; }
-
-        .pin-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.75) 100%);
+        .customization-sidebar {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 420px;
+            height: 100vh;
+            background: white;
+            box-shadow: var(--shadow-lg);
+            z-index: 1002;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            padding: 16px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
         }
 
-        .pin-card:hover .pin-overlay { opacity: 1; }
+        .customization-sidebar.active {
+            right: 0;
+        }
 
-        .overlay-top {
+        .sidebar-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
+            flex-shrink: 0;
         }
 
-        .overlay-btn {
-            width: 40px;
-            height: 40px;
+        .sidebar-header h2 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .sidebar-close {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.95);
+            background: var(--bg-body);
             border: none;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            font-size: 1.1rem;
-            color: var(--dark);
             transition: var(--transition);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .overlay-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.15);
-        }
-
-        .overlay-btn.saved {
-            background: #EF4444;
-            color: white;
-        }
-
-        .overlay-bottom {
-            background: rgba(255,255,255,0.98);
-            padding: 16px;
-            border-radius: var(--radius-md);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-        }
-
-        .overlay-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 6px;
-            line-height: 1.3;
-        }
-
-        .overlay-price {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 12px;
-        }
-
-        .btn-customize-overlay {
-            width: 100%;
-            padding: 12px;
-            background: var(--dark);
-            color: white;
-            border: none;
-            border-radius: var(--radius-full);
-            font-size: 0.9rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: inherit;
-        }
-
-        .btn-customize-overlay:hover {
-            background: var(--primary);
-        }
-
-        .category-badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(255,255,255,0.95);
-            padding: 4px 10px;
-            border-radius: var(--radius-full);
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--dark);
-            backdrop-filter: blur(8px);
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: var(--transition);
-            z-index: 2;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .pin-card:hover .category-badge { 
-            opacity: 1; 
-            transform: translateY(0);
-        }
-
-        /* EMPTY STATE */
-        .empty-state {
-            text-align: center;
-            padding: 100px 20px;
             color: var(--text-muted);
-            column-span: all;
-            background: white;
+        }
+
+        .sidebar-close:hover {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+            padding: 20px;
+            background: var(--bg-body);
             border-radius: var(--radius-lg);
-            border: 2px dashed var(--border);
+            border: 1px solid var(--border);
         }
 
-        .empty-state i { font-size: 4rem; margin-bottom: 20px; color: var(--border); }
-        .empty-state h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
-
-        /* FOOTER */
-        .app-footer {
-            background: var(--dark);
-            color: white;
-            padding: 60px 24px 120px;
-            margin-top: 60px;
-        }
-
-        @media (min-width: 768px) { .app-footer { padding-bottom: 60px; } }
-
-        .footer-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 40px;
-        }
-
-        @media (min-width: 768px) { .footer-container { grid-template-columns: 2fr 1fr 1fr 1.5fr; } }
-
-        .footer-brand .logo { margin-bottom: 16px; }
-        .footer-brand .logo-taki { color: var(--primary); }
-        .footer-brand .logo-doc { color: white; }
-        .footer-brand p { color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 20px; }
-
-        .footer-team {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255,107,53,0.15);
-            color: var(--primary);
-            padding: 10px 20px;
-            border-radius: var(--radius-full);
-            font-size: 0.9rem;
+        .sidebar-section h3 {
+            font-size: 1rem;
             font-weight: 700;
-            border: 1px solid rgba(255,107,53,0.3);
+            color: var(--dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .footer-col h4 { color: white; font-size: 1.05rem; font-weight: 700; margin-bottom: 20px; }
-        .footer-col ul { list-style: none; }
-        .footer-col li { margin-bottom: 12px; }
-        .footer-col a { color: rgba(255,255,255,0.7); text-decoration: none; transition: var(--transition); }
-        .footer-col a:hover { color: var(--primary); transform: translateX(4px); }
+        .sidebar-section h3 i {
+            color: var(--primary);
+        }
 
-        .footer-contact-item {
+        .form-field {
+            margin-bottom: 16px;
+        }
+
+        .form-field label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .form-field input,
+        .form-field textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-field input:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.1);
+        }
+
+        .form-field textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .color-picker-wrapper {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 14px;
-            color: rgba(255,255,255,0.7);
+            margin-bottom: 12px;
         }
 
-        .footer-contact-item i { color: var(--primary); width: 20px; }
-
-        .footer-bottom {
-            max-width: 1400px;
-            margin: 40px auto 0;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            text-align: center;
-            color: rgba(255,255,255,0.5);
+        #color-picker {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 4px;
+            background: white;
         }
 
-        /* BOTTOM NAV */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            z-index: 1000;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        .color-presets {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
         }
 
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            text-decoration: none;
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            font-weight: 600;
+        .color-preset {
+            width: 100%;
+            aspect-ratio: 1;
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: pointer;
             transition: var(--transition);
-            padding: 4px 16px;
-            flex: 1;
+            box-shadow: var(--shadow-sm);
         }
 
-        .nav-item i { font-size: 1.4rem; }
-        .nav-item.active { color: var(--primary); }
-        .nav-item.active i { transform: scale(1.15); }
-
-        @media (min-width: 768px) {
-            .bottom-nav { display: none; }
-            body { padding-bottom: 0; }
+        .color-preset:hover { transform: scale(1.15); }
+        .color-preset.active {
+            border: 2px solid var(--dark);
+            transform: scale(1.1);
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 640px) {
-            .app-header { padding: 10px 16px; gap: 12px; }
-            .logo { font-size: 1.3rem; }
-            .search-bar { padding: 10px 16px; }
-            .btn-auth { padding: 8px 12px; font-size: 0.8rem; }
-            .btn-auth span { display: none; }
-            .categories-wrapper { top: 59px; }
-            .categories-nav { padding: 12px 16px; gap: 8px; }
-            .cat-pill { padding: 6px 16px; font-size: 0.8rem; }
-            .feed-container { padding: 16px; }
-            .masonry-grid { column-gap: 12px; }
-            .pin-card { margin-bottom: 12px; }
-            .dropdown-menu { width: calc(100% - 32px); right: 16px; left: 16px; }
-            .btn-profile span { display: none; }
-            .btn-profile { padding: 8px; }
+        .photo-upload-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            font-weight: 600;
+            background: white;
+            gap: 8px;
+        }
+
+        .photo-upload-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        /* ============================================
+           MODAL CONNEXION (NON-BLOQUANT)
+           ============================================ */
+        .login-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .login-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .login-modal-content {
+            background: white;
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            max-width: 400px;
+            width: 90%;
+            box-shadow: var(--shadow-xl);
+            text-align: center;
+            transform: scale(0.9);
+            transition: var(--transition);
+        }
+
+        .login-modal.active .login-modal-content {
+            transform: scale(1);
+        }
+
+        .login-modal-content h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 12px;
+        }
+
+        .login-modal-content p {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .login-modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .login-modal-actions .btn { flex: 1; }
+
+        /* ============================================
+           ÉDITION DIRECTE
+           ============================================ */
+        .direct-editable {
+            cursor: text !important;
+            border: 1.5px dashed transparent;
+            border-radius: 4px;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .direct-editable:hover {
+            border-color: var(--primary);
+            background-color: rgba(255,107,53,0.05);
+        }
+
+        .direct-editable:focus {
+            border-color: var(--primary);
+            background-color: rgba(255,255,255,0.95);
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+        }
+
+        .takidoc-footer-protected {
+            contentEditable: false !important;
+            user-select: none !important;
+            pointer-events: none !important;
+            opacity: 0.5;
+        }
+
+        /* Toast */
+        .editor-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--dark);
+            color: white;
+            padding: 14px 24px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            opacity: 0;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .editor-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ============================================
+           RESPONSIVE MOBILE
+           ============================================ */
+        @media (max-width: 768px) {
+            .header-top {
+                padding: 10px 16px;
+                gap: 12px;
+            }
+
+            .header-logo { font-size: 1.2rem; }
+
+            .header-search {
+                display: none; /* Caché sur mobile, accessible via menu */
+            }
+
+            .header-auth .btn span { display: none; }
+            .header-auth .btn { padding: 8px 12px; }
+
+            .header-bottom {
+                padding: 8px 16px;
+                gap: 8px;
+                overflow-x: auto;
+            }
+
+            .zoom-controls {
+                padding: 4px 8px;
+                gap: 4px;
+            }
+
+            .zoom-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
+            }
+
+            .zoom-level {
+                min-width: 40px;
+                font-size: 0.75rem;
+            }
+
+            .header-actions .btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+
+            .header-actions .btn span { display: none; }
+
+            .document-area {
+                top: 100px;
+                padding: 20px 16px;
+            }
+
+            .customization-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-bottom {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .header-actions {
+                margin-left: 0;
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <a href="/" class="logo">
-            <span class="logo-taki">Taki</span><span class="logo-doc">Doc</span>
-        </a>
-        <div class="search-bar">
-            <i class="fas fa-search" style="color: var(--text-muted);"></i>
-            <input type="text" id="searchInput" placeholder="Rechercher un CV, un contrat, une facture...">
-        </div>
-        <div class="header-actions" id="headerActions"></div>
-        <div class="dropdown-menu" id="notifDropdown">
-            <div class="dropdown-header">
-                <h3>Notifications</h3>
-                <button class="mark-read" onclick="markAllRead(event)">Tout marquer comme lu</button>
+    <!-- Header à 2 lignes -->
+    <header class="editor-header">
+        <!-- Ligne 1 : Logo + Recherche + Auth -->
+        <div class="header-top">
+            <a href="index.html" class="header-logo">
+                <span class="taki">Taki</span><span class="doc">Doc</span>
+            </a>
+            
+            <form class="header-search" id="searchForm">
+                <i class="fas fa-search"></i>
+                <input type="text" id="headerSearch" placeholder="Rechercher un document..." autocomplete="off">
+            </form>
+            
+            <div class="header-auth" id="headerAuth">
+                <!-- Injecté dynamiquement -->
             </div>
-            <div class="notif-item unread"><div class="notif-title">Nouveau modèle</div><div class="notif-text">CV Exécutif Moderne disponible</div><div class="notif-time">Il y a 2 heures</div></div>
-            <div class="notif-item unread"><div class="notif-title">Promotion</div><div class="notif-text">-20% sur les contrats avec PROMO20</div><div class="notif-time">Il y a 5 heures</div></div>
+        </div>
+
+        <!-- Ligne 2 : Zoom + Actions -->
+        <div class="header-bottom">
+            <div class="zoom-controls">
+                <button class="zoom-btn" id="btn-zoom-out" title="Réduire">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <span class="zoom-level" id="zoom-level">95%</span>
+                <button class="zoom-btn" id="btn-zoom-in" title="Agrandir">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button class="zoom-btn" id="btn-zoom-reset" title="Taille normale">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn btn-secondary" id="btn-download">
+                    <i class="fas fa-download"></i>
+                    <span>Télécharger</span>
+                </button>
+                <button class="btn btn-primary" id="btn-customize">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Personnaliser</span>
+                </button>
+            </div>
         </div>
     </header>
 
-    <div class="categories-wrapper">
-        <nav class="categories-nav" id="categoriesNav">
-            <button class="cat-pill active" data-cat="all">Tous</button>
-            <button class="cat-pill" data-cat="cv">CV</button>
-            <button class="cat-pill" data-cat="lettre">Lettres</button>
-            <button class="cat-pill" data-cat="contrat">Contrats</button>
-            <button class="cat-pill" data-cat="commercial">Commercial</button>
-            <button class="cat-pill" data-cat="attestation">Attestations</button>
-            <button class="cat-pill" data-cat="administratif">Administratif</button>
-        </nav>
+    <!-- Zone Document -->
+    <div class="document-area" id="documentArea">
+        <div class="document-wrapper" id="documentWrapper">
+            <div id="document-canvas" class="document-canvas"></div>
+        </div>
     </div>
 
-    <main class="feed-container">
-        <div class="masonry-grid" id="masonryGrid"></div>
-    </main>
+    <!-- Overlay Sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <footer class="app-footer">
-        <div class="footer-container">
-            <div class="footer-brand">
-                <a href="/" class="logo"><span class="logo-taki">Taki</span><span class="logo-doc">Doc</span></a>
-                <p>La plateforme de référence au Congo pour vos documents professionnels.</p>
-                <div class="footer-team"><i class="fas fa-code"></i> Développé par L'équipe Meurphy</div>
+    <!-- Sidebar de Personnalisation -->
+    <aside class="customization-sidebar" id="customizationSidebar">
+        <div class="sidebar-header">
+            <h2>Personnalisation</h2>
+            <button class="sidebar-close" id="sidebarClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="sidebar-content">
+            <!-- Photo -->
+            <div class="sidebar-section" id="photo-section" style="display: none;">
+                <h3><i class="fas fa-camera"></i> Photo de profil</h3>
+                <input type="file" id="photo-input" accept="image/*" hidden>
+                <label for="photo-input" class="photo-upload-btn">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span id="photo-label">Ajouter une photo</span>
+                </label>
+                <button id="photo-remove" class="btn btn-secondary" style="display: none; margin-top: 8px; width: 100%;">
+                    <i class="fas fa-times"></i> Retirer
+                </button>
             </div>
-            <div class="footer-col">
-                <h4>Navigation</h4>
-                <ul>
-                    <li><a href="/">Accueil</a></li>
-                    <li><a href="auth.html">Connexion</a></li>
-                    <li><a href="profile.html">Profil</a></li>
-                </ul>
+
+            <!-- Couleur -->
+            <div class="sidebar-section" id="color-section" style="display: none;">
+                <h3><i class="fas fa-palette"></i> Couleur principale</h3>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="color-picker" value="#0F172A">
+                    <span id="color-hex" style="font-family: monospace; font-size: 0.9rem;">#0F172A</span>
+                </div>
+                <div class="color-presets">
+                    <button class="color-preset" data-color="#0F172A" style="background: #0F172A;"></button>
+                    <button class="color-preset" data-color="#FF6B35" style="background: #FF6B35;"></button>
+                    <button class="color-preset" data-color="#004E89" style="background: #004E89;"></button>
+                    <button class="color-preset" data-color="#059669" style="background: #059669;"></button>
+                    <button class="color-preset" data-color="#DC2626" style="background: #DC2626;"></button>
+                    <button class="color-preset" data-color="#7C3AED" style="background: #7C3AED;"></button>
+                </div>
             </div>
-            <div class="footer-col">
-                <h4>Légal</h4>
-                <ul>
-                    <li><a href="conditions.html">Conditions</a></li>
-                    <li><a href="confidentialite.html">Confidentialité</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Contact</h4>
-                <div class="footer-contact-item"><i class="fas fa-envelope"></i><span>contact.takidoc@gmail.com</span></div>
-                <div class="footer-contact-item"><i class="fas fa-phone"></i><span>06 518 69 67</span></div>
-                <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>Brazzaville, Congo</span></div>
+
+            <!-- Champs -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-edit"></i> Vos informations</h3>
+                <div id="fields-container"></div>
             </div>
         </div>
-        <div class="footer-bottom"><p>&copy; 2026 TakiDoc. Propriétaire : Meurphy TALAMIO.</p></div>
-    </footer>
+    </aside>
 
-    <nav class="bottom-nav">
-        <a href="/" class="nav-item active"><i class="fas fa-home"></i><span>Accueil</span></a>
-        <a href="#search" class="nav-item" id="nav-search"><i class="fas fa-search"></i><span>Rechercher</span></a>
-        <a href="profile.html#favorites" class="nav-item"><i class="fas fa-heart"></i><span>Favoris</span></a>
-        <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Profil</span></a>
-    </nav>
+    <!-- Modal Connexion (Non-bloquant) -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-modal-content">
+            <i class="fas fa-user-circle" style="color: var(--primary); font-size: 3rem; margin-bottom: 16px;"></i>
+            <h3>Connectez-vous pour sauvegarder</h3>
+            <p>Pour retrouver votre document même après avoir quitté le site, veuillez vous connecter ou créer un compte.</p>
+            <div class="login-modal-actions">
+                <button class="btn btn-ghost" id="loginModalClose">Continuer</button>
+                <a href="auth.html?action=login" class="btn btn-primary">Se connecter</a>
+            </div>
+        </div>
+    </div>
 
+    <!-- Toast -->
+    <div class="editor-toast" id="editorToast"></div>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <script type="module">
-        import { templatesRegistry } from './js/templates-registry.js';
-
-        const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        const grid = document.getElementById('masonryGrid');
-        const searchInput = document.getElementById('searchInput');
-        const catPills = document.querySelectorAll('.cat-pill');
-        const notifDropdown = document.getElementById('notifDropdown');
-        const headerActions = document.getElementById('headerActions');
-        const navSearch = document.getElementById('nav-search');
-
-        let currentUser = null;
-        let thumbnailsCache = {};
-
-        // ============================================
-        // AUTHENTIFICATION
-        // ============================================
-        async function checkAuth() {
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
-                currentUser = session?.user || null;
-                updateHeaderUI();
-            } catch (error) {
-                console.error('Erreur auth:', error);
-            }
-        }
-
-        function updateHeaderUI() {
-            const notifBtnHTML = `<button class="icon-btn" id="notifBtn"><i class="far fa-bell"></i><span class="badge">3</span></button>`;
-            
-            if (currentUser) {
-                const fullName = currentUser.user_metadata?.full_name || currentUser.email || 'Utilisateur';
-                const initials = fullName.split('@')[0].split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                headerActions.innerHTML = notifBtnHTML + `<a href="profile.html" class="btn-profile"><span class="initials">${initials}</span><span>Profil</span></a>`;
-            } else {
-                headerActions.innerHTML = notifBtnHTML + `<a href="auth.html?action=signup" class="btn-auth btn-signup"><i class="fas fa-user-plus"></i><span>S'inscrire</span></a><a href="auth.html?action=login" class="btn-auth btn-login"><i class="fas fa-sign-in-alt"></i><span>Connexion</span></a>`;
-            }
-            
-            const notifBtn = document.getElementById('notifBtn');
-            if (notifBtn) {
-                notifBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    notifDropdown.classList.toggle('active');
-                });
-            }
-        }
-
-        const categoryNames = { 'cv': 'CV', 'lettre': 'Lettre', 'contrat': 'Contrat', 'commercial': 'Commercial', 'attestation': 'Attestation', 'administratif': 'Administratif' };
-        const categoryIcons = { 'cv': 'fa-user-tie', 'lettre': 'fa-envelope-open-text', 'contrat': 'fa-file-signature', 'commercial': 'fa-file-invoice-dollar', 'attestation': 'fa-certificate', 'administratif': 'fa-building' };
-
-        document.addEventListener('click', () => notifDropdown.classList.remove('active'));
-
-        // ============================================
-        // PLACEHOLDERS STYLISÉS PAR CATÉGORIE (Affichage immédiat)
-        // ============================================
-        function getPlaceholderHTML(template) {
-            const icon = categoryIcons[template.category] || 'fa-file-alt';
-            const name = template.name.toUpperCase();
-            return `
-                <div class="thumbnail-placeholder">
-                    <div class="placeholder-icon"><i class="fas ${icon}"></i></div>
-                    <div class="placeholder-title">${name}</div>
-                    <div class="placeholder-lines">
-                        <div class="placeholder-line medium"></div>
-                        <div class="placeholder-line"></div>
-                        <div class="placeholder-line short"></div>
-                        <div class="placeholder-line medium"></div>
-                        <div class="placeholder-line"></div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // ============================================
-        // GÉNÉRATION LAZY DES MINIATURES (En arrière-plan)
-        // ============================================
-        async function generateThumbnail(template) {
-            // Vérifier le cache d'abord
-            const cached = localStorage.getItem(`thumb_${template.id}`);
-            if (cached) return cached;
-
-            try {
-                // Créer un conteneur hors écran
-                const container = document.createElement('div');
-                container.style.cssText = 'position: absolute; left: -10000px; top: 0; width: 794px; background: white; font-family: inherit;';
-                
-                // Injecter le CSS du template
-                const style = document.createElement('style');
-                style.textContent = template.cssStyles || '';
-                container.appendChild(style);
-                
-                // Injecter le HTML
-                const content = document.createElement('div');
-                content.innerHTML = template.htmlStructure || '<p>Document</p>';
-                container.appendChild(content);
-                
-                document.body.appendChild(container);
-                
-                // Attendre le rendu
-                await new Promise(resolve => setTimeout(resolve, 200));
-                
-                // Capturer avec html2canvas (hauteur fixe A4)
-                const canvas = await html2canvas(container, {
-                    scale: 0.4,
-                    useCORS: true,
-                    logging: false,
-                    backgroundColor: '#ffffff',
-                    width: 794,
-                    height: 1123,
-                    windowWidth: 794,
-                    windowHeight: 1123
-                });
-                
-                const imageData = canvas.toDataURL('image/jpeg', 0.85);
-                
-                // Mettre en cache
-                try {
-                    localStorage.setItem(`thumb_${template.id}`, imageData);
-                } catch (e) {
-                    console.warn('Cache plein:', e);
-                }
-                
-                // Nettoyer
-                document.body.removeChild(container);
-                
-                return imageData;
-            } catch (error) {
-                console.error(`Erreur miniature ${template.id}:`, error);
-                // Nettoyer en cas d'erreur
-                const existing = document.body.querySelector(`[style*="left: -10000px"]`);
-                if (existing) document.body.removeChild(existing);
-                return null;
-            }
-        }
-
-        // ============================================
-        // AFFICHAGE DES CARTES (Avec mise à jour progressive)
-        // ============================================
-        function renderPins(docs) {
-            grid.innerHTML = '';
-            
-            if (docs.length === 0) {
-                grid.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i><h3>Aucun document trouvé</h3><p>Essayez une autre recherche</p></div>`;
-                return;
-            }
-
-            docs.forEach(template => {
-                const card = document.createElement('div');
-                card.className = 'pin-card';
-                card.dataset.templateId = template.id;
-                
-                const categoryName = categoryNames[template.category] || template.category;
-                const isSaved = localStorage.getItem('takidoc_favorites')?.includes(template.id);
-                const cachedThumb = thumbnailsCache[template.id];
-                
-                card.innerHTML = `
-                    <div class="document-preview">
-                        <div class="category-badge">${categoryName}</div>
-                        ${cachedThumb 
-                            ? `<img src="${cachedThumb}" alt="${template.name}" class="thumbnail-image" loading="lazy">`
-                            : getPlaceholderHTML(template)
-                        }
-                        <div class="pin-overlay">
-                            <div class="overlay-top">
-                                <button class="overlay-btn save ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSave('${template.id}', this)"><i class="${isSaved ? 'fas' : 'far'} fa-heart"></i></button>
-                                <button class="overlay-btn" onclick="event.stopPropagation(); shareDoc('${template.id}', '${template.name.replace(/'/g, "\\'")}')" title="Partager"><i class="fas fa-share"></i></button>
-                            </div>
-                            <div class="overlay-bottom">
-                                <h3 class="overlay-title">${template.name}</h3>
-                                <div class="overlay-price">${template.price.toLocaleString()} FCFA</div>
-                                <button class="btn-customize-overlay" onclick="event.stopPropagation(); window.location.href='editor.html?id=${template.id}'"><i class="fas fa-edit"></i> Personnaliser</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                card.addEventListener('click', () => window.location.href = `editor.html?id=${template.id}`);
-                grid.appendChild(card);
-            });
-
-            // Générer les miniatures en arrière-plan pour celles qui n'ont pas de cache
-            generateThumbnailsInBackground(docs);
-        }
-
-        async function generateThumbnailsInBackground(docs) {
-            for (const template of docs) {
-                if (thumbnailsCache[template.id]) continue; // Déjà en cache
-                
-                const thumbnail = await generateThumbnail(template);
-                if (thumbnail) {
-                    thumbnailsCache[template.id] = thumbnail;
-                    
-                    // Mettre à jour la carte si elle est encore visible
-                    const card = document.querySelector(`.pin-card[data-template-id="${template.id}"]`);
-                    if (card) {
-                        const preview = card.querySelector('.document-preview');
-                        const placeholder = preview.querySelector('.thumbnail-placeholder');
-                        if (placeholder) {
-                            const img = document.createElement('img');
-                            img.src = thumbnail;
-                            img.alt = template.name;
-                            img.className = 'thumbnail-image';
-                            img.style.opacity = '0';
-                            img.style.transition = 'opacity 0.5s ease';
-                            placeholder.replaceWith(img);
-                            // Fade in
-                            setTimeout(() => { img.style.opacity = '1'; }, 50);
-                        }
-                    }
-                }
-            }
-        }
-
-        // ============================================
-        // FILTRAGE ET RECHERCHE
-        // ============================================
-        let currentCat = 'all';
-        catPills.forEach(pill => {
-            pill.addEventListener('click', () => {
-                catPills.forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
-                currentCat = pill.dataset.cat;
-                filterAndRender();
-            });
-        });
-
-        searchInput.addEventListener('input', filterAndRender);
-
-        function filterAndRender() {
-            const query = searchInput.value.toLowerCase().trim();
-            const filtered = templatesRegistry.filter(doc => {
-                const matchCat = currentCat === 'all' || doc.category === currentCat;
-                const matchSearch = !query || doc.name.toLowerCase().includes(query) || doc.description.toLowerCase().includes(query);
-                return matchCat && matchSearch;
-            });
-            renderPins(filtered);
-        }
-
-        // ============================================
-        // ACTIONS GLOBALES
-        // ============================================
-        window.toggleSave = function(docId, btn) {
-            const icon = btn.querySelector('i');
-            let favorites = JSON.parse(localStorage.getItem('takidoc_favorites') || '[]');
-            if (btn.classList.contains('saved')) {
-                btn.classList.remove('saved');
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-                favorites = favorites.filter(id => id !== docId);
-            } else {
-                btn.classList.add('saved');
-                icon.classList.remove('far');
-                icon.classList.add('fas');
-                if (!favorites.includes(docId)) favorites.push(docId);
-                btn.style.transform = 'scale(1.3)';
-                setTimeout(() => btn.style.transform = '', 200);
-            }
-            localStorage.setItem('takidoc_favorites', JSON.stringify(favorites));
-        };
-
-        window.shareDoc = function(id, name) {
-            const url = window.location.origin + '/editor.html?id=' + id;
-            if (navigator.share) {
-                navigator.share({ title: name + ' - TakiDoc', url }).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(url).then(() => alert('Lien copié !'));
-            }
-        };
-
-        window.markAllRead = function(e) {
-            e.stopPropagation();
-            document.querySelectorAll('.notif-item.unread').forEach(item => item.classList.remove('unread'));
-        };
-
-        // Navigation recherche
-        if (navSearch) {
-            navSearch.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                setTimeout(() => searchInput.focus(), 300);
-            });
-        }
-
-        // ============================================
-        // INITIALISATION
-        // ============================================
-        document.addEventListener('DOMContentLoaded', async () => {
-            await checkAuth();
-            renderPins(templatesRegistry);
-        });
-    </script>
+    <script type="module" src="js/supabase-config.js"></script>
+    <script type="module" src="js/templates-registry.js"></script>
+    <script type="module" src="js/editor.js"></script>
 </body>
 </html>
+
+
+// ============================================
+// TAKIDOC - ÉDITEUR PLEIN ÉCRAN
+// L'équipe Meurphy - 2026
+// ============================================
+
+import { fetchTemplateById, createPendingPurchase } from './supabase-config.js';
+import { templatesRegistry } from './templates-registry.js';
+
+const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const editorState = {
+    template: null,
+    zoom: 0.95, // ← Réduit pour voir les côtés
+    primaryColor: '#0F172A',
+    photoDataUrl: null,
+    currentUser: null
+};
+
+// ============================================
+// UTILITAIRES
+// ============================================
+function showToast(message) {
+    const toast = document.getElementById('editorToast');
+    toast.innerHTML = `<i class="fas fa-check-circle" style="color: #10B981;"></i> ${message}`;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ============================================
+// AUTHENTIFICATION
+// ============================================
+async function checkAuth() {
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        editorState.currentUser = session?.user || null;
+        updateHeaderUI();
+    } catch (error) {
+        console.error('Erreur auth:', error);
+    }
+}
+
+function updateHeaderUI() {
+    const authContainer = document.getElementById('headerAuth');
+    
+    if (editorState.currentUser) {
+        const metaData = editorState.currentUser.user_metadata || {};
+        const fullName = metaData.full_name || editorState.currentUser.email || 'U';
+        const initials = fullName.split('@')[0].split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        
+        authContainer.innerHTML = `
+            <a href="profile.html" class="btn btn-secondary" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; justify-content: center;">
+                <span style="font-weight: 800; font-size: 0.85rem;">${initials}</span>
+            </a>
+        `;
+    } else {
+        authContainer.innerHTML = `
+            <a href="auth.html?action=signup" class="btn btn-secondary">
+                <i class="fas fa-user-plus"></i>
+                <span>S'inscrire</span>
+            </a>
+            <a href="auth.html?action=login" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Connexion</span>
+            </a>
+        `;
+    }
+}
+
+// ============================================
+// INITIALISATION
+// ============================================
+document.addEventListener('DOMContentLoaded', async () => {
+    await checkAuth();
+    
+    const templateId = new URLSearchParams(window.location.search).get('id');
+    
+    let template = templatesRegistry.find(t => t.id === templateId);
+    if (!template) template = await fetchTemplateById(templateId);
+    
+    if (!template) {
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    editorState.template = template;
+    initEditor();
+});
+
+function initEditor() {
+    const { template } = editorState;
+    
+    renderDocument();
+    buildSidebarFields(template.fields || []);
+    setupZoomControls();
+    setupSidebar();
+    setupSearch();
+    setupDownload();
+    
+    if (template.hasPhoto) {
+        document.getElementById('photo-section').style.display = 'block';
+        setupPhotoUpload();
+    }
+    if (template.hasColorPicker) {
+        document.getElementById('color-section').style.display = 'block';
+        setupColorPicker();
+    }
+    
+    setTimeout(() => {
+        updateZoomDisplay();
+        enableDirectEditing();
+        showToast("Document chargé - Cliquez sur 'Personnaliser' pour modifier");
+    }, 300);
+}
+
+// ============================================
+// RENDU DU DOCUMENT
+// ============================================
+function renderDocument() {
+    const canvas = document.getElementById('document-canvas');
+    const { template } = editorState;
+    
+    let styleTag = document.getElementById('template-style');
+    if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = 'template-style';
+        document.head.appendChild(styleTag);
+    }
+    styleTag.textContent = template.cssStyles || '';
+    
+    canvas.innerHTML = template.htmlStructure || '<p>Aperçu non disponible</p>';
+    
+    if (template.fields) {
+        template.fields.forEach(field => {
+            const el = document.getElementById(`field-${field.name}`);
+            if (el && field.default) el.textContent = field.default;
+        });
+    }
+    
+    if (template.hasPhoto) {
+        const photoContainer = document.getElementById('doc-photo');
+        if (photoContainer && !photoContainer.querySelector('img')) {
+            photoContainer.innerHTML = `<span class="cv-photo-placeholder" style="font-size: 2rem; font-weight: 700; color: white;">TD</span>`;
+        }
+    }
+}
+
+// ============================================
+// SIDEBAR
+// ============================================
+function setupSidebar() {
+    const btn = document.getElementById('btn-customize');
+    const sidebar = document.getElementById('customizationSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const close = document.getElementById('sidebarClose');
+    
+    function openSidebar() {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        btn.innerHTML = '<i class="fas fa-times"></i><span>Fermer</span>';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+    }
+    
+    function closeSidebar() {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        btn.innerHTML = '<i class="fas fa-sliders-h"></i><span>Personnaliser</span>';
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-primary');
+    }
+    
+    btn.addEventListener('click', () => {
+        if (sidebar.classList.contains('active')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+    
+    overlay.addEventListener('click', closeSidebar);
+    close.addEventListener('click', closeSidebar);
+}
+
+// ============================================
+// CHAMPS
+// ============================================
+function buildSidebarFields(fields) {
+    const container = document.getElementById('fields-container');
+    container.innerHTML = '';
+    
+    fields.forEach(field => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'form-field';
+        
+        const label = document.createElement('label');
+        label.textContent = field.label;
+        wrapper.appendChild(label);
+        
+        const input = document.createElement(field.type === 'textarea' ? 'textarea' : 'input');
+        
+        if (field.type !== 'textarea') {
+            input.type = field.type === 'email' ? 'email' : field.type === 'tel' ? 'tel' : 'text';
+        }
+        
+        input.id = `input-${field.name}`;
+        const defaultValue = field.default || '';
+        
+        if (field.type === 'textarea') {
+            input.textContent = defaultValue;
+            input.rows = 3;
+        } else {
+            input.value = defaultValue;
+        }
+        
+        input.addEventListener('input', (e) => {
+            const targetEl = document.getElementById(`field-${field.name}`);
+            if (targetEl) targetEl.textContent = e.target.value;
+        });
+        
+        wrapper.appendChild(input);
+        container.appendChild(wrapper);
+    });
+}
+
+// ============================================
+// ZOOM
+// ============================================
+function updateZoomDisplay() {
+    const wrapper = document.getElementById('documentWrapper');
+    if (!wrapper) return;
+    
+    wrapper.style.transform = `scale(${editorState.zoom})`;
+    
+    const zoomLevel = document.getElementById('zoom-level');
+    if (zoomLevel) {
+        zoomLevel.textContent = `${Math.round(editorState.zoom * 100)}%`;
+    }
+}
+
+function setupZoomControls() {
+    document.getElementById('btn-zoom-in')?.addEventListener('click', () => {
+        editorState.zoom = Math.min(3, +(editorState.zoom + 0.1).toFixed(2));
+        updateZoomDisplay();
+    });
+    
+    document.getElementById('btn-zoom-out')?.addEventListener('click', () => {
+        editorState.zoom = Math.max(0.2, +(editorState.zoom - 0.1).toFixed(2));
+        updateZoomDisplay();
+    });
+    
+    document.getElementById('btn-zoom-reset')?.addEventListener('click', () => {
+        editorState.zoom = 0.95;
+        updateZoomDisplay();
+    });
+}
+
+// ============================================
+// RECHERCHE (REDIRECTION VERS INDEX)
+// ============================================
+function setupSearch() {
+    const form = document.getElementById('searchForm');
+    const input = document.getElementById('headerSearch');
+    
+    if (!form || !input) return;
+    
+    // Soumission du formulaire (Entrée)
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = input.value.trim();
+        if (query.length >= 2) {
+            window.location.href = `index.html?q=${encodeURIComponent(query)}`;
+        }
+    });
+    
+    // Recherche en temps réel (optionnel - affiche suggestions)
+    input.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (query.length < 2) return;
+        
+        const results = templatesRegistry.filter(t => 
+            t.name.toLowerCase().includes(query) || 
+            t.category.toLowerCase().includes(query)
+        );
+        
+        // Log pour debug
+        console.log('Suggestions:', results.map(r => r.name));
+    });
+}
+
+// ============================================
+// TÉLÉCHARGEMENT
+// ============================================
+function setupDownload() {
+    const btn = document.getElementById('btn-download');
+    
+    btn.addEventListener('click', async () => {
+        if (!editorState.currentUser) {
+            // Afficher modal non-bloquante
+            document.getElementById('loginModal').classList.add('active');
+            
+            // Attendre fermeture
+            await new Promise(resolve => {
+                const closeModal = () => {
+                    document.getElementById('loginModal').classList.remove('active');
+                    document.getElementById('loginModalClose').removeEventListener('click', closeModal);
+                    resolve();
+                };
+                document.getElementById('loginModalClose').addEventListener('click', closeModal);
+            });
+        }
+        
+        await generatePDF();
+    });
+}
+
+async function generatePDF() {
+    const canvas = document.getElementById('document-canvas');
+    
+    try {
+        const editableElements = canvas.querySelectorAll('[contenteditable="true"]');
+        editableElements.forEach(el => el.contentEditable = false);
+        
+        const prevZoom = editorState.zoom;
+        editorState.zoom = 1.0;
+        updateZoomDisplay();
+        await new Promise(r => setTimeout(r, 300));
+
+        const canvasImage = await html2canvas(canvas, { 
+            scale: 2, 
+            useCORS: true, 
+            backgroundColor: '#ffffff' 
+        });
+        
+        const pdf = new jspdf.jsPDF({ 
+            orientation: 'portrait', 
+            unit: 'mm', 
+            format: 'a4' 
+        });
+        
+        pdf.addImage(
+            canvasImage.toDataURL('image/jpeg', 0.98), 
+            'JPEG', 
+            0, 0, 
+            pdf.internal.pageSize.getWidth(), 
+            pdf.internal.pageSize.getHeight()
+        );
+        
+        pdf.save(`TakiDoc_${editorState.template.id}_${Date.now()}.pdf`);
+
+        editableElements.forEach(el => el.contentEditable = true);
+        editorState.zoom = prevZoom;
+        updateZoomDisplay();
+        
+        showToast('PDF téléchargé avec succès !');
+    } catch (e) {
+        console.error(e);
+        alert('Erreur lors de la génération du PDF');
+    }
+}
+
+// ============================================
+// ÉDITION DIRECTE
+// ============================================
+function enableDirectEditing() {
+    const canvas = document.getElementById('document-canvas');
+    if (!canvas) return;
+
+    const treeWalker = document.createTreeWalker(
+        canvas,
+        NodeFilter.SHOW_TEXT,
+        {
+            acceptNode: function(node) {
+                if (!node.textContent.trim()) return NodeFilter.FILTER_REJECT;
+                const parent = node.parentElement;
+                if (parent && (parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')) {
+                    return NodeFilter.FILTER_REJECT;
+                }
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        }
+    );
+
+    let textNode;
+    while (textNode = treeWalker.nextNode()) {
+        const parent = textNode.parentElement;
+        if (!parent) continue;
+        
+        const parentText = parent.textContent.trim();
+        if (parentText.includes('TakiDoc') && parentText.includes('onrender.com')) {
+            parent.contentEditable = false;
+            parent.classList.add('takidoc-footer-protected');
+            continue;
+        }
+        
+        if (parent.children.length > 5) continue;
+        
+        parent.contentEditable = true;
+        parent.classList.add('direct-editable');
+        
+        if (parent.id && parent.id.startsWith('field-')) {
+            const fieldName = parent.id.replace('field-', '');
+            const sidebarInput = document.getElementById(`input-${fieldName}`);
+            
+            parent.addEventListener('input', () => {
+                if (sidebarInput) sidebarInput.value = parent.textContent;
+            });
+        }
+    }
+}
+
+// ============================================
+// PHOTO & COULEUR
+// ============================================
+function setupPhotoUpload() {
+    const input = document.getElementById('photo-input');
+    input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file || !file.type.startsWith('image/')) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            editorState.photoDataUrl = event.target.result;
+            const container = document.getElementById('doc-photo');
+            if (container) {
+                container.innerHTML = `<img src="${editorState.photoDataUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            }
+            document.getElementById('photo-label').textContent = '✓ Photo ajoutée';
+            document.getElementById('photo-remove').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('photo-remove').addEventListener('click', () => {
+        editorState.photoDataUrl = null;
+        input.value = '';
+        const container = document.getElementById('doc-photo');
+        if (container) container.innerHTML = `<span class="cv-photo-placeholder" style="font-size:2rem; font-weight:700; color:white;">TD</span>`;
+        document.getElementById('photo-label').textContent = 'Ajouter une photo';
+        document.getElementById('photo-remove').style.display = 'none';
+    });
+}
+
+function setupColorPicker() {
+    const picker = document.getElementById('color-picker');
+    const hexDisplay = document.getElementById('color-hex');
+    
+    const applyColor = (color) => {
+        editorState.primaryColor = color;
+        picker.value = color;
+        if (hexDisplay) hexDisplay.textContent = color.toUpperCase();
+        document.getElementById('document-canvas').style.setProperty('--doc-primary-color', color);
+        updateColorPresets();
+    };
+    
+    picker.addEventListener('input', (e) => applyColor(e.target.value));
+    
+    document.querySelectorAll('.color-preset').forEach(preset => {
+        preset.addEventListener('click', () => applyColor(preset.dataset.color));
+    });
+    
+    applyColor(editorState.primaryColor);
+}
+
+function updateColorPresets() {
+    document.querySelectorAll('.color-preset').forEach(p => {
+        p.classList.toggle('active', p.dataset.color === editorState.primaryColor);
+    });
+}

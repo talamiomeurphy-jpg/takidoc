@@ -1,55 +1,91 @@
+
+
+
 // ============================================
-// TAKIDOC - MOTEUR D'ÉDITION COMPLET (VERSION ULTIME UNIVERSAL)
+// TAKIDOC - ÉDITEUR PLEIN ÉCRAN
 // L'équipe Meurphy - 2026
 // ============================================
 
 import { fetchTemplateById, createPendingPurchase } from './supabase-config.js';
 import { templatesRegistry } from './templates-registry.js';
 
-// ============================================
-// ÉTAT GLOBAL DE L'ÉDITEUR
-// ============================================
+const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const editorState = {
     template: null,
-    zoom: window.innerWidth <= 768 ? 0.35 : 1.0,
+    zoom: window.innerWidth <= 768 ? 0.45 : 0.95, // ← 45% sur mobile, 95% sur desktop
     primaryColor: '#0F172A',
-    photoDataUrl: null
+    photoDataUrl: null,
+    currentUser: null
 };
-
 // ============================================
-// UTILITAIRE - TOAST NOTIFICATION
+// UTILITAIRES
 // ============================================
-function showToast(message, duration = 5000) {
-    const oldToast = document.querySelector('.editor-toast');
-    if (oldToast) oldToast.remove();
-
-    const toast = document.createElement('div');
-    toast.className = 'editor-toast';
-    toast.innerHTML = `<i class="fas fa-lightbulb" style="color: #FF6B35; margin-right: 8px;"></i> ${message}`;
-    document.body.appendChild(toast);
-
-    requestAnimationFrame(() => {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateY(0)';
-    });
-
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(20px)';
-        setTimeout(() => toast.remove(), 400);
-    }, duration);
+function showToast(message) {
+    const toast = document.getElementById('editorToast');
+    toast.innerHTML = `<i class="fas fa-check-circle" style="color: #10B981;"></i> ${message}`;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
 // ============================================
-// 1. INITIALISATION PRINCIPALE
+// AUTHENTIFICATION
+// ============================================
+async function checkAuth() {
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        editorState.currentUser = session?.user || null;
+        updateHeaderUI();
+    } catch (error) {
+        console.error('Erreur auth:', error);
+    }
+}
+
+function updateHeaderUI() {
+    const authContainer = document.getElementById('headerAuth');
+    
+    if (editorState.currentUser) {
+        const metaData = editorState.currentUser.user_metadata || {};
+        const fullName = metaData.full_name || editorState.currentUser.email || 'U';
+        const initials = fullName.split('@')[0].split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        
+        authContainer.innerHTML = `
+            <a href="profile.html" class="btn btn-secondary" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; justify-content: center;">
+                <span style="font-weight: 800; font-size: 0.85rem;">${initials}</span>
+            </a>
+        `;
+    } else {
+        authContainer.innerHTML = `
+            <a href="auth.html?action=signup" class="btn btn-secondary">
+                <i class="fas fa-user-plus"></i>
+                <span>S'inscrire</span>
+            </a>
+            <a href="auth.html?action=login" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Connexion</span>
+            </a>
+        `;
+    }
+}
+
+// ============================================
+// INITIALISATION
 // ============================================
 document.addEventListener('DOMContentLoaded', async () => {
+    await checkAuth();
+    
     const templateId = new URLSearchParams(window.location.search).get('id');
     
     let template = templatesRegistry.find(t => t.id === templateId);
     if (!template) template = await fetchTemplateById(templateId);
     
-    if (!template) return showError();
+    if (!template) {
+        window.location.href = 'index.html';
+        return;
+    }
     
     editorState.template = template;
     initEditor();
@@ -58,12 +94,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 function initEditor() {
     const { template } = editorState;
     
-    document.getElementById('editor-loading').style.display = 'none';
-    document.getElementById('editor-interface').style.display = 'grid';
+    document.getElementById('docNameText').textContent = template.name;
+    document.getElementById('docCategoryText').textContent = template.category ? `• ${template.category}` : '';
     
-    document.getElementById('doc-title').textContent = template.name;
-    document.getElementById('doc-category').textContent = template.category || 'Document';
-    document.getElementById('doc-price').textContent = `${template.price || 0} FCFA`;
+    renderDocument();
+    buildSidebarFields(template.fields || []);
+    setupZoomControls();
+    setupSidebar();
+    setupSearch();
+    setupDownload();
+    setupMobileFABs(); // ← NOUVEAU : Configure les boutons flottants
     
     if (template.hasPhoto) {
         document.getElementById('photo-section').style.display = 'block';
@@ -74,21 +114,56 @@ function initEditor() {
         setupColorPicker();
     }
     
-    renderDocument();
-    buildSidebarFields(template.fields || []);
-    setupZoomControls();
-    setupActions();
-    
     setTimeout(() => {
         updateZoomDisplay();
-        applyMobileZoom();
         enableDirectEditing();
-        showToast("✏️ Cliquez sur n'importe quel texte pour le modifier");
-    }, 400);
+        showToast("Document chargé");
+    }, 300);
 }
 
 // ============================================
-// 2. RENDU DU DOCUMENT
+// BOUTONS FLOTTANTS MOBILE
+// ============================================
+function setupMobileFABs() {
+    const customizeBtn = document.getElementById('mobileBtnCustomize');
+    const downloadBtn = document.getElementById('mobileBtnDownload');
+    const desktopCustomizeBtn = document.getElementById('btn-customize');
+    const desktopDownloadBtn = document.getElementById('btn-download');
+    
+    // ✅ Utilise 'click' avec preventDefault pour éviter les conflits
+    if (customizeBtn && desktopCustomizeBtn) {
+        customizeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            desktopCustomizeBtn.click();
+        });
+        
+        // ✅ Support tactile explicite
+        customizeBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            desktopCustomizeBtn.click();
+        });
+    }
+    
+    if (downloadBtn && desktopDownloadBtn) {
+        downloadBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            desktopDownloadBtn.click();
+        });
+        
+        // ✅ Support tactile explicite
+        downloadBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            desktopDownloadBtn.click();
+        });
+    }
+    
+    console.log('✅ Boutons flottants mobiles configurés');
+}
+
+// ============================================
+// RENDU DU DOCUMENT
 // ============================================
 function renderDocument() {
     const canvas = document.getElementById('document-canvas');
@@ -120,7 +195,44 @@ function renderDocument() {
 }
 
 // ============================================
-// 3. CONSTRUCTION DYNAMIQUE DE LA SIDEBAR
+// SIDEBAR
+// ============================================
+function setupSidebar() {
+    const btn = document.getElementById('btn-customize');
+    const sidebar = document.getElementById('customizationSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const close = document.getElementById('sidebarClose');
+    
+    function openSidebar() {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        btn.innerHTML = '<i class="fas fa-times"></i><span>Fermer</span>';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+    }
+    
+    function closeSidebar() {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        btn.innerHTML = '<i class="fas fa-sliders-h"></i><span>Personnaliser</span>';
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-primary');
+    }
+    
+    btn.addEventListener('click', () => {
+        if (sidebar.classList.contains('active')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+    
+    overlay.addEventListener('click', closeSidebar);
+    close.addEventListener('click', closeSidebar);
+}
+
+// ============================================
+// CHAMPS
 // ============================================
 function buildSidebarFields(fields) {
     const container = document.getElementById('fields-container');
@@ -129,11 +241,9 @@ function buildSidebarFields(fields) {
     fields.forEach(field => {
         const wrapper = document.createElement('div');
         wrapper.className = 'form-field';
-        wrapper.style.marginBottom = '16px';
         
         const label = document.createElement('label');
         label.textContent = field.label;
-        label.style.cssText = 'display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600;';
         wrapper.appendChild(label);
         
         const input = document.createElement(field.type === 'textarea' ? 'textarea' : 'input');
@@ -152,17 +262,6 @@ function buildSidebarFields(fields) {
             input.value = defaultValue;
         }
         
-        input.style.cssText = 'width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; transition: all 0.2s; font-family: inherit;';
-        
-        input.addEventListener('focus', () => {
-            input.style.borderColor = 'var(--primary)';
-            input.style.boxShadow = '0 0 0 3px rgba(255,107,53,0.1)';
-        });
-        input.addEventListener('blur', () => {
-            input.style.borderColor = 'var(--border)';
-            input.style.boxShadow = 'none';
-        });
-        
         input.addEventListener('input', (e) => {
             const targetEl = document.getElementById(`field-${field.name}`);
             if (targetEl) targetEl.textContent = e.target.value;
@@ -174,33 +273,162 @@ function buildSidebarFields(fields) {
 }
 
 // ============================================
-// 4. ÉDITION DIRECTE UNIVERSELLE (TreeWalker)
+// ZOOM
+// ============================================
+function updateZoomDisplay() {
+    const wrapper = document.getElementById('documentWrapper');
+    if (!wrapper) return;
+    
+    wrapper.style.transform = `scale(${editorState.zoom})`;
+    
+    const zoomLevel = document.getElementById('zoom-level');
+    if (zoomLevel) {
+        zoomLevel.textContent = `${Math.round(editorState.zoom * 100)}%`;
+    }
+}
+
+
+
+// Dans setupZoomControls(), ajuste le reset :
+function setupZoomControls() {
+    document.getElementById('btn-zoom-in')?.addEventListener('click', () => {
+        editorState.zoom = Math.min(3, +(editorState.zoom + 0.1).toFixed(2));
+        updateZoomDisplay();
+    });
+    
+    document.getElementById('btn-zoom-out')?.addEventListener('click', () => {
+        editorState.zoom = Math.max(0.2, +(editorState.zoom - 0.1).toFixed(2));
+        updateZoomDisplay();
+    });
+    
+    document.getElementById('btn-zoom-reset')?.addEventListener('click', () => {
+        // Reset intelligent selon la taille d'écran
+        editorState.zoom = window.innerWidth <= 768 ? 0.45 : 0.95;
+        updateZoomDisplay();
+    });
+}
+
+// ============================================
+// RECHERCHE (REDIRECTION VERS INDEX)
+// ============================================
+function setupSearch() {
+    const form = document.getElementById('searchForm');
+    const input = document.getElementById('headerSearch');
+    
+    if (!form || !input) return;
+    
+    // Soumission du formulaire (Entrée)
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = input.value.trim();
+        if (query.length >= 2) {
+            window.location.href = `index.html?q=${encodeURIComponent(query)}`;
+        }
+    });
+    
+    // Recherche en temps réel (optionnel - affiche suggestions)
+    input.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (query.length < 2) return;
+        
+        const results = templatesRegistry.filter(t => 
+            t.name.toLowerCase().includes(query) || 
+            t.category.toLowerCase().includes(query)
+        );
+        
+        // Log pour debug
+        console.log('Suggestions:', results.map(r => r.name));
+    });
+}
+
+// ============================================
+// TÉLÉCHARGEMENT
+// ============================================
+function setupDownload() {
+    const btn = document.getElementById('btn-download');
+    
+    btn.addEventListener('click', async () => {
+        if (!editorState.currentUser) {
+            // Afficher modal non-bloquante
+            document.getElementById('loginModal').classList.add('active');
+            
+            // Attendre fermeture
+            await new Promise(resolve => {
+                const closeModal = () => {
+                    document.getElementById('loginModal').classList.remove('active');
+                    document.getElementById('loginModalClose').removeEventListener('click', closeModal);
+                    resolve();
+                };
+                document.getElementById('loginModalClose').addEventListener('click', closeModal);
+            });
+        }
+        
+        await generatePDF();
+    });
+}
+
+async function generatePDF() {
+    const canvas = document.getElementById('document-canvas');
+    
+    try {
+        const editableElements = canvas.querySelectorAll('[contenteditable="true"]');
+        editableElements.forEach(el => el.contentEditable = false);
+        
+        const prevZoom = editorState.zoom;
+        editorState.zoom = 1.0;
+        updateZoomDisplay();
+        await new Promise(r => setTimeout(r, 300));
+
+        const canvasImage = await html2canvas(canvas, { 
+            scale: 2, 
+            useCORS: true, 
+            backgroundColor: '#ffffff' 
+        });
+        
+        const pdf = new jspdf.jsPDF({ 
+            orientation: 'portrait', 
+            unit: 'mm', 
+            format: 'a4' 
+        });
+        
+        pdf.addImage(
+            canvasImage.toDataURL('image/jpeg', 0.98), 
+            'JPEG', 
+            0, 0, 
+            pdf.internal.pageSize.getWidth(), 
+            pdf.internal.pageSize.getHeight()
+        );
+        
+        pdf.save(`TakiDoc_${editorState.template.id}_${Date.now()}.pdf`);
+
+        editableElements.forEach(el => el.contentEditable = true);
+        editorState.zoom = prevZoom;
+        updateZoomDisplay();
+        
+        showToast('PDF téléchargé avec succès !');
+    } catch (e) {
+        console.error(e);
+        alert('Erreur lors de la génération du PDF');
+    }
+}
+
+// ============================================
+// ÉDITION DIRECTE
 // ============================================
 function enableDirectEditing() {
     const canvas = document.getElementById('document-canvas');
-    if (!canvas) {
-        console.error('Canvas non trouvé');
-        return;
-    }
+    if (!canvas) return;
 
-    let editableCount = 0;
-    const processedParents = new Set(); // Éviter de traiter le même parent 2 fois
-
-    //  TREEWALKER : parcourt TOUS les nœuds texte du document
     const treeWalker = document.createTreeWalker(
         canvas,
         NodeFilter.SHOW_TEXT,
         {
             acceptNode: function(node) {
-                // Ignorer les nœuds vides ou uniquement des espaces
                 if (!node.textContent.trim()) return NodeFilter.FILTER_REJECT;
-                
-                // Ignorer les nœuds dans les scripts/styles
                 const parent = node.parentElement;
                 if (parent && (parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')) {
                     return NodeFilter.FILTER_REJECT;
                 }
-                
                 return NodeFilter.FILTER_ACCEPT;
             }
         }
@@ -209,113 +437,33 @@ function enableDirectEditing() {
     let textNode;
     while (textNode = treeWalker.nextNode()) {
         const parent = textNode.parentElement;
+        if (!parent) continue;
         
-        if (!parent || processedParents.has(parent)) continue;
-        
-        // 🔒 Protéger le footer TakiDoc
         const parentText = parent.textContent.trim();
         if (parentText.includes('TakiDoc') && parentText.includes('onrender.com')) {
             parent.contentEditable = false;
             parent.classList.add('takidoc-footer-protected');
-            parent.setAttribute('data-protected', 'true');
-            processedParents.add(parent);
             continue;
         }
         
-        // Ignorer les conteneurs trop complexes (qui casseraient le layout)
         if (parent.children.length > 5) continue;
         
-        // Ignorer les éléments déjà non-éditables explicitement
-        if (parent.getAttribute('data-protected') === 'true') continue;
-        
-        // ✅ Rendre éditable
         parent.contentEditable = true;
         parent.classList.add('direct-editable');
-        parent.style.cursor = 'text';
-        parent.style.outline = 'none';
         
-        // Effet visuel au survol
-        parent.addEventListener('mouseenter', () => {
-            if (parent.getAttribute('data-protected') === 'true') return;
-            parent.style.backgroundColor = 'rgba(255,107,53,0.08)';
-            parent.style.border = '1px dashed var(--primary)';
-        });
-        
-        parent.addEventListener('mouseleave', () => {
-            if (document.activeElement !== parent) {
-                parent.style.backgroundColor = '';
-                parent.style.border = '';
-            }
-        });
-        
-        parent.addEventListener('blur', () => {
-            parent.style.backgroundColor = '';
-            parent.style.border = '';
-        });
-        
-        // Synchronisation BIDIRECTIONNELLE : Document -> Sidebar
         if (parent.id && parent.id.startsWith('field-')) {
             const fieldName = parent.id.replace('field-', '');
             const sidebarInput = document.getElementById(`input-${fieldName}`);
             
             parent.addEventListener('input', () => {
-                if (sidebarInput) {
-                    sidebarInput.value = parent.textContent;
-                }
+                if (sidebarInput) sidebarInput.value = parent.textContent;
             });
         }
-        
-        processedParents.add(parent);
-        editableCount++;
-    }
-    
-    console.log(`✅ Édition universelle activée sur ${editableCount} éléments`);
-}
-
-// ============================================
-// 5. ZOOM RESPONSIVE
-// ============================================
-function applyMobileZoom() {
-    const canvas = document.getElementById('document-canvas');
-    const container = document.getElementById('previewContainer');
-    
-    if (!canvas || !container) return;
-    
-    if (window.innerWidth <= 768) {
-        const containerWidth = container.clientWidth - 20;
-        const documentWidth = 794;
-        const autoZoom = Math.min(1, containerWidth / documentWidth);
-        
-        editorState.zoom = autoZoom;
-        updateZoomDisplay();
-        
-        container.style.justifyContent = 'center';
-        container.style.alignItems = 'flex-start';
-        
-        console.log(`📱 Zoom mobile automatique : ${autoZoom}`);
-    } else {
-        editorState.zoom = 1.0;
-        updateZoomDisplay();
-        container.style.justifyContent = 'center';
-        container.style.alignItems = 'flex-start';
-    }
-}
-
-function updateZoomDisplay() {
-    const canvas = document.getElementById('document-canvas');
-    if (!canvas) return;
-    
-    canvas.style.transform = `scale(${editorState.zoom})`;
-    canvas.style.transformOrigin = 'top center';
-    
-    const zoomLevel = document.getElementById('zoom-level');
-    if (zoomLevel) {
-        zoomLevel.textContent = `${Math.round(editorState.zoom * 100)}%`;
     }
 }
 
 // ============================================
-// 6. FONCTIONNALITÉS SPÉCIALES
+// PHOTO & COULEUR
 // ============================================
 function setupPhotoUpload() {
     const input = document.getElementById('photo-input');
@@ -371,175 +519,4 @@ function updateColorPresets() {
     document.querySelectorAll('.color-preset').forEach(p => {
         p.classList.toggle('active', p.dataset.color === editorState.primaryColor);
     });
-}
-
-// ============================================
-// 7. CONTRÔLES DE ZOOM
-// ============================================
-function setupZoomControls() {
-    document.getElementById('btn-zoom-in')?.addEventListener('click', () => {
-        editorState.zoom = Math.min(2, +(editorState.zoom + 0.1).toFixed(2));
-        updateZoomDisplay();
-    });
-    
-    document.getElementById('btn-zoom-out')?.addEventListener('click', () => {
-        editorState.zoom = Math.max(0.1, +(editorState.zoom - 0.1).toFixed(2));
-        updateZoomDisplay();
-    });
-    
-    document.getElementById('btn-zoom-reset')?.addEventListener('click', () => {
-        editorState.zoom = window.innerWidth <= 768 ? 0.35 : 1.0;
-        updateZoomDisplay();
-    });
-    
-    window.addEventListener('resize', () => {
-        applyMobileZoom();
-    });
-}
-
-// ============================================
-// 8. ACTIONS (PDF, PAIEMENT)
-// ============================================
-function setupActions() {
-    // --- GÉNÉRATION PDF ---
-    document.getElementById('btn-download')?.addEventListener('click', async () => {
-        const btn = document.getElementById('btn-download');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Génération...';
-        btn.disabled = true;
-
-        try {
-            const canvas = document.getElementById('document-canvas');
-            
-            // Désactiver temporairement l'édition pour une capture propre
-            const editableElements = canvas.querySelectorAll('[contenteditable="true"]');
-            editableElements.forEach(el => el.contentEditable = false);
-            
-            const prevZoom = editorState.zoom;
-            editorState.zoom = 1.0;
-            updateZoomDisplay();
-            await new Promise(r => setTimeout(r, 300));
-
-            const canvasImage = await html2canvas(canvas, { 
-                scale: 2, 
-                useCORS: true, 
-                backgroundColor: '#ffffff' 
-            });
-            const pdf = new jspdf.jsPDF({ 
-                orientation: 'portrait', 
-                unit: 'mm', 
-                format: 'a4' 
-            });
-            pdf.addImage(
-                canvasImage.toDataURL('image/jpeg', 0.98), 
-                'JPEG', 
-                0, 0, 
-                pdf.internal.pageSize.getWidth(), 
-                pdf.internal.pageSize.getHeight()
-            );
-            pdf.save(`TakiDoc_${editorState.template.id}_${Date.now()}.pdf`);
-
-            // Réactiver l'édition
-            editableElements.forEach(el => el.contentEditable = true);
-            editorState.zoom = prevZoom;
-            updateZoomDisplay();
-        } catch (e) {
-            console.error(e);
-            alert('Erreur lors de la génération du PDF');
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    });
-
-    // --- MODAL DE PAIEMENT ---
-    const modal = document.getElementById('payment-modal');
-    const openModal = () => {
-        document.getElementById('payment-doc-name').textContent = editorState.template.name;
-        document.getElementById('payment-amount').textContent = `${editorState.template.price || 0} FCFA`;
-        modal.style.display = 'flex';
-    };
-    
-    document.getElementById('btn-buy')?.addEventListener('click', openModal);
-    document.getElementById('btn-buy-sidebar')?.addEventListener('click', openModal);
-    document.getElementById('modal-close')?.addEventListener('click', () => modal.style.display = 'none');
-    modal?.addEventListener('click', (e) => { 
-        if (e.target === modal) modal.style.display = 'none'; 
-    });
-
-    document.getElementById('payment-form')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const phone = document.getElementById('pay-phone').value;
-        const email = document.getElementById('pay-email').value;
-        if (!phone || !email) return alert('Veuillez remplir tous les champs');
-        alert(`Redirection vers le paiement sécurisé de ${editorState.template.price} FCFA...`);
-    });
-}
-
-// Animation d'entrée des sections sidebar
-function animateSidebarSections() {
-    const sections = document.querySelectorAll('.sidebar-section');
-    sections.forEach((section, index) => {
-        section.style.opacity = '0';
-        section.style.transform = 'translateY(20px)';
-        setTimeout(() => {
-            section.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-            section.style.opacity = '1';
-            section.style.transform = 'translateY(0)';
-        }, index * 100);
-    });
-}
-
-// Effet de ripple sur les boutons
-function addRippleEffect(button) {
-    button.addEventListener('click', function(e) {
-        const ripple = document.createElement('span');
-        const rect = this.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
-        
-        ripple.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            left: ${x}px;
-            top: ${y}px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple 0.6s ease-out;
-            pointer-events: none;
-        `;
-        
-        this.appendChild(ripple);
-        setTimeout(() => ripple.remove(), 600);
-    });
-}
-
-// Ajoute l'animation ripple au CSS
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes ripple {
-        to {
-            transform: scale(4);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
-
-// Applique l'effet à tous les boutons
-document.querySelectorAll('.btn').forEach(addRippleEffect);
-
-// Appel dans initEditor()
-setTimeout(() => {
-    animateSidebarSections();
-}, 100);
-// ============================================
-// 9. GESTION D'ERREUR
-// ============================================
-function showError() {
-    document.getElementById('editor-loading').style.display = 'none';
-    document.getElementById('editor-error').style.display = 'flex';
 }
