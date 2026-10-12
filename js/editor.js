@@ -388,6 +388,71 @@ async function generatePDF() {
         );
         
         const filename = `TakiDoc_${editorState.template.id}_${Date.now()}.pdf`;
+        
+        // ============================================
+        // ENREGISTREMENT DANS SUPABASE
+        // ============================================
+        if (editorState.currentUser) {
+            try {
+                // 1. Créer une entrée dans purchases
+                const { data: purchaseData, error: purchaseError } = await supabase
+                    .from('purchases')
+                    .insert({
+                        user_id: editorState.currentUser.id,
+                        template_id: editorState.template.id,
+                        amount_paid: editorState.template.price || 0,
+                        currency: 'XAF',
+                        payment_method: 'free_download',
+                        payment_status: 'completed',
+                        payment_reference: `FREE_${Date.now()}`,
+                        guest_email: editorState.currentUser.email,
+                        guest_phone: null
+                    })
+                    .select()
+                    .single();
+                
+                if (purchaseError) {
+                    console.error('Erreur création purchase:', purchaseError);
+                } else {
+                    // 2. Récupérer les données du document
+                    const documentData = {};
+                    const fields = editorState.template.fields || [];
+                    
+                    fields.forEach(field => {
+                        const element = document.getElementById(`field-${field.name}`);
+                        if (element) {
+                            documentData[field.name] = element.textContent;
+                        }
+                    });
+                    
+                    // Ajouter les métadonnées
+                    documentData.generatedAt = new Date().toISOString();
+                    documentData.templateName = editorState.template.name;
+                    documentData.category = editorState.template.category;
+                    
+                    // 3. Créer une entrée dans user_documents
+                    const { error: docError } = await supabase
+                        .from('user_documents')
+                        .insert({
+                            purchase_id: purchaseData.id,
+                            user_id: editorState.currentUser.id,
+                            template_id: editorState.template.id,
+                            document_data: documentData,
+                            generated_pdf_url: null // On régénère à la demande
+                        });
+                    
+                    if (docError) {
+                        console.error('Erreur création user_document:', docError);
+                    } else {
+                        console.log('✅ Document enregistré dans l\'historique');
+                    }
+                }
+            } catch (dbError) {
+                console.error('Erreur base de données:', dbError);
+            }
+        }
+        
+        // Télécharger le PDF
         pdf.save(filename);
         
         // Réactiver l'édition
@@ -397,12 +462,12 @@ async function generatePDF() {
         
         showToast('PDF téléchargé avec succès !');
         console.log('✅ PDF généré:', filename);
+        
     } catch (e) {
         console.error('Erreur PDF:', e);
         showToast('Erreur lors de la génération du PDF');
     }
 }
-
 // ============================================
 // BOUTONS FLOTTANTS MOBILE
 // ============================================

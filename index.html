@@ -2716,358 +2716,760 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
-    <script type="module">
-        import { templatesRegistry } from './js/templates-registry.js';
+   
+<script type="module">
+import { templatesRegistry } from './js/templates-registry.js';
 
-        // ============================================
-        // ÉLÉMENTS DU DOM
-        // ============================================
-        const grid = document.getElementById('masonryGrid');
-        const catPills = document.querySelectorAll('.cat-pill');
-        const catalogueStatus = document.getElementById('catalogueStatus');
-        const catalogueTitle = document.getElementById('catalogueTitle');
+// =============================================
+// TAKIDOC — CATALOGUE RAPIDE + FAVORIS SUPABASE
+// =============================================
 
-        let currentCat = 'all';
-        let thumbnailsCache = {};
+const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
 
-        // ============================================
-        // CONSTANTES
-        // ============================================
-        const categoryNames = { 
-            'cv': 'CV', 
-            'lettre': 'Lettre', 
-            'contrat': 'Contrat', 
-            'commercial': 'Commercial', 
-            'attestation': 'Attestation', 
-            'administratif': 'Administratif',
-            'facture': 'Facture',
-            'devis': 'Devis',
-            'rapport': 'Rapport',
-            'procuration': 'Procuration',
-            'declaration': 'Déclaration',
-            'certificat': 'Certificat'
-        };
-        
-        const categoryIcons = { 
-            'cv': 'fa-user-tie', 
-            'lettre': 'fa-envelope-open-text', 
-            'contrat': 'fa-file-contract', 
-            'commercial': 'fa-file-invoice', 
-            'attestation': 'fa-certificate', 
-            'administratif': 'fa-building',
-            'facture': 'fa-file-invoice-dollar',
-            'devis': 'fa-file-invoice',
-            'rapport': 'fa-file-alt',
-            'procuration': 'fa-handshake',
-            'declaration': 'fa-file-signature',
-            'certificat': 'fa-certificate'
-        };
+// Utilise ici ta clé publique anon/publishable actuelle.
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
 
-        // ============================================
-        // PLACEHOLDERS STYLISÉS
-        // ============================================
-        function getPlaceholderHTML(template) {
-            const icon = categoryIcons[template.category] || 'fa-file-alt';
-            const name = template.name.toUpperCase();
-            return `
-                <div class="thumbnail-placeholder">
-                    <div class="placeholder-icon"><i class="fas ${icon}"></i></div>
-                    <div class="placeholder-title">${name}</div>
-                    <div class="placeholder-lines">
-                        <div class="placeholder-line medium"></div>
-                        <div class="placeholder-line"></div>
-                        <div class="placeholder-line short"></div>
-                        <div class="placeholder-line medium"></div>
-                        <div class="placeholder-line"></div>
-                    </div>
+const grid = document.getElementById('masonryGrid');
+const catPills = document.querySelectorAll('.cat-pill');
+const catalogueStatus = document.getElementById('catalogueStatus');
+const catalogueTitle = document.getElementById('catalogueTitle');
+
+const categoryNames = {
+    cv: 'CV',
+    lettre: 'Lettre',
+    contrat: 'Contrat',
+    commercial: 'Commercial',
+    attestation: 'Attestation',
+    administratif: 'Administratif',
+    facture: 'Facture',
+    devis: 'Devis',
+    rapport: 'Rapport',
+    procuration: 'Procuration',
+    declaration: 'Déclaration',
+    certificat: 'Certificat'
+};
+
+const categoryIcons = {
+    cv: 'fa-user-tie',
+    lettre: 'fa-envelope-open-text',
+    contrat: 'fa-file-contract',
+    commercial: 'fa-file-invoice',
+    attestation: 'fa-certificate',
+    administratif: 'fa-building',
+    facture: 'fa-file-invoice-dollar',
+    devis: 'fa-file-invoice',
+    rapport: 'fa-file-alt',
+    procuration: 'fa-handshake',
+    declaration: 'fa-file-signature',
+    certificat: 'fa-certificate'
+};
+
+let currentCat = 'all';
+let currentQuery = new URLSearchParams(location.search).get('q') || '';
+let supabase = null;
+let currentUser = null;
+let renderVersion = 0;
+
+const favoriteIds = new Set();
+const thumbnailCache = new Map();
+const thumbnailQueue = [];
+const thumbnailQueued = new Set();
+
+const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+}[char]));
+
+function getLocalFavorites() {
+    try {
+        const value = JSON.parse(
+            localStorage.getItem('takidoc_favorites') || '[]'
+        );
+        return Array.isArray(value) ? value.map(String) : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveLocalFavorites() {
+    try {
+        localStorage.setItem(
+            'takidoc_favorites',
+            JSON.stringify([...favoriteIds])
+        );
+    } catch (error) {
+        console.warn('Cache favoris indisponible', error);
+    }
+}
+
+function showToast(message) {
+    let toast = document.getElementById('td-catalogue-toast');
+
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'td-catalogue-toast';
+        toast.style.cssText = `
+            position:fixed;
+            bottom:95px;
+            left:50%;
+            transform:translateX(-50%);
+            background:#1A1A2E;
+            color:white;
+            padding:12px 18px;
+            border-radius:12px;
+            z-index:99999;
+            font-size:14px;
+            box-shadow:0 8px 25px #0002;
+            max-width:90%;
+            text-align:center;
+        `;
+        document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+    toast.hidden = false;
+
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => {
+        toast.hidden = true;
+    }, 2600);
+}
+
+function getPlaceholderHTML(template) {
+    const icon = categoryIcons[template.category] || 'fa-file-alt';
+
+    return `
+        <div class="thumbnail-placeholder">
+            <div class="placeholder-icon">
+                <i class="fas ${icon}"></i>
+            </div>
+            <div class="placeholder-title">
+                ${escapeHTML(template.name)}
+            </div>
+            <div class="placeholder-lines">
+                <div class="placeholder-line medium"></div>
+                <div class="placeholder-line"></div>
+                <div class="placeholder-line short"></div>
+                <div class="placeholder-line medium"></div>
+                <div class="placeholder-line"></div>
+            </div>
+        </div>
+    `;
+}
+
+function getThumbnail(template) {
+    const id = String(template.id);
+
+    if (thumbnailCache.has(id)) {
+        return thumbnailCache.get(id);
+    }
+
+    try {
+        const saved = localStorage.getItem(`thumb_${id}`);
+
+        if (saved) {
+            thumbnailCache.set(id, saved);
+            return saved;
+        }
+    } catch (error) {
+        console.warn('Lecture miniature impossible', error);
+    }
+
+    return null;
+}
+
+function renderCard(template, index) {
+    const id = String(template.id);
+    const saved = favoriteIds.has(id);
+    const thumbnail = getThumbnail(template);
+    const category = categoryNames[template.category] || template.category || 'Document';
+    const price = Number(template.price || 0).toLocaleString('fr-FR');
+    const name = escapeHTML(template.name || 'Document professionnel');
+
+    const card = document.createElement('article');
+    card.className = 'pin-card';
+    card.dataset.templateId = id;
+    card.style.animationDelay = `${Math.min(index, 12) * 0.025}s`;
+
+    card.innerHTML = `
+        <div class="document-preview">
+            <div class="category-badge">${escapeHTML(category)}</div>
+
+            ${thumbnail
+                ? `<img src="${thumbnail}" alt="${name}"
+                     class="thumbnail-image" loading="lazy" decoding="async">`
+                : getPlaceholderHTML(template)
+            }
+
+            <div class="pin-overlay">
+                <div class="overlay-top">
+                    <button
+                        type="button"
+                        class="overlay-btn save ${saved ? 'saved' : ''}"
+                        data-favorite="${escapeHTML(id)}"
+                        aria-label="${saved ? 'Retirer des favoris' : 'Ajouter aux favoris'}"
+                        aria-pressed="${saved}">
+                        <i class="${saved ? 'fas' : 'far'} fa-heart"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="overlay-btn"
+                        data-share="${escapeHTML(id)}"
+                        aria-label="Partager ${name}">
+                        <i class="fas fa-share"></i>
+                    </button>
                 </div>
-            `;
+
+                <div class="overlay-bottom">
+                    <h3 class="overlay-title">${name}</h3>
+                    <div class="overlay-price">${price} FCFA</div>
+
+                    <button
+                        type="button"
+                        class="btn-customize-overlay"
+                        data-open="${escapeHTML(id)}">
+                        <i class="fas fa-edit"></i> Personnaliser
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    card.addEventListener('click', event => {
+        if (event.target.closest('button')) return;
+
+        location.href = `editor.html?id=${encodeURIComponent(id)}`;
+    });
+
+    return card;
+}
+
+function getFilteredTemplates() {
+    const query = currentQuery.trim().toLocaleLowerCase('fr');
+
+    return templatesRegistry.filter(template => {
+        const matchesCategory =
+            currentCat === 'all' || template.category === currentCat;
+
+        const searchableText = [
+            template.name,
+            template.category,
+            template.description
+        ].join(' ').toLocaleLowerCase('fr');
+
+        return matchesCategory &&
+            (!query || searchableText.includes(query));
+    });
+}
+
+function renderPins(documents) {
+    if (!grid) return;
+
+    const version = ++renderVersion;
+
+    if (!documents.length) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <h3>Aucun document trouvé</h3>
+                <p>Essayez une autre recherche ou une autre catégorie.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    documents.forEach((template, index) => {
+        fragment.appendChild(renderCard(template, index));
+    });
+
+    // Affichage immédiat : aucune attente des miniatures.
+    grid.replaceChildren(fragment);
+
+    // Les miniatures sont traitées après le rendu.
+    scheduleThumbnails(documents, version);
+}
+
+function filterAndRender() {
+    const documents = getFilteredTemplates();
+    renderPins(documents);
+
+    if (catalogueTitle) {
+        const category = currentCat === 'all'
+            ? 'Tous'
+            : categoryNames[currentCat] || currentCat;
+
+        catalogueTitle.textContent = currentQuery
+            ? `Résultats pour « ${currentQuery} » (${documents.length})`
+            : `${category} — ${documents.length} document${documents.length > 1 ? 's' : ''}`;
+    }
+
+    if (catalogueStatus) {
+        catalogueStatus.textContent =
+            'Choisissez un document et personnalisez-le selon vos besoins.';
+    }
+}
+
+// =============================================
+// MINIATURES EN ARRIÈRE-PLAN
+// =============================================
+
+async function generateThumbnail(template) {
+    const id = String(template.id);
+    const cached = getThumbnail(template);
+
+    if (cached) return cached;
+    if (typeof window.html2canvas !== 'function') return null;
+
+    let container;
+
+    try {
+        container = document.createElement('div');
+
+        container.style.cssText = `
+            position:fixed;
+            left:-12000px;
+            top:0;
+            width:794px;
+            height:1123px;
+            overflow:hidden;
+            background:white;
+            pointer-events:none;
+        `;
+
+        const style = document.createElement('style');
+        style.textContent = template.cssStyles || '';
+        container.appendChild(style);
+
+        const content = document.createElement('div');
+        content.innerHTML = template.htmlStructure || '<p>Document</p>';
+        container.appendChild(content);
+
+        document.body.appendChild(container);
+
+        const canvas = await window.html2canvas(container, {
+            scale: 0.3,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            width: 794,
+            height: 1123,
+            windowWidth: 794,
+            windowHeight: 1123
+        });
+
+        const data = canvas.toDataURL('image/jpeg', 0.78);
+
+        thumbnailCache.set(id, data);
+
+        try {
+            localStorage.setItem(`thumb_${id}`, data);
+        } catch {
+            // Le cache est facultatif ; ne bloque pas le catalogue.
         }
 
-        // ============================================
-        // GÉNÉRATION DES MINIATURES
-        // ============================================
-        async function generateThumbnail(template) {
-            const cached = localStorage.getItem(`thumb_${template.id}`);
-            if (cached) return cached;
+        return data;
+    } catch (error) {
+        console.warn(`Miniature indisponible : ${id}`, error);
+        return null;
+    } finally {
+        container?.remove();
+    }
+}
+
+let activeThumbnailJobs = 0;
+
+function scheduleThumbnails(documents, version) {
+    for (const template of documents) {
+        const id = String(template.id);
+
+        if (getThumbnail(template) || thumbnailQueued.has(id)) continue;
+
+        thumbnailQueued.add(id);
+        thumbnailQueue.push({ template, version });
+    }
+
+    processThumbnailQueue();
+}
+
+function processThumbnailQueue() {
+    // Deux rendus maximum en parallèle pour préserver la fluidité.
+    while (activeThumbnailJobs < 2 && thumbnailQueue.length) {
+        const job = thumbnailQueue.shift();
+        activeThumbnailJobs++;
+
+        generateThumbnail(job.template)
+            .then(data => {
+                if (!data || job.version !== renderVersion) return;
+
+                const card = grid?.querySelector(
+                    `.pin-card[data-template-id="${CSS.escape(String(job.template.id))}"]`
+                );
+
+                const placeholder = card?.querySelector('.thumbnail-placeholder');
+
+                if (placeholder) {
+                    const img = new Image();
+                    img.className = 'thumbnail-image';
+                    img.loading = 'lazy';
+                    img.decoding = 'async';
+                    img.alt = job.template.name || 'Aperçu du document';
+                    img.src = data;
+                    placeholder.replaceWith(img);
+                }
+            })
+            .catch(error => console.warn('Miniature :', error))
+            .finally(() => {
+                thumbnailQueued.delete(String(job.template.id));
+                activeThumbnailJobs--;
+                processThumbnailQueue();
+            });
+    }
+}
+
+// =============================================
+// FAVORIS — SUPABASE
+// =============================================
+
+async function loadFavorites() {
+    // Affichage provisoire depuis le cache local.
+    favoriteIds.clear();
+    getLocalFavorites().forEach(id => favoriteIds.add(id));
+    filterAndRender();
+
+    if (!supabase) return;
+
+    try {
+        const { data: { session }, error: sessionError } =
+            await supabase.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
+        currentUser = session?.user || null;
+
+        if (!currentUser) {
+            // Les favoris locaux restent disponibles pour les invités.
+            return;
+        }
+
+        const { data, error } = await supabase
+            .from('favorites')
+            .select('template_id')
+            .eq('user_id', currentUser.id);
+
+        if (error) throw error;
+
+        // Supabase est la source de vérité du compte connecté.
+        favoriteIds.clear();
+
+        (data || []).forEach(row => {
+            favoriteIds.add(String(row.template_id));
+        });
+
+        saveLocalFavorites();
+        filterAndRender();
+
+    } catch (error) {
+        console.error('Chargement favoris Supabase :', error);
+        showToast('Impossible de charger les favoris en ligne.');
+    }
+}
+
+async function toggleFavorite(templateId) {
+    const id = String(templateId);
+
+    if (!supabase) {
+        showToast('Le service de favoris est indisponible.');
+        return;
+    }
+
+    try {
+        const { data: { session }, error: sessionError } =
+            await supabase.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
+        currentUser = session?.user || null;
+
+        // Un invité peut enregistrer localement, mais ce favori ne sera
+        // visible sur d'autres appareils qu'après synchronisation.
+        if (!currentUser) {
+            const wasSaved = favoriteIds.has(id);
+
+            if (wasSaved) favoriteIds.delete(id);
+            else favoriteIds.add(id);
+
+            saveLocalFavorites();
+            updateFavoriteButtons(id);
+
+            showToast(wasSaved
+                ? 'Favori retiré de cet appareil.'
+                : 'Favori local ajouté. Connectez-vous pour le synchroniser.');
+
+            return;
+        }
+
+        const buttons = [
+            ...document.querySelectorAll(`[data-favorite="${CSS.escape(id)}"]`)
+        ];
+
+        buttons.forEach(button => button.disabled = true);
+
+        const { data: existing, error: findError } = await supabase
+            .from('favorites')
+            .select('id')
+            .eq('user_id', currentUser.id)
+            .eq('template_id', id);
+
+        if (findError) throw findError;
+
+        if (existing?.length) {
+            const { error } = await supabase
+                .from('favorites')
+                .delete()
+                .eq('user_id', currentUser.id)
+                .eq('template_id', id);
+
+            if (error) throw error;
+
+            favoriteIds.delete(id);
+            showToast('Retiré de vos favoris.');
+        } else {
+            const { error } = await supabase
+                .from('favorites')
+                .insert({
+                    user_id: currentUser.id,
+                    template_id: id
+                });
+
+            if (error) throw error;
+
+            favoriteIds.add(id);
+            showToast('Ajouté à vos favoris.');
+        }
+
+        saveLocalFavorites();
+        updateFavoriteButtons(id);
+
+    } catch (error) {
+        console.error('Enregistrement du favori échoué :', error);
+
+        showToast(
+            error?.code === '42501'
+                ? 'Supabase refuse cette action : vérifiez les règles RLS de favorites.'
+                : 'Favori non enregistré. Vérifiez la connexion et les autorisations.'
+        );
+    } finally {
+        document.querySelectorAll(
+            `[data-favorite="${CSS.escape(id)}"]`
+        ).forEach(button => button.disabled = false);
+    }
+}
+
+function updateFavoriteButtons(id) {
+    const saved = favoriteIds.has(String(id));
+
+    document.querySelectorAll(
+        `[data-favorite="${CSS.escape(String(id))}"]`
+    ).forEach(button => {
+        button.classList.toggle('saved', saved);
+        button.setAttribute('aria-pressed', String(saved));
+        button.setAttribute(
+            'aria-label',
+            saved ? 'Retirer des favoris' : 'Ajouter aux favoris'
+        );
+
+        const icon = button.querySelector('i');
+
+        if (icon) {
+            icon.classList.toggle('fas', saved);
+            icon.classList.toggle('far', !saved);
+        }
+    });
+}
+
+// Synchroniser les favoris locaux lors d'une connexion.
+// Les identifiants doivent exister dans le registre des modèles.
+async function importLocalFavorites() {
+    if (!supabase || !currentUser) return;
+
+    const localIds = getLocalFavorites();
+
+    if (!localIds.length) return;
+
+    const validIds = new Set(
+        templatesRegistry.map(template => String(template.id))
+    );
+
+    try {
+        const { data, error } = await supabase
+            .from('favorites')
+            .select('template_id')
+            .eq('user_id', currentUser.id);
+
+        if (error) throw error;
+
+        const onlineIds = new Set(
+            (data || []).map(row => String(row.template_id))
+        );
+
+        for (const id of localIds) {
+            if (!validIds.has(id) || onlineIds.has(id)) continue;
+
+            const { error: insertError } = await supabase
+                .from('favorites')
+                .insert({
+                    user_id: currentUser.id,
+                    template_id: id
+                });
+
+            if (insertError) {
+                console.warn('Favori non synchronisé :', id, insertError);
+            } else {
+                onlineIds.add(id);
+            }
+        }
+
+        favoriteIds.clear();
+        onlineIds.forEach(id => favoriteIds.add(id));
+        saveLocalFavorites();
+        filterAndRender();
+
+    } catch (error) {
+        console.warn('Synchronisation des favoris locaux impossible', error);
+    }
+}
+
+// =============================================
+// ÉVÉNEMENTS
+// =============================================
+
+function bindEvents() {
+    catPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            catPills.forEach(item => item.classList.remove('active'));
+            pill.classList.add('active');
+
+            currentCat = pill.dataset.cat || 'all';
+            filterAndRender();
+
+            document.getElementById('documents')?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
+    });
+
+    grid?.addEventListener('click', async event => {
+        const favoriteButton = event.target.closest('[data-favorite]');
+
+        if (favoriteButton) {
+            event.preventDefault();
+            event.stopPropagation();
+            await toggleFavorite(favoriteButton.dataset.favorite);
+            return;
+        }
+
+        const openButton = event.target.closest('[data-open]');
+
+        if (openButton) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            location.href =
+                `editor.html?id=${encodeURIComponent(openButton.dataset.open)}`;
+
+            return;
+        }
+
+        const shareButton = event.target.closest('[data-share]');
+
+        if (shareButton) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const template = templatesRegistry.find(
+                item => String(item.id) === String(shareButton.dataset.share)
+            );
+
+            const url = new URL(
+                `editor.html?id=${encodeURIComponent(shareButton.dataset.share)}`,
+                location.href
+            ).href;
 
             try {
-                const container = document.createElement('div');
-                container.style.cssText = 'position: absolute; left: -10000px; top: 0; width: 794px; background: white; font-family: inherit;';
-                
-                const style = document.createElement('style');
-                style.textContent = template.cssStyles || '';
-                container.appendChild(style);
-                
-                const content = document.createElement('div');
-                content.innerHTML = template.htmlStructure || '<p>Document</p>';
-                container.appendChild(content);
-                
-                document.body.appendChild(container);
-                
-                await new Promise(resolve => setTimeout(resolve, 200));
-                
-                const canvas = await html2canvas(container, {
-                    scale: 0.4,
-                    useCORS: true,
-                    logging: false,
-                    backgroundColor: '#ffffff',
-                    width: 794,
-                    height: 1123,
-                    windowWidth: 794,
-                    windowHeight: 1123
-                });
-                
-                const imageData = canvas.toDataURL('image/jpeg', 0.85);
-                
-                try {
-                    localStorage.setItem(`thumb_${template.id}`, imageData);
-                } catch (e) {
-                    console.warn('Cache plein:', e);
+                if (navigator.share) {
+                    await navigator.share({
+                        title: `${template?.name || 'Document'} - TakiDoc`,
+                        url
+                    });
+                } else {
+                    await navigator.clipboard.writeText(url);
+                    showToast('Lien copié.');
                 }
-                
-                document.body.removeChild(container);
-                
-                return imageData;
             } catch (error) {
-                console.error(`Erreur miniature ${template.id}:`, error);
-                const existing = document.body.querySelector('[style*="left: -10000px"]');
-                if (existing) document.body.removeChild(existing);
-                return null;
-            }
-        }
-
-        // ============================================
-        // AFFICHAGE DES CARTES
-        // ============================================
-        function renderPins(docs) {
-            if (!grid) return;
-            
-            grid.innerHTML = '';
-            
-            if (docs.length === 0) {
-                grid.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i><h3>Aucun document trouvé</h3><p>Essayez une autre recherche ou une autre catégorie</p></div>`;
-                return;
-            }
-
-            docs.forEach((template, index) => {
-                const card = document.createElement('div');
-                card.className = 'pin-card';
-                card.dataset.templateId = template.id;
-                card.style.animationDelay = `${index * 0.05}s`;
-                
-                const categoryName = categoryNames[template.category] || template.category;
-                const isSaved = localStorage.getItem('takidoc_favorites')?.includes(template.id);
-                const cachedThumb = thumbnailsCache[template.id];
-                const price = template.price ? template.price.toLocaleString() : '0';
-                
-                card.innerHTML = `
-                    <div class="document-preview">
-                        <div class="category-badge">${categoryName}</div>
-                        ${cachedThumb 
-                            ? `<img src="${cachedThumb}" alt="${template.name}" class="thumbnail-image" loading="lazy">`
-                            : getPlaceholderHTML(template)
-                        }
-                        <div class="pin-overlay">
-                            <div class="overlay-top">
-                                <button class="overlay-btn save ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSave('${template.id}', this)" title="${isSaved ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
-                                    <i class="${isSaved ? 'fas' : 'far'} fa-heart"></i>
-                                </button>
-                                <button class="overlay-btn" onclick="event.stopPropagation(); shareDoc('${template.id}', '${template.name.replace(/'/g, "\\'")}')" title="Partager">
-                                    <i class="fas fa-share"></i>
-                                </button>
-                            </div>
-                            <div class="overlay-bottom">
-                                <h3 class="overlay-title">${template.name}</h3>
-                                <div class="overlay-price">${price} FCFA</div>
-                                <button class="btn-customize-overlay" onclick="event.stopPropagation(); window.location.href='editor.html?id=${template.id}'">
-                                    <i class="fas fa-edit"></i> Personnaliser
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                card.addEventListener('click', () => window.location.href = `editor.html?id=${template.id}`);
-                grid.appendChild(card);
-            });
-
-            generateThumbnailsInBackground(docs);
-        }
-
-        // ============================================
-        // GÉNÉRATION DES MINIATURES EN ARRIÈRE-PLAN
-        // ============================================
-        async function generateThumbnailsInBackground(docs) {
-            for (const template of docs) {
-                if (thumbnailsCache[template.id]) continue;
-                
-                try {
-                    const thumbnail = await generateThumbnail(template);
-                    if (thumbnail) {
-                        thumbnailsCache[template.id] = thumbnail;
-                        
-                        const card = document.querySelector(`.pin-card[data-template-id="${template.id}"]`);
-                        if (card) {
-                            const preview = card.querySelector('.document-preview');
-                            const placeholder = preview.querySelector('.thumbnail-placeholder');
-                            if (placeholder) {
-                                const img = document.createElement('img');
-                                img.src = thumbnail;
-                                img.alt = template.name;
-                                img.className = 'thumbnail-image';
-                                img.style.opacity = '0';
-                                img.style.transition = 'opacity 0.5s ease';
-                                placeholder.replaceWith(img);
-                                setTimeout(() => { img.style.opacity = '1'; }, 50);
-                            }
-                        }
-                    }
-                } catch (e) {
-                    console.warn(`Erreur thumbnail ${template.id}:`, e);
+                if (error.name !== 'AbortError') {
+                    showToast('Impossible de partager ce lien.');
                 }
             }
         }
+    });
+}
 
-        // ============================================
-        // FILTRAGE PAR CATÉGORIE
-        // ============================================
-        function filterAndRender() {
-            if (!grid) return;
-            
-            const filtered = currentCat === 'all' 
-                ? templatesRegistry 
-                : templatesRegistry.filter(doc => doc.category === currentCat);
-            
-            renderPins(filtered);
+// =============================================
+// DÉMARRAGE
+// =============================================
 
-            if (catalogueTitle) {
-                const catName = currentCat === 'all' ? 'Tous' : (categoryNames[currentCat] || currentCat);
-                catalogueTitle.textContent = `${catName} - ${filtered.length} document${filtered.length > 1 ? 's' : ''}`;
-            }
-            
-            if (catalogueStatus) {
-                catalogueStatus.textContent = `Choisissez un document et personnalisez-le selon vos besoins.`;
-            }
+async function init() {
+    // Premier rendu rapide, même si Supabase est momentanément lent.
+    favoriteIds.clear();
+    getLocalFavorites().forEach(id => favoriteIds.add(id));
+    bindEvents();
+    filterAndRender();
+
+    try {
+        if (window.supabase?.createClient) {
+            supabase = window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_ANON_KEY
+            );
         }
+    } catch (error) {
+        console.error('Initialisation Supabase échouée', error);
+    }
 
-        // ============================================
-        // GESTIONNAIRES D'ÉVÉNEMENTS
-        // ============================================
-        
-        // Filtres par catégorie
-        catPills.forEach(pill => {
-            pill.addEventListener('click', () => {
-                catPills.forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
-                currentCat = pill.dataset.cat || 'all';
-                filterAndRender();
-                
-                // Scroll vers les documents
-                const documentsSection = document.getElementById('documents');
-                if (documentsSection) {
-                    documentsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
+    if (!supabase) {
+        console.warn('Supabase non chargé : favoris en ligne indisponibles.');
+        return;
+    }
 
-        // ============================================
-        // ACTIONS GLOBALES (window)
-        // ============================================
-        window.toggleSave = function(docId, btn) {
-            const icon = btn.querySelector('i');
-            let favorites = JSON.parse(localStorage.getItem('takidoc_favorites') || '[]');
-            
-            if (btn.classList.contains('saved')) {
-                btn.classList.remove('saved');
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-                favorites = favorites.filter(id => id !== docId);
-                showToast('Retiré des favoris');
-            } else {
-                btn.classList.add('saved');
-                icon.classList.remove('far');
-                icon.classList.add('fas');
-                if (!favorites.includes(docId)) favorites.push(docId);
-                btn.style.transform = 'scale(1.3)';
-                setTimeout(() => btn.style.transform = '', 200);
-                showToast('Ajouté aux favoris');
-            }
-            localStorage.setItem('takidoc_favorites', JSON.stringify(favorites));
-        };
+    await loadFavorites();
+    await importLocalFavorites();
 
-        window.shareDoc = function(id, name) {
-            const url = window.location.origin + '/editor.html?id=' + id;
-            if (navigator.share) {
-                navigator.share({ title: name + ' - TakiDoc', url }).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(url).then(() => showToast('Lien copié dans le presse-papier !'));
-            }
-        };
+    supabase.auth.onAuthStateChange((_event, session) => {
+        currentUser = session?.user || null;
 
-        // ============================================
-        // NOTIFICATION TOAST
-        // ============================================
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 100px;
-                left: 50%;
-                transform: translateX(-50%) translateY(20px);
-                background: #0F172A;
-                color: white;
-                padding: 14px 24px;
-                border-radius: 12px;
-                font-size: 0.9rem;
-                font-weight: 500;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-                z-index: 9999;
-                opacity: 0;
-                transition: all 0.3s ease;
-            `;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '1';
-                toast.style.transform = 'translateX(-50%) translateY(0)';
-            }, 10);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(-50%) translateY(20px)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
+        // Éviter les opérations lourdes directement dans le callback auth.
+        setTimeout(async () => {
+            await loadFavorites();
+            await importLocalFavorites();
+        }, 0);
+    });
 
-        // ============================================
-        // INITIALISATION
-        // ============================================
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log("🚀 TakiDoc initialisé - L'équipe Meurphy est en service");
-            
-            // Afficher tous les documents au démarrage
-            filterAndRender();
-            
-            // Gérer les paramètres d'URL (recherche)
-            const params = new URLSearchParams(window.location.search);
-            const query = params.get('q');
-            
-            if (query) {
-                const filtered = templatesRegistry.filter(t => 
-                    t.name.toLowerCase().includes(query.toLowerCase()) ||
-                    t.category.toLowerCase().includes(query.toLowerCase())
-                );
-                renderPins(filtered);
-                
-                if (catalogueTitle) {
-                    catalogueTitle.textContent = `Résultats pour "${query}"`;
-                }
-            }
-        });
-    </script>
-    
+    console.info(`TakiDoc : ${templatesRegistry.length} modèles prêts.`);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+} else {
+    init();
+}
+</script>
     <!-- HEADER DYNAMIQUE -->
     <script src="js/header.js"></script>
 </body>
