@@ -1,9 +1,8 @@
 // ============================================
-// TAKIDOC - ÉDITEUR PLEIN ÉCRAN (VERSION CORRIGÉE)
+// TAKIDOC - ÉDITEUR PROFESSIONNEL (VERSION PRODUCTION)
 // L'équipe Meurphy - 2026
 // ============================================
 
-import { fetchTemplateById } from './supabase-config.js';
 import { templatesRegistry } from './templates-registry.js';
 
 const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
@@ -11,23 +10,50 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// État global de l'éditeur
 const editorState = {
     template: null,
-    zoom: window.innerWidth <= 768 ? 0.45 : 0.95,
+    zoom: 1.0,
     primaryColor: '#0F172A',
+    fontFamily: "'Inter', sans-serif",
     photoDataUrl: null,
-    currentUser: null
+    currentUser: null,
+    isDirty: false,
+    draftKey: null
 };
 
 // ============================================
 // UTILITAIRES
 // ============================================
-function showToast(message) {
+function showToast(message, type = 'success') {
     const toast = document.getElementById('editorToast');
     if (!toast) return;
-    toast.innerHTML = `<i class="fas fa-check-circle" style="color: #10B981;"></i> ${message}`;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
+    
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-circle-exclamation',
+        info: 'fa-info-circle'
+    };
+    
+    toast.className = `editor-toast ${type} show`;
+    toast.innerHTML = `<i class="fas ${icons[type]}"></i> ${message}`;
+    
+    setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+function markAsDirty() {
+    editorState.isDirty = true;
+    const statusEl = document.getElementById('header-doc-status');
+    if (statusEl) {
+        statusEl.className = 'doc-status saving';
+        statusEl.innerHTML = '<i class="fas fa-sync fa-spin" style="color: var(--primary);"></i><span>Modification en cours...</span>';
+    }
+    
+    // Auto-save local après 1 seconde d'inactivité
+    clearTimeout(editorState.autoSaveTimer);
+    editorState.autoSaveTimer = setTimeout(() => {
+        saveDraftToLocal();
+    }, 1000);
 }
 
 // ============================================
@@ -37,94 +63,107 @@ async function checkAuth() {
     try {
         const { data: { session } } = await supabase.auth.getSession();
         editorState.currentUser = session?.user || null;
-        console.log('Auth status:', editorState.currentUser ? 'Connecté' : 'Non connecté');
     } catch (error) {
         console.error('Erreur auth:', error);
+        editorState.currentUser = null;
     }
 }
 
 // ============================================
-// INITIALISATION
+// CHARGEMENT DU TEMPLATE
 // ============================================
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🚀 Initialisation de l\'éditeur...');
+async function loadTemplate(templateId) {
+    showToast('Chargement du document...', 'info');
     
-    await checkAuth();
-    
-    const templateId = new URLSearchParams(window.location.search).get('id');
-    console.log('Template ID:', templateId);
-    
-    if (!templateId) {
-        console.error('Aucun ID de template dans l\'URL');
-        showToast('Erreur: Aucun document spécifié');
-        setTimeout(() => window.location.href = 'index.html', 2000);
-        return;
-    }
-    
-    let template = templatesRegistry.find(t => t.id === templateId);
-    
-    if (!template) {
-        console.warn('Template non trouvé dans le registre local, tentative de récupération Supabase...');
-        try {
-            // template = await fetchTemplateById(templateId);
-        } catch (e) {
-            console.error('Erreur fetch template:', e);
+    // 1. Essayer Supabase en premier
+    try {
+        const { data, error } = await supabase
+            .from('templates')
+            .select(`
+                id, name, description, price_xaf, category_id,
+                has_photo, has_color_picker, html_structure, css_styles,
+                template_fields(field_name, field_label, field_type, default_value, is_required, display_order)
+            `)
+            .eq('id', templateId)
+            .eq('is_active', true)
+            .single();
+            
+        if (data && !error) {
+            editorState.template = {
+                id: data.id,
+                name: data.name,
+                description: data.description,
+                price: data.price_xaf,
+                category: data.category_id,
+                hasPhoto: data.has_photo,
+                hasColorPicker: data.has_color_picker,
+                htmlStructure: data.html_structure,
+                cssStyles: data.css_styles,
+                fields: (data.template_fields || [])
+                    .sort((a, b) => a.display_order - b.display_order)
+                    .map(f => ({
+                        name: f.field_name,
+                        label: f.field_label,
+                        type: f.field_type,
+                        default: f.default_value,
+                        required: f.is_required
+                    }))
+            };
+            console.log('✅ Template chargé depuis Supabase');
+            return;
         }
+    } catch (e) {
+        console.warn('⚠️ Supabase indisponible, fallback local...');
     }
     
-    if (!template) {
-        console.error('Template introuvable:', templateId);
-        showToast('Document introuvable');
-        setTimeout(() => window.location.href = 'index.html', 2000);
+    // 2. Fallback sur le registre local
+    const localTemplate = templatesRegistry.find(t => t.id === templateId);
+    if (localTemplate) {
+        editorState.template = localTemplate;
+        console.log('✅ Template chargé depuis le registre local');
         return;
     }
     
-    console.log('✅ Template chargé:', template.name);
-    editorState.template = template;
-    initEditor();
-});
+    // 3. Échec total
+    showToast('Document introuvable', 'error');
+    setTimeout(() => window.location.href = 'index.html', 2000);
+}
 
-function initEditor() {
+// ============================================
+// INITIALISATION DE L'ÉDITEUR
+// ============================================
+async function initEditor() {
     const { template } = editorState;
+    editorState.draftKey = `takidoc_draft_${template.id}`;
     
-    // Mettre à jour le titre
+    // Mettre à jour le header
     document.title = `${template.name} - Éditeur TakiDoc`;
+    document.getElementById('header-doc-title').textContent = template.name;
+    document.getElementById('sidebar-template-name').textContent = template.name;
+    document.getElementById('sidebar-template-desc').textContent = template.description || 'Document professionnel personnalisable.';
     
-    console.log(' Rendu du document...');
+    // Rendu initial
     renderDocument();
-    
-    console.log(' Construction des champs...');
-    buildSidebarFields(template.fields || []);
-    
-    console.log('🔍 Configuration du zoom...');
+    buildFieldsForm();
     setupZoomControls();
+    setupSidebarTabs();
+    setupDesignControls();
+    setupPhotoUpload();
+    setupExportControls();
+    setupDirectEditing();
+    setupKeyboardShortcuts();
     
-    console.log(' Configuration de la sidebar...');
-    setupSidebar();
+    // Charger un brouillon existant si présent
+    loadDraftFromLocal();
     
-    console.log('💾 Configuration du téléchargement...');
-    setupDownload();
-    
-    console.log(' Configuration des boutons mobiles...');
-    setupMobileFABs();
-    
-    if (template.hasPhoto) {
-        console.log(' Configuration de la photo...');
-        document.getElementById('photo-section').style.display = 'block';
-        setupPhotoUpload();
+    // Statut prêt
+    const statusEl = document.getElementById('header-doc-status');
+    if (statusEl) {
+        statusEl.className = 'doc-status';
+        statusEl.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i><span>Toutes les modifications sont sauvegardées</span>';
     }
     
-    if (template.hasColorPicker) {
-        console.log('🎨 Configuration des couleurs...');
-        document.getElementById('color-section').style.display = 'block';
-        setupColorPicker();
-    }
-    
-    setTimeout(() => {
-        updateZoomDisplay();
-        enableDirectEditing();
-        showToast('Document chargé - Cliquez sur un texte pour modifier');
-    }, 500);
+    showToast('Document chargé avec succès', 'success');
 }
 
 // ============================================
@@ -134,12 +173,9 @@ function renderDocument() {
     const canvas = document.getElementById('document-canvas');
     const { template } = editorState;
     
-    if (!canvas) {
-        console.error('Canvas non trouvé!');
-        return;
-    }
+    if (!canvas) return;
     
-    // Styles
+    // 1. Injecter les styles
     let styleTag = document.getElementById('template-style');
     if (!styleTag) {
         styleTag = document.createElement('style');
@@ -148,10 +184,15 @@ function renderDocument() {
     }
     styleTag.textContent = template.cssStyles || '';
     
-    // Contenu HTML
-    canvas.innerHTML = template.htmlStructure || '<p style="padding: 40px; text-align: center; color: #64748B;">Aperçu non disponible</p>';
+    // 2. Injecter le HTML
+    if (template.htmlStructure) {
+        canvas.innerHTML = template.htmlStructure;
+    } else {
+        canvas.innerHTML = '<div style="padding: 60px; text-align: center; color: var(--text-muted);"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 16px; color: var(--warning);"></i><p>Aperçu non disponible pour ce modèle.</p></div>';
+        return;
+    }
     
-    // Champs par défaut
+    // 3. Appliquer les valeurs par défaut
     if (template.fields) {
         template.fields.forEach(field => {
             const el = document.getElementById(`field-${field.name}`);
@@ -161,410 +202,163 @@ function renderDocument() {
         });
     }
     
-    // Photo placeholder
+    // 4. Gérer l'affichage des sections conditionnelles
+    const photoSection = document.getElementById('design-photo-section');
+    if (photoSection) photoSection.style.display = template.hasPhoto ? 'block' : 'none';
+    
+    const colorSection = document.getElementById('design-color-section');
+    if (colorSection) colorSection.style.display = template.hasColorPicker ? 'block' : 'none';
+    
+    // 5. Placeholder photo si nécessaire
     if (template.hasPhoto) {
         const photoContainer = document.getElementById('doc-photo');
         if (photoContainer && !photoContainer.querySelector('img')) {
-            photoContainer.innerHTML = `<span class="cv-photo-placeholder" style="font-size: 2rem; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">TD</span>`;
+            photoContainer.innerHTML = `<span class="cv-photo-placeholder" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:rgba(255,255,255,0.6);font-size:0.9rem;">Photo</span>`;
         }
     }
-    
-    console.log('✅ Document rendu');
 }
 
 // ============================================
-// SIDEBAR
+// GESTION DES CHAMPS (FORMULAIRE)
 // ============================================
-function setupSidebar() {
-    const sidebar = document.getElementById('customizationSidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const close = document.getElementById('sidebarClose');
-    
-    if (!sidebar || !overlay) {
-        console.error('Sidebar ou overlay non trouvé');
-        return;
-    }
-    
-    // Fonction pour ouvrir
-    window.openCustomizationSidebar = function() {
-        sidebar.classList.add('active');
-        overlay.classList.add('active');
-        console.log('Sidebar ouverte');
-    };
-    
-    // Fonction pour fermer
-    function closeSidebar() {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-    }
-    
-    // Événement sur le bouton du header (via delegation)
-    document.addEventListener('click', (e) => {
-        const btn = e.target.closest('#btn-customize, #mobileBtnCustomize');
-        if (btn) {
-            e.preventDefault();
-            e.stopPropagation();
-            window.openCustomizationSidebar();
-        }
-    });
-    
-    overlay.addEventListener('click', closeSidebar);
-    if (close) close.addEventListener('click', closeSidebar);
-    
-    console.log('✅ Sidebar configurée');
-}
-
-// ============================================
-// CHAMPS
-// ============================================
-function buildSidebarFields(fields) {
-    const container = document.getElementById('fields-container');
+function buildFieldsForm() {
+    const container = document.getElementById('fields-form');
     if (!container) return;
     
     container.innerHTML = '';
     
-    if (!fields || fields.length === 0) {
-        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">Aucun champ à modifier pour ce document</p>';
+    if (!editorState.template.fields || editorState.template.fields.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">Ce document ne contient pas de champs modifiables.</p>';
         return;
     }
     
-    fields.forEach(field => {
+    editorState.template.fields.forEach(field => {
         const wrapper = document.createElement('div');
-        wrapper.className = 'form-field';
+        wrapper.className = 'form-group';
         
         const label = document.createElement('label');
-        label.textContent = field.label;
+        label.innerHTML = `${field.label} ${field.required ? '<span class="required">*</span>' : ''}`;
         wrapper.appendChild(label);
         
-        const input = document.createElement(field.type === 'textarea' ? 'textarea' : 'input');
-        
-        if (field.type !== 'textarea') {
+        let input;
+        if (field.type === 'textarea') {
+            input = document.createElement('textarea');
+            input.rows = 3;
+            input.textContent = field.default || '';
+        } else {
+            input = document.createElement('input');
             input.type = field.type === 'email' ? 'email' : field.type === 'tel' ? 'tel' : 'text';
+            input.value = field.default || '';
         }
         
         input.id = `input-${field.name}`;
-        const defaultValue = field.default || '';
+        input.className = 'form-control';
+        input.placeholder = `Entrez ${field.label.toLowerCase()}...`;
         
-        if (field.type === 'textarea') {
-            input.textContent = defaultValue;
-            input.rows = 3;
-        } else {
-            input.value = defaultValue;
-        }
-        
+        // Synchronisation bidirectionnelle : Formulaire -> Canvas
         input.addEventListener('input', (e) => {
             const targetEl = document.getElementById(`field-${field.name}`);
             if (targetEl) {
                 targetEl.textContent = e.target.value;
             }
+            markAsDirty();
         });
         
         wrapper.appendChild(input);
         container.appendChild(wrapper);
     });
-    
-    console.log(`✅ ${fields.length} champs créés`);
 }
 
 // ============================================
-// ZOOM
+// ÉDITION DIRECTE SUR LE CANVAS
 // ============================================
-function updateZoomDisplay() {
-    const wrapper = document.getElementById('documentWrapper');
-    if (!wrapper) return;
-    
-    wrapper.style.transform = `scale(${editorState.zoom})`;
-    
-    const zoomLevel = document.getElementById('zoom-level');
-    if (zoomLevel) {
-        zoomLevel.textContent = `${Math.round(editorState.zoom * 100)}%`;
-    }
-}
-
-function setupZoomControls() {
-    const zoomIn = document.getElementById('btn-zoom-in');
-    const zoomOut = document.getElementById('btn-zoom-out');
-    const zoomReset = document.getElementById('btn-zoom-reset');
-    
-    if (zoomIn) {
-        zoomIn.addEventListener('click', () => {
-            editorState.zoom = Math.min(3, +(editorState.zoom + 0.1).toFixed(2));
-            updateZoomDisplay();
-        });
-    }
-    
-    if (zoomOut) {
-        zoomOut.addEventListener('click', () => {
-            editorState.zoom = Math.max(0.2, +(editorState.zoom - 0.1).toFixed(2));
-            updateZoomDisplay();
-        });
-    }
-    
-    if (zoomReset) {
-        zoomReset.addEventListener('click', () => {
-            editorState.zoom = window.innerWidth <= 768 ? 0.45 : 0.95;
-            updateZoomDisplay();
-        });
-    }
-    
-    console.log('✅ Contrôles de zoom configurés');
-}
-
-// ============================================
-// TÉLÉCHARGEMENT
-// ============================================
-function setupDownload() {
-    const btn = document.getElementById('btn-download');
-    if (!btn) {
-        console.warn('Bouton téléchargement non trouvé');
-        return;
-    }
-    
-    btn.addEventListener('click', async () => {
-        console.log('Bouton téléchargement cliqué');
-        
-        if (!editorState.currentUser) {
-            console.log('Utilisateur non connecté, affichage de la modal');
-            const modal = document.getElementById('loginModal');
-            if (modal) {
-                modal.classList.add('active');
-                
-                // Attendre que l'utilisateur ferme la modal
-                await new Promise(resolve => {
-                    const closeModal = () => {
-                        modal.classList.remove('active');
-                        document.getElementById('loginModalClose')?.removeEventListener('click', closeModal);
-                        resolve();
-                    };
-                    document.getElementById('loginModalClose')?.addEventListener('click', closeModal);
-                });
-            }
-        }
-        
-        await generatePDF();
-    });
-}
-
-async function generatePDF() {
-    const canvas = document.getElementById('document-canvas');
-    if (!canvas) {
-        showToast('Erreur: Canvas non trouvé');
-        return;
-    }
-    
-    try {
-        showToast('Génération du PDF...');
-        
-        // Désactiver l'édition temporaire
-        const editableElements = canvas.querySelectorAll('[contenteditable="true"]');
-        editableElements.forEach(el => el.contentEditable = 'false');
-        
-        // Reset zoom pour le PDF
-        const prevZoom = editorState.zoom;
-        editorState.zoom = 1.0;
-        updateZoomDisplay();
-        await new Promise(r => setTimeout(r, 300));
-
-        const canvasImage = await html2canvas(canvas, { 
-            scale: 2, 
-            useCORS: true, 
-            backgroundColor: '#ffffff',
-            logging: false
-        });
-        
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({ 
-            orientation: 'portrait', 
-            unit: 'mm', 
-            format: 'a4' 
-        });
-        
-        pdf.addImage(
-            canvasImage.toDataURL('image/jpeg', 0.98), 
-            'JPEG', 
-            0, 0, 
-            pdf.internal.pageSize.getWidth(), 
-            pdf.internal.pageSize.getHeight()
-        );
-        
-        const filename = `TakiDoc_${editorState.template.id}_${Date.now()}.pdf`;
-        
-        // ============================================
-        // ENREGISTREMENT DANS SUPABASE
-        // ============================================
-        if (editorState.currentUser) {
-            try {
-                // 1. Créer une entrée dans purchases
-                const { data: purchaseData, error: purchaseError } = await supabase
-                    .from('purchases')
-                    .insert({
-                        user_id: editorState.currentUser.id,
-                        template_id: editorState.template.id,
-                        amount_paid: editorState.template.price || 0,
-                        currency: 'XAF',
-                        payment_method: 'free_download',
-                        payment_status: 'completed',
-                        payment_reference: `FREE_${Date.now()}`,
-                        guest_email: editorState.currentUser.email,
-                        guest_phone: null
-                    })
-                    .select()
-                    .single();
-                
-                if (purchaseError) {
-                    console.error('Erreur création purchase:', purchaseError);
-                } else {
-                    // 2. Récupérer les données du document
-                    const documentData = {};
-                    const fields = editorState.template.fields || [];
-                    
-                    fields.forEach(field => {
-                        const element = document.getElementById(`field-${field.name}`);
-                        if (element) {
-                            documentData[field.name] = element.textContent;
-                        }
-                    });
-                    
-                    // Ajouter les métadonnées
-                    documentData.generatedAt = new Date().toISOString();
-                    documentData.templateName = editorState.template.name;
-                    documentData.category = editorState.template.category;
-                    
-                    // 3. Créer une entrée dans user_documents
-                    const { error: docError } = await supabase
-                        .from('user_documents')
-                        .insert({
-                            purchase_id: purchaseData.id,
-                            user_id: editorState.currentUser.id,
-                            template_id: editorState.template.id,
-                            document_data: documentData,
-                            generated_pdf_url: null // On régénère à la demande
-                        });
-                    
-                    if (docError) {
-                        console.error('Erreur création user_document:', docError);
-                    } else {
-                        console.log('✅ Document enregistré dans l\'historique');
-                    }
-                }
-            } catch (dbError) {
-                console.error('Erreur base de données:', dbError);
-            }
-        }
-        
-        // Télécharger le PDF
-        pdf.save(filename);
-        
-        // Réactiver l'édition
-        editableElements.forEach(el => el.contentEditable = 'true');
-        editorState.zoom = prevZoom;
-        updateZoomDisplay();
-        
-        showToast('PDF téléchargé avec succès !');
-        console.log('✅ PDF généré:', filename);
-        
-    } catch (e) {
-        console.error('Erreur PDF:', e);
-        showToast('Erreur lors de la génération du PDF');
-    }
-}
-// ============================================
-// BOUTONS FLOTTANTS MOBILE
-// ============================================
-function setupMobileFABs() {
-    const customizeBtn = document.getElementById('mobileBtnCustomize');
-    const downloadBtn = document.getElementById('mobileBtnDownload');
-    
-    if (customizeBtn) {
-        customizeBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            window.openCustomizationSidebar?.();
-        });
-        
-        customizeBtn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            window.openCustomizationSidebar?.();
-        });
-    }
-    
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            document.getElementById('btn-download')?.click();
-        });
-    }
-    
-    console.log('✅ Boutons mobiles configurés');
-}
-
-// ============================================
-// ÉDITION DIRECTE
-// ============================================
-function enableDirectEditing() {
+function setupDirectEditing() {
     const canvas = document.getElementById('document-canvas');
     if (!canvas) return;
 
-    let editableCount = 0;
-    const protectedKeywords = ['TakiDoc', 'onrender.com', 'takidoc'];
-
-    const treeWalker = document.createTreeWalker(
-        canvas,
-        NodeFilter.SHOW_TEXT,
-        {
-            acceptNode: function(node) {
-                if (!node.textContent.trim()) return NodeFilter.FILTER_REJECT;
-                const parent = node.parentElement;
-                if (parent && (parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')) {
-                    return NodeFilter.FILTER_REJECT;
-                }
-                return NodeFilter.FILTER_ACCEPT;
-            }
-        }
-    );
-
-    let textNode;
-    while (textNode = treeWalker.nextNode()) {
-        const parent = textNode.parentElement;
-        if (!parent) continue;
-        
-        // Vérifier si protégé
-        const parentText = parent.textContent.trim().toLowerCase();
-        if (protectedKeywords.some(keyword => parentText.includes(keyword))) {
-            parent.contentEditable = 'false';
-            parent.classList.add('takidoc-footer-protected');
-            continue;
-        }
-        
-        if (parent.children.length > 5) continue;
-        
-        parent.contentEditable = 'true';
-        parent.classList.add('direct-editable');
-        editableCount++;
-        
-        // Sync avec sidebar
-        if (parent.id && parent.id.startsWith('field-')) {
-            const fieldName = parent.id.replace('field-', '');
-            const sidebarInput = document.getElementById(`input-${fieldName}`);
-            
-            if (sidebarInput) {
-                parent.addEventListener('input', () => {
-                    sidebarInput.value = parent.textContent;
-                });
-            }
-        }
-    }
+    const editableElements = canvas.querySelectorAll('[id^="field-"]');
     
-    console.log(`✅ Édition activée sur ${editableCount} éléments`);
+    editableElements.forEach(el => {
+        el.contentEditable = true;
+        el.classList.add('direct-editable');
+        
+        // Synchronisation bidirectionnelle : Canvas -> Formulaire
+        el.addEventListener('input', () => {
+            const fieldName = el.id.replace('field-', '');
+            const sidebarInput = document.getElementById(`input-${fieldName}`);
+            if (sidebarInput) {
+                sidebarInput.value = el.textContent;
+            }
+            markAsDirty();
+        });
+        
+        // Empêcher la perte de focus accidentelle
+        el.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    });
+    
+    // Protéger les éléments TakiDoc
+    const protectedElements = canvas.querySelectorAll('.takidoc-footer-protected, [contenteditable="false"]');
+    protectedElements.forEach(el => {
+        el.contentEditable = false;
+        el.style.pointerEvents = 'none';
+        el.style.opacity = '0.6';
+    });
 }
 
 // ============================================
-// PHOTO
+// CONTRÔLES DE DESIGN
+// ============================================
+function setupDesignControls() {
+    // Sélecteur de police
+    const fontSelect = document.getElementById('font-family-select');
+    if (fontSelect) {
+        fontSelect.addEventListener('change', (e) => {
+            editorState.fontFamily = e.target.value;
+            document.getElementById('document-canvas').style.fontFamily = editorState.fontFamily;
+            markAsDirty();
+        });
+    }
+    
+    // Color Picker
+    const colorPicker = document.getElementById('color-picker');
+    const colorHex = document.getElementById('color-hex');
+    
+    if (colorPicker && colorHex) {
+        const applyColor = (color) => {
+            editorState.primaryColor = color;
+            colorPicker.value = color;
+            colorHex.textContent = color.toUpperCase();
+            document.getElementById('document-canvas').style.setProperty('--doc-primary-color', color);
+            
+            // Mettre à jour les presets actifs
+            document.querySelectorAll('.color-preset').forEach(p => {
+                p.classList.toggle('active', p.dataset.color === color);
+            });
+            markAsDirty();
+        };
+        
+        colorPicker.addEventListener('input', (e) => applyColor(e.target.value));
+        
+        document.querySelectorAll('.color-preset').forEach(preset => {
+            preset.addEventListener('click', () => applyColor(preset.dataset.color));
+        });
+        
+        // Initialiser avec la couleur par défaut
+        applyColor(editorState.primaryColor);
+    }
+}
+
+// ============================================
+// GESTION DES PHOTOS
 // ============================================
 function setupPhotoUpload() {
     const input = document.getElementById('photo-input');
-    if (!input) return;
+    const preview = document.getElementById('photo-preview-area');
+    const removeBtn = document.getElementById('photo-remove');
+    
+    if (!input || !preview) return;
     
     input.addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -573,59 +367,407 @@ function setupPhotoUpload() {
         const reader = new FileReader();
         reader.onload = (event) => {
             editorState.photoDataUrl = event.target.result;
-            const container = document.getElementById('doc-photo');
-            if (container) {
-                container.innerHTML = `<img src="${editorState.photoDataUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" alt="Photo de profil">`;
+            
+            // Mise à jour de l'aperçu sidebar
+            preview.innerHTML = `<img src="${editorState.photoDataUrl}" alt="Photo de profil">`;
+            preview.classList.add('has-image');
+            if (removeBtn) removeBtn.style.display = 'block';
+            
+            // Mise à jour du document
+            const docPhotoContainer = document.getElementById('doc-photo');
+            if (docPhotoContainer) {
+                docPhotoContainer.innerHTML = `<img src="${editorState.photoDataUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
             }
-            document.getElementById('photo-label').textContent = '✓ Photo ajoutée';
-            document.getElementById('photo-remove').style.display = 'block';
+            markAsDirty();
         };
         reader.readAsDataURL(file);
     });
-
-    const removeBtn = document.getElementById('photo-remove');
+    
     if (removeBtn) {
         removeBtn.addEventListener('click', () => {
             editorState.photoDataUrl = null;
             input.value = '';
-            const container = document.getElementById('doc-photo');
-            if (container) {
-                container.innerHTML = `<span class="cv-photo-placeholder" style="font-size:2rem; font-weight:700; color:white; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">TD</span>`;
-            }
-            document.getElementById('photo-label').textContent = 'Ajouter une photo';
+            preview.innerHTML = `<i class="fas fa-user-circle"></i><span>Aucune photo</span>`;
+            preview.classList.remove('has-image');
             removeBtn.style.display = 'none';
+            
+            const docPhotoContainer = document.getElementById('doc-photo');
+            if (docPhotoContainer) {
+                docPhotoContainer.innerHTML = `<span class="cv-photo-placeholder" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:rgba(255,255,255,0.6);font-size:0.9rem;">Photo</span>`;
+            }
+            markAsDirty();
         });
     }
 }
 
 // ============================================
-// COULEUR
+// GESTION DES ONGLETS SIDEBAR
 // ============================================
-function setupColorPicker() {
-    const picker = document.getElementById('color-picker');
-    const hexDisplay = document.getElementById('color-hex');
-    if (!picker) return;
-    
-    const applyColor = (color) => {
-        editorState.primaryColor = color;
-        picker.value = color;
-        if (hexDisplay) hexDisplay.textContent = color.toUpperCase();
-        document.getElementById('document-canvas').style.setProperty('--doc-primary-color', color);
-        updateColorPresets();
-    };
-    
-    picker.addEventListener('input', (e) => applyColor(e.target.value));
-    
-    document.querySelectorAll('.color-preset').forEach(preset => {
-        preset.addEventListener('click', () => applyColor(preset.dataset.color));
+function setupSidebarTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            
+            btn.classList.add('active');
+            document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+        });
     });
     
-    applyColor(editorState.primaryColor);
-    console.log('✅ Sélecteur de couleur configuré');
+    // Mobile sidebar toggle
+    const mobileToggle = document.getElementById('mobileSidebarToggle');
+    const sidebar = document.getElementById('editorSidebar');
+    if (mobileToggle && sidebar) {
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+    }
 }
 
-function updateColorPresets() {
-    document.querySelectorAll('.color-preset').forEach(p => {
-        p.classList.toggle('active', p.dataset.color === editorState.primaryColor);
+// ============================================
+// CONTRÔLES DE ZOOM
+// ============================================
+function setupZoomControls() {
+    const updateZoom = () => {
+        const wrapper = document.getElementById('document-wrapper');
+        if (wrapper) {
+            wrapper.style.transform = `scale(${editorState.zoom})`;
+        }
+        const levelEl = document.getElementById('zoom-level');
+        if (levelEl) {
+            levelEl.textContent = `${Math.round(editorState.zoom * 100)}%`;
+        }
+    };
+    
+    document.getElementById('btn-zoom-in')?.addEventListener('click', () => {
+        editorState.zoom = Math.min(2.5, +(editorState.zoom + 0.1).toFixed(2));
+        updateZoom();
+    });
+    
+    document.getElementById('btn-zoom-out')?.addEventListener('click', () => {
+        editorState.zoom = Math.max(0.3, +(editorState.zoom - 0.1).toFixed(2));
+        updateZoom();
+    });
+    
+    document.getElementById('btn-zoom-fit')?.addEventListener('click', () => {
+        editorState.zoom = 1.0;
+        updateZoom();
+    });
+    
+    // Zoom avec la molette de la souris (Ctrl + Scroll)
+    document.getElementById('canvasArea')?.addEventListener('wheel', (e) => {
+        if (e.ctrlKey) {
+            e.preventDefault();
+            if (e.deltaY < 0) {
+                editorState.zoom = Math.min(2.5, +(editorState.zoom + 0.05).toFixed(2));
+            } else {
+                editorState.zoom = Math.max(0.3, +(editorState.zoom - 0.05).toFixed(2));
+            }
+            updateZoom();
+        }
+    });
+    
+    updateZoom();
+}
+
+// ============================================
+// EXPORT ET SAUVEGARDE
+// ============================================
+function setupExportControls() {
+    // Boutons de téléchargement
+    const downloadActions = [
+        document.getElementById('btn-download-pdf'),
+        document.getElementById('header-download-btn')
+    ];
+    
+    downloadActions.forEach(btn => {
+        if (btn) {
+            btn.addEventListener('click', async () => {
+                if (!editorState.currentUser) {
+                    document.getElementById('loginModal').classList.add('active');
+                    
+                    // Attendre que l'utilisateur ferme la modal
+                    await new Promise(resolve => {
+                        const closeModal = () => {
+                            document.getElementById('loginModal').classList.remove('active');
+                            document.getElementById('loginModalClose')?.removeEventListener('click', closeModal);
+                            resolve();
+                        };
+                        document.getElementById('loginModalClose')?.addEventListener('click', closeModal);
+                    });
+                }
+                await generatePDF();
+            });
+        }
+    });
+    
+    // Sauvegarde brouillon
+    document.getElementById('btn-save-draft')?.addEventListener('click', () => {
+        saveDraftToLocal();
+        showToast('Brouillon enregistré localement', 'success');
+    });
+    
+    document.getElementById('btn-load-draft')?.addEventListener('click', () => {
+        loadDraftFromLocal();
+        showToast('Brouillon restauré', 'success');
     });
 }
+
+async function generatePDF() {
+    const canvas = document.getElementById('document-canvas');
+    if (!canvas) return showToast('Erreur: Document introuvable', 'error');
+
+    showToast('Génération du document en cours...', 'info');
+
+    try {
+        // 1. Préparer le document pour la capture
+        const editableElements = canvas.querySelectorAll('[contenteditable="true"]');
+        editableElements.forEach(el => el.contentEditable = 'false');
+
+        // 2. Reset du zoom pour une capture précise
+        const wrapper = document.getElementById('document-wrapper');
+        const originalTransform = wrapper.style.transform;
+        wrapper.style.transform = 'scale(1)';
+        
+        await new Promise(r => setTimeout(r, 300));
+
+        // 3. Capture
+        const quality = document.getElementById('pdf-quality')?.value || '2';
+        const canvasImage = await html2canvas(canvas, { 
+            scale: parseFloat(quality), 
+            useCORS: true, 
+            backgroundColor: '#ffffff',
+            logging: false,
+            windowWidth: canvas.scrollWidth,
+            windowHeight: canvas.scrollHeight
+        });
+
+        // 4. Restaurer l'état
+        editableElements.forEach(el => el.contentEditable = 'true');
+        wrapper.style.transform = originalTransform;
+
+        // 5. Générer le PDF
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ 
+            orientation: 'portrait', 
+            unit: 'mm', 
+            format: 'a4' 
+        });
+        
+        const imgData = canvasImage.toDataURL('image/jpeg', 0.95);
+        pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+        
+        const filename = `TakiDoc_${editorState.template.name.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+        pdf.save(filename);
+
+        // 6. Sauvegarder dans l'historique Supabase si connecté
+        if (editorState.currentUser) {
+            await saveDocumentToHistory(filename);
+        }
+
+        showToast('Document téléchargé avec succès !', 'success');
+
+    } catch (error) {
+        console.error('Erreur génération PDF:', error);
+        showToast('Erreur lors de la génération du PDF', 'error');
+    }
+}
+
+async function saveDocumentToHistory(filename) {
+    try {
+        // Récupérer les données actuelles des champs
+        const documentData = {};
+        if (editorState.template.fields) {
+            editorState.template.fields.forEach(field => {
+                const el = document.getElementById(`field-${field.name}`);
+                if (el) documentData[field.name] = el.textContent;
+            });
+        }
+        
+        documentData.photoDataUrl = editorState.photoDataUrl;
+        documentData.primaryColor = editorState.primaryColor;
+        documentData.fontFamily = editorState.fontFamily;
+        documentData.generatedAt = new Date().toISOString();
+
+        // 1. Créer une entrée d'achat (gratuite pour l'instant)
+        const { data: purchaseData, error: purchaseError } = await supabase
+            .from('purchases')
+            .insert({
+                user_id: editorState.currentUser.id,
+                template_id: editorState.template.id,
+                amount_paid: editorState.template.price || 0,
+                currency: 'XAF',
+                payment_method: 'free_download',
+                payment_status: 'completed',
+                payment_reference: `FREE_${Date.now()}`
+            })
+            .select()
+            .single();
+            
+        if (purchaseError) throw purchaseError;
+
+        // 2. Créer l'entrée du document généré
+        const { error: docError } = await supabase
+            .from('user_documents')
+            .insert({
+                purchase_id: purchaseData.id,
+                user_id: editorState.currentUser.id,
+                template_id: editorState.template.id,
+                document_data: documentData,
+                generated_pdf_url: null // Pourra être mis à jour si on upload le PDF vers Storage
+            });
+            
+        if (docError) throw docError;
+        
+        console.log('✅ Document enregistré dans l\'historique');
+    } catch (error) {
+        console.error('Erreur sauvegarde historique:', error);
+    }
+}
+
+// ============================================
+// GESTION DES BROUILLONS (LOCALSTORAGE)
+// ============================================
+function saveDraftToLocal() {
+    if (!editorState.draftKey) return;
+    
+    const draftData = {
+        timestamp: Date.now(),
+        fields: {},
+        photoDataUrl: editorState.photoDataUrl,
+        primaryColor: editorState.primaryColor,
+        fontFamily: editorState.fontFamily
+    };
+    
+    if (editorState.template.fields) {
+        editorState.template.fields.forEach(field => {
+            const el = document.getElementById(`input-${field.name}`);
+            if (el) draftData.fields[field.name] = el.value;
+        });
+    }
+    
+    localStorage.setItem(editorState.draftKey, JSON.stringify(draftData));
+    
+    const statusEl = document.getElementById('header-doc-status');
+    if (statusEl) {
+        statusEl.className = 'doc-status';
+        statusEl.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i><span>Toutes les modifications sont sauvegardées</span>';
+    }
+    editorState.isDirty = false;
+    
+    // Afficher le bouton de restauration
+    const loadBtn = document.getElementById('btn-load-draft');
+    if (loadBtn) loadBtn.style.display = 'block';
+}
+
+function loadDraftFromLocal() {
+    if (!editorState.draftKey) return;
+    
+    const saved = localStorage.getItem(editorState.draftKey);
+    if (!saved) return;
+    
+    try {
+        const draftData = JSON.parse(saved);
+        
+        // Restaurer les champs
+        if (draftData.fields) {
+            Object.keys(draftData.fields).forEach(fieldName => {
+                const input = document.getElementById(`input-${fieldName}`);
+                const canvasEl = document.getElementById(`field-${fieldName}`);
+                if (input) input.value = draftData.fields[fieldName];
+                if (canvasEl) canvasEl.textContent = draftData.fields[fieldName];
+            });
+        }
+        
+        // Restaurer le design
+        if (draftData.primaryColor) {
+            editorState.primaryColor = draftData.primaryColor;
+            document.getElementById('document-canvas').style.setProperty('--doc-primary-color', editorState.primaryColor);
+            const colorPicker = document.getElementById('color-picker');
+            const colorHex = document.getElementById('color-hex');
+            if (colorPicker) colorPicker.value = editorState.primaryColor;
+            if (colorHex) colorHex.textContent = editorState.primaryColor.toUpperCase();
+        }
+        
+        if (draftData.fontFamily) {
+            editorState.fontFamily = draftData.fontFamily;
+            document.getElementById('document-canvas').style.fontFamily = editorState.fontFamily;
+            const fontSelect = document.getElementById('font-family-select');
+            if (fontSelect) fontSelect.value = editorState.fontFamily;
+        }
+        
+        // Restaurer la photo
+        if (draftData.photoDataUrl) {
+            editorState.photoDataUrl = draftData.photoDataUrl;
+            const preview = document.getElementById('photo-preview-area');
+            const removeBtn = document.getElementById('photo-remove');
+            if (preview) {
+                preview.innerHTML = `<img src="${editorState.photoDataUrl}" alt="Photo de profil">`;
+                preview.classList.add('has-image');
+            }
+            if (removeBtn) removeBtn.style.display = 'block';
+            
+            const docPhotoContainer = document.getElementById('doc-photo');
+            if (docPhotoContainer) {
+                docPhotoContainer.innerHTML = `<img src="${editorState.photoDataUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            }
+        }
+        
+        showToast('Brouillon restauré avec succès', 'success');
+    } catch (e) {
+        console.error('Erreur restauration brouillon:', e);
+    }
+}
+
+// ============================================
+// RACCOURCIS CLAVIER
+// ============================================
+function setupKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+        // Ctrl+S ou Cmd+S : Sauvegarder le brouillon
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            saveDraftToLocal();
+            showToast('Brouillon sauvegardé (Ctrl+S)', 'success');
+        }
+        
+        // Ctrl+P ou Cmd+P : Télécharger le PDF
+        if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+            e.preventDefault();
+            document.getElementById('header-download-btn')?.click();
+        }
+    });
+}
+
+// ============================================
+// INITIALISATION GLOBALE
+// ============================================
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 Initialisation de l\'éditeur TakiDoc...');
+    
+    await checkAuth();
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const templateId = urlParams.get('id');
+    
+    if (!templateId) {
+        console.error('❌ Aucun ID de template dans l\'URL');
+        showToast('Erreur: Aucun document spécifié', 'error');
+        setTimeout(() => window.location.href = 'index.html', 2000);
+        return;
+    }
+    
+    await loadTemplate(templateId);
+    
+    if (editorState.template) {
+        await initEditor();
+    }
+    
+    // Avertissement avant de quitter si des modifications non sauvegardées existent
+    window.addEventListener('beforeunload', (e) => {
+        if (editorState.isDirty) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+});
