@@ -2720,13 +2720,11 @@
 <script type="module">
 import { templatesRegistry } from './js/templates-registry.js';
 
-// =============================================
-// TAKIDOC — CATALOGUE RAPIDE + FAVORIS SUPABASE
-// =============================================
+// ============================================
+// TAKIDOC — CATALOGUE RAPIDE + FAVORIS HYBRIDES
+// ============================================
 
 const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
-
-// Utilise ici ta clé publique anon/publishable actuelle.
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
 
 const grid = document.getElementById('masonryGrid');
@@ -2735,33 +2733,17 @@ const catalogueStatus = document.getElementById('catalogueStatus');
 const catalogueTitle = document.getElementById('catalogueTitle');
 
 const categoryNames = {
-    cv: 'CV',
-    lettre: 'Lettre',
-    contrat: 'Contrat',
-    commercial: 'Commercial',
-    attestation: 'Attestation',
-    administratif: 'Administratif',
-    facture: 'Facture',
-    devis: 'Devis',
-    rapport: 'Rapport',
-    procuration: 'Procuration',
-    declaration: 'Déclaration',
-    certificat: 'Certificat'
+    cv: 'CV', lettre: 'Lettre', contrat: 'Contrat', commercial: 'Commercial',
+    attestation: 'Attestation', administratif: 'Administratif', facture: 'Facture',
+    devis: 'Devis', rapport: 'Rapport', procuration: 'Procuration',
+    declaration: 'Déclaration', certificat: 'Certificat'
 };
 
 const categoryIcons = {
-    cv: 'fa-user-tie',
-    lettre: 'fa-envelope-open-text',
-    contrat: 'fa-file-contract',
-    commercial: 'fa-file-invoice',
-    attestation: 'fa-certificate',
-    administratif: 'fa-building',
-    facture: 'fa-file-invoice-dollar',
-    devis: 'fa-file-invoice',
-    rapport: 'fa-file-alt',
-    procuration: 'fa-handshake',
-    declaration: 'fa-file-signature',
-    certificat: 'fa-certificate'
+    cv: 'fa-user-tie', lettre: 'fa-envelope-open-text', contrat: 'fa-file-contract',
+    commercial: 'fa-file-invoice', attestation: 'fa-certificate', administratif: 'fa-building',
+    facture: 'fa-file-invoice-dollar', devis: 'fa-file-invoice', rapport: 'fa-file-alt',
+    procuration: 'fa-handshake', declaration: 'fa-file-signature', certificat: 'fa-certificate'
 };
 
 let currentCat = 'all';
@@ -2775,307 +2757,156 @@ const thumbnailCache = new Map();
 const thumbnailQueue = [];
 const thumbnailQueued = new Set();
 
-const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-}[char]));
-
+// --- UTILITAIRES ---
 function getLocalFavorites() {
     try {
-        const value = JSON.parse(
-            localStorage.getItem('takidoc_favorites') || '[]'
-        );
+        const value = JSON.parse(localStorage.getItem('takidoc_favorites') || '[]');
         return Array.isArray(value) ? value.map(String) : [];
-    } catch {
-        return [];
-    }
+    } catch { return []; }
 }
 
 function saveLocalFavorites() {
-    try {
-        localStorage.setItem(
-            'takidoc_favorites',
-            JSON.stringify([...favoriteIds])
-        );
-    } catch (error) {
-        console.warn('Cache favoris indisponible', error);
-    }
+    try { localStorage.setItem('takidoc_favorites', JSON.stringify([...favoriteIds])); } 
+    catch (e) { console.warn('Cache favoris indisponible', e); }
 }
 
 function showToast(message) {
     let toast = document.getElementById('td-catalogue-toast');
-
     if (!toast) {
         toast = document.createElement('div');
         toast.id = 'td-catalogue-toast';
-        toast.style.cssText = `
-            position:fixed;
-            bottom:95px;
-            left:50%;
-            transform:translateX(-50%);
-            background:#1A1A2E;
-            color:white;
-            padding:12px 18px;
-            border-radius:12px;
-            z-index:99999;
-            font-size:14px;
-            box-shadow:0 8px 25px #0002;
-            max-width:90%;
-            text-align:center;
-        `;
+        toast.style.cssText = `position:fixed; bottom:95px; left:50%; transform:translateX(-50%); background:#1A1A2E; color:white; padding:12px 18px; border-radius:12px; z-index:99999; font-size:14px; box-shadow:0 8px 25px #0002; max-width:90%; text-align:center; transition: opacity 0.3s;`;
         document.body.appendChild(toast);
     }
-
     toast.textContent = message;
-    toast.hidden = false;
-
+    toast.style.opacity = '1';
     clearTimeout(showToast.timer);
-    showToast.timer = setTimeout(() => {
-        toast.hidden = true;
-    }, 2600);
+    showToast.timer = setTimeout(() => { toast.style.opacity = '0'; }, 2600);
 }
 
 function getPlaceholderHTML(template) {
     const icon = categoryIcons[template.category] || 'fa-file-alt';
-
     return `
         <div class="thumbnail-placeholder">
-            <div class="placeholder-icon">
-                <i class="fas ${icon}"></i>
-            </div>
-            <div class="placeholder-title">
-                ${escapeHTML(template.name)}
-            </div>
+            <div class="placeholder-icon"><i class="fas ${icon}"></i></div>
+            <div class="placeholder-title">${template.name}</div>
             <div class="placeholder-lines">
-                <div class="placeholder-line medium"></div>
-                <div class="placeholder-line"></div>
-                <div class="placeholder-line short"></div>
-                <div class="placeholder-line medium"></div>
-                <div class="placeholder-line"></div>
+                <div class="placeholder-line medium"></div><div class="placeholder-line"></div>
+                <div class="placeholder-line short"></div><div class="placeholder-line medium"></div><div class="placeholder-line"></div>
             </div>
-        </div>
-    `;
+        </div>`;
 }
 
 function getThumbnail(template) {
     const id = String(template.id);
-
-    if (thumbnailCache.has(id)) {
-        return thumbnailCache.get(id);
-    }
-
+    if (thumbnailCache.has(id)) return thumbnailCache.get(id);
     try {
         const saved = localStorage.getItem(`thumb_${id}`);
-
-        if (saved) {
-            thumbnailCache.set(id, saved);
-            return saved;
-        }
-    } catch (error) {
-        console.warn('Lecture miniature impossible', error);
-    }
-
+        if (saved) { thumbnailCache.set(id, saved); return saved; }
+    } catch (e) {}
     return null;
 }
 
+// --- RENDU ---
 function renderCard(template, index) {
     const id = String(template.id);
     const saved = favoriteIds.has(id);
     const thumbnail = getThumbnail(template);
     const category = categoryNames[template.category] || template.category || 'Document';
     const price = Number(template.price || 0).toLocaleString('fr-FR');
-    const name = escapeHTML(template.name || 'Document professionnel');
 
     const card = document.createElement('article');
     card.className = 'pin-card';
     card.dataset.templateId = id;
-    card.style.animationDelay = `${Math.min(index, 12) * 0.025}s`;
+    card.style.animationDelay = `${Math.min(index, 12) * 0.03}s`;
 
     card.innerHTML = `
         <div class="document-preview">
-            <div class="category-badge">${escapeHTML(category)}</div>
-
-            ${thumbnail
-                ? `<img src="${thumbnail}" alt="${name}"
-                     class="thumbnail-image" loading="lazy" decoding="async">`
-                : getPlaceholderHTML(template)
-            }
-
+            <div class="category-badge">${category}</div>
+            ${thumbnail ? `<img src="${thumbnail}" alt="${template.name}" class="thumbnail-image" loading="lazy" decoding="async">` : getPlaceholderHTML(template)}
             <div class="pin-overlay">
                 <div class="overlay-top">
-                    <button
-                        type="button"
-                        class="overlay-btn save ${saved ? 'saved' : ''}"
-                        data-favorite="${escapeHTML(id)}"
-                        aria-label="${saved ? 'Retirer des favoris' : 'Ajouter aux favoris'}"
-                        aria-pressed="${saved}">
+                    <button type="button" class="overlay-btn save ${saved ? 'saved' : ''}" data-favorite="${id}" aria-label="${saved ? 'Retirer' : 'Ajouter'} aux favoris">
                         <i class="${saved ? 'fas' : 'far'} fa-heart"></i>
                     </button>
-
-                    <button
-                        type="button"
-                        class="overlay-btn"
-                        data-share="${escapeHTML(id)}"
-                        aria-label="Partager ${name}">
-                        <i class="fas fa-share"></i>
-                    </button>
+                    <button type="button" class="overlay-btn" data-share="${id}" aria-label="Partager"><i class="fas fa-share"></i></button>
                 </div>
-
                 <div class="overlay-bottom">
-                    <h3 class="overlay-title">${name}</h3>
+                    <h3 class="overlay-title">${template.name}</h3>
                     <div class="overlay-price">${price} FCFA</div>
-
-                    <button
-                        type="button"
-                        class="btn-customize-overlay"
-                        data-open="${escapeHTML(id)}">
-                        <i class="fas fa-edit"></i> Personnaliser
-                    </button>
+                    <button type="button" class="btn-customize-overlay" data-open="${id}"><i class="fas fa-edit"></i> Personnaliser</button>
                 </div>
             </div>
-        </div>
-    `;
+        </div>`;
 
     card.addEventListener('click', event => {
         if (event.target.closest('button')) return;
-
         location.href = `editor.html?id=${encodeURIComponent(id)}`;
     });
-
     return card;
-}
-
-function getFilteredTemplates() {
-    const query = currentQuery.trim().toLocaleLowerCase('fr');
-
-    return templatesRegistry.filter(template => {
-        const matchesCategory =
-            currentCat === 'all' || template.category === currentCat;
-
-        const searchableText = [
-            template.name,
-            template.category,
-            template.description
-        ].join(' ').toLocaleLowerCase('fr');
-
-        return matchesCategory &&
-            (!query || searchableText.includes(query));
-    });
 }
 
 function renderPins(documents) {
     if (!grid) return;
-
     const version = ++renderVersion;
 
     if (!documents.length) {
-        grid.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-search"></i>
-                <h3>Aucun document trouvé</h3>
-                <p>Essayez une autre recherche ou une autre catégorie.</p>
-            </div>
-        `;
+        grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><i class="fas fa-search"></i><h3>Aucun document trouvé</h3><p>Essayez une autre recherche ou catégorie.</p></div>`;
         return;
     }
 
     const fragment = document.createDocumentFragment();
-
-    documents.forEach((template, index) => {
-        fragment.appendChild(renderCard(template, index));
-    });
-
-    // Affichage immédiat : aucune attente des miniatures.
+    documents.forEach((template, index) => fragment.appendChild(renderCard(template, index)));
+    
+    // Affichage IMMÉDIAT (pas d'attente des miniatures)
     grid.replaceChildren(fragment);
-
-    // Les miniatures sont traitées après le rendu.
     scheduleThumbnails(documents, version);
 }
 
 function filterAndRender() {
-    const documents = getFilteredTemplates();
+    const query = currentQuery.trim().toLocaleLowerCase('fr');
+    const documents = templatesRegistry.filter(template => {
+        const matchesCategory = currentCat === 'all' || template.category === currentCat;
+        const searchableText = [template.name, template.category, template.description].join(' ').toLocaleLowerCase('fr');
+        return matchesCategory && (!query || searchableText.includes(query));
+    });
+
     renderPins(documents);
 
     if (catalogueTitle) {
-        const category = currentCat === 'all'
-            ? 'Tous'
-            : categoryNames[currentCat] || currentCat;
-
-        catalogueTitle.textContent = currentQuery
-            ? `Résultats pour « ${currentQuery} » (${documents.length})`
-            : `${category} — ${documents.length} document${documents.length > 1 ? 's' : ''}`;
+        const catName = currentCat === 'all' ? 'Tous' : (categoryNames[currentCat] || currentCat);
+        catalogueTitle.textContent = query ? `Résultats pour « ${query} » (${documents.length})` : `${catName} — ${documents.length} document${documents.length > 1 ? 's' : ''}`;
     }
-
-    if (catalogueStatus) {
-        catalogueStatus.textContent =
-            'Choisissez un document et personnalisez-le selon vos besoins.';
-    }
+    if (catalogueStatus) catalogueStatus.textContent = 'Choisissez un document et personnalisez-le selon vos besoins.';
 }
 
-// =============================================
-// MINIATURES EN ARRIÈRE-PLAN
-// =============================================
-
+// --- MINIATURES EN ARRIÈRE-PLAN (Non-bloquant) ---
 async function generateThumbnail(template) {
     const id = String(template.id);
-    const cached = getThumbnail(template);
-
-    if (cached) return cached;
+    if (getThumbnail(template)) return getThumbnail(template);
     if (typeof window.html2canvas !== 'function') return null;
 
     let container;
-
     try {
         container = document.createElement('div');
-
-        container.style.cssText = `
-            position:fixed;
-            left:-12000px;
-            top:0;
-            width:794px;
-            height:1123px;
-            overflow:hidden;
-            background:white;
-            pointer-events:none;
-        `;
-
+        container.style.cssText = 'position:fixed; left:-12000px; top:0; width:794px; height:1123px; overflow:hidden; background:white; pointer-events:none;';
+        
         const style = document.createElement('style');
         style.textContent = template.cssStyles || '';
         container.appendChild(style);
-
+        
         const content = document.createElement('div');
         content.innerHTML = template.htmlStructure || '<p>Document</p>';
         container.appendChild(content);
-
         document.body.appendChild(container);
 
-        const canvas = await window.html2canvas(container, {
-            scale: 0.3,
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff',
-            width: 794,
-            height: 1123,
-            windowWidth: 794,
-            windowHeight: 1123
-        });
-
+        const canvas = await window.html2canvas(container, { scale: 0.3, useCORS: true, logging: false, backgroundColor: '#ffffff', width: 794, height: 1123 });
         const data = canvas.toDataURL('image/jpeg', 0.78);
-
         thumbnailCache.set(id, data);
-
-        try {
-            localStorage.setItem(`thumb_${id}`, data);
-        } catch {
-            // Le cache est facultatif ; ne bloque pas le catalogue.
-        }
-
+        
+        try { localStorage.setItem(`thumb_${id}`, data); } catch(e) {}
         return data;
     } catch (error) {
-        console.warn(`Miniature indisponible : ${id}`, error);
         return null;
     } finally {
         container?.remove();
@@ -3083,291 +2914,131 @@ async function generateThumbnail(template) {
 }
 
 let activeThumbnailJobs = 0;
-
 function scheduleThumbnails(documents, version) {
     for (const template of documents) {
         const id = String(template.id);
-
         if (getThumbnail(template) || thumbnailQueued.has(id)) continue;
-
         thumbnailQueued.add(id);
         thumbnailQueue.push({ template, version });
     }
-
     processThumbnailQueue();
 }
 
 function processThumbnailQueue() {
-    // Deux rendus maximum en parallèle pour préserver la fluidité.
-    while (activeThumbnailJobs < 2 && thumbnailQueue.length) {
+    while (activeThumbnailJobs < 2 && thumbnailQueue.length) { // Max 2 rendus en parallèle pour ne pas freezer le site
         const job = thumbnailQueue.shift();
         activeThumbnailJobs++;
 
-        generateThumbnail(job.template)
-            .then(data => {
-                if (!data || job.version !== renderVersion) return;
-
-                const card = grid?.querySelector(
-                    `.pin-card[data-template-id="${CSS.escape(String(job.template.id))}"]`
-                );
-
-                const placeholder = card?.querySelector('.thumbnail-placeholder');
-
-                if (placeholder) {
-                    const img = new Image();
-                    img.className = 'thumbnail-image';
-                    img.loading = 'lazy';
-                    img.decoding = 'async';
-                    img.alt = job.template.name || 'Aperçu du document';
-                    img.src = data;
-                    placeholder.replaceWith(img);
-                }
-            })
-            .catch(error => console.warn('Miniature :', error))
-            .finally(() => {
-                thumbnailQueued.delete(String(job.template.id));
-                activeThumbnailJobs--;
-                processThumbnailQueue();
-            });
+        generateThumbnail(job.template).then(data => {
+            if (!data || job.version !== renderVersion) return;
+            const card = grid?.querySelector(`.pin-card[data-template-id="${CSS.escape(String(job.template.id))}"]`);
+            const placeholder = card?.querySelector('.thumbnail-placeholder');
+            if (placeholder) {
+                const img = new Image();
+                img.className = 'thumbnail-image';
+                img.loading = 'lazy';
+                img.src = data;
+                placeholder.replaceWith(img);
+            }
+        }).finally(() => {
+            thumbnailQueued.delete(String(job.template.id));
+            activeThumbnailJobs--;
+            processThumbnailQueue();
+        });
     }
 }
 
-// =============================================
-// FAVORIS — SUPABASE
-// =============================================
-
+// --- FAVORIS (Hybride : Local d'abord, Supabase en fond) ---
 async function loadFavorites() {
-    // Affichage provisoire depuis le cache local.
     favoriteIds.clear();
     getLocalFavorites().forEach(id => favoriteIds.add(id));
-    filterAndRender();
+    filterAndRender(); // Affiche instantanément avec les favoris locaux
 
     if (!supabase) return;
-
     try {
-        const { data: { session }, error: sessionError } =
-            await supabase.auth.getSession();
-
-        if (sessionError) throw sessionError;
-
+        const { data: { session } } = await supabase.auth.getSession();
         currentUser = session?.user || null;
+        if (!currentUser) return;
 
-        if (!currentUser) {
-            // Les favoris locaux restent disponibles pour les invités.
-            return;
-        }
-
-        const { data, error } = await supabase
-            .from('favorites')
-            .select('template_id')
-            .eq('user_id', currentUser.id);
-
+        const { data, error } = await supabase.from('favorites').select('template_id').eq('user_id', currentUser.id);
         if (error) throw error;
 
-        // Supabase est la source de vérité du compte connecté.
         favoriteIds.clear();
-
-        (data || []).forEach(row => {
-            favoriteIds.add(String(row.template_id));
-        });
-
+        (data || []).forEach(row => favoriteIds.add(String(row.template_id)));
         saveLocalFavorites();
-        filterAndRender();
-
+        filterAndRender(); // Met à jour l'affichage avec les vrais favoris Supabase
     } catch (error) {
-        console.error('Chargement favoris Supabase :', error);
-        showToast('Impossible de charger les favoris en ligne.');
+        console.warn('Chargement favoris Supabase échoué (mode local actif)', error);
     }
 }
 
 async function toggleFavorite(templateId) {
     const id = String(templateId);
-
-    if (!supabase) {
-        showToast('Le service de favoris est indisponible.');
-        return;
-    }
+    if (!supabase) { showToast('Service indisponible'); return; }
 
     try {
-        const { data: { session }, error: sessionError } =
-            await supabase.auth.getSession();
-
-        if (sessionError) throw sessionError;
-
+        const { data: { session } } = await supabase.auth.getSession();
         currentUser = session?.user || null;
 
-        // Un invité peut enregistrer localement, mais ce favori ne sera
-        // visible sur d'autres appareils qu'après synchronisation.
         if (!currentUser) {
-            const wasSaved = favoriteIds.has(id);
-
-            if (wasSaved) favoriteIds.delete(id);
+            // Mode invité : sauvegarde locale uniquement
+            if (favoriteIds.has(id)) favoriteIds.delete(id);
             else favoriteIds.add(id);
-
             saveLocalFavorites();
             updateFavoriteButtons(id);
-
-            showToast(wasSaved
-                ? 'Favori retiré de cet appareil.'
-                : 'Favori local ajouté. Connectez-vous pour le synchroniser.');
-
+            showToast(favoriteIds.has(id) ? 'Ajouté localement. Connectez-vous pour synchroniser.' : 'Retiré localement.');
             return;
         }
 
-        const buttons = [
-            ...document.querySelectorAll(`[data-favorite="${CSS.escape(id)}"]`)
-        ];
+        const buttons = [...document.querySelectorAll(`[data-favorite="${CSS.escape(id)}"]`)];
+        buttons.forEach(b => b.disabled = true);
 
-        buttons.forEach(button => button.disabled = true);
-
-        const { data: existing, error: findError } = await supabase
-            .from('favorites')
-            .select('id')
-            .eq('user_id', currentUser.id)
-            .eq('template_id', id);
-
-        if (findError) throw findError;
+        const { data: existing } = await supabase.from('favorites').select('id').eq('user_id', currentUser.id).eq('template_id', id);
 
         if (existing?.length) {
-            const { error } = await supabase
-                .from('favorites')
-                .delete()
-                .eq('user_id', currentUser.id)
-                .eq('template_id', id);
-
-            if (error) throw error;
-
+            await supabase.from('favorites').delete().eq('user_id', currentUser.id).eq('template_id', id);
             favoriteIds.delete(id);
-            showToast('Retiré de vos favoris.');
+            showToast('Retiré de vos favoris');
         } else {
-            const { error } = await supabase
-                .from('favorites')
-                .insert({
-                    user_id: currentUser.id,
-                    template_id: id
-                });
-
-            if (error) throw error;
-
+            await supabase.from('favorites').insert({ user_id: currentUser.id, template_id: id });
             favoriteIds.add(id);
-            showToast('Ajouté à vos favoris.');
+            showToast('Ajouté à vos favoris');
         }
 
         saveLocalFavorites();
         updateFavoriteButtons(id);
-
     } catch (error) {
-        console.error('Enregistrement du favori échoué :', error);
-
-        showToast(
-            error?.code === '42501'
-                ? 'Supabase refuse cette action : vérifiez les règles RLS de favorites.'
-                : 'Favori non enregistré. Vérifiez la connexion et les autorisations.'
-        );
+        console.error('Erreur favori:', error);
+        showToast('Erreur de synchronisation. Vérifiez les règles RLS Supabase.');
     } finally {
-        document.querySelectorAll(
-            `[data-favorite="${CSS.escape(id)}"]`
-        ).forEach(button => button.disabled = false);
+        document.querySelectorAll(`[data-favorite="${CSS.escape(id)}"]`).forEach(b => b.disabled = false);
     }
 }
 
 function updateFavoriteButtons(id) {
     const saved = favoriteIds.has(String(id));
-
-    document.querySelectorAll(
-        `[data-favorite="${CSS.escape(String(id))}"]`
-    ).forEach(button => {
+    document.querySelectorAll(`[data-favorite="${CSS.escape(String(id))}"]`).forEach(button => {
         button.classList.toggle('saved', saved);
         button.setAttribute('aria-pressed', String(saved));
-        button.setAttribute(
-            'aria-label',
-            saved ? 'Retirer des favoris' : 'Ajouter aux favoris'
-        );
-
         const icon = button.querySelector('i');
-
-        if (icon) {
-            icon.classList.toggle('fas', saved);
-            icon.classList.toggle('far', !saved);
-        }
+        if (icon) { icon.classList.toggle('fas', saved); icon.classList.toggle('far', !saved); }
     });
 }
 
-// Synchroniser les favoris locaux lors d'une connexion.
-// Les identifiants doivent exister dans le registre des modèles.
-async function importLocalFavorites() {
-    if (!supabase || !currentUser) return;
-
-    const localIds = getLocalFavorites();
-
-    if (!localIds.length) return;
-
-    const validIds = new Set(
-        templatesRegistry.map(template => String(template.id))
-    );
-
-    try {
-        const { data, error } = await supabase
-            .from('favorites')
-            .select('template_id')
-            .eq('user_id', currentUser.id);
-
-        if (error) throw error;
-
-        const onlineIds = new Set(
-            (data || []).map(row => String(row.template_id))
-        );
-
-        for (const id of localIds) {
-            if (!validIds.has(id) || onlineIds.has(id)) continue;
-
-            const { error: insertError } = await supabase
-                .from('favorites')
-                .insert({
-                    user_id: currentUser.id,
-                    template_id: id
-                });
-
-            if (insertError) {
-                console.warn('Favori non synchronisé :', id, insertError);
-            } else {
-                onlineIds.add(id);
-            }
-        }
-
-        favoriteIds.clear();
-        onlineIds.forEach(id => favoriteIds.add(id));
-        saveLocalFavorites();
-        filterAndRender();
-
-    } catch (error) {
-        console.warn('Synchronisation des favoris locaux impossible', error);
-    }
-}
-
-// =============================================
-// ÉVÉNEMENTS
-// =============================================
-
+// --- ÉVÉNEMENTS ---
 function bindEvents() {
     catPills.forEach(pill => {
         pill.addEventListener('click', () => {
             catPills.forEach(item => item.classList.remove('active'));
             pill.classList.add('active');
-
             currentCat = pill.dataset.cat || 'all';
             filterAndRender();
-
-            document.getElementById('documents')?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+            document.getElementById('documents')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     });
 
     grid?.addEventListener('click', async event => {
         const favoriteButton = event.target.closest('[data-favorite]');
-
         if (favoriteButton) {
             event.preventDefault();
             event.stopPropagation();
@@ -3376,92 +3047,45 @@ function bindEvents() {
         }
 
         const openButton = event.target.closest('[data-open]');
-
         if (openButton) {
             event.preventDefault();
             event.stopPropagation();
-
-            location.href =
-                `editor.html?id=${encodeURIComponent(openButton.dataset.open)}`;
-
+            location.href = `editor.html?id=${encodeURIComponent(openButton.dataset.open)}`;
             return;
         }
 
         const shareButton = event.target.closest('[data-share]');
-
         if (shareButton) {
             event.preventDefault();
             event.stopPropagation();
-
-            const template = templatesRegistry.find(
-                item => String(item.id) === String(shareButton.dataset.share)
-            );
-
-            const url = new URL(
-                `editor.html?id=${encodeURIComponent(shareButton.dataset.share)}`,
-                location.href
-            ).href;
-
+            const url = new URL(`editor.html?id=${encodeURIComponent(shareButton.dataset.share)}`, location.href).href;
             try {
-                if (navigator.share) {
-                    await navigator.share({
-                        title: `${template?.name || 'Document'} - TakiDoc`,
-                        url
-                    });
-                } else {
-                    await navigator.clipboard.writeText(url);
-                    showToast('Lien copié.');
-                }
-            } catch (error) {
-                if (error.name !== 'AbortError') {
-                    showToast('Impossible de partager ce lien.');
-                }
-            }
+                if (navigator.share) await navigator.share({ title: 'TakiDoc', url });
+                else { await navigator.clipboard.writeText(url); showToast('Lien copié !'); }
+            } catch (e) {}
         }
     });
 }
 
-// =============================================
-// DÉMARRAGE
-// =============================================
-
+// --- DÉMARRAGE ---
 async function init() {
-    // Premier rendu rapide, même si Supabase est momentanément lent.
+    // 1. Rendu IMMÉDIAT depuis le fichier local (0 attente)
     favoriteIds.clear();
     getLocalFavorites().forEach(id => favoriteIds.add(id));
     bindEvents();
     filterAndRender();
 
+    // 2. Initialisation Supabase en arrière-plan (ne bloque pas l'affichage)
     try {
         if (window.supabase?.createClient) {
-            supabase = window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_ANON_KEY
-            );
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            await loadFavorites(); // Synchronise les favoris si connecté
+            
+            supabase.auth.onAuthStateChange(() => { setTimeout(loadFavorites, 0); });
         }
     } catch (error) {
-        console.error('Initialisation Supabase échouée', error);
+        console.warn('Supabase non chargé, mode 100% local actif.');
     }
-
-    if (!supabase) {
-        console.warn('Supabase non chargé : favoris en ligne indisponibles.');
-        return;
-    }
-
-    await loadFavorites();
-    await importLocalFavorites();
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-        currentUser = session?.user || null;
-
-        // Éviter les opérations lourdes directement dans le callback auth.
-        setTimeout(async () => {
-            await loadFavorites();
-            await importLocalFavorites();
-        }, 0);
-    });
-
-    console.info(`TakiDoc : ${templatesRegistry.length} modèles prêts.`);
 }
 
 if (document.readyState === 'loading') {

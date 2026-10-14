@@ -839,6 +839,327 @@
             cursor: pointer;
             color: var(--text-main);
         }
+
+        @media (min-width: 769px) {
+            .editor-desktop-buttons {
+                display: block !important;
+            }
+            .mobile-fab-container {
+                display: none !important;
+            }
+        }
+        @media (max-width: 768px) {
+            .editor-desktop-buttons {
+                display: none !important;
+            }
+            .mobile-fab-container {
+                display: flex !important;
+            }
+        }
+
+       /* ============================================
+   BOUTONS HEADER EN ICÔNES SUR MOBILE
+   ============================================ */
+@media (max-width: 768px) {
+    /* Cacher le texte des boutons, garder les icônes */
+    .editor-header .btn span {
+        display: none !important;
+    }
+    
+    .editor-header .btn {
+        padding: 10px !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        border-radius: 50% !important;
+        justify-content: center !important;
+    }
+    
+    /* Bouton Retour : icône flèche seule */
+    .editor-header .btn-secondary {
+        background: var(--bg-body) !important;
+        border: 1.5px solid var(--border) !important;
+        color: var(--text-main) !important;
+    }
+    
+    .editor-header .btn-secondary i {
+        font-size: 1rem !important;
+    }
+    
+    /* Bouton Télécharger : icône download seule */
+    .editor-header .btn-primary {
+        background: var(--primary) !important;
+        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3) !important;
+    }
+    
+    .editor-header .btn-primary i {
+        font-size: 1rem !important;
+    }
+}
+
+/* Très petits écrans : boutons encore plus compacts */
+@media (max-width: 480px) {
+    .editor-header .btn {
+        padding: 8px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+    }
+    
+    .editor-header .btn i {
+        font-size: 0.9rem !important;
+    }
+}
+/* ============================================
+   ARRIÈRE-PLAN COLORÉ AVEC POINTILLÉS
+   ============================================ */
+.document-area {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
+    background-size: 100% 100%;
+    position: relative;
+}
+
+.document-area::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        radial-gradient(circle, rgba(255,255,255,0.25) 3px, transparent 3px),
+        radial-gradient(circle, rgba(255,255,255,0.15) 1.5px, transparent 1.5px);
+    background-size: 50px 50px, 25px 25px;
+    background-position: 0 0, 25px 25px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* S'assurer que le document reste au-dessus des pointillés */
+.document-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   MODAL CONNEXION - CORRECTION MOBILE
+   ============================================ */
+
+/* Desktop : modal centrée et élégante */
+.login-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    padding: 20px;
+}
+
+.login-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.login-modal-content {
+    background: white;
+    padding: 40px 32px;
+    border-radius: 20px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+    text-align: center;
+    transform: scale(0.95) translateY(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.login-modal.active .login-modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.login-modal-content .modal-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, #FFF5F0 0%, #FFE4D6 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.login-modal-content h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 16px;
+    line-height: 1.3;
+}
+
+.login-modal-content p {
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.login-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.login-modal-actions .btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 14px 20px;
+    font-size: 0.95rem;
+}
+
+/* Mobile : modal adaptée aux petits écrans */
+@media (max-width: 768px) {
+    .login-modal {
+        padding: 16px;
+        align-items: flex-end; /* Modal en bas sur mobile */
+    }
+    
+    .login-modal-content {
+        padding: 28px 20px;
+        border-radius: 24px 24px 0 0; /* Coins arrondis en haut seulement */
+        max-height: 85vh;
+        transform: translateY(100%);
+        margin: 0;
+    }
+    
+    .login-modal.active .login-modal-content {
+        transform: translateY(0);
+    }
+    
+    .login-modal-content .modal-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.7rem;
+        margin-bottom: 16px;
+    }
+    
+    .login-modal-content h3 {
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+    }
+    
+    .login-modal-content p {
+        font-size: 0.9rem;
+        margin-bottom: 24px;
+    }
+    
+    .login-modal-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .login-modal-actions .btn {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+/* Très petits écrans */
+@media (max-width: 380px) {
+    .login-modal-content {
+        padding: 24px 16px;
+    }
+    
+    .login-modal-content h3 {
+        font-size: 1.15rem;
+    }
+    
+    .login-modal-content p {
+        font-size: 0.85rem;
+    }
+}
+
+/* ============================================
+   CORRECTION ARRIÈRE-PLAN ÉDITEUR
+   ============================================ */
+
+/* Appliquer le dégradé violet/rose/bleu sur la zone canvas */
+.editor-canvas-area {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
+    position: relative;
+}
+
+/* Gros pointillés blancs pour la profondeur */
+.editor-canvas-area::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle, rgba(255,255,255,0.25) 3px, transparent 3px),
+        radial-gradient(circle, rgba(255,255,255,0.15) 1.5px, transparent 1.5px);
+    background-size: 50px 50px, 25px 25px;
+    background-position: 0 0, 25px 25px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* S'assurer que le document reste au-dessus */
+.document-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   CORRECTION HEADER - AFFICHER TAKIDOC COMPLET
+   ============================================ */
+
+/* Sur TOUS les écrans, afficher TakiDoc complet */
+.header-logo .taki,
+.header-logo .doc {
+    display: inline !important;
+}
+
+/* Sur mobile très petit, on peut réduire la taille mais pas cacher */
+@media (max-width: 480px) {
+    .header-logo {
+        font-size: 1.2rem !important;
+    }
+    
+    .header-logo .taki,
+    .header-logo .doc {
+        display: inline !important;
+    }
+}
+
+/* Supprimer la règle qui cache .doc sur mobile */
+@media (max-width: 768px) {
+    .header-logo .doc {
+        display: inline !important;
+    }
+}
+
+/* Dans le <style> de index.html */
+.header-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0 !important; /* Force la suppression de l'espace */
+    letter-spacing: -0.5px; /* Rapproche les lettres */
+}
+
+.header-logo .taki,
+.header-logo .doc {
+    display: inline;
+    margin: 0 !important;
+    padding: 0 !important;
+}
     </style>
 </head>
 <body>
@@ -1025,6 +1346,31 @@
 
     <!-- TOAST -->
     <div class="editor-toast" id="editorToast"></div>
+
+
+    <!-- Boutons flottants mobile -->
+    <div class="mobile-fab-container" id="mobileFabContainer">
+        <button type="button" class="mobile-fab mobile-fab-customize" id="mobileBtnCustomize" aria-label="Personnaliser le document">
+            <i class="fas fa-sliders-h"></i>
+            <span>Personnaliser</span>
+        </button>
+        <button type="button" class="mobile-fab mobile-fab-download" id="mobileBtnDownload" aria-label="Télécharger le document">
+            <i class="fas fa-download"></i>
+            <span>Télécharger</span>
+        </button>
+    </div>
+
+        <!-- Boutons Desktop (cachés sur mobile) -->
+    <div class="editor-desktop-buttons" style="display: none;">
+        <button id="btn-download" class="btn btn-secondary" style="position: fixed; bottom: 30px; left: 30px; z-index: 999;">
+            <i class="fas fa-download"></i>
+            <span>Télécharger</span>
+        </button>
+        <button id="btn-customize" class="btn btn-primary" style="position: fixed; bottom: 30px; right: 30px; z-index: 999;">
+            <i class="fas fa-sliders-h"></i>
+            <span>Personnaliser</span>
+        </button>
+    </div>
 
     <!-- Scripts -->
     <script type="module" src="js/editor.js"></script>

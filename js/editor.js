@@ -41,6 +41,19 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.classList.remove('show'), 3500);
 }
 
+function setupTypography() {
+    const fontSelect = document.getElementById('font-family-select');
+    if (!fontSelect) return;
+    
+    fontSelect.addEventListener('change', (e) => {
+        editorState.fontFamily = e.target.value;
+        const canvas = document.getElementById('document-canvas');
+        if (canvas) {
+            canvas.style.fontFamily = editorState.fontFamily;
+        }
+        markAsDirty(); // Indique qu'il y a des modifications non sauvegardées
+    });
+}
 function markAsDirty() {
     editorState.isDirty = true;
     const statusEl = document.getElementById('header-doc-status');
@@ -73,6 +86,7 @@ async function checkAuth() {
 // CHARGEMENT DU TEMPLATE
 // ============================================
 async function loadTemplate(templateId) {
+    
     showToast('Chargement du document...', 'info');
     
     // 1. Essayer Supabase en premier
@@ -90,9 +104,9 @@ async function loadTemplate(templateId) {
             
         if (data && !error) {
             editorState.template = {
-                id: data.id,
-                name: data.name,
-                description: data.description,
+            id: data.id,
+               name: data.name,
+              description: data.description,
                 price: data.price_xaf,
                 category: data.category_id,
                 hasPhoto: data.has_photo,
@@ -133,7 +147,10 @@ async function loadTemplate(templateId) {
 // INITIALISATION DE L'ÉDITEUR
 // ============================================
 async function initEditor() {
-    const { template } = editorState;
+     const { template } = editorState;
+    
+    // Zoom automatique : 48% sur mobile, 95% sur desktop
+    editorState.zoom = window.innerWidth <= 768 ? 0.48 : 0.95;
     editorState.draftKey = `takidoc_draft_${template.id}`;
     
     // Mettre à jour le header
@@ -141,6 +158,9 @@ async function initEditor() {
     document.getElementById('header-doc-title').textContent = template.name;
     document.getElementById('sidebar-template-name').textContent = template.name;
     document.getElementById('sidebar-template-desc').textContent = template.description || 'Document professionnel personnalisable.';
+
+    document.getElementById('btn-save-draft')?.addEventListener('click', saveDraftToLocal);
+document.getElementById('btn-load-draft')?.addEventListener('click', loadDraftFromLocal);
     
     // Rendu initial
     renderDocument();
@@ -152,6 +172,7 @@ async function initEditor() {
     setupExportControls();
     setupDirectEditing();
     setupKeyboardShortcuts();
+    setupTypography();
     
     // Charger un brouillon existant si présent
     loadDraftFromLocal();
@@ -532,15 +553,18 @@ async function generatePDF() {
         await new Promise(r => setTimeout(r, 300));
 
         // 3. Capture
-        const quality = document.getElementById('pdf-quality')?.value || '2';
-        const canvasImage = await html2canvas(canvas, { 
-            scale: parseFloat(quality), 
-            useCORS: true, 
-            backgroundColor: '#ffffff',
-            logging: false,
-            windowWidth: canvas.scrollWidth,
-            windowHeight: canvas.scrollHeight
-        });
+        // Récupérer la qualité choisie par l'utilisateur (1, 1.5 ou 2)
+const qualitySelect = document.getElementById('pdf-quality');
+const scale = qualitySelect ? parseFloat(qualitySelect.value) : 2;
+
+const canvasImage = await html2canvas(canvas, { 
+    scale: scale, // <-- C'est ici que la qualité est appliquée
+    useCORS: true, 
+    backgroundColor: '#ffffff',
+    logging: false,
+    windowWidth: canvas.scrollWidth,
+    windowHeight: canvas.scrollHeight
+});
 
         // 4. Restaurer l'état
         editableElements.forEach(el => el.contentEditable = 'true');
@@ -738,6 +762,7 @@ function setupKeyboardShortcuts() {
         }
     });
 }
+
 
 // ============================================
 // INITIALISATION GLOBALE
