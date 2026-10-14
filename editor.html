@@ -1160,6 +1160,147 @@
     margin: 0 !important;
     padding: 0 !important;
 }
+
+/* Éléments protégés (footer TakiDoc) */
+.protected-element {
+    contentEditable: false !important;
+    user-select: none !important;
+    pointer-events: none !important;
+    opacity: 0.6;
+    background: rgba(255, 107, 53, 0.05);
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+/* Éléments éditables */
+.direct-editable {
+    cursor: text !important;
+    border: 2px dashed transparent;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    outline: none;
+    position: relative;
+    background-color: transparent !important;
+    color: inherit !important;
+    padding: 2px 4px;
+    margin: -2px -4px;
+}
+
+.direct-editable:hover {
+    border-color: var(--primary);
+    background-color: rgba(255, 107, 53, 0.08) !important;
+}
+
+.direct-editable:focus {
+    border-color: var(--primary);
+    background-color: rgba(255, 107, 53, 0.12) !important;
+    box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.2);
+}
+/* ============================================
+   ÉDITION DIRECTE - STYLES CORRIGÉS
+   ============================================ */
+
+.direct-editable {
+    cursor: text !important;
+    border: 2px dashed transparent !important;
+    border-radius: 4px !important;
+    transition: all 0.2s ease !important;
+    outline: none !important;
+    position: relative !important;
+    background-color: transparent !important;
+    color: inherit !important;
+    padding: 2px 4px !important;
+    margin: -2px -4px !important;
+}
+
+.direct-editable:hover {
+    border-color: rgba(255, 107, 53, 0.4) !important;
+    background-color: rgba(255, 107, 53, 0.05) !important;
+}
+
+.direct-editable:focus {
+    border-color: var(--primary, #FF6B35) !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15) !important;
+    z-index: 10;
+}
+
+/* Empêcher l'héritage de couleur orange */
+.direct-editable * {
+    background-color: transparent !important;
+    color: inherit !important;
+}
+
+/* Footer protégé */
+.takidoc-footer-protected {
+    contentEditable: false !important;
+    user-select: none !important;
+    pointer-events: none !important;
+    opacity: 0.6;
+    background-color: transparent !important;
+}
+
+/* Annuler tout style orange indésirable */
+.document-canvas,
+.document-canvas *,
+.cv-exec-container,
+.cv-exec-container * {
+    background-color: transparent !important;
+}
+
+/* S'assurer que le canvas reste blanc */
+#document-canvas {
+    background: white !important;
+}
+
+/* Corriger les problèmes de rendu */
+.cv-sidebar {
+    background: var(--doc-primary-color, #0F172A) !important;
+}
+
+.cv-sidebar * {
+    color: white !important;
+}
+
+/* ============================================
+   ÉDITION DIRECTE - PROPRE ET GÉNÉRIQUE
+   ============================================ */
+
+/* Cible UNIQUEMENT les éléments qui sont des champs modifiables */
+.direct-editable {
+    cursor: text !important;
+    border: 1px dashed transparent !important;
+    border-radius: 3px !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    outline: none !important;
+    
+    /* CRUCIAL : Ne jamais écraser le fond d'origine du template */
+    background-color: transparent !important;
+    color: inherit !important;
+}
+
+/* Au survol : juste une bordure subtile, pas de fond orange */
+.direct-editable:hover {
+    border-color: rgba(255, 107, 53, 0.6) !important;
+    background-color: transparent !important;
+}
+
+/* Au focus (quand on clique pour écrire) */
+.direct-editable:focus {
+    border-color: var(--primary, #FF6B35) !important;
+    /* Fond très léger uniquement si nécessaire, mais transparent par défaut */
+    background-color: rgba(255, 255, 255, 0.05) !important; 
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.25) !important;
+}
+
+/* Protection du footer TakiDoc */
+.takidoc-protected {
+    contentEditable: false !important;
+    user-select: none !important;
+    pointer-events: none !important;
+    opacity: 0.5;
+    cursor: default !important;
+}
     </style>
 </head>
 <body>
