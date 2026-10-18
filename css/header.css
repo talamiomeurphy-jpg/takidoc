@@ -118,3 +118,4 @@ html.td-lock { overflow: hidden; }
 }
 @media (max-width: 480px) { .td-logo { font-size: 22px; } .td-logo svg { width: 30px; height: 30px; } .td-ib { width: 42px; height: 42px; } }
 @media (prefers-reduced-motion: reduce) { #td-header-container *, .td-drawer, .td-ov { transition: none !important; animation: none !important; } }
+ 
