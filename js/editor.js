@@ -8,7 +8,7 @@
      coupées entre deux lignes (jamais au milieu d'un texte)
    - Nombre de pages et repères de saut de page visibles dans l'éditeur
      (module js/editor-pagination.js)
-
+ 
    v3 :
    - TOUT le texte du document est modifiable (texte mêlé à du gras,
      icônes, listes, tableaux, textes « orphelins »…)
@@ -17,11 +17,13 @@
    - Polices Google des modèles (@import) rechargées
 ============================================ */
 
-import {
-  initPagination,
-  refreshPages,
-  exportPagedPDF
-} from './editor-pagination.js';
+   import './editor-underline-fix.js';
+
+   import {
+     initPagination,
+     refreshPages,
+     exportPagedPDF
+   } from './editor-pagination.js';
 
 const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
