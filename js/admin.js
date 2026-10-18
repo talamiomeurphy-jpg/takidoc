@@ -99,6 +99,18 @@ function bind() {
   $('pv-refresh').onclick = preview;
   $('t-photo').onchange = $('t-color').onchange = check;
   $('t-thumb-file').onchange = e => { const f = e.target.files[0]; if (f) setThumb(URL.createObjectURL(f)); };
+  $('css-var').onclick = () => {
+    const css = val('css');
+    if (css.includes('--doc-primary-color')) return toast('Le CSS utilise déjà --doc-primary-color', 'warning');
+    const cnt = {};
+    for (const m of css.matchAll(/#([0-9a-f]{6})\b/gi)) { const h = '#' + m[1].toLowerCase(); cnt[h] = (cnt[h] || 0) + 1; }
+    const vivid = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); return Math.max(...c) - Math.min(...c) > 60; };
+    const top = Object.entries(cnt).filter(([h]) => vivid(h)).sort((a, b) => b[1] - a[1])[0];
+    if (!top) return toast('Aucune couleur vive (#rrggbb) trouvée dans le CSS', 'warning');
+    if (!confirm(`Remplacer les ${top[1]} occurrence(s) de ${top[0]} par var(--doc-primary-color, ${top[0]}) ?\nLe document gardera cette couleur tant que l'utilisateur n'en choisit pas une autre.`)) return;
+    S.ed.css.setValue(css.replace(new RegExp(top[0], 'gi'), `var(--doc-primary-color, ${top[0]})`));
+    $('t-color').checked = true; toast('Couleur convertie : pensez à enregistrer');
+  };
   $('pv-color').oninput = preview; $('pv-a4').onchange = preview;
   $('fform').addEventListener('input', formEdit); $('fform').addEventListener('change', formEdit); $('fform').addEventListener('click', formClick);
   $$('.tab').forEach(t => t.onclick = () => showTab(t.dataset.tab));
