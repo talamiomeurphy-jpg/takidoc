@@ -1,7 +1,7 @@
 (()=>{'use strict';
 const CFG={url:'https://wyfkogowsdbxctbpfuud.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM',page:200,favKey:'takidoc_favorites',editor:'editor.html',params:['id','template']};
 const ICONS=[['cv','fa-id-card'],['lettre','fa-envelope'],['contrat','fa-file-signature'],['commercial','fa-briefcase'],['attestation','fa-stamp'],['administr','fa-building-columns'],['facture','fa-receipt'],['devis','fa-file-invoice-dollar'],['rapport','fa-chart-column'],['procuration','fa-signature'],['declaration','fa-file-circle-check'],['certificat','fa-award']];
-const RT=[1.414,1.15,1.3,1,1.414,1.22,1.1],$=s=>document.querySelector(s),grid=$('#grid');
+const STUB=document.createElement('div'),RT=[1.414,1.15,1.3,1,1.414,1.22,1.1],$=s=>document.querySelector(s)||STUB,grid=$('#grid');
 const S={cats:[],sb:null,user:null,all:[],list:[],cur:0,cat:'all',q:'',favOnly:false,fav:new Set(),cols:0,colW:200,hs:[],cs:[],cards:[],info:78,busy:false,loaded:false};
 const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

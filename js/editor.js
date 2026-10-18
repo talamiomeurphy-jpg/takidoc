@@ -1,8 +1,14 @@
-
 /* ============================================
-   TAKIDOC — MOTEUR D'ÉDITION PROFESSIONNEL
+   TAKIDOC — MOTEUR D'ÉDITION PROFESSIONNEL (v3)
    Supabase • CSS isolé • A4 • PDF • Brouillons
    Téléchargement actuellement gratuit
+
+   v3 :
+   - TOUT le texte du document est modifiable (texte mêlé à du gras,
+     icônes, listes, tableaux, textes « orphelins »…)
+   - Le design du modèle n'est plus écrasé : couleur et police ne sont
+     forcées que si l'utilisateur les change
+   - Polices Google des modèles (@import) rechargées
 ============================================ */
 
 const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
@@ -16,15 +22,25 @@ const supabase = window.supabase?.createClient(
   SUPABASE_ANON_KEY
 ) || null;
 
-const BRAND_TEXT =
-  'Document personnalisable généré par TakiDoc · www.takidoc.onrender.com';
+/* Mettre à false pour rendre AUSSI le pied de page TakiDoc modifiable */
+const PROTECT_BRAND = true;
+
+const BRAND_TEXTS = [
+  'Document personnalisable généré par TakiDoc',
+  'www.takidoc.onrender.com'
+];
+
+const DEFAULT_FONT = "'Inter', sans-serif";
+const DEFAULT_COLOR = '#0F172A';
 
 const state = {
   template: null,
   user: null,
   zoom: 1,
-  primaryColor: '#0F172A',
-  fontFamily: "'Inter', sans-serif",
+  primaryColor: DEFAULT_COLOR,
+  colorActive: false,      // true seulement si l'utilisateur a choisi une couleur
+  fontFamily: DEFAULT_FONT,
+  fontCustom: false,       // true seulement si l'utilisateur a choisi une police
   photoDataUrl: null,
   draftKey: null,
   isDirty: false,
@@ -79,18 +95,39 @@ function escapeHTML(value) {
   })[c]);
 }
 
+/* Pied de page TakiDoc (protégé) — version « globale » utilisée par les brouillons */
 function isBrandElement(el) {
-  if (!el) return false;
+  if (!el || !PROTECT_BRAND) return false;
 
   const text = (el.textContent || '')
     .replace(/\s+/g, ' ')
     .trim();
 
   return (
-    text.includes('Document personnalisable généré par TakiDoc') ||
-    text.includes('www.takidoc.onrender.com') ||
+    BRAND_TEXTS.some(b => text.includes(b)) ||
     el.matches('[data-takidoc-brand], .takidoc-brand, #takidoc-brand')
   );
+}
+
+/* Version « locale » : ne regarde que le texte PROPRE de l'élément,
+   pour ne pas protéger tout un bloc qui contiendrait le pied de page */
+function ownText(el) {
+  return [...el.childNodes]
+    .filter(n => n.nodeType === 3)
+    .map(n => n.nodeValue)
+    .join(' ')
+    .replace(/\s+/g, ' ');
+}
+
+function isBrandNode(el) {
+  if (!PROTECT_BRAND || !el || el.nodeType !== 1) return false;
+
+  if (el.matches('[data-takidoc-brand], .takidoc-brand, #takidoc-brand')) {
+    return true;
+  }
+
+  const text = ownText(el);
+  return BRAND_TEXTS.some(b => text.includes(b));
 }
 
 function markDirty() {
@@ -350,6 +387,35 @@ function scopeCSS(css) {
   return output;
 }
 
+/* Les @import de polices Google sont retirés du CSS isolé :
+   on les recharge ici sous forme de <link> pour garder la typographie du modèle */
+const loadedFontLinks = new Set();
+
+function loadTemplateFonts(css) {
+  const re = /@import\s+(?:url\(\s*)?['"]?(https:\/\/fonts\.googleapis\.com\/[^'")\s;]+)/gi;
+  let match;
+
+  while ((match = re.exec(String(css || '')))) {
+    const href = match[1].replace(/&amp;/g, '&');
+
+    if (loadedFontLinks.has(href)) continue;
+    loadedFontLinks.add(href);
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    document.head.appendChild(link);
+  }
+}
+
+/* Les <style> intégrés dans le HTML du modèle sont isolés eux aussi,
+   sinon ils s'appliqueraient à toute la page de l'éditeur */
+function scopeInlineStyles(canvas) {
+  $$('style', canvas).forEach(style => {
+    style.textContent = scopeCSS(style.textContent);
+  });
+}
+
 function installTemplateCSS() {
   if (!state.template) return;
 
@@ -362,19 +428,74 @@ function installTemplateCSS() {
   }
 
   style.textContent = scopeCSS(state.template.css);
+  loadTemplateFonts(state.template.css);
+}
 
-  const canvas = getCanvas();
+/* ---------- Couleur principale ---------- */
 
-  if (canvas) {
-    canvas.style.setProperty('--doc-primary-color', state.primaryColor);
-    canvas.style.setProperty('--primary-color', state.primaryColor);
-    canvas.style.fontFamily = state.fontFamily;
+function toHex(value) {
+  const v = String(value || '').trim();
+
+  if (/^#[0-9a-f]{6}$/i.test(v)) return v.toUpperCase();
+
+  const short = v.match(/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i);
+  if (short) {
+    return `#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`
+      .toUpperCase();
   }
 
-  installColorOverrides();
+  return '';
+}
+
+/* Lit la couleur par défaut DU MODÈLE au lieu d'imposer #0F172A */
+function initTemplateColor() {
+  const canvas = getCanvas();
+  const css = state.template?.css || '';
+  if (!canvas) return;
+
+  const computed = getComputedStyle(canvas);
+  let found = '';
+
+  for (const name of ['--doc-primary-color', '--primary-color']) {
+    found = toHex(computed.getPropertyValue(name));
+    if (found) break;
+  }
+
+  if (!found) {
+    const fallback = css.match(
+      /var\(\s*--(?:doc-)?primary-color\s*,\s*(#[0-9a-f]{3,8})/i
+    );
+    if (fallback) found = toHex(fallback[1]);
+  }
+
+  if (found) {
+    state.primaryColor = found;
+    state.colorActive = false;
+  } else {
+    // Le modèle utilise la variable sans valeur : on lui fournit la couleur par défaut
+    state.colorActive = /var\(\s*--(?:doc-)?primary-color/.test(css);
+  }
+
+  syncColorUI();
+}
+
+function syncColorUI() {
+  const picker = $('#color-picker');
+  const hex = $('#color-hex');
+
+  if (picker) picker.value = state.primaryColor;
+  if (hex) hex.textContent = state.primaryColor;
+
+  $$('.color-preset').forEach(button => {
+    button.classList.toggle(
+      'active',
+      (button.dataset.color || '').toUpperCase() === state.primaryColor
+    );
+  });
 }
 
 function installColorOverrides() {
+  const canvas = getCanvas();
   let style = $('#takidoc-color-overrides');
 
   if (!style) {
@@ -382,6 +503,16 @@ function installColorOverrides() {
     style.id = 'takidoc-color-overrides';
     document.head.appendChild(style);
   }
+
+  if (!state.colorActive) {
+    style.textContent = '';
+    canvas?.style.removeProperty('--doc-primary-color');
+    canvas?.style.removeProperty('--primary-color');
+    return;
+  }
+
+  canvas?.style.setProperty('--doc-primary-color', state.primaryColor);
+  canvas?.style.setProperty('--primary-color', state.primaryColor);
 
   style.textContent = `
     #document-canvas {
@@ -427,7 +558,10 @@ function renderDocument() {
   canvas.innerHTML = state.template.html ||
     '<div style="padding:40px;text-align:center">Aperçu du document indisponible.</div>';
 
+  scopeInlineStyles(canvas);
   installTemplateCSS();
+  initTemplateColor();
+  installColorOverrides();
 
   state.template.fields.forEach(field => {
     const el = getTemplateFieldElement(field.name);
@@ -553,55 +687,177 @@ function buildFieldsForm() {
 }
 
 /* ============================================
-   ÉDITION DIRECTE DES TEXTES
+   ÉDITION DIRECTE — TOUT LE TEXTE DU DOCUMENT
+
+   Principe :
+   - un élément qui contient du texte ET seulement des éléments « en ligne »
+     (gras, italique, lien, icône…) devient une zone modifiable entière ;
+   - un élément qui contient du texte ET des blocs (div, li, flex…) voit son
+     texte « orphelin » enveloppé dans un <span> invisible, puis modifiable ;
+   - les icônes, images et le pied de page TakiDoc restent protégés.
 ============================================ */
+
+const SKIP_TAGS = new Set([
+  'script', 'style', 'noscript', 'template', 'head', 'title', 'meta', 'link',
+  'svg', 'canvas', 'iframe', 'video', 'audio', 'object', 'embed', 'img',
+  'br', 'hr', 'button', 'input', 'textarea', 'select', 'option'
+]);
+
+function isBlockLevel(el) {
+  const display = getComputedStyle(el).display;
+
+  return !(
+    display === 'none' ||
+    display === 'contents' ||
+    display.startsWith('inline')
+  );
+}
+
+function collectEditableHosts(canvas) {
+  const hosts = [];
+
+  const visit = el => {
+    if (SKIP_TAGS.has(el.localName) || isBrandNode(el)) return;
+
+    const nodes = [...el.childNodes];
+    const texts = nodes.filter(
+      n => n.nodeType === 3 && n.nodeValue.trim() !== ''
+    );
+    const kids = nodes.filter(
+      n => n.nodeType === 1 && n.localName !== 'br'
+    );
+
+    if (texts.length) {
+      if (!kids.some(isBlockLevel)) {
+        hosts.push(el);
+        return;
+      }
+
+      texts.forEach(textNode => {
+        const span = document.createElement('span');
+        span.className = 'takidoc-text';
+        textNode.before(span);
+        span.appendChild(textNode);
+        hosts.push(span);
+      });
+    }
+
+    kids.forEach(visit);
+  };
+
+  [...canvas.children].forEach(visit);
+
+  // Champs du modèle encore vides : on les rend modifiables aussi
+  (state.template?.fields || []).forEach(field => {
+    const el = getTemplateFieldElement(field.name);
+
+    if (!el || SKIP_TAGS.has(el.localName) || isBrandNode(el)) return;
+    if (hosts.some(h => h === el || h.contains(el) || el.contains(h))) return;
+
+    if (!el.children.length) hosts.push(el);
+  });
+
+  return hosts;
+}
+
+/* Icônes, images et pied de page à l'intérieur d'une zone modifiable : verrouillés */
+function lockInside(host) {
+  $$('*', host).forEach(node => {
+    const tag = node.localName;
+
+    const isMedia = ['img', 'svg', 'canvas', 'video', 'iframe', 'input', 'button', 'select', 'textarea']
+      .includes(tag);
+    const isIcon = tag === 'i' && !node.textContent.trim();
+
+    if (isMedia || isIcon || isBrandNode(node)) {
+      node.contentEditable = 'false';
+    }
+  });
+}
+
+function fieldForElement(el) {
+  return (state.template?.fields || []).find(
+    field => getTemplateFieldElement(field.name) === el
+  );
+}
+
+/* Met à jour le formulaire de gauche quand on écrit directement dans le document */
+function syncFieldInputsFrom(host) {
+  (state.template?.fields || []).forEach(field => {
+    const el = getTemplateFieldElement(field.name);
+    const input = document.getElementById(`input-${field.name}`);
+
+    if (el && input && (el === host || host.contains(el))) {
+      input.value = el.textContent;
+    }
+  });
+}
+
+function bindEditingEvents(canvas) {
+  if (canvas.dataset.editBound) return;
+  canvas.dataset.editBound = '1';
+
+  const hostOf = event => event.target?.closest?.('.direct-editable') || null;
+
+  canvas.addEventListener('input', event => {
+    const host = hostOf(event);
+    if (!host) return;
+
+    // Zone vidée : on retire le <br> résiduel pour qu'elle reste cliquable
+    if (host.innerHTML.toLowerCase() === '<br>') host.innerHTML = '';
+
+    syncFieldInputsFrom(host);
+    markDirty();
+  });
+
+  // Entrée = simple retour à la ligne (ne crée pas de nouveaux blocs dans le modèle)
+  canvas.addEventListener('keydown', event => {
+    if (!hostOf(event)) return;
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      document.execCommand('insertLineBreak');
+    }
+  });
+
+  // Collage en texte brut : évite d'importer les styles de Word / d'un site web
+  canvas.addEventListener('paste', event => {
+    if (!hostOf(event)) return;
+
+    event.preventDefault();
+
+    const text = (event.clipboardData || window.clipboardData)
+      ?.getData('text/plain') || '';
+
+    document.execCommand('insertText', false, text);
+  });
+
+  // Dans l'éditeur, un lien ne doit pas faire quitter la page
+  canvas.addEventListener('click', event => {
+    if (event.target?.closest?.('a')) event.preventDefault();
+  });
+}
 
 function enableFieldEditing() {
   const canvas = getCanvas();
   if (!canvas) return;
 
-  $$('[contenteditable="true"]', canvas).forEach(el => {
-    el.contentEditable = 'false';
+  bindEditingEvents(canvas);
+
+  $$('.direct-editable', canvas).forEach(el => {
+    el.removeAttribute('contenteditable');
     el.classList.remove('direct-editable');
   });
 
-  const protectedSelector =
-    'script,style,svg,path,button,input,textarea,select,option,img,iframe,video,audio,br,hr';
+  const hosts = collectEditableHosts(canvas);
 
-  const nodes = $$('*', canvas).filter(el => {
-    if (el.matches(protectedSelector) || el.closest(protectedSelector)) {
-      return false;
-    }
-
-    if (isBrandElement(el)) return false;
-
-    const hasElementChildren = [...el.children].some(
-      child => !child.matches('br')
-    );
-
-    return !hasElementChildren &&
-      (el.textContent || '').trim().length > 0;
-  });
-
-  (state.template?.fields || []).forEach(field => {
-    const el = getTemplateFieldElement(field.name);
-
-    if (el && !isBrandElement(el) && !el.matches(protectedSelector)) {
-      nodes.push(el);
-    }
-  });
-
-  [...new Set(nodes)].forEach((el, index) => {
-    if (isBrandElement(el)) return;
-
+  hosts.forEach((el, index) => {
     if (!el.dataset.takidocEditId) {
-      const field = (state.template?.fields || []).find(
-        item => getTemplateFieldElement(item.name) === el
-      );
+      const field = fieldForElement(el);
 
       el.dataset.takidocEditId = field
         ? `field-${field.name}`
-        : `text-${index}`;
+        : `t-${index}`;
     }
 
     el.contentEditable = 'true';
@@ -609,18 +865,7 @@ function enableFieldEditing() {
     el.spellcheck = true;
     el.setAttribute('aria-label', 'Texte modifiable du document');
 
-    el.oninput = () => {
-      const field = (state.template?.fields || []).find(
-        item => getTemplateFieldElement(item.name) === el
-      );
-
-      if (field) {
-        const input = document.getElementById(`input-${field.name}`);
-        if (input) input.value = el.textContent;
-      }
-
-      markDirty();
-    };
+    lockInside(el);
   });
 }
 
@@ -756,40 +1001,21 @@ function setupPhotoUpload() {
    COULEURS ET TYPOGRAPHIE
 ============================================ */
 
-function applyPrimaryColor(color) {
+function applyPrimaryColor(color, options = {}) {
   if (!/^#[0-9a-f]{6}$/i.test(color)) return;
 
   state.primaryColor = color.toUpperCase();
+  state.colorActive = true;
 
-  const canvas = getCanvas();
-
-  if (canvas) {
-    canvas.style.setProperty('--doc-primary-color', state.primaryColor);
-    canvas.style.setProperty('--primary-color', state.primaryColor);
-  }
-
-  const picker = $('#color-picker');
-  const hex = $('#color-hex');
-
-  if (picker) picker.value = state.primaryColor;
-  if (hex) hex.textContent = state.primaryColor;
-
-  $$('.color-preset').forEach(button => {
-    button.classList.toggle(
-      'active',
-      (button.dataset.color || '').toUpperCase() === state.primaryColor
-    );
-  });
-
+  syncColorUI();
   installColorOverrides();
-  markDirty();
+
+  if (!options.silent) markDirty();
 }
 
 function applyFontFamily() {
   const canvas = getCanvas();
   if (!canvas) return;
-
-  canvas.style.fontFamily = state.fontFamily;
 
   let style = $('#takidoc-font-overrides');
 
@@ -799,9 +1025,18 @@ function applyFontFamily() {
     document.head.appendChild(style);
   }
 
+  // Tant que l'utilisateur n'a pas choisi de police, on garde celles du modèle
+  if (!state.fontCustom) {
+    canvas.style.removeProperty('font-family');
+    style.textContent = '';
+    return;
+  }
+
+  canvas.style.fontFamily = state.fontFamily;
+
   style.textContent = `
     #document-canvas,
-    #document-canvas :not(i):not(svg):not(path) {
+    #document-canvas *:not(svg):not(path):not(.fa):not(.fas):not(.far):not(.fab):not([class*="fa-"]) {
       font-family: ${state.fontFamily} !important;
     }
   `;
@@ -823,7 +1058,8 @@ function setupDesignControls() {
   });
 
   $('#font-family-select')?.addEventListener('change', event => {
-    state.fontFamily = event.target.value || "'Inter', sans-serif";
+    state.fontFamily = event.target.value || DEFAULT_FONT;
+    state.fontCustom = true;
 
     applyFontFamily();
     markDirty();
@@ -846,16 +1082,16 @@ function updateZoom() {
 }
 
 function fitZoom() {
-  const container = $('.preview-container');
+  const container = $('.editor-canvas-area') || $('.preview-container');
   const canvas = getCanvas();
 
   if (!container || !canvas) {
     return window.innerWidth <= 768 ? 0.48 : 0.85;
   }
 
-  const available = Math.max(220, container.clientWidth - 36);
-  const canvasWidth =
-    canvas.getBoundingClientRect().width || canvas.offsetWidth || 794;
+  const available = Math.max(220, container.clientWidth - 80);
+  // offsetWidth = largeur réelle, non affectée par le zoom en cours
+  const canvasWidth = canvas.offsetWidth || 794;
 
   return Math.max(0.3, Math.min(1.2, available / canvasWidth));
 }
@@ -892,6 +1128,11 @@ function setupZoomControls() {
    ONGLETS ET PANNEAU MOBILE
 ============================================ */
 
+function openFieldsTab() {
+  $('#editorSidebar')?.classList.add('open');
+  $('.tab-btn[data-tab="fields"]')?.click();
+}
+
 function setupSidebarTabs() {
   $$('.tab-btn').forEach(button => {
     button.addEventListener('click', () => {
@@ -915,17 +1156,42 @@ function setupSidebarTabs() {
     sidebar?.classList.toggle('open');
   });
 
-  $('#mobileBtnCustomize')?.addEventListener('click', () => {
-    sidebar?.classList.add('open');
+  $('#mobileBtnCustomize')?.addEventListener('click', openFieldsTab);
 
-    const fieldsTab = $('.tab-btn[data-tab="fields"]');
-    fieldsTab?.click();
+  $('#btn-customize')?.addEventListener('click', () => {
+    openFieldsTab();
+    $('#fields-form input, #fields-form textarea')?.focus();
   });
 }
 
 /* ============================================
    BROUILLONS LOCAUX
 ============================================ */
+
+/* Nettoyage d'un HTML issu d'un brouillon avant de le réinjecter */
+function sanitizeHTML(html) {
+  const tpl = document.createElement('template');
+  tpl.innerHTML = String(html || '');
+
+  tpl.content
+    .querySelectorAll('script,style,iframe,object,embed,link,meta,base,form')
+    .forEach(node => node.remove());
+
+  tpl.content.querySelectorAll('*').forEach(node => {
+    [...node.attributes].forEach(attr => {
+      const value = attr.value.trim().toLowerCase();
+      const dangerousUrl =
+        ['href', 'src', 'xlink:href'].includes(attr.name) &&
+        value.startsWith('javascript:');
+
+      if (attr.name.startsWith('on') || dangerousUrl) {
+        node.removeAttribute(attr.name);
+      }
+    });
+  });
+
+  return tpl.innerHTML;
+}
 
 function collectDraft() {
   const fields = {};
@@ -938,24 +1204,25 @@ function collectDraft() {
   const canvas = getCanvas();
 
   if (canvas) {
-    $$('[contenteditable="true"]', canvas).forEach((el, index) => {
-      if (!isBrandElement(el)) {
-        const id = el.dataset.takidocEditId ||
-          (el.dataset.takidocEditId = `text-${index}`);
+    $$('.direct-editable', canvas).forEach(el => {
+      const id = el.dataset.takidocEditId;
+      if (!id || isBrandElement(el)) return;
 
-        directTexts[id] = el.textContent;
-      }
+      // Zone avec balises internes (gras, icône…) : on garde le HTML
+      directTexts[id] = el.children.length
+        ? { h: el.innerHTML }
+        : { t: el.textContent };
     });
   }
 
   return {
-    version: 2,
+    version: 3,
     timestamp: Date.now(),
     fields,
     directTexts,
     photoDataUrl: state.photoDataUrl,
-    primaryColor: state.primaryColor,
-    fontFamily: state.fontFamily
+    primaryColor: state.colorActive ? state.primaryColor : null,
+    fontFamily: state.fontCustom ? state.fontFamily : null
   };
 }
 
@@ -1001,6 +1268,7 @@ function loadDraft() {
     if (!raw) return false;
 
     const draft = JSON.parse(raw);
+    const version = Number(draft.version) || 1;
 
     Object.entries(draft.fields || {}).forEach(([name, value]) => {
       setFieldValue(name, value);
@@ -1010,22 +1278,33 @@ function loadDraft() {
 
     if (canvas && draft.directTexts) {
       Object.entries(draft.directTexts).forEach(([id, value]) => {
-        const el = $$('[contenteditable="true"]', canvas).find(
-          node => node.dataset.takidocEditId === id
+        const el = canvas.querySelector(
+          `[data-takidoc-edit-id="${CSS.escape(id)}"]`
         );
 
-        if (el && !isBrandElement(el)) {
+        if (!el || isBrandElement(el)) return;
+
+        if (typeof value === 'string') {            // anciens brouillons
           el.textContent = value;
+        } else if (value?.h !== undefined) {
+          el.innerHTML = sanitizeHTML(value.h);
+        } else if (value?.t !== undefined) {
+          el.textContent = value.t;
         }
       });
     }
 
-    if (draft.primaryColor) {
-      applyPrimaryColor(draft.primaryColor);
+    // Les anciens brouillons enregistraient toujours la couleur / la police par défaut :
+    // on ne les applique que si elles ont réellement été choisies.
+    if (draft.primaryColor &&
+        (version >= 3 || draft.primaryColor.toUpperCase() !== DEFAULT_COLOR)) {
+      applyPrimaryColor(draft.primaryColor, { silent: true });
     }
 
-    if (draft.fontFamily) {
+    if (draft.fontFamily &&
+        (version >= 3 || draft.fontFamily !== DEFAULT_FONT)) {
       state.fontFamily = draft.fontFamily;
+      state.fontCustom = true;
 
       const select = $('#font-family-select');
       if (select) select.value = state.fontFamily;
@@ -1081,10 +1360,12 @@ async function generatePDF() {
 
   const wrapper = $('#document-wrapper');
   const originalTransform = wrapper?.style.transform || '';
-  const editable = $$('[contenteditable="true"]', canvas);
-  const originalContentEditable = editable.map(el => el.contentEditable);
+  const editable = $$('.direct-editable', canvas);
 
   try {
+    // Retire le focus (et son contour) avant la capture
+    document.activeElement?.blur?.();
+
     editable.forEach(el => {
       el.contentEditable = 'false';
     });
@@ -1106,8 +1387,10 @@ async function generatePDF() {
       await document.fonts.ready;
     }
 
+    const scale = parseFloat($('#pdf-quality')?.value) || 2;
+
     const imageCanvas = await window.html2canvas(canvas, {
-      scale: 2,
+      scale,
       useCORS: true,
       backgroundColor: '#ffffff',
       logging: false,
@@ -1164,8 +1447,8 @@ async function generatePDF() {
   } finally {
     if (wrapper) wrapper.style.transform = originalTransform;
 
-    editable.forEach((el, index) => {
-      el.contentEditable = originalContentEditable[index] || 'true';
+    editable.forEach(el => {
+      el.contentEditable = 'true';
     });
   }
 }
@@ -1179,6 +1462,7 @@ function setupExportControls() {
   $('#btn-download-pdf')?.addEventListener('click', download);
   $('#header-download-btn')?.addEventListener('click', download);
   $('#mobileBtnDownload')?.addEventListener('click', download);
+  $('#btn-download')?.addEventListener('click', download);
 
   $('#btn-save-draft')?.addEventListener('click', event => {
     event.preventDefault();
@@ -1275,7 +1559,7 @@ async function initEditor() {
 
     const params = new URLSearchParams(window.location.search);
 
-    await loadTemplate(params.get('id'));
+    await loadTemplate(params.get('id') || params.get('template'));
 
     const template = state.template;
 

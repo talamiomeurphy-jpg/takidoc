@@ -55,7 +55,7 @@ main{padding-top:var(--ch)}
 .sheet img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
 .ph{position:absolute;inset:0;display:grid;place-items:center;color:#c3cad8;font-size:28px;background:linear-gradient(100deg,#fff 30%,#EFF2F8 50%,#fff 70%) 0 0/300% 100%;animation:sh 1.5s linear infinite}
 .ready .ph{display:none}@keyframes sh{to{background-position:-200% 0}}
-.open{position:absolute;inset:0;z-index:1}
+.media>.open{position:absolute;inset:0;z-index:1}
 .ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--night);box-shadow:0 2px 8px rgba(14,26,51,.2);font-size:14px;transition:.15s}.ic:hover{color:var(--or)}
 .fav{position:absolute;top:10px;right:10px;z-index:2;opacity:0}.pin:hover .fav,.pin:focus-within .fav,.fav.on{opacity:1}.fav.on{background:var(--or);color:#fff}.fav.on:hover{color:#fff}
 .hov{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;gap:8px;padding:44px 10px 10px;background:linear-gradient(transparent,rgba(14,26,51,.6));opacity:0;transition:opacity .2s;pointer-events:none}
@@ -96,22 +96,15 @@ body{padding-bottom:62px}
 .top.dn{transform:translateY(calc(-1*(var(--hh) + var(--ch))))}.top.dn .chips{transform:none;opacity:1}
 .intro{padding-top:18px}.intro a{display:none}.intro p{font-size:14px}.info h3{font-size:13px}.media{border-radius:13px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+.chips{position:sticky;top:69px;left:auto;right:auto;z-index:40;height:var(--ch);transform:none;opacity:1;pointer-events:auto}
+main{padding-top:0}
+@media(max-width:1040px){.chips{top:63px}}
 </style>
+<link rel="stylesheet" href="css/header.css">
 </head>
 <body>
-<div class="top" id="top">
-  <header class="hd"><div class="wrap">
-    <a class="brand" href="index.html" aria-label="TakiDoc, accueil"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="10" fill="#FF6B35"/><path d="M10 8h10l5 5v13a1 1 0 0 1-1 1H10a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" fill="#fff"/><path d="M20 8v5h5" fill="#FFD2BF"/><path d="M12.5 16h9M12.5 19.5h9M12.5 23h5" stroke="#FF6B35" stroke-width="1.8" stroke-linecap="round"/></svg><span>Taki<i>Doc</i></span></a>
-    <nav class="nav" aria-label="Catégories principales"><a href="?categorie=cv">CV</a><a href="?categorie=lettre">Lettres</a><a href="?categorie=contrat">Contrats</a><a href="?categorie=facture">Factures</a><a href="?categorie=devis">Devis</a></nav>
-    <form class="sf" id="sf" role="search"><i class="fa-solid fa-magnifying-glass"></i><input id="q" type="search" placeholder="Rechercher un CV, un contrat, une facture…" aria-label="Rechercher un document" autocomplete="off" enterkeyhint="search"><button type="button" id="qc" hidden aria-label="Effacer"><i class="fa-solid fa-xmark"></i></button><kbd>/</kbd></form>
-    <div class="act">
-      <button class="hb" id="favBtn" aria-label="Mes favoris" aria-pressed="false"><i class="fa-regular fa-heart"></i><em id="favN" hidden>0</em></button>
-      <span id="guest" style="display:contents"><a class="bt g" href="auth.html?action=login">Se connecter</a><a class="bt p" href="auth.html?action=signup">S’inscrire</a></span>
-      <a class="av" id="user" href="profile.html" aria-label="Mon compte" hidden></a>
-    </div>
-  </div></header>
-  <nav class="chips" aria-label="Catégories"><div class="wrap"><div class="rail" id="rail"></div></div></nav>
-</div>
+<div id="td-header-container"></div>
+<div class="chips" id="chipsBar"><div class="wrap rail" id="rail"></div></div>
 
 <main>
   <section class="wrap intro"><div><h1>Des documents professionnels, prêts à personnaliser.</h1><p>Parcourez la bibliothèque, choisissez un modèle et ouvrez-le dans l’éditeur TakiDoc.</p></div><a href="comment-ca-marche.html">Comment ça marche</a></section>
@@ -128,5 +121,6 @@ body{padding-bottom:62px}
 <div class="toast" id="toast" role="status"></div>
 
 <script src="js/home.js"></script>
+<script src="js/header.js"></script>
 </body>
 </html>
