@@ -74,20 +74,67 @@
   }
 
   /* ---------- Rendu ---------- */
-  const logo = (cls = '') => `<a class="td-logo ${cls}" href="${CFG.home}" aria-label="TakiDoc, accueil">
-    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="10" fill="#FF6B35"/><path d="M10 8h10l5 5v13a1 1 0 0 1-1 1H10a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" fill="#fff"/><path d="M20 8v5h5" fill="#FFD2BF"/><path d="M12.5 16h9M12.5 19.5h9M12.5 23h5" stroke="#FF6B35" stroke-width="1.8" stroke-linecap="round"/></svg>
-    <span>Taki<i>Doc</i></span></a>`;
+  
+
+
+
+const logo = (cls = '') => `
+  <a class="td-logo ${cls}" href="${CFG.home}" aria-label="TakiDoc, accueil">
+    <img
+      src="favicon-32x32.png"
+      alt=""
+      width="36"
+      height="36"
+    >
+    <span class="td-logo-wordmark"><span class="td-logo-taki">Taki</span><span class="td-logo-doc">Doc</span></span>
+  </a>`;
+
+
+
+
+
+
+
 
   const dd = (id, label, body, cls = '') => `<div class="td-dd ${cls}"><button class="td-nl" type="button" data-dd="${id}" aria-haspopup="true" aria-expanded="false">${label}<i class="fa-solid fa-chevron-down"></i></button><div class="td-menu" role="menu">${body}</div></div>`;
   const catLinks = () => S.cats.map(c => `<a class="td-mi" role="menuitem" href="${catUrl(c.id)}"><i class="fa-solid ${catIcon(c.name + ' ' + c.id)}"></i>${esc(c.name)}</a>`).join('') +
     `<a class="td-mi td-all" role="menuitem" href="index.html#catalog"><i class="fa-solid fa-border-all"></i>Tous les documents</a>`;
 
-  function nav(cur) {
-    return `<nav class="td-nav" aria-label="Navigation principale">${MAIN.map(m => m.menu
-      ? dd('cats', 'Modèles', catLinks(), 'td-wide')
-      : `<a class="td-nl${m.low ? ' td-lo' : ''}${cur === m.id ? ' on' : ''}" href="${m.url}">${m.name}</a>`).join('')}
-      ${dd('legal', 'Plus', LEGAL.map(([n, u]) => `<a class="td-mi" role="menuitem" href="${u}"><i class="fa-regular fa-file-lines"></i>${n}</a>`).join(''), 'td-right')}</nav>`;
-  }
+  
+function nav(cur) {
+  const information = MAIN
+    .filter(m => m.low)
+    .map(m => `
+      <a class="td-mi" role="menuitem" href="${m.url}">
+        <i class="fa-solid ${m.icon}"></i>${m.name}
+      </a>
+    `)
+    .join('');
+
+  const legalLinks = LEGAL
+    .map(([name, url]) => `
+      <a class="td-mi" role="menuitem" href="${url}">
+        <i class="fa-regular fa-file-lines"></i>${name}
+      </a>
+    `)
+    .join('');
+
+  return `
+    <nav class="td-nav" aria-label="Navigation principale">
+      ${MAIN.filter(m => !m.low).map(m => m.menu
+        ? dd('cats', 'Modèles', catLinks(), 'td-wide')
+        : `<a class="td-nl${cur === m.id ? ' on' : ''}" href="${m.url}">${m.name}</a>`
+      ).join('')}
+
+      ${dd(
+        'legal',
+        'Plus',
+        information + legalLinks,
+        'td-right'
+      )}
+    </nav>`;
+}
+
 
   function search(id) {
     const q = new URLSearchParams(location.search).get('q') || '';
