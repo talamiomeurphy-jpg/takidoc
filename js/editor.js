@@ -1,7 +1,13 @@
 /* ============================================
-   TAKIDOC — MOTEUR D'ÉDITION PROFESSIONNEL (v3)
-   Supabase • CSS isolé • A4 • PDF • Brouillons
+   TAKIDOC — MOTEUR D'ÉDITION PROFESSIONNEL (v4)
+   Supabase • CSS isolé • A4 • PDF multi-pages • Brouillons
    Téléchargement actuellement gratuit
+
+   v4 :
+   - Documents longs : le PDF compte autant de pages A4 que nécessaire,
+     coupées entre deux lignes (jamais au milieu d'un texte)
+   - Nombre de pages et repères de saut de page visibles dans l'éditeur
+     (module js/editor-pagination.js)
 
    v3 :
    - TOUT le texte du document est modifiable (texte mêlé à du gras,
@@ -10,6 +16,12 @@
      forcées que si l'utilisateur les change
    - Polices Google des modèles (@import) rechargées
 ============================================ */
+
+import {
+  initPagination,
+  refreshPages,
+  exportPagedPDF
+} from './editor-pagination.js';
 
 const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
@@ -138,6 +150,9 @@ function markDirty() {
     status.className = 'doc-status saving';
     status.textContent = 'Modifications en cours…';
   }
+
+  // Le texte a pu se déplacer : on recalcule les pages
+  refreshPages();
 
   clearTimeout(state.autoSaveTimer);
 
@@ -1079,6 +1094,7 @@ function updateZoom() {
   }
 
   setText('zoom-level', `${Math.round(state.zoom * 100)}%`);
+  refreshPages();
 }
 
 function fitZoom() {
@@ -1341,116 +1357,13 @@ function loadDraft() {
 
 /* ============================================
    EXPORT PDF A4 — GRATUIT
+   Multi-pages : voir js/editor-pagination.js
 ============================================ */
 
 async function generatePDF() {
-  const canvas = getCanvas();
-
-  if (!canvas || !state.template) {
-    toast('Document introuvable.', 'error');
-    return;
-  }
-
-  if (!window.html2canvas || !window.jspdf?.jsPDF) {
-    toast('Les bibliothèques PDF ne sont pas chargées.', 'error');
-    return;
-  }
-
-  toast('Préparation du PDF…', 'info');
-
-  const wrapper = $('#document-wrapper');
-  const originalTransform = wrapper?.style.transform || '';
-  const editable = $$('.direct-editable', canvas);
-
-  try {
-    // Retire le focus (et son contour) avant la capture
-    document.activeElement?.blur?.();
-
-    editable.forEach(el => {
-      el.contentEditable = 'false';
-    });
-
-    if (wrapper) wrapper.style.transform = 'none';
-
-    await Promise.all(
-      $$('img', canvas).map(img => {
-        if (img.complete) return Promise.resolve();
-
-        return new Promise(resolve => {
-          img.onload = resolve;
-          img.onerror = resolve;
-        });
-      })
-    );
-
-    if (document.fonts?.ready) {
-      await document.fonts.ready;
-    }
-
-    const scale = parseFloat($('#pdf-quality')?.value) || 2;
-
-    const imageCanvas = await window.html2canvas(canvas, {
-      scale,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      logging: false,
-      width: canvas.scrollWidth,
-      height: canvas.scrollHeight,
-      windowWidth: Math.max(
-        document.documentElement.clientWidth,
-        canvas.scrollWidth
-      )
-    });
-
-    const { jsPDF } = window.jspdf;
-
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-      compress: true
-    });
-
-    const pageWidth = 210;
-    const pageHeight = 297;
-
-    const ratio = Math.min(
-      pageWidth / imageCanvas.width,
-      pageHeight / imageCanvas.height
-    );
-
-    const width = imageCanvas.width * ratio;
-    const height = imageCanvas.height * ratio;
-
-    pdf.addImage(
-      imageCanvas.toDataURL('image/jpeg', 0.96),
-      'JPEG',
-      (pageWidth - width) / 2,
-      0,
-      width,
-      height
-    );
-
-    const safeName = (state.template.name || 'document')
-      .replace(/[^a-z0-9_-]/gi, '_');
-
-    pdf.save(`TakiDoc_${safeName}.pdf`);
-
-    // Aucun achat fictif n’est créé :
-    // le téléchargement est gratuit pendant la construction du site.
-    saveDraft({ quiet: true });
-
-    toast('PDF téléchargé avec succès.', 'success');
-  } catch (error) {
-    console.error('Erreur pendant la génération du PDF :', error);
-    toast('Erreur pendant la génération du PDF. Réessaie.', 'error');
-  } finally {
-    if (wrapper) wrapper.style.transform = originalTransform;
-
-    editable.forEach(el => {
-      el.contentEditable = 'true';
-    });
-  }
+  // Aucun achat fictif n'est créé :
+  // le téléchargement est gratuit pendant la construction du site.
+  await exportPagedPDF({ state, $, $$, getCanvas, toast, saveDraft });
 }
 
 function setupExportControls() {
@@ -1481,6 +1394,7 @@ function setupExportControls() {
       event.preventDefault();
 
       if (loadDraft()) {
+        refreshPages();
         toast('Brouillon restauré.', 'success');
       } else {
         toast('Aucun brouillon disponible.', 'info');
@@ -1587,6 +1501,9 @@ async function initEditor() {
     // Réactiver l’édition après la restauration du brouillon.
     applySavedFieldValues();
     enableFieldEditing();
+
+    // Compteur de pages, repères de saut de page et note dans l'onglet Export
+    initPagination({ state, $, $$, getCanvas });
 
     state.isDirty = false;
 
