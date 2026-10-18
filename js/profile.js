@@ -7,7 +7,7 @@ const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
 const LOGIN_URL    = 'auth.html?action=login';                       // page de connexion
 const HOME_URL     = 'index.html';
-const templateUrl  = (id) => `index.html?template=${encodeURIComponent(id)}`; // page d'un modèle
+const templateUrl = (id) => `editor.html?id=${encodeURIComponent(id)}`; // page d'un modèle
 const resetRedirect = new URL('reset-password.html', location.href).href;     // retour après reset mot de passe
 
 /* ================= Helpers ================= */
@@ -67,37 +67,171 @@ document.addEventListener('click', (e) => {
 window.addEventListener('hashchange', () => go(location.hash.slice(1), false));
 
 /* ================= Aperçus de modèles ================= */
+
+/* =========================================================
+   APERÇUS DES MODÈLES — TAKIDOC
+   - Miniatures proportionnelles au format A4
+   - Images complètes, sans recadrage
+   - Iframe dimensionné et centré dans son conteneur
+   - Compatibilité avec les favoris et la vue d'ensemble
+   ========================================================= */
+
+const PREVIEW_WIDTH = 794;
+const PREVIEW_HEIGHT = 1123;
+
 function previewHTML(t) {
-  const link = templateUrl(t.id);
-  let inner;
-  if (t.preview_image_url && safeUrl(t.preview_image_url)) {
-    inner = `<img src="${esc(safeUrl(t.preview_image_url))}" alt="Aperçu ${esc(t.name)}" loading="lazy">`;
+  const id = t.id ?? '';
+  const link = templateUrl(id);
+  let inner = '';
+
+  const imageUrl = safeUrl(t.preview_image_url);
+
+  if (imageUrl) {
+    inner = `
+      <img
+        src="${esc(imageUrl)}"
+        alt="Aperçu du document ${esc(t.name || '')}"
+        loading="lazy"
+        decoding="async"
+      >`;
   } else if (t.html_structure) {
-    const doc = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#fff}${t.css_styles || ''}</style></head><body>${t.html_structure}</body></html>`;
-    inner = `<iframe sandbox tabindex="-1" loading="lazy" title="Aperçu ${esc(t.name)}" srcdoc="${esc(doc)}"></iframe>`;
-  } else {
-    inner = '';
+    /*
+     * Le contenu du modèle reste dans un iframe isolé.
+     * Le CSS du modèle est conservé, mais la page d'aperçu
+     * reçoit une base de dimensions cohérente.
+     */
+    const css = String(t.css_styles || '');
+
+    const doc = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  html {
+    width: 100%;
+    min-height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
   }
-  return `<div class="pv${inner ? '' : ' ready'}"><div class="ph0"><i class="fa-regular fa-file-lines"></i></div>${inner}<a href="${link}" aria-label="Ouvrir ${esc(t.name)}"></a>`;
+
+  body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+    background: #fff !important;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+</style>
+<style>${css}</style>
+</head>
+<body>${t.html_structure}</body>
+</html>`;
+
+    inner = `
+      <iframe
+        sandbox
+        tabindex="-1"
+        loading="lazy"
+        title="Aperçu du document ${esc(t.name || '')}"
+        srcdoc="${esc(doc)}"
+        width="${PREVIEW_WIDTH}"
+        height="${PREVIEW_HEIGHT}"
+      ></iframe>`;
+  }
+
+  return `
+    <div class="pv${inner ? '' : ' ready'}">
+      <div class="ph0" aria-hidden="true">
+        <i class="fa-regular fa-file-lines"></i>
+      </div>
+      ${inner}
+      <a
+        href="${esc(link)}"
+        aria-label="Ouvrir le modèle ${esc(t.name || '')}"
+        title="Ouvrir ce modèle"
+      ></a>`;
 }
-function fitPreviews() {
-  $$('.pv iframe').forEach(f => {
-    const w = f.parentElement.clientWidth;
-    if (w) f.style.transform = `scale(${w / 794})`;
+
+/*
+ * Ajuste la page complète à la zone A4.
+ * On utilise la plus petite échelle permise par la largeur
+ * et la hauteur disponibles : aucun débordement du document.
+ */
+function fitPreviews(root = document) {
+  $$('.pv iframe', root).forEach(frame => {
+    const container = frame.parentElement;
+    if (!container) return;
+
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    if (!width || !height) return;
+
+    const scale = Math.min(
+      width / PREVIEW_WIDTH,
+      height / PREVIEW_HEIGHT
+    );
+
+    const renderedWidth = PREVIEW_WIDTH * scale;
+    const renderedHeight = PREVIEW_HEIGHT * scale;
+
+    frame.style.width = `${PREVIEW_WIDTH}px`;
+    frame.style.height = `${PREVIEW_HEIGHT}px`;
+    frame.style.transformOrigin = 'top left';
+    frame.style.transform = `scale(${scale})`;
+    frame.style.left = `${Math.max(0, (width - renderedWidth) / 2)}px`;
+    frame.style.top = `${Math.max(0, (height - renderedHeight) / 2)}px`;
   });
 }
-function bindPreviewLoad(root) {
+
+/*
+ * Attend les images et iframes pour retirer l'indicateur
+ * de chargement. Le délai de secours évite de laisser
+ * indéfiniment une miniature bloquée en chargement.
+ */
+function bindPreviewLoad(root = document) {
   $$('.pv', root).forEach(pv => {
     const media = $('img, iframe', pv);
-    if (!media) return;
-    const done = () => pv.classList.add('ready');
-    if (media.tagName === 'IMG' && media.complete) done(); else media.addEventListener('load', done, { once: true });
-    media.addEventListener('error', done, { once: true });
-    setTimeout(done, 4000);
+
+    if (!media) {
+      pv.classList.add('ready');
+      return;
+    }
+
+    const done = () => {
+      pv.classList.add('ready');
+      fitPreviews(pv);
+    };
+
+    if (media.tagName === 'IMG') {
+      if (media.complete) {
+        done();
+      } else {
+        media.addEventListener('load', done, { once: true });
+        media.addEventListener('error', done, { once: true });
+      }
+    } else {
+      media.addEventListener('load', done, { once: true });
+      media.addEventListener('error', done, { once: true });
+    }
   });
-  fitPreviews();
+
+  fitPreviews(root);
 }
-window.addEventListener('resize', fitPreviews);
+
+window.addEventListener('resize', () => fitPreviews());
+
 
 /* ================= Rendu ================= */
 function favCard(f, removable = true) {

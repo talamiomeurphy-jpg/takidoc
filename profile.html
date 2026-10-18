@@ -74,6 +74,279 @@ td b{display:block}td small{color:var(--mut)}.tag{display:inline-block;padding:3
 .head{flex-direction:column;align-items:flex-start}.hero{flex-direction:column;text-align:center;align-items:stretch}.who{flex-direction:column}.hero .bt{width:100%}
 .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.search,.search input{width:100%}.nt{grid-template-columns:36px minmax(0,1fr)}.nt div:last-child{grid-column:2;justify-content:flex-start}.pb{padding:16px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+
+/* =========================================================
+   TAKIDOC — MINIATURES PROFESSIONNELLES DES DOCUMENTS
+   Feuille entière, ratio A4, aperçu centré, sans découpage
+   ========================================================= */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 22px;
+  align-items: start;
+}
+
+.fc {
+  min-width: 0;
+  width: 100%;
+  position: relative;
+  animation: td-card-in .35s ease both;
+}
+
+@keyframes td-card-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Zone A4 : conserve toujours les proportions de la feuille */
+.pv {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  aspect-ratio: 210 / 297;
+  overflow: hidden;
+  border: 1px solid #E1E6EF;
+  border-radius: 13px;
+  background: #EEF1F6;
+  box-shadow:
+    0 2px 5px rgba(14, 26, 51, .035),
+    0 10px 25px -16px rgba(14, 26, 51, .30);
+  transition:
+    box-shadow .22s ease,
+    border-color .22s ease,
+    transform .22s ease;
+}
+
+/* Effet discret, sans déplacer la carte au survol */
+.fc:hover .pv {
+  border-color: #F5B39A;
+  box-shadow:
+    0 5px 12px rgba(14, 26, 51, .06),
+    0 18px 35px -18px rgba(14, 26, 51, .30);
+}
+
+/* Images : montrer l'image complète, jamais la couper */
+.pv img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  background: #fff;
+}
+
+/* Document HTML rendu dans un iframe de dimensions A4 */
+.pv iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 794px;
+  height: 1123px;
+  max-width: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  transform-origin: top left;
+  pointer-events: none;
+  background: #fff;
+}
+
+/* État de chargement */
+.pv .ph0 {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  color: #A5AEC0;
+  font-size: 30px;
+  background:
+    linear-gradient(
+      100deg,
+      #F0F2F7 20%,
+      #FFFFFF 42%,
+      #F0F2F7 64%
+    );
+  background-size: 250% 100%;
+  animation: td-preview-shimmer 1.6s linear infinite;
+}
+
+.pv.ready .ph0 {
+  display: none;
+}
+
+@keyframes td-preview-shimmer {
+  to { background-position: -250% 0; }
+}
+
+/* Toute la surface reste cliquable pour ouvrir le modèle */
+.pv > a {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  border-radius: inherit;
+  cursor: pointer;
+}
+
+.pv > a:focus-visible {
+  outline: 3px solid var(--or);
+  outline-offset: -4px;
+}
+
+/* Bouton de retrait toujours visible au-dessus de l'aperçu */
+.rm {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #FF6B35;
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(14, 26, 51, .20);
+  transition: background .18s ease, transform .18s ease;
+}
+
+.rm:hover {
+  background: #C92D43;
+  transform: scale(1.06);
+}
+
+.rm:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+/* Informations sous la feuille */
+.fi {
+  min-width: 0;
+  padding: 12px 2px 2px;
+}
+
+.fi small {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.fi h3 {
+  min-height: 2.6em;
+  margin: 0 0 10px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
+  font: 700 15px/1.35 var(--d);
+  letter-spacing: -.015em;
+}
+
+.fr {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fr b {
+  min-width: 0;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.fr b.free {
+  color: var(--ok);
+}
+
+.fr .bt {
+  flex-shrink: 0;
+}
+
+/* Téléphones */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 12px;
+  }
+
+  .pv {
+    border-radius: 10px;
+  }
+
+  .fi {
+    padding-top: 9px;
+  }
+
+  .fi h3 {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .fr {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .fr b {
+    font-size: 13px;
+  }
+
+  .fr .bt.s {
+    height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .rm {
+    top: 7px;
+    right: 7px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 360px) {
+  .grid {
+    gap: 12px 9px;
+  }
+
+  .fr {
+    gap: 6px;
+  }
+
+  .fr .bt.s {
+    padding: 0 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc,
+  .pv,
+  .rm,
+  .pv .ph0 {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -157,3 +430,4 @@ td b{display:block}td small{color:var(--mut)}.tag{display:inline-block;padding:3
 <script src="js/profile.js"></script>
 </body>
 </html>
+ 
