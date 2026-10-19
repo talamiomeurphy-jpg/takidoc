@@ -17,8 +17,10 @@
    - Polices Google des modèles (@import) rechargées
 ============================================ */
 
-   import './editor-underline-fix.js';
 
+   import { initProtection } from './editor-protection.js';
+   import './editor-underline-fix.js';
+ 
    import {
      initPagination,
      refreshPages,
@@ -1472,6 +1474,9 @@ async function initEditor() {
 
   try {
     await checkAuth();
+    
+
+    initProtection({ supabase, state, toast });
 
     const params = new URLSearchParams(window.location.search);
 
