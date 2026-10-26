@@ -56,11 +56,16 @@ USER node
 #    .puppeteerrc.cjs doit être présent AVANT npm install : c'est lui qui
 #    place Chromium dans /app/.cache/puppeteer
 COPY --chown=node:node package*.json .puppeteerrc.cjs ./
-RUN npm ci --omit=dev --no-audit --no-fund \
- || npm install --omit=dev --no-audit --no-fund
 
-# Chrome : installation explicite (sans effet s'il est déjà présent)
-RUN npx puppeteer browsers install chrome
+# npm install (et non npm ci) : fonctionne même si package-lock.json n'est pas à jour
+RUN npm install --omit=dev --no-audit --no-fund
+
+# Chrome : on repart d'un dossier propre, on l'installe, puis on VÉRIFIE que le
+# programme existe vraiment. Si ce n'est pas le cas, le build échoue ICI
+# avec un message clair (au lieu d'un serveur qui plante plus tard).
+RUN rm -rf /app/.cache/puppeteer \
+ && npx puppeteer browsers install chrome \
+ && node -e "const p=require('puppeteer').executablePath(); require('fs').accessSync(p); console.log('Chrome OK :', p)"
 
 # 2) Code de l'application
 COPY --chown=node:node . .
