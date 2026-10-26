@@ -3,13 +3,13 @@
 # TakiDoc — Générateur de documents (PDF / Word)
 # Image prévue pour Render (ou tout hébergeur Docker).
 #
-# - Node 20 sur Debian « bookworm »
+# - Node 22 sur Debian « bookworm » (exigé par Puppeteer 25 et supabase-js)
 # - bibliothèques système exigées par Chromium + polices
 # - Chromium téléchargé par Puppeteer dans /app/.cache/puppeteer
 #   (dossier défini par .puppeteerrc.cjs : il reste dans l'image)
 # - exécution sous l'utilisateur « node » (pas root)
 # ============================================================
-FROM node:20-bookworm-slim
+FROM node:22-bookworm-slim
 
 ENV NODE_ENV=production \
     PORT=10000 \
@@ -58,6 +58,9 @@ USER node
 COPY --chown=node:node package*.json .puppeteerrc.cjs ./
 RUN npm ci --omit=dev --no-audit --no-fund \
  || npm install --omit=dev --no-audit --no-fund
+
+# Chrome : installation explicite (sans effet s'il est déjà présent)
+RUN npx puppeteer browsers install chrome
 
 # 2) Code de l'application
 COPY --chown=node:node . .

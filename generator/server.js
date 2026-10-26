@@ -43,15 +43,20 @@ const { buildSnapshotDocument, SnapshotError } = require('./lib/snapshot');
 ============================================================ */
 const IS_PROD = process.env.NODE_ENV === 'production';
 
+// Nettoie une variable d'environnement : espaces et guillemets collés par erreur
+function cleanEnv(value) {
+  return String(value ?? '').trim().replace(/^['"]+|['"]+$/g, '').trim();
+}
+
 const CONFIG = {
   port: Number(process.env.PORT) || 3001,
-  supabaseUrl: process.env.SUPABASE_URL || 'https://wyfkogowsdbxctbpfuud.supabase.co',
-  supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+  supabaseUrl: cleanEnv(process.env.SUPABASE_URL) || 'https://wyfkogowsdbxctbpfuud.supabase.co',
+  supabaseKey: cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY),
 
   allowedOrigins: (process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',')
     : ['http://localhost:5500', 'http://localhost:3000', 'https://takidoc.onrender.com']
-  ).map(o => o.trim()).filter(Boolean),
+  ).map(o => cleanEnv(o).replace(/\/$/, '')).filter(Boolean),
 
   // Rendu
   maxConcurrentRenders: Math.max(1, Number(process.env.MAX_CONCURRENT_RENDERS) || 2),
@@ -87,6 +92,15 @@ const ALLOWED_ASSET_HOSTS = new Set([
 const ID_RE = /^[A-Za-z0-9_-]{4,128}$/;
 const HEX_COLOR_RE = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 const PHOTO_DATA_URL_RE = /^data:image\/(?:png|jpe?g|webp|gif);base64,[A-Za-z0-9+/=]+$/;
+
+if (!/^https?:\/\//i.test(CONFIG.supabaseUrl)) {
+  console.error('');
+  console.error('❌ SUPABASE_URL est invalide (début de la valeur reçue : « ' + CONFIG.supabaseUrl.slice(0, 12) + '… »).');
+  console.error('   Elle doit ressembler à : https://xxxxxxxx.supabase.co  (sans guillemets, sans espace).');
+  console.error('   Corrige-la dans Render > Environment, puis redéploie.');
+  console.error('');
+  process.exit(1);
+}
 
 if (!CONFIG.supabaseKey) {
   console.warn('⚠️  SUPABASE_SERVICE_ROLE_KEY est vide : /api/generate renverra une erreur de configuration.');
