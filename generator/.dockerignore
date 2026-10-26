@@ -1,0 +1,14 @@
+# TAKIDOC-DOCKERIGNORE-V3
+# Fichiers exclus de l'image Docker du générateur
+node_modules
+.cache
+.env
+.env.*
+!.env.example
+npm-debug.log*
+.git
+.gitignore
+Dockerfile
+.dockerignore
+*.md
+_sauvegarde_avant_lot2

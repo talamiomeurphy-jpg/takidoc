@@ -1,0 +1,25 @@
+{
+  "name": "takidoc-generator",
+  "version": "3.0.0",
+  "description": "Service de génération de documents TakiDoc (PDF et Word)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "cors": "^2.8.5",
+    "dotenv": "^18.0.9",
+    "express": "^4.19.2",
+    "html-to-docx": "^1.8.0",
+    "puppeteer": "^25.16.0",
+    "sanitize-html": "^2.13.0"
+  },
+  "overrides": {
+    "image-size": "2.0.4"
+  }
+}
