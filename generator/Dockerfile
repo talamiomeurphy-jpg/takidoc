@@ -67,7 +67,7 @@ RUN npm install --omit=dev --no-audit --no-fund
 # avec un message clair (au lieu d'un serveur qui plante plus tard).
 RUN rm -rf /app/.cache/puppeteer \
  && npx puppeteer browsers install chrome \
- && node -e "const p=require('puppeteer').executablePath(); require('fs').accessSync(p); console.log('Chrome OK :', p)"
+ && node -e "Promise.resolve(require('puppeteer').executablePath()).then(p => { require('fs').accessSync(p); console.log('Chrome OK :', p) })"
 
 # 2) Code de l'application
 COPY --chown=node:node . .
