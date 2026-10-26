@@ -18,7 +18,8 @@ ENV NODE_ENV=production \
     BROWSER_RECYCLE_AFTER=40 \
     PREWARM_BROWSER=false
 
-# Bibliothèques système de Chromium et polices
+# Bibliothèques système de Chromium, polices, et « unzip »
+# (indispensable : sans lui, Puppeteer ne peut pas décompresser Chrome après l'avoir téléchargé)
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
       ca-certificates \
@@ -45,6 +46,7 @@ RUN apt-get update \
       libxfixes3 \
       libxkbcommon0 \
       libxrandr2 \
+      unzip \
       xdg-utils \
  && rm -rf /var/lib/apt/lists/*
 
