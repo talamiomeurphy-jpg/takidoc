@@ -241,10 +241,48 @@ function extractInPage() {
   }
 
   /* ---------- Détections ---------- */
+  const hasDirectText = el => [...el.childNodes].some(n => n.nodeType === 3 && n.nodeValue.trim() !== '');
+  const isFlexRowEl = cs => (cs.display === 'flex' || cs.display === 'inline-flex') && !cs.flexDirection.startsWith('column');
+  const blockInside = el => [...el.querySelectorAll('*')].some(d => d.localName === 'img'
+    || (!isInlineDisplay(cssOf(d).display) && d.localName !== 'br'));
+
+  /** Ligne flex qui mélange du texte brut et des <b>/<span> (ex. « Fait à <b>Ville</b>, le <b>date</b> ») :
+   *  c'est une simple phrase, pas des colonnes -> un seul paragraphe Word. */
+  function inlineFlow(el) {
+    if (el === document.body || !isFlexRowEl(cssOf(el)) || !hasDirectText(el)) return false;
+    return [...el.children].every(k => SKIP.has(k.tagName) || isIcon(k) || !blockInside(k));
+  }
+
+  function collectFor(el, runs) {
+    if (!inlineFlow(el)) { collectRuns(el.childNodes, runs); return; }
+    const gap = num(cssOf(el).columnGap);
+    let first = true;
+    for (const node of el.childNodes) {
+      if (node.nodeType === 3 && !node.nodeValue.trim()) continue;
+      const tmp = [];
+      collectRuns([node], tmp);
+      const head = tmp.find(r => !r.br);
+      if (!head) continue;
+      const last = runs[runs.length - 1];
+      if (!first && gap > 0 && last && !last.br && !/\s$/.test(last.text) && !/^[\s,.;:!?)\]]/.test(head.text)) {
+        runs.push({ ...last, text: ' ', bold: false, underline: false });
+      }
+      runs.push(...tmp);
+      first = false;
+    }
+  }
+
+  function isInlineOnly(el) {
+    if (inlineFlow(el)) return true;
+    return [...el.childNodes].filter(n => n.nodeType === 3 || n.nodeType === 1).every(n => n.nodeType === 3
+      || (n.nodeType === 1 && (SKIP.has(n.tagName) || isIcon(n) || isHidden(n, cssOf(n)) || isInlineEl(n))));
+  }
+
+  /** Renvoie une liste de lignes (chaque ligne = colonnes côte à côte) ou null. Gère flex en ligne ET grilles à plusieurs rangées. */
   function sideBySide(el, b) {
-    const display = b.cs.display;
-    const isFlexRow = (display === 'flex' || display === 'inline-flex') && !b.cs.flexDirection.startsWith('column');
-    const isGrid = display === 'grid' && b.cs.gridTemplateColumns.trim().split(/\s+/).length >= 2;
+    if (inlineFlow(el)) return null;
+    const isFlexRow = isFlexRowEl(b.cs);
+    const isGrid = b.cs.display === 'grid' && b.cs.gridTemplateColumns.trim().split(/\s+/).length >= 2;
     if (!isFlexRow && !isGrid) return null;
     const kids = [...el.children].filter(k => {
       const kcs = cssOf(k);
@@ -253,11 +291,25 @@ function extractInPage() {
     if (kids.length < 2) return null;
     const rects = kids.map(k => k.getBoundingClientRect());
     if (!rects.every(r => r.width > 0)) return null;
-    if (!rects.every((r, i) => i === 0 || r.left >= rects[i - 1].right - 2)) return null;
-    // au moins deux colonnes avec du contenu ou un fond
+    let rows;
+    if (isGrid) {
+      const groups = [];
+      kids.forEach((k, i) => {
+        const t = rects[i].top;
+        let g = groups.find(x => Math.abs(x.top - t) <= 3);
+        if (!g) { g = { top: t, kids: [] }; groups.push(g); }
+        g.kids.push(k);
+      });
+      rows = groups.sort((a, c) => a.top - c.top).map(g => g.kids);
+    } else rows = [kids];
+    const ordered = rows.every(rk => {
+      const rr = rk.map(k => k.getBoundingClientRect());
+      return rr.every((r, i) => i === 0 || r.left >= rr[i - 1].right - 2);
+    });
+    if (!ordered) return null;
     const meaningful = kids.filter(k => hasContent(k) || bgOf(cssOf(k), k));
     if (meaningful.length < 2) return null;
-    return kids;
+    return rows;
   }
 
   function barOf(el, b) {
@@ -294,11 +346,13 @@ function extractInPage() {
       const spec = borderSpec(b.cs, side, el);
       if (spec) borders[key] = spec;
     }
+    if (ctx.skipOwn) { for (const k of Object.keys(borders)) delete borders[k]; }
     const own = flush ? { top: b.top, bottom: b.bottom } : { top: b.top + b.pad[0], bottom: b.bottom - b.pad[2] };
     return {
       t: 'p', runs: clean, align: al.align, line: lh,
       indentLeft: al.explicit ? Math.round(b.cLeft - ctx.left) : 0,
-      indentRight: (al.explicit && (al.align !== 'left' || (tr && tr.lines > 1) || ctx.shd || Object.keys(borders).length)) ? Math.round(ctx.right - b.cRight) : 0,
+      // Toujours retenir la marge droite : Word (vraie police) est plus large que Chromium, sinon une ligne unique déborde de la page
+      indentRight: (al.explicit && ((ctx.root && ctx.right - b.cRight > 4) || al.align !== 'left' || (tr && tr.lines > 1) || ctx.shd || Object.keys(borders).length)) ? Math.max(0, Math.round(ctx.right - b.cRight)) : 0,
       shd: ctx.shd || null, borders: flush ? borders : {},
       padTop: flush ? padTop : 0, padBottom: flush ? padBottom : 0, padLeft: flush ? b.pad[3] : 0,
       bullet: b.cs.display === 'list-item' && b.cs.listStyleType !== 'none',
@@ -326,12 +380,26 @@ function extractInPage() {
     const bar = barOf(el, b);
     if (bar) { bar.left = Math.round(bar.left - ctx.left); emit(bar, ctx, out); return; }
 
-    const cols = sideBySide(el, b);
-    if (cols) { emitTable(el, b, cols, ctx, out); return; }
+    // Bloc vide plus haut qu'un trait (zone de signature : hauteur + bordure basse) -> on garde le trait
+    if (!hasContent(el) && b.r.height > 8 && b.r.width > 12) {
+      const bT = borderSpec(b.cs, 'Top', el); const bB = borderSpec(b.cs, 'Bottom', el);
+      if (bT || bB) {
+        const side = { left: Math.round(b.left - ctx.left), right: Math.round(ctx.right - b.right) };
+        if (bT) emit({ t: 'rule', color: bT.color, px: Math.max(1, bT.px), ...side, top: b.top, bottom: b.top + bT.px }, ctx, out);
+        if (bB) emit({ t: 'rule', color: bB.color, px: Math.max(1, bB.px), ...side, top: b.bottom - bB.px, bottom: b.bottom }, ctx, out);
+        return;
+      }
+    }
+
+    // Carte encadrée (bordure gauche/droite, ou fond + colonnes) : un tableau 1 cellule qui porte fond et bordures
+    const frame = frameOf(el, b);
+    if (frame) { emitFrame(el, b, frame, ctx, out); return; }
+
+    const rows = sideBySide(el, b);
+    if (rows) { emitRows(el, b, rows, ctx, out, false); return; }
 
     const nodes = [...el.childNodes].filter(n => n.nodeType === 3 ? n.nodeValue.trim() !== '' || true : n.nodeType === 1);
-    const inlineOnly = nodes.every(n => n.nodeType === 3
-      || (n.nodeType === 1 && (SKIP.has(n.tagName) || isIcon(n) || isHidden(n, cssOf(n)) || isInlineEl(n))));
+    const inlineOnly = isInlineOnly(el);
 
     // Trait décoratif (div vide avec fond ou bordure fine)
     if (!hasContent(el) && b.r.height <= 8 && b.r.width > 12) {
@@ -354,7 +422,7 @@ function extractInPage() {
 
     if (inlineOnly) {
       const runs = [];
-      collectRuns(el.childNodes, runs);
+      collectFor(el, runs);
       const p = paragraphFrom(el, b, runs, childCtx, true);
       if (p) emit(p, ctx, out);
       return;
@@ -380,48 +448,134 @@ function extractInPage() {
     flushBuffer();
   }
 
-  function emitTable(el, b, kids, ctx, out) {
+  function frameOf(el, b) {
+    if (b.r.width >= PAGE_W * 0.95 && b.r.height > 500) return null;
+    if (b.r.width < 20 || b.r.height < 8 || !hasContent(el) || isInlineOnly(el)) return null;
+    const borders = {}; let sideBorder = false;
+    for (const [side, key] of [['Top', 'top'], ['Right', 'right'], ['Bottom', 'bottom'], ['Left', 'left']]) {
+      const spec = borderSpec(b.cs, side, el);
+      if (spec) { borders[key] = spec; if (key === 'left' || key === 'right') sideBorder = true; }
+    }
+    const bg = bgOf(b.cs, el);
+    if (sideBorder || (bg && sideBySide(el, b))) return borders;
+    return null;
+  }
+
+  function emitFrame(el, b, borders, ctx, out) {
+    const cellCtx = { left: b.cLeft, right: b.cRight, cursor: { y: b.top + b.bw[0] + b.pad[0] }, shd: null };
+    const children = [];
+    walkContent(el, b, cellCtx, children, true);
+    const width = Math.round(b.r.width);
+    emit({
+      t: 'table', indent: Math.round(b.left - ctx.left), width, minHeight: 0,
+      cols: [{ width, bg: bgOf(b.cs, el), borders, valign: 'top', left: b.left, pad: b.pad.slice(), children }],
+      top: b.top, bottom: b.bottom
+    }, ctx, out);
+  }
+
+  function emitRows(el, b, rows, ctx, out, skipBorder) {
+    rows.forEach((kids, idx) => emitTable(el, b, kids, ctx, out,
+      { first: idx === 0, last: idx === rows.length - 1, single: rows.length === 1, skipBorder }));
+  }
+
+  function emitTable(el, b, kids, ctx, out, opt) {
+    opt = opt || { first: true, last: true, single: true };
     const rects = kids.map(k => k.getBoundingClientRect());
     const startX = rects[0].left;
     const endX = Math.max(b.cRight, rects[rects.length - 1].right);
 
-    // Marge de sécurité : Word mesure le texte un peu plus large que Chromium.
-    // Chaque colonne (sauf la première) gagne quelques pixels pris sur l'espace vide qui la précède.
+    // Petits traits décoratifs (ex. « — TITRE — ») : un trait dans la cellule, pas un bloc plein
+    const decor = kids.map(k => {
+      const r = k.getBoundingClientRect();
+      return !hasContent(k) && r.height > 0 && r.height <= 8 && r.width > 4 && !!bgOf(cssOf(k), k);
+    });
+    const ai = b.cs.alignItems;
+    const valign = ai === 'center' ? 'center' : (ai === 'flex-end' || ai === 'end') ? 'bottom' : 'top';
+
+    // Pastille / logo : petite boîte avec fond ou bordure -> elle garde sa largeur, l'espace qui la suit va à la colonne suivante
+    const boxed = kids.map((k, i) => {
+      if (decor[i] || !hasContent(k)) return false;
+      const kcs = cssOf(k);
+      const r = rects[i];
+      if (r.width > 60 || r.height > 60) return false;
+      return !!bgOf(kcs, k) || ['Top', 'Right', 'Bottom', 'Left'].some(sd => borderSpec(kcs, sd, k));
+    });
+    // Marge de sécurité : Word (vraie police, ex. Georgia) est plus large que Chromium (police de repli sur le serveur).
+    // Une colonne gagne de la place prise sur l'espace vide qui la précède (ou sur un trait décoratif voisin),
+    // proportionnelle à la largeur de sa boîte, pour que les textes d'une seule ligne ne passent pas à la ligne.
+    const want = i => Math.max(8, Math.min(26, Math.round(rects[i].width * 0.14)));
     const slack = kids.map((k, i) => {
       if (i === 0) return 0;
-      const gapPx = rects[i].left - rects[i - 1].right;
-      const s = Math.min(16, Math.floor(gapPx / 2));
-      return s >= 6 ? s : 0;
+      const gapPx = Math.max(0, rects[i].left - rects[i - 1].right);
+      if (decor[i]) return -Math.min(want(i - 1), Math.floor(rects[i].width * 0.6));
+      if (boxed[i - 1]) return Math.floor(gapPx);
+      if (decor[i - 1]) return Math.floor(gapPx) + Math.min(want(i), Math.floor(rects[i - 1].width * 0.6));
+      const cap = Math.max(32, Math.round(rects[i].width * 0.4));
+      const sl = Math.min(cap, Math.floor(gapPx * 0.85));
+      return sl >= 4 ? sl : 0;
     });
+
+    // Dernière colonne alignée à gauche (ex. nom + slogan à côté d'un logo) : on lui laisse de la place à droite
+    let endExt = 0;
+    {
+      const li = kids.length - 1; const lk = kids[li]; const lcs = cssOf(lk);
+      const ta = lcs.textAlign;
+      if (!decor[li] && !boxed[li] && (ta === 'left' || ta === 'start') && rects[li].right >= endX - 1) {
+        const tr = textRectOf(lk);
+        if (tr && tr.lines === 1) endExt = Math.max(0, Math.min(Math.max(10, Math.min(60, Math.round(rects[li].width * 0.25))), Math.floor(ctx.right - endX) - 2));
+      }
+    }
+    const endXs = endX + endExt;
 
     const columns = kids.map((k, i) => {
       const kb = box(k);
       const left = rects[i].left - slack[i];
-      const nextLeft = (i < kids.length - 1 ? rects[i + 1].left - slack[i + 1] : endX);
+      const nextLeft = (i < kids.length - 1 ? rects[i + 1].left - slack[i + 1] : endXs);
       const width = Math.max(10, Math.round(nextLeft - left));
+      if (decor[i]) {
+        const h = Math.max(1, Math.round(kb.r.height));
+        return {
+          width, bg: null, valign, left,
+          pad: [0, Math.max(0, Math.round(nextLeft - rects[i].right)), 0, Math.max(0, Math.round(rects[i].left - left))],
+          children: [{ t: 'rule', color: bgOf(kb.cs, k), px: h, left: 0, right: 0, before: 0, top: 0, bottom: h }]
+        };
+      }
+      // Petit badge encadré (ex. pastille « i ») : bordure portée par la cellule
+      let cellBorders = null;
+      if (boxed[i]) {
+        for (const [side, key] of [['Top', 'top'], ['Right', 'right'], ['Bottom', 'bottom'], ['Left', 'left']]) {
+          const spec = borderSpec(kb.cs, side, k);
+          if (spec) { cellBorders = cellBorders || {}; cellBorders[key] = spec; }
+        }
+      }
       const cellCtx = {
         left: kb.cLeft - slack[i],
         right: nextLeft - kb.pad[1] - kb.bw[1],
-        cursor: { y: kb.top + kb.pad[0] + kb.bw[0] }, shd: null
+        cursor: { y: kb.top + kb.pad[0] + kb.bw[0] }, shd: null, skipOwn: !!cellBorders
       };
       const children = [];
       walkContent(k, kb, cellCtx, children);
       return {
-        width, bg: bgOf(kb.cs, k),
-        pad: [kb.pad[0] + kb.bw[0], kb.pad[1] + kb.bw[1], kb.pad[2] + kb.bw[2], kb.pad[3] + kb.bw[3]],
+        width, bg: bgOf(kb.cs, k), valign, borders: cellBorders,
+        pad: cellBorders ? kb.pad.slice() : [kb.pad[0] + kb.bw[0], kb.pad[1] + kb.bw[1], kb.pad[2] + kb.bw[2], kb.pad[3] + kb.bw[3]],
         children, left
       };
     });
+
+    const rowTop = Math.min(...rects.map(r => r.top)) + window.scrollY;
+    const rowBottom = Math.max(...rects.map(r => r.bottom)) + window.scrollY;
     const node = {
       t: 'table', indent: Math.round(columns[0].left - ctx.left), cols: columns,
-      width: Math.round(endX - columns[0].left), minHeight: b.r.height > 200 ? Math.round(b.r.height) : 0,
-      top: b.top + b.pad[0] + b.bw[0], bottom: b.bottom - b.pad[2] - b.bw[2]
+      width: Math.round(endXs - columns[0].left),
+      minHeight: opt.single && b.r.height > 200 ? Math.round(b.r.height) : 0,
+      top: opt.first ? b.top + b.pad[0] + b.bw[0] : rowTop,
+      bottom: opt.last ? b.bottom - b.pad[2] - b.bw[2] : rowBottom
     };
     if (node.minHeight) { node.top = b.top; node.bottom = b.bottom; }
     emit(node, ctx, out);
 
     // Trait sous la rangée (ex. en-tête avec bordure inférieure)
-    const lineBelow = borderSpec(b.cs, 'Bottom', el);
+    const lineBelow = opt.last && !opt.skipBorder ? borderSpec(b.cs, 'Bottom', el) : null;
     if (lineBelow) {
       emit({
         t: 'rule', color: lineBelow.color, px: Math.max(1, lineBelow.px),
@@ -432,13 +586,17 @@ function extractInPage() {
   }
 
   /** Contenu d'un conteneur (colonne) : on traite l'élément comme racine sans re-détecter son propre cadre. */
-  function walkContent(el, b, ctx, out) {
+  function walkContent(el, b, ctx, out, skipBorder) {
+    // La colonne est elle-même une ligne flex/grille (logo + nom, etc.) : tableau imbriqué
+    if (el !== document.body) {
+      const rows = sideBySide(el, b);
+      if (rows) { emitRows(el, b, rows, ctx, out, !!skipBorder); return; }
+    }
     const nodes = [...el.childNodes].filter(n => n.nodeType === 3 || n.nodeType === 1);
-    const inlineOnly = nodes.every(n => n.nodeType === 3
-      || (n.nodeType === 1 && (SKIP.has(n.tagName) || isIcon(n) || isHidden(n, cssOf(n)) || isInlineEl(n))));
+    const inlineOnly = isInlineOnly(el);
     if (inlineOnly) {
       const runs = [];
-      collectRuns(el.childNodes, runs);
+      collectFor(el, runs);
       const p = paragraphFrom(el, { ...b, pad: [0, 0, 0, 0], bw: [0, 0, 0, 0], cLeft: b.cLeft, cRight: b.cRight, top: b.top + b.pad[0], bottom: b.bottom - b.pad[2], cs: b.cs }, runs, ctx, true);
       if (p) emit(p, ctx, out);
       return;
@@ -461,7 +619,7 @@ function extractInPage() {
   }
 
   /* ---------- Racine ---------- */
-  const root = { left: 0, right: PAGE_W, cursor: { y: 0 }, shd: null };
+  const root = { left: 0, right: PAGE_W, cursor: { y: 0 }, shd: null, root: true };
   const nodes = [];
   const bodyBox = box(document.body);
   const rootCtx = { ...root, cursor: { y: 0 } };
@@ -511,6 +669,11 @@ function buildDocxBuffer(layout, title) {
       color: spec.color,
       space: Math.min(31, Math.max(0, Math.round(spacePx * 0.75)))
     };
+  };
+
+  const cellBorder = spec => !spec ? NONE : {
+    style: spec.dashed ? BorderStyle.DASHED : BorderStyle.SINGLE,
+    size: Math.min(96, Math.max(2, Math.round(spec.px * 6))), color: spec.color
   };
 
   function paragraphNode(n, inCell) {
@@ -601,9 +764,12 @@ function buildDocxBuffer(layout, title) {
       children: n.cols.map((col, i) => new TableCell({
         children: nodesToChildren(col.children, true),
         width: { size: widths[i], type: WidthType.DXA },
-        verticalAlign: VerticalAlign.TOP,
+        verticalAlign: col.valign === 'center' ? VerticalAlign.CENTER : col.valign === 'bottom' ? VerticalAlign.BOTTOM : VerticalAlign.TOP,
         shading: col.bg ? { type: ShadingType.CLEAR, color: 'auto', fill: col.bg } : undefined,
-        borders: NO_BORDERS,
+        borders: col.borders ? {
+          top: cellBorder(col.borders.top), bottom: cellBorder(col.borders.bottom),
+          left: cellBorder(col.borders.left), right: cellBorder(col.borders.right)
+        } : NO_BORDERS,
         margins: { top: tw(col.pad[0]), right: tw(col.pad[1]), bottom: tw(col.pad[2]), left: tw(col.pad[3]) }
       }))
     });
