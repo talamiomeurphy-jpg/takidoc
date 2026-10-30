@@ -4,10 +4,36 @@
    Paiement Mobile Money • Génération par le serveur Render
 ============================================================ */
 
+import "../components/taki/taki.js";
 import { initProtection } from './editor-protection.js';
 import './editor-underline-fix.js';
 import { initPagination, refreshPages } from './editor-pagination.js';
 import { supabase } from './supabase-config.js';
+
+// =========================================
+// TAKI — INITIALISATION DANS L'ÉDITEUR
+// =========================================
+
+let takiMascot = null;
+
+async function initTakiMascot() {
+  const container = document.getElementById("taki-container");
+
+  if (!container || !window.TakiMascot) {
+    console.warn("Taki : assistant indisponible.");
+    return;
+  }
+
+  try {
+    takiMascot = await window.TakiMascot.mount(container, {
+      initialState: "idle"
+    });
+  } catch (error) {
+    console.warn("Taki : impossible de charger l'assistant.", error);
+  }
+}
+
+initTakiMascot();
 
 /* ------------------------------------------------------------
    1. CONFIGURATION
@@ -1333,6 +1359,10 @@ async function downloadDocument(format, purchaseToken = null) {
 
   const { label, ext } = FORMATS[format];
   state.downloading = true;
+  showTaki(
+  "thinking",
+  "Je prépare ton document…"
+);
   setExportBusy(true);
   toast(`Génération de votre document ${label} en cours…`, 'info');
 
@@ -1357,14 +1387,34 @@ async function downloadDocument(format, purchaseToken = null) {
     if (!response.ok) throw new Error(await readServerError(response));
 
     const blob = await response.blob();
+    showTaki(
+  "working",
+  "Je travaille sur ton document. Un instant…"
+);
+showTaki(
+  "working",
+  "Ton document est prêt. Je prépare le téléchargement…"
+);
     if (!blob.size) throw new Error('Le fichier généré est vide. Réessayez.');
 
     triggerBrowserDownload(blob, `TakiDoc_${safeFileBase(state.template.name)}.${ext}`);
+    showTaki(
+  "celebrating",
+  "Et voilà ! Ton document est prêt. 🎉"
+);
+
+hideTaki(3500);
     if (purchaseToken) clearPending();
     saveDraft({ quiet: true });
     toast(`Document ${label} téléchargé avec succès.`, 'success');
     return true;
   } catch (error) {
+    showTaki(
+  "error",
+  "Un petit souci est survenu. On va regarder ça."
+);
+
+hideTaki(5000);
     console.error('Erreur génération :', error);
     toast(error.message || `Erreur lors de la génération du ${label}.`, 'error');
     return false;
@@ -1473,3 +1523,28 @@ async function initEditor() {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initEditor);
 else initEditor();
+
+let takiHideTimer = null;
+
+function showTaki(state, message) {
+  const container = document.getElementById("taki-container");
+
+  if (!container || !takiMascot) return;
+
+  window.clearTimeout(takiHideTimer);
+  container.hidden = false;
+
+  takiMascot.setState(state, message);
+}
+
+function hideTaki(delay = 0) {
+  window.clearTimeout(takiHideTimer);
+
+  takiHideTimer = window.setTimeout(() => {
+    const container = document.getElementById("taki-container");
+
+    if (container) {
+      container.hidden = true;
+    }
+  }, delay);
+}

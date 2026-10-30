@@ -1,0 +1,85 @@
+.taki{--orange:#FF6534;--navy:#101828;--cream:#FFFCFA;width:min(100%,340px);margin:auto;text-align:center;user-select:none;color:var(--navy)}.taki__svg{display:block;width:100%;height:auto;overflow:visible;transform-origin:50% 90%}.taki__caption{display:inline-block;margin-top:-2px;padding:9px 15px;border:1px solid #F1E4DE;border-radius:999px;background:var(--cream);font:600 13px/1.4 system-ui,sans-serif;box-shadow:0 5px 18px #10182812}.taki__wing{transform-box:fill-box}@media(prefers-reduced-motion:reduce){.taki *{animation:none!important;transition:none!important}}
+
+/* =========================================
+   TAKI — FENÊTRE FLOTTANTE DE L'ÉDITEUR
+========================================= */
+
+#taki-container {
+  position: fixed;
+  right: 24px;
+  bottom: 90px;
+  z-index: 1000;
+
+  width: 240px;
+  max-width: calc(100vw - 32px);
+
+  padding: 12px 10px 8px;
+  border: 1px solid #f1e4de;
+  border-radius: 22px;
+
+  background: rgba(255, 252, 250, 0.97);
+  box-shadow:
+    0 14px 40px rgba(16, 24, 40, 0.13),
+    0 3px 10px rgba(16, 24, 40, 0.05);
+
+  animation: taki-window-enter 0.35s ease-out;
+}
+
+#taki-container[hidden] {
+  display: none !important;
+}
+
+#taki-container .taki {
+  width: 100%;
+  max-width: 220px;
+}
+
+@keyframes taki-window-enter {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Adaptation mobile */
+@media (max-width: 600px) {
+  #taki-container {
+    right: 12px;
+    bottom: 82px;
+    width: 190px;
+    padding: 8px 6px;
+  }
+
+  #taki-container .taki__caption {
+    font-size: 11px;
+    padding: 7px 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #taki-container {
+    animation: none;
+  }
+}
+#taki-container.is-center {
+  inset: 0;
+  right: auto; bottom: auto;
+  width: 100%; max-width: none; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0; border: 0; border-radius: 0;
+  background: rgba(16, 24, 40, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 10001;
+}
+#taki-container.is-center .taki {
+  width: min(82vw, 300px); max-width: none;
+  padding: 18px 16px 14px;
+  border-radius: 26px;
+  background: #fffcfa;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+}
