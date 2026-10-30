@@ -1,11 +1,14 @@
 {
   "name": "takidoc-generator",
   "version": "3.0.0",
-  "description": "TakiDoc Document Generator",
+  "description": "TakiDoc Document Generator (PDF & DOCX)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
@@ -13,9 +16,6 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "html-to-docx": "^1.8.0",
-    "puppeteer": "^21.6.1"
-  },
-  "engines": {
-    "node": "18.x"
+    "puppeteer": "^21.11.0"
   }
 }

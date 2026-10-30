@@ -1,14 +1,7 @@
 /* ============================================
    TAKIDOC — MOTEUR D'ÉDITION PROFESSIONNEL (v6.0)
-   Supabase • CSS isolé • A4 • PDF multi-pages • Brouillons
-   Modale de paiement dédiée avec Payment Intents (sans redirection)
-
-   v6.0 :
-   - Modale de paiement dédiée avec formulaire complet
-   - L'utilisateur saisit email, téléphone et choisit l'opérateur
-   - Intégration YabetooPay via Payment Intents (reste sur le site)
-   - Confirmation automatique et polling du statut de paiement
-   - Génération PDF via serveur Render (Puppeteer)
+   Supabase • CSS isolé • A4 • PDF/DOCX multi-pages • Brouillons
+   Génération via Serveur Render (Puppeteer)
 ============================================ */
 
 // ✅ IMPORTS UNIQUES ET CENTRALISÉS
@@ -55,15 +48,8 @@ const getTemplateFieldElement = name => document.getElementById(`field-${name}`)
 
 function toast(message, type = 'success') {
   const el = $('#editorToast');
-  if (!el) {
-    console.log(`[TakiDoc] ${message}`);
-    return;
-  }
-  const icons = {
-    success: 'fa-check-circle',
-    error: 'fa-circle-exclamation',
-    info: 'fa-info-circle'
-  };
+  if (!el) { console.log(`[TakiDoc] ${message}`); return; }
+  const icons = { success: 'fa-check-circle', error: 'fa-circle-exclamation', info: 'fa-info-circle' };
   el.className = `editor-toast ${type} show`;
   const icon = document.createElement('i');
   icon.className = `fas ${icons[type] || icons.info}`;
@@ -78,13 +64,7 @@ function setText(id, value) {
 }
 
 function escapeHTML(value) {
-  return String(value ?? '').replace(/[&<>"']/g, c => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  })[c]);
+  return String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 }
 
 function isBrandElement(el) {
@@ -94,11 +74,7 @@ function isBrandElement(el) {
 }
 
 function ownText(el) {
-  return [...el.childNodes]
-    .filter(n => n.nodeType === 3)
-    .map(n => n.nodeValue)
-    .join(' ')
-    .replace(/\s+/g, ' ');
+  return [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.nodeValue).join(' ').replace(/\s+/g, ' ');
 }
 
 function isBrandNode(el) {
@@ -110,10 +86,7 @@ function isBrandNode(el) {
 function markDirty() {
   state.isDirty = true;
   const status = $('#header-doc-status');
-  if (status) {
-    status.className = 'doc-status saving';
-    status.textContent = 'Modifications en cours…';
-  }
+  if (status) { status.className = 'doc-status saving'; status.textContent = 'Modifications en cours…'; }
   refreshPages();
   clearTimeout(state.autoSaveTimer);
   state.autoSaveTimer = setTimeout(() => { saveDraft({ quiet: true }); }, 900);
@@ -124,88 +97,46 @@ async function checkAuth() {
   try {
     const { data, error } = await supabase.auth.getSession();
     if (error) throw error;
-    
     state.user = data.session?.user ?? null;
-    
-    // Debug : vérifier si l'utilisateur est bien connecté
-    if (state.user) {
-      console.log('✅ Utilisateur connecté:', state.user.email);
-    } else {
-      console.warn('⚠️ Aucun utilisateur connecté');
-    }
   } catch (error) {
-    console.error('❌ Erreur authentification:', error);
+    console.warn('Session utilisateur indisponible :', error);
     state.user = null;
   }
 }
 
 async function loadTemplate(id) {
   if (!id) throw new Error('Identifiant de document manquant dans l\'URL.');
-  if (!supabase) throw new Error('Supabase ne s\'est pas chargé. Vérifie les scripts dans editor.html.');
+  if (!supabase) throw new Error('Supabase ne s\'est pas chargé.');
 
   const { data, error } = await supabase
     .from('templates')
     .select(`id, name, description, price_xaf, category_id, has_photo, has_color_picker, html_structure, css_styles, template_fields (field_name, field_label, field_type, default_value, is_required, display_order)`)
-    .eq('id', id)
-    .eq('is_active', true)
-    .single();
+    .eq('id', id).eq('is_active', true).single();
 
-  if (error) {
-    console.error('Erreur Supabase lors du chargement du modèle :', error);
-    throw new Error(`Impossible de charger le modèle : ${error.message}`);
-  }
+  if (error) throw new Error(`Impossible de charger le modèle : ${error.message}`);
   if (!data) throw new Error('Ce modèle est introuvable ou inactif.');
 
   state.template = {
-    id: data.id,
-    name: data.name,
-    description: data.description,
-    price: data.price_xaf,
-    category: data.category_id,
-    hasPhoto: Boolean(data.has_photo),
-    hasColorPicker: Boolean(data.has_color_picker),
-    html: data.html_structure || '',
-    css: data.css_styles || '',
-    fields: (data.template_fields || [])
-      .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
-      .map(field => ({
-        name: field.field_name,
-        label: field.field_label,
-        type: field.field_type,
-        defaultValue: field.default_value ?? '',
-        required: Boolean(field.is_required)
-      }))
+    id: data.id, name: data.name, description: data.description, price: data.price_xaf,
+    category: data.category_id, hasPhoto: Boolean(data.has_photo), hasColorPicker: Boolean(data.has_color_picker),
+    html: data.html_structure || '', css: data.css_styles || '',
+    fields: (data.template_fields || []).sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+      .map(field => ({ name: field.field_name, label: field.field_label, type: field.field_type, defaultValue: field.default_value ?? '', required: Boolean(field.is_required) }))
   };
-
   state.originalCss = state.template.css;
   state.draftKey = `takidoc_draft_${data.id}`;
   return state.template;
 }
 
 function splitSelectors(selectorText) {
-  const result = [];
-  let current = '';
-  let depth = 0;
-  let quote = '';
+  const result = []; let current = ''; let depth = 0; let quote = '';
   for (const char of selectorText) {
-    if (quote) {
-      current += char;
-      if (char === quote) quote = '';
-      continue;
-    }
-    if (char === '"' || char === "'") {
-      quote = char;
-      current += char;
-      continue;
-    }
+    if (quote) { current += char; if (char === quote) quote = ''; continue; }
+    if (char === '"' || char === "'") { quote = char; current += char; continue; }
     if (char === '(' || char === '[') depth++;
     if (char === ')' || char === ']') depth--;
-    if (char === ',' && depth === 0) {
-      if (current.trim()) result.push(current.trim());
-      current = '';
-    } else {
-      current += char;
-    }
+    if (char === ',' && depth === 0) { if (current.trim()) result.push(current.trim()); current = ''; } 
+    else { current += char; }
   }
   if (current.trim()) result.push(current.trim());
   return result;
@@ -224,8 +155,7 @@ function scopeSelector(selector) {
 
 function scopeCSS(css) {
   css = String(css || '').replace(/^\uFEFF/, '').replace(/<\/?style\b[^>]*>/gi, '').replace(/@import\b[^;]*;?/gi, '');
-  let output = '';
-  let i = 0;
+  let output = ''; let i = 0;
   while (i < css.length) {
     while (i < css.length && /\s/.test(css[i])) output += css[i++];
     if (i >= css.length) break;
@@ -233,38 +163,23 @@ function scopeCSS(css) {
     const semicolon = css.indexOf(';', i);
     if (open === -1 || (semicolon !== -1 && semicolon < open)) {
       output += css.slice(i, semicolon === -1 ? css.length : semicolon + 1);
-      i = semicolon === -1 ? css.length : semicolon + 1;
-      continue;
+      i = semicolon === -1 ? css.length : semicolon + 1; continue;
     }
     const header = css.slice(i, open).trim();
-    let depth = 1;
-    let j = open + 1;
-    let quote = '';
-    let comment = false;
+    let depth = 1; let j = open + 1; let quote = ''; let comment = false;
     for (; j < css.length && depth > 0; j++) {
-      const char = css[j];
-      const next = css[j + 1];
-      if (comment) {
-        if (char === '*' && next === '/') { comment = false; j++; }
-        continue;
-      }
+      const char = css[j]; const next = css[j + 1];
+      if (comment) { if (char === '*' && next === '/') { comment = false; j++; } continue; }
       if (!quote && char === '/' && next === '*') { comment = true; j++; continue; }
-      if (quote) {
-        if (char === '\\') j++;
-        else if (char === quote) quote = '';
-        continue;
-      }
+      if (quote) { if (char === '\\') j++; else if (char === quote) quote = ''; continue; }
       if (char === '"' || char === "'") { quote = char; continue; }
-      if (char === '{') depth++;
-      if (char === '}') depth--;
+      if (char === '{') depth++; if (char === '}') depth--;
     }
     const body = css.slice(open + 1, j - 1);
     if (header.startsWith('@')) {
       if (/^@(media|supports|container|layer|document)\b/i.test(header)) output += `${header}{${scopeCSS(body)}}`;
       else output += `${header}{${body}}`;
-    } else {
-      output += `${splitSelectors(header).map(scopeSelector).join(', ')}{${body}}`;
-    }
+    } else { output += `${splitSelectors(header).map(scopeSelector).join(', ')}{${body}}`; }
     i = j;
   }
   return output;
@@ -279,8 +194,7 @@ function loadTemplateFonts(css) {
     if (loadedFontLinks.has(href)) continue;
     loadedFontLinks.add(href);
     const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = href;
+    link.rel = 'stylesheet'; link.href = href;
     document.head.appendChild(link);
   }
 }
@@ -292,11 +206,7 @@ function scopeInlineStyles(canvas) {
 function installTemplateCSS() {
   if (!state.template) return;
   let style = $('#template-dynamic-css');
-  if (!style) {
-    style = document.createElement('style');
-    style.id = 'template-dynamic-css';
-    document.head.appendChild(style);
-  }
+  if (!style) { style = document.createElement('style'); style.id = 'template-dynamic-css'; document.head.appendChild(style); }
   style.textContent = scopeCSS(state.template.css);
   loadTemplateFonts(state.template.css);
 }
@@ -323,12 +233,8 @@ function initTemplateColor() {
     const fallback = css.match(/var\(\s*--(?:doc-)?primary-color\s*,\s*(#[0-9a-f]{3,8})/i);
     if (fallback) found = toHex(fallback[1]);
   }
-  if (found) {
-    state.primaryColor = found;
-    state.colorActive = false;
-  } else {
-    state.colorActive = /var\(\s*--(?:doc-)?primary-color/.test(css);
-  }
+  if (found) { state.primaryColor = found; state.colorActive = false; } 
+  else { state.colorActive = /var\(\s*--(?:doc-)?primary-color/.test(css); }
   syncColorUI();
 }
 
@@ -345,11 +251,7 @@ function syncColorUI() {
 function installColorOverrides() {
   const canvas = getCanvas();
   let style = $('#takidoc-color-overrides');
-  if (!style) {
-    style = document.createElement('style');
-    style.id = 'takidoc-color-overrides';
-    document.head.appendChild(style);
-  }
+  if (!style) { style = document.createElement('style'); style.id = 'takidoc-color-overrides'; document.head.appendChild(style); }
   if (!state.colorActive) {
     style.textContent = '';
     canvas?.style.removeProperty('--doc-primary-color');
@@ -368,7 +270,7 @@ function installColorOverrides() {
 
 function renderDocument() {
   const canvas = getCanvas();
-  if (!canvas || !state.template) throw new Error("La zone d'aperçu du document est introuvable.");
+  if (!canvas || !state.template) throw new Error('La zone d’aperçu du document est introuvable.');
   canvas.innerHTML = state.template.html || '<div style="padding:40px;text-align:center">Aperçu du document indisponible.</div>';
   scopeInlineStyles(canvas);
   installTemplateCSS();
@@ -417,9 +319,8 @@ function buildFieldsForm() {
   container.replaceChildren();
   if (!state.template.fields.length) {
     const message = document.createElement('p');
-    message.textContent = "Ce document ne contient aucun champ personnalisable. Vous pouvez modifier directement les textes dans l'aperçu.";
-    container.appendChild(message);
-    return;
+    message.textContent = 'Ce document ne contient aucun champ personnalisable. Vous pouvez modifier directement les textes dans l’aperçu.';
+    container.appendChild(message); return;
   }
   state.template.fields.forEach(field => {
     const wrapper = document.createElement('div');
@@ -428,27 +329,21 @@ function buildFieldsForm() {
     label.htmlFor = `input-${field.name}`;
     label.textContent = `${field.label}${field.required ? ' *' : ''}`;
     let input;
-    if (field.type === 'textarea') {
-      input = document.createElement('textarea');
-      input.rows = 3;
-    } else {
+    if (field.type === 'textarea') { input = document.createElement('textarea'); input.rows = 3; } 
+    else {
       input = document.createElement('input');
       const allowed = ['text', 'email', 'tel', 'url', 'date', 'number'];
       input.type = allowed.includes(field.type) ? field.type : 'text';
     }
-    input.id = `input-${field.name}`;
-    input.name = field.name;
-    input.className = 'form-control';
-    input.value = field.defaultValue;
-    input.placeholder = `Entrez ${field.label.toLowerCase()}`;
+    input.id = `input-${field.name}`; input.name = field.name; input.className = 'form-control';
+    input.value = field.defaultValue; input.placeholder = `Entrez ${field.label.toLowerCase()}`;
     if (field.required) input.required = true;
     input.addEventListener('input', () => {
       const target = getTemplateFieldElement(field.name);
       if (target && !isBrandElement(target)) target.textContent = input.value;
       markDirty();
     });
-    wrapper.append(label, input);
-    container.appendChild(wrapper);
+    wrapper.append(label, input); container.appendChild(wrapper);
   });
 }
 
@@ -471,9 +366,7 @@ function collectEditableHosts(canvas) {
       texts.forEach(textNode => {
         const span = document.createElement('span');
         span.className = 'takidoc-text';
-        textNode.before(span);
-        span.appendChild(textNode);
-        hosts.push(span);
+        textNode.before(span); span.appendChild(textNode); hosts.push(span);
       });
     }
     kids.forEach(visit);
@@ -517,8 +410,7 @@ function bindEditingEvents(canvas) {
     const host = hostOf(event);
     if (!host) return;
     if (host.innerHTML.toLowerCase() === '<br>') host.innerHTML = '';
-    syncFieldInputsFrom(host);
-    markDirty();
+    syncFieldInputsFrom(host); markDirty();
   });
   canvas.addEventListener('keydown', event => {
     if (!hostOf(event)) return;
@@ -562,24 +454,17 @@ function updateDocumentPhoto(dataUrl) {
   const canvas = getCanvas() || document;
   let container = $('#doc-photo', canvas);
   if (!container) container = $('[data-photo-placeholder], .doc-photo, .cv-photo, .photo-placeholder', canvas);
-  if (!container) {
-    console.warn("Ce modèle est marqué comme compatible avec une photo, mais aucun emplacement #doc-photo ou .doc-photo n'a été trouvé dans son HTML.");
-    return;
-  }
+  if (!container) { console.warn('Emplacement photo introuvable.'); return; }
   container.replaceChildren();
   if (!dataUrl) {
     const placeholder = document.createElement('span');
     placeholder.className = 'cv-photo-placeholder';
     placeholder.textContent = 'Photo';
-    container.appendChild(placeholder);
-    return;
+    container.appendChild(placeholder); return;
   }
   const img = document.createElement('img');
-  img.src = dataUrl;
-  img.alt = 'Photo du document';
-  img.style.width = '100%';
-  img.style.height = '100%';
-  img.style.objectFit = 'cover';
+  img.src = dataUrl; img.alt = 'Photo du document';
+  img.style.width = '100%'; img.style.height = '100%'; img.style.objectFit = 'cover';
   container.appendChild(img);
 }
 
@@ -587,20 +472,14 @@ function renderPhotoPreview(dataUrl) {
   const preview = $('#photo-preview-area');
   if (!preview) return;
   if (!dataUrl) {
-    preview.classList.remove('has-image');
-    preview.replaceChildren();
-    const icon = document.createElement('i');
-    icon.className = 'fas fa-user-circle';
-    const span = document.createElement('span');
-    span.textContent = 'Aucune photo';
-    preview.append(icon, span);
-    return;
+    preview.classList.remove('has-image'); preview.replaceChildren();
+    const icon = document.createElement('i'); icon.className = 'fas fa-user-circle';
+    const span = document.createElement('span'); span.textContent = 'Aucune photo';
+    preview.append(icon, span); return;
   }
   const img = document.createElement('img');
-  img.src = dataUrl;
-  img.alt = 'Aperçu de la photo';
-  preview.replaceChildren(img);
-  preview.classList.add('has-image');
+  img.src = dataUrl; img.alt = 'Aperçu de la photo';
+  preview.replaceChildren(img); preview.classList.add('has-image');
 }
 
 function setupPhotoUpload() {
@@ -610,45 +489,29 @@ function setupPhotoUpload() {
   input.addEventListener('change', event => {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      toast('Choisis un fichier image valide.', 'error');
-      input.value = '';
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      toast('La photo ne doit pas dépasser 5 Mo.', 'error');
-      input.value = '';
-      return;
-    }
+    if (!file.type.startsWith('image/')) { toast('Choisis un fichier image valide.', 'error'); input.value = ''; return; }
+    if (file.size > 5 * 1024 * 1024) { toast('La photo ne doit pas dépasser 5 Mo.', 'error'); input.value = ''; return; }
     const reader = new FileReader();
     reader.onload = () => {
       state.photoDataUrl = String(reader.result || '');
-      renderPhotoPreview(state.photoDataUrl);
-      updateDocumentPhoto(state.photoDataUrl);
+      renderPhotoPreview(state.photoDataUrl); updateDocumentPhoto(state.photoDataUrl);
       if (remove) remove.style.display = 'inline-flex';
-      markDirty();
-      toast('Photo ajoutée au document.', 'success');
+      markDirty(); toast('Photo ajoutée au document.', 'success');
     };
     reader.onerror = () => { toast('Impossible de lire cette image.', 'error'); };
     reader.readAsDataURL(file);
   });
   remove?.addEventListener('click', event => {
-    event.preventDefault();
-    state.photoDataUrl = null;
-    input.value = '';
-    renderPhotoPreview(null);
-    updateDocumentPhoto(null);
-    remove.style.display = 'none';
-    markDirty();
+    event.preventDefault(); state.photoDataUrl = null; input.value = '';
+    renderPhotoPreview(null); updateDocumentPhoto(null);
+    remove.style.display = 'none'; markDirty();
   });
 }
 
 function applyPrimaryColor(color, options = {}) {
   if (!/^#[0-9a-f]{6}$/i.test(color)) return;
-  state.primaryColor = color.toUpperCase();
-  state.colorActive = true;
-  syncColorUI();
-  installColorOverrides();
+  state.primaryColor = color.toUpperCase(); state.colorActive = true;
+  syncColorUI(); installColorOverrides();
   if (!options.silent) markDirty();
 }
 
@@ -656,16 +519,8 @@ function applyFontFamily() {
   const canvas = getCanvas();
   if (!canvas) return;
   let style = $('#takidoc-font-overrides');
-  if (!style) {
-    style = document.createElement('style');
-    style.id = 'takidoc-font-overrides';
-    document.head.appendChild(style);
-  }
-  if (!state.fontCustom) {
-    canvas.style.removeProperty('font-family');
-    style.textContent = '';
-    return;
-  }
+  if (!style) { style = document.createElement('style'); style.id = 'takidoc-font-overrides'; document.head.appendChild(style); }
+  if (!state.fontCustom) { canvas.style.removeProperty('font-family'); style.textContent = ''; return; }
   canvas.style.fontFamily = state.fontFamily;
   style.textContent = `#document-canvas, #document-canvas *:not(svg):not(path):not(.fa):not(.fas):not(.far):not(.fab):not([class*="fa-"]) { font-family: ${state.fontFamily} !important; }`;
 }
@@ -679,19 +534,14 @@ function setupDesignControls() {
     });
   });
   $('#font-family-select')?.addEventListener('change', event => {
-    state.fontFamily = event.target.value || DEFAULT_FONT;
-    state.fontCustom = true;
-    applyFontFamily();
-    markDirty();
+    state.fontFamily = event.target.value || DEFAULT_FONT; state.fontCustom = true;
+    applyFontFamily(); markDirty();
   });
 }
 
 function updateZoom() {
   const wrapper = $('#document-wrapper');
-  if (wrapper) {
-    wrapper.style.transform = `scale(${state.zoom})`;
-    wrapper.style.transformOrigin = 'top center';
-  }
+  if (wrapper) { wrapper.style.transform = `scale(${state.zoom})`; wrapper.style.transformOrigin = 'top center'; }
   setText('zoom-level', `${Math.round(state.zoom * 100)}%`);
   refreshPages();
 }
@@ -710,9 +560,7 @@ function setupZoomControls() {
   $('#btn-zoom-in')?.addEventListener('click', () => { state.zoom = Math.min(2.5, state.zoom + 0.1); updateZoom(); });
   $('#btn-zoom-out')?.addEventListener('click', () => { state.zoom = Math.max(0.3, state.zoom - 0.1); updateZoom(); });
   $('#btn-zoom-fit')?.addEventListener('click', () => { state.zoom = fitZoom(); updateZoom(); });
-  window.addEventListener('resize', () => {
-    if (state.zoom < 0.6) { state.zoom = fitZoom(); updateZoom(); }
-  });
+  window.addEventListener('resize', () => { if (state.zoom < 0.6) { state.zoom = fitZoom(); updateZoom(); } });
   updateZoom();
 }
 
@@ -732,10 +580,7 @@ function setupSidebarTabs() {
   const sidebar = $('#editorSidebar');
   toggle?.addEventListener('click', () => { sidebar?.classList.toggle('open'); });
   $('#mobileBtnCustomize')?.addEventListener('click', openFieldsTab);
-  $('#btn-customize')?.addEventListener('click', () => {
-    openFieldsTab();
-    $('#fields-form input, #fields-form textarea')?.focus();
-  });
+  $('#btn-customize')?.addEventListener('click', () => { openFieldsTab(); $('#fields-form input, #fields-form textarea')?.focus(); });
 }
 
 function sanitizeHTML(html) {
@@ -765,10 +610,7 @@ function collectDraft() {
     });
   }
   return {
-    version: 3,
-    timestamp: Date.now(),
-    fields,
-    directTexts,
+    version: 3, timestamp: Date.now(), fields, directTexts,
     photoDataUrl: state.photoDataUrl,
     primaryColor: state.colorActive ? state.primaryColor : null,
     fontFamily: state.fontCustom ? state.fontFamily : null
@@ -781,10 +623,7 @@ function saveDraft(options = {}) {
     localStorage.setItem(state.draftKey, JSON.stringify(collectDraft()));
     state.isDirty = false;
     const status = $('#header-doc-status');
-    if (status) {
-      status.className = 'doc-status';
-      status.textContent = 'Modifications sauvegardées';
-    }
+    if (status) { status.className = 'doc-status'; status.textContent = 'Modifications sauvegardées'; }
     if (!options.quiet) toast('Brouillon sauvegardé sur cet appareil.', 'success');
     return true;
   } catch (error) {
@@ -816,25 +655,20 @@ function loadDraft() {
       applyPrimaryColor(draft.primaryColor, { silent: true });
     }
     if (draft.fontFamily && (version >= 3 || draft.fontFamily !== DEFAULT_FONT)) {
-      state.fontFamily = draft.fontFamily;
-      state.fontCustom = true;
+      state.fontFamily = draft.fontFamily; state.fontCustom = true;
       const select = $('#font-family-select');
       if (select) select.value = state.fontFamily;
       applyFontFamily();
     }
     if (draft.photoDataUrl && state.template?.hasPhoto) {
       state.photoDataUrl = draft.photoDataUrl;
-      renderPhotoPreview(state.photoDataUrl);
-      updateDocumentPhoto(state.photoDataUrl);
+      renderPhotoPreview(state.photoDataUrl); updateDocumentPhoto(state.photoDataUrl);
       const remove = $('#photo-remove');
       if (remove) remove.style.display = 'inline-flex';
     }
     state.isDirty = false;
     const status = $('#header-doc-status');
-    if (status) {
-      status.className = 'doc-status';
-      status.textContent = 'Brouillon restauré';
-    }
+    if (status) { status.className = 'doc-status'; status.textContent = 'Brouillon restauré'; }
     return true;
   } catch (error) {
     console.error('Erreur restauration brouillon :', error);
@@ -844,15 +678,25 @@ function loadDraft() {
 }
 
 /* ============================================
-   MODALE DE PAIEMENT DÉDIÉE (PAYMENT INTENTS)
-   L'utilisateur saisit email, téléphone et choisit l'opérateur
+   PAIEMENT ET TÉLÉCHARGEMENT (VERSION COMPLÈTE ET ROBUSTE)
 ============================================ */
+
+async function initiatePayment() {
+  if (!state.template) return;
+  if (state.template.price === 0) {
+    await downloadDocument('pdf'); // Par défaut pour les gratuits
+    return;
+  }
+  showPaymentModal();
+}
+
 function showPaymentModal() {
   const existing = document.getElementById('takidoc-payment-modal');
   if (existing) existing.remove();
 
   const price = state.template.price;
   const templateName = state.template.name;
+  let selectedFormat = 'pdf';
 
   const modalHtml = `
     <div id="takidoc-payment-modal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);padding:20px;">
@@ -896,10 +740,6 @@ function showPaymentModal() {
           .pay-status.success { background:#ECFDF5; color:#065F46; display:block; }
           .pay-status.error { background:#FEF2F2; color:#991B1B; display:block; }
           .spinner { display:inline-block; width:20px; height:20px; border:3px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.8s linear infinite; }
-          .loader-overlay { position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:10001;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white; }
-          .loader-overlay .spinner-big { width:60px; height:60px; border:4px solid rgba(255,255,255,0.3); border-top-color:#FF6B35; border-radius:50%; animation:spin 1s linear infinite; margin-bottom:20px; }
-          .loader-overlay h3 { margin:0 0 8px; font-size:20px; }
-          .loader-overlay p { margin:0; opacity:0.9; }
           .secure-badge { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:16px; font-size:12px; color:#64748B; }
           .secure-badge i { color:#10B981; }
         </style>
@@ -914,12 +754,12 @@ function showPaymentModal() {
           <div class="pay-section">
             <span class="pay-label">Format du document *</span>
             <div class="format-selector">
-              <div class="format-option pdf selected" data-format="pdf" onclick="selectFormat('pdf')">
+              <div class="format-option pdf selected" data-format="pdf" onclick="window.selectFormat('pdf')">
                 <i class="fas fa-file-pdf"></i>
                 <div class="name">PDF</div>
                 <div class="desc">Format universel</div>
               </div>
-              <div class="format-option docx" data-format="docx" onclick="selectFormat('docx')">
+              <div class="format-option docx" data-format="docx" onclick="window.selectFormat('docx')">
                 <i class="fas fa-file-word"></i>
                 <div class="name">Word</div>
                 <div class="desc">Modifiable</div>
@@ -969,8 +809,6 @@ function showPaymentModal() {
 
   document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-  // Variables globales pour la modale
-  let selectedFormat = 'pdf';
   let paymentCompleted = false;
 
   window.selectFormat = (format) => {
@@ -991,18 +829,14 @@ function showPaymentModal() {
     const emailInput = document.getElementById('pay-email');
     const phoneInput = document.getElementById('pay-phone');
     const btn = document.getElementById('pay-submit-btn');
-    
     if (!emailInput || !phoneInput || !btn) return;
-    
     const email = emailInput.value.trim();
     const phone = phoneInput.value.replace(/\D/g, '');
-    
     btn.disabled = !(selectedOp && email.includes('@') && email.includes('.') && phone.length === 9);
   };
 
   window.closePaymentModal = () => {
-    if (paymentCompleted) return; // Ne pas fermer si le paiement est en cours/complété
-    
+    if (paymentCompleted) return;
     const modal = document.getElementById('takidoc-payment-modal');
     if (modal) {
       modal.style.opacity = '0';
@@ -1012,6 +846,7 @@ function showPaymentModal() {
         delete window.checkPayForm;
         delete window.closePaymentModal;
         delete window.processPayment;
+        delete window.pollPaymentStatus;
         delete window.selectFormat;
         toast('Paiement annulé.', 'info');
       }, 200);
@@ -1034,15 +869,13 @@ function showPaymentModal() {
     const phone = `+242${phoneRaw}`;
 
     const btn = document.getElementById('pay-submit-btn');
-    const formContainer = document.getElementById('pay-form-container');
     const statusMsg = document.getElementById('pay-status-msg');
 
-    paymentCompleted = true; // Empêcher la fermeture accidentelle
+    paymentCompleted = true;
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Traitement en cours...';
 
     try {
-      // 1. Créer l'intention de paiement
       const documentData = {
         fields: {},
         primary_color: state.colorActive ? state.primaryColor : null,
@@ -1066,17 +899,6 @@ function showPaymentModal() {
       const createData = await createResponse.json();
       if (!createResponse.ok) throw new Error(createData.message || "Erreur de création du paiement");
 
-      if (createData.mode === 'free') {
-        await downloadDocument(selectedFormat);
-        closePaymentModal();
-        return;
-      }
-
-      if (createData.mode !== 'checkout' || !createData.payment_intent_id || !createData.client_secret) {
-        throw new Error("Réponse inattendue du serveur");
-      }
-
-      // 2. Confirmer le paiement avec les détails Mobile Money
       statusMsg.className = 'pay-status processing';
       statusMsg.style.display = 'block';
       statusMsg.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:24px;margin-bottom:8px;"></i><p>Initiation du paiement...</p>';
@@ -1094,14 +916,9 @@ function showPaymentModal() {
       });
 
       const confirmData = await confirmResponse.json();
-      if (!confirmResponse.ok) {
-        throw new Error(confirmData.message || "Le paiement a été refusé. Vérifiez votre numéro et réessayez.");
-      }
+      if (!confirmResponse.ok) throw new Error(confirmData.message || "Le paiement a été refusé.");
 
-      // 3. Afficher le loader de génération
-      statusMsg.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:24px;margin-bottom:8px;"></i><p>Veuillez valider le paiement sur votre téléphone...</p>';
-      
-      // Attendre la confirmation du paiement
+      statusMsg.innerHTML = '<i class="fas fa-mobile-alt" style="font-size:24px;margin-bottom:8px;"></i><p>Veuillez valider le paiement sur votre téléphone...</p>';
       await pollPaymentStatus(createData.purchase_token, selectedFormat);
 
     } catch (error) {
@@ -1109,12 +926,10 @@ function showPaymentModal() {
       statusMsg.className = 'pay-status error';
       statusMsg.style.display = 'block';
       statusMsg.innerHTML = `<i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><p>${error.message}</p><button class="pay-cancel" id="pay-error-close-btn" style="margin-top:12px;">Fermer</button>`;
-      
       setTimeout(() => {
         const errorCloseBtn = document.getElementById('pay-error-close-btn');
-        if (errorCloseBtn) errorCloseBtn.onclick = closePaymentModal;
+        if (errorCloseBtn) errorCloseBtn.onclick = window.closePaymentModal;
       }, 100);
-      
       paymentCompleted = false;
       btn.disabled = false;
       btn.innerHTML = `<i class="fas fa-lock"></i> Payer ${state.template.price} XAF`;
@@ -1122,82 +937,104 @@ function showPaymentModal() {
   };
 
   window.pollPaymentStatus = async (token, format) => {
-  let attempts = 0;
-  const maxAttempts = 180; // 6 minutes (2s * 180)
-  const statusMsg = document.getElementById('pay-status-msg');
-  
-  const pollInterval = setInterval(async () => {
-    attempts++;
-    try {
-      const res = await fetch('https://wyfkogowsdbxctbpfuud.supabase.co/functions/v1/purchase-status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
-        body: JSON.stringify({ purchase_token: token })
-      });
-      const resData = await res.json();
-      
-      if (resData.status === 'completed') {
-        clearInterval(pollInterval);
+    let attempts = 0;
+    const maxAttempts = 180;
+    const statusMsg = document.getElementById('pay-status-msg');
+    const btn = document.getElementById('pay-submit-btn');
+    
+    const pollInterval = setInterval(async () => {
+      attempts++;
+      try {
+        const res = await fetch('https://wyfkogowsdbxctbpfuud.supabase.co/functions/v1/purchase-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+          body: JSON.stringify({ purchase_token: token })
+        });
+        const resData = await res.json();
         
-        // 1. Mettre à jour le message de succès dans la modale
-        statusMsg.className = 'pay-status success';
-        statusMsg.innerHTML = '<i class="fas fa-check-circle" style="font-size:32px;color:#10B981;margin-bottom:8px;"></i><p style="font-size:18px;font-weight:700;">Paiement réussi !</p><p style="font-size:12px;margin-top:4px;">Fermeture...</p>';
-        
-        // 2. Attendre 1 seconde pour que l'utilisateur voie le succès
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // 3. Fermer la modale
-        const modal = document.getElementById('takidoc-payment-modal');
-        if (modal) {
-          modal.style.opacity = '0';
-          await new Promise(resolve => setTimeout(resolve, 200));
-          modal.remove();
+        if (resData.status === 'completed') {
+          clearInterval(pollInterval);
+          statusMsg.className = 'pay-status success';
+          statusMsg.innerHTML = '<i class="fas fa-check-circle" style="font-size:32px;color:#10B981;margin-bottom:8px;"></i><p style="font-size:16px;font-weight:700;">Paiement réussi !</p><p style="font-size:12px;margin-top:4px;">Fermeture...</p>';
+          
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          const modal = document.getElementById('takidoc-payment-modal');
+          if (modal) {
+            modal.style.opacity = '0';
+            await new Promise(resolve => setTimeout(resolve, 200));
+            modal.remove();
+          }
+          
+          delete window.selectPayOperator;
+          delete window.checkPayForm;
+          delete window.closePaymentModal;
+          delete window.processPayment;
+          delete window.pollPaymentStatus;
+          delete window.selectFormat;
+          
+          toast('Paiement confirmé ! Génération de votre document...', 'success');
+          await downloadDocument(format, token);
+          return;
         }
         
-        // 4. Nettoyer les fonctions globales
-        delete window.selectPayOperator;
-        delete window.checkPayForm;
-        delete window.closePaymentModal;
-        delete window.processPayment;
-        delete window.pollPaymentStatus;
-        delete window.selectFormat;
+        if (resData.status === 'failed' || resData.status === 'cancelled') {
+          clearInterval(pollInterval);
+          throw new Error('Le paiement a échoué ou a été annulé.');
+        }
         
-        // 5. Afficher le toast de génération
-        toast('Paiement confirmé ! Génération de votre document...', 'success');
-        
-        // 6. Télécharger le document
-        await downloadDocument(format, token);
-        
-        return;
-      }
-      
-      if (resData.status === 'failed' || resData.status === 'cancelled') {
+        if (attempts >= maxAttempts) {
+          clearInterval(pollInterval);
+          throw new Error('Délai de vérification dépassé.');
+        }
+      } catch (error) {
         clearInterval(pollInterval);
-        throw new Error('Le paiement a échoué ou a été annulé.');
+        statusMsg.className = 'pay-status error';
+        statusMsg.innerHTML = `<i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><p>${error.message}</p><button class="pay-cancel" id="pay-error-close-btn" style="margin-top:12px;">Fermer</button>`;
+        setTimeout(() => {
+          const errorCloseBtn = document.getElementById('pay-error-close-btn');
+          if (errorCloseBtn) errorCloseBtn.onclick = window.closePaymentModal;
+        }, 100);
+        paymentCompleted = false;
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fas fa-lock"></i> Payer ${state.template.price} XAF`;
       }
-      
-      if (attempts >= maxAttempts) {
-        clearInterval(pollInterval);
-        throw new Error('Délai de vérification dépassé. Veuillez vérifier votre compte.');
-      }
-    } catch (error) {
-      clearInterval(pollInterval);
-      
-      statusMsg.className = 'pay-status error';
-      statusMsg.innerHTML = `<i class="fas fa-exclamation-circle" style="font-size:24px;margin-bottom:8px;"></i><p>${error.message}</p><button class="pay-cancel" id="pay-error-close-btn" style="margin-top:12px;">Fermer</button>`;
-      
-      setTimeout(() => {
-        const errorCloseBtn = document.getElementById('pay-error-close-btn');
-        if (errorCloseBtn) errorCloseBtn.onclick = closePaymentModal;
-      }, 100);
-      
-      paymentCompleted = false;
-    }
-  }, 2000);
-};
+    }, 2000);
+  };
 
-  // Fonction de téléchargement selon le format
-  async function downloadDocument(format, purchaseToken = null) {
+  setTimeout(() => {
+    const emailInput = document.getElementById('pay-email');
+    const phoneInput = document.getElementById('pay-phone');
+    const operatorMtn = document.getElementById('operator-mtn');
+    const operatorAirtel = document.getElementById('operator-airtel');
+    const submitBtn = document.getElementById('pay-submit-btn');
+    const cancelBtn = document.getElementById('pay-cancel-btn');
+    const modal = document.getElementById('takidoc-payment-modal');
+
+    if (emailInput) emailInput.addEventListener('input', window.checkPayForm);
+    if (phoneInput) {
+      phoneInput.addEventListener('input', () => {
+        let val = phoneInput.value.replace(/\D/g, '');
+        if (val.length > 9) val = val.slice(0, 9);
+        phoneInput.value = val;
+        window.checkPayForm();
+      });
+    }
+    if (operatorMtn) operatorMtn.addEventListener('click', () => window.selectPayOperator('MTN'));
+    if (operatorAirtel) operatorAirtel.addEventListener('click', () => window.selectPayOperator('AIRTEL'));
+    if (submitBtn) submitBtn.addEventListener('click', window.processPayment);
+    if (cancelBtn) cancelBtn.addEventListener('click', window.closePaymentModal);
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target.id === 'takidoc-payment-modal') window.closePaymentModal();
+      });
+    }
+    if (emailInput) emailInput.focus();
+  }, 100);
+}
+
+async function downloadDocument(format, purchaseToken = null) {
+  toast(`Génération de votre document ${format.toUpperCase()} en cours...`, 'info');
   try {
     const documentData = {
       fields: {},
@@ -1215,15 +1052,12 @@ function showPaymentModal() {
 
     const generatorUrl = 'https://takidoc-generator.onrender.com';
     
-    // Obtenir le token de session
     let authToken = SUPABASE_ANON_KEY;
     if (supabase) {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.access_token) authToken = session.access_token;
-      } catch (err) {
-        console.warn('⚠️ Erreur récupération session:', err);
-      }
+      } catch (err) { console.warn('⚠️ Erreur récupération session:', err); }
     }
 
     const authBody = purchaseToken 
@@ -1232,30 +1066,13 @@ function showPaymentModal() {
 
     const authResponse = await fetch('https://wyfkogowsdbxctbpfuud.supabase.co/functions/v1/authorize-download', {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${authToken}`
-      },
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${authToken}` },
       body: JSON.stringify(authBody)
     });
 
     const authData = await authResponse.json();
-    if (!authResponse.ok) {
-      throw new Error(authData.message || `Erreur d'autorisation (${authResponse.status})`);
-    }
+    if (!authResponse.ok) throw new Error(authData.message || `Erreur d'autorisation (${authResponse.status})`);
 
-    // Afficher le loader de téléchargement
-    const loaderHtml = `
-      <div id="download-loader" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:10001;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;backdrop-filter:blur(5px);">
-        <div style="width:60px;height:60px;border:4px solid rgba(255,255,255,0.3);border-top-color:#FF6B35;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px;"></div>
-        <h3 style="margin:0 0 8px;font-size:20px;">Génération de votre document...</h3>
-        <p style="margin:0;opacity:0.9;">Veuillez patienter, cela peut prendre quelques instants</p>
-      </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', loaderHtml);
-
-    // Générer le document
     const docResponse = await fetch(`${generatorUrl}/api/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1272,7 +1089,6 @@ function showPaymentModal() {
       throw new Error(`Erreur serveur: ${docResponse.status} - ${errorText}`);
     }
 
-    // Télécharger le fichier
     const blob = await docResponse.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1284,219 +1100,21 @@ function showPaymentModal() {
     window.URL.revokeObjectURL(url);
     a.remove();
 
-    // Supprimer le loader
-    const loader = document.getElementById('download-loader');
-    if (loader) loader.remove();
-
     saveDraft({ quiet: true });
     toast(`Document ${format.toUpperCase()} téléchargé avec succès.`, 'success');
   } catch (error) {
     console.error("Erreur génération:", error);
-    
-    // Supprimer le loader en cas d'erreur
-    const loader = document.getElementById('download-loader');
-    if (loader) loader.remove();
-    
     toast(error.message || `Erreur lors de la génération du ${format.toUpperCase()}.`, 'error');
   }
 }
 
-  // Ajouter les écouteurs d'événements
-  setTimeout(() => {
-    const emailInput = document.getElementById('pay-email');
-    const phoneInput = document.getElementById('pay-phone');
-    const operatorMtn = document.getElementById('operator-mtn');
-    const operatorAirtel = document.getElementById('operator-airtel');
-    const submitBtn = document.getElementById('pay-submit-btn');
-    const cancelBtn = document.getElementById('pay-cancel-btn');
-    const modal = document.getElementById('takidoc-payment-modal');
-
-    if (emailInput) emailInput.addEventListener('input', checkPayForm);
-    if (phoneInput) {
-      phoneInput.addEventListener('input', () => {
-        let val = phoneInput.value.replace(/\D/g, '');
-        if (val.length > 9) val = val.slice(0, 9);
-        phoneInput.value = val;
-        checkPayForm();
-      });
-    }
-    
-    if (operatorMtn) operatorMtn.addEventListener('click', () => selectPayOperator('MTN'));
-    if (operatorAirtel) operatorAirtel.addEventListener('click', () => selectPayOperator('AIRTEL'));
-    if (submitBtn) submitBtn.addEventListener('click', processPayment);
-    if (cancelBtn) cancelBtn.addEventListener('click', closePaymentModal);
-    if (modal) {
-      modal.addEventListener('click', (e) => {
-        if (e.target.id === 'takidoc-payment-modal') closePaymentModal();
-      });
-    }
-    
-    if (emailInput) emailInput.focus();
-  }, 100);
-}
-
-  // Ajouter les écouteurs d'événements
-  setTimeout(() => {
-    const emailInput = document.getElementById('pay-email');
-    const phoneInput = document.getElementById('pay-phone');
-    const operatorMtn = document.getElementById('operator-mtn');
-    const operatorAirtel = document.getElementById('operator-airtel');
-    const submitBtn = document.getElementById('pay-submit-btn');
-    const cancelBtn = document.getElementById('pay-cancel-btn');
-    const modal = document.getElementById('takidoc-payment-modal');
-
-    if (emailInput) emailInput.addEventListener('input', checkPayForm);
-    if (phoneInput) {
-      phoneInput.addEventListener('input', () => {
-        let val = phoneInput.value.replace(/\D/g, '');
-        if (val.length > 9) val = val.slice(0, 9);
-        phoneInput.value = val;
-        checkPayForm();
-      });
-    }
-    
-    if (operatorMtn) operatorMtn.addEventListener('click', () => selectPayOperator('MTN'));
-    if (operatorAirtel) operatorAirtel.addEventListener('click', () => selectPayOperator('AIRTEL'));
-    if (submitBtn) submitBtn.addEventListener('click', processPayment);
-    if (cancelBtn) cancelBtn.addEventListener('click', closePaymentModal);
-    if (modal) {
-      modal.addEventListener('click', (e) => {
-        if (e.target.id === 'takidoc-payment-modal') closePaymentModal();
-      });
-    }
-    
-    if (emailInput) emailInput.focus();
-  }, 100);
-
-
-async function initiatePayment() {
-  if (!state.template) return;
-
-  // Document gratuit → téléchargement direct
-  if (state.template.price === 0) {
-    await downloadFromServer();
-    return;
-  }
-
-  // Vérifier la connexion
-  if (!state.user) {
-    toast('Veuillez vous connecter pour effectuer un paiement.', 'error');
-    // Optionnel : rediriger vers la page de connexion
-    // window.location.href = 'auth.html?action=login';
-    return;
-  }
-
-  // Afficher la modale de paiement
-  showPaymentModal();
-}
-
 async function generatePDF() {
   if (!state.template) return;
-  
-  // DEBUG : log du prix du template
-  console.log('📄 Template:', state.template.name, '| Prix:', state.template.price, 'XAF');
-  
-  // 1. Si le document est GRATUIT → téléchargement direct
   if (state.template.price === 0) {
-    console.log('✅ Template gratuit → downloadFromServer()');
-    await downloadFromServer();
+    await downloadDocument('pdf');
     return;
   }
-  
-  // 2. Si le document est PAYANT → flux de paiement Yabetoo
-  console.log('💰 Template payant → initiatePayment()');
   await initiatePayment();
-}
-
-
-async function downloadFromServer(purchaseToken = null) {
-  toast("Génération du PDF en cours...", "info");
-  try {
-    const documentData = {
-      fields: {},
-      primary_color: state.colorActive ? state.primaryColor : null,
-      photo_data_url: state.photoDataUrl || null,
-      font_family: state.fontCustom ? state.fontFamily : null,
-      snapshot: {
-        html: getCanvas().innerHTML,
-        css: getCanvas().querySelectorAll('style').length > 0 
-          ? Array.from(getCanvas().querySelectorAll('style')).map(s => s.textContent).join('\n') 
-          : null
-      }
-    };
-    state.template.fields.forEach(field => { 
-      documentData.fields[field.name] = getFieldValue(field.name); 
-    });
-
-    const generatorUrl = 'https://takidoc-generator.onrender.com';
-    
-    // Obtenir le token de session
-    let authToken = SUPABASE_ANON_KEY;
-    if (supabase) {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.access_token) authToken = session.access_token;
-      } catch (err) {
-        console.warn('⚠️ Erreur récupération session:', err);
-      }
-    }
-
-    // Appeler authorize-download avec purchase_token SI disponible
-    const authBody = purchaseToken 
-      ? { purchase_token: purchaseToken, format: 'pdf' }
-      : { template_id: state.template.id, format: 'pdf' };
-
-    const authResponse = await fetch('https://wyfkogowsdbxctbpfuud.supabase.co/functions/v1/authorize-download', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${authToken}`
-      },
-      body: JSON.stringify(authBody)
-    });
-
-    const authData = await authResponse.json();
-    
-    if (!authResponse.ok) {
-      console.error('❌ authorize-download erreur:', authResponse.status, authData);
-      throw new Error(authData.message || `Erreur d'autorisation (${authResponse.status})`);
-    }
-
-    console.log('✅ Nonce obtenu:', authData.nonce?.slice(0, 8) + '...');
-
-    const pdfResponse = await fetch(`${generatorUrl}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        nonce: authData.nonce, 
-        template_id: state.template.id, 
-        format: 'pdf', 
-        data: documentData 
-      })
-    });
-
-    if (!pdfResponse.ok) {
-      const errorText = await pdfResponse.text();
-      throw new Error(`Erreur serveur: ${pdfResponse.status} - ${errorText}`);
-    }
-
-    const blob = await pdfResponse.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `TakiDoc_${(state.template.name || 'document').replace(/[^a-z0-9_-]/gi, '_')}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
-
-    saveDraft({ quiet: true });
-    toast("PDF téléchargé avec succès.", "success");
-  } catch (error) {
-    console.error("Erreur génération serveur:", error);
-    toast(error.message || "Erreur lors de la génération du PDF.", "error");
-  }
 }
 
 function setupExportControls() {
