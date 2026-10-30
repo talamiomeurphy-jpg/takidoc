@@ -395,6 +395,38 @@ function injectPhoto(html, dataUrl) {
   return out;
 }
 
+
+/* ------------------------------------------------------------
+   Mode « instantané » : réapplique la couleur et la police choisies.
+   Le navigateur n'envoie que le HTML du document ; la couleur (variable CSS
+   portée par l'éditeur) et la police ne voyageaient donc pas jusqu'ici.
+   Les valeurs sont validées strictement avant d'être injectées.
+------------------------------------------------------------ */
+const FONT_FAMILY_RE = /^[A-Za-z0-9 ,'"\-]{1,200}$/;
+
+function applySnapshotOverrides(html, data) {
+  let out = html;
+  let css = '';
+
+  if (typeof data.primary_color === 'string' && HEX_COLOR_RE.test(data.primary_color.trim())) {
+    const c = data.primary_color.trim();
+    out = injectColor(out, c); // réécrit les déclarations --doc-primary-color / --primary-color du modèle
+    css += `:root{--doc-primary-color:${c};--primary-color:${c};}`
+      + `.primary,.accent,.accent-color,.section-title,.title-accent,h1,h2{border-color:${c};}`
+      + `.text-primary,.primary-color,.accent-text{color:${c};}`
+      + `.bg-primary,.primary-bg,.accent-bg{background-color:${c};}`;
+  }
+
+  if (typeof data.font_family === 'string' && FONT_FAMILY_RE.test(data.font_family.trim())) {
+    const f = data.font_family.trim();
+    css += `body,body *:not(svg):not(path):not(.fa):not(.fas):not(.far):not(.fab):not([class*="fa-"]){font-family:${f} !important;}`;
+  }
+
+  if (!css) return out;
+  const tag = `<style>${css}</style>`;
+  return /<\/head>/i.test(out) ? out.replace(/<\/head>/i, () => tag + '</head>') : tag + out;
+}
+
 function buildDocumentHtml(template, data) {
   const fields = Array.isArray(template.template_fields) ? template.template_fields : [];
 
@@ -549,8 +581,16 @@ async function renderPdf(html, reqId) {
    (ex. barre latérale + contenu) en tableau Word. Le HTML obtenu est
    ensuite converti en .docx par la bibliothèque html-to-docx.
 ------------------------------------------------------------ */
-function isDocxAvailable() {
+function isNativeDocxAvailable() {
+  try { require.resolve('docx'); require.resolve('./docx-native'); return true; } catch (_) { return false; }
+}
+
+function isLegacyDocxAvailable() {
   try { require.resolve('html-to-docx'); return true; } catch (_) { return false; }
+}
+
+function isDocxAvailable() {
+  return isNativeDocxAvailable() || isLegacyDocxAvailable();
 }
 
 // ⚠️ Cette fonction s'exécute DANS Chromium : elle ne doit utiliser
@@ -709,6 +749,41 @@ function wordifyInPage(opts) {
 
 async function renderDocx(html, title, reqId) {
   if (!isDocxAvailable()) throw new Error('DOCX_UNAVAILABLE');
+
+  // 1) Rendu Word NATIF (vrais paragraphes, tableaux, fonds colorés…)
+  if (isNativeDocxAvailable() && process.env.DOCX_NATIVE !== 'false') {
+    try {
+      return await renderDocxNative(html, title, reqId);
+    } catch (error) {
+      log(reqId, '⚠️  Rendu Word natif en échec, bascule sur html-to-docx :', error && error.message);
+      if (!isLegacyDocxAvailable()) throw error;
+    }
+  }
+
+  // 2) Secours : conversion HTML -> Word
+  return renderDocxLegacy(html, title, reqId);
+}
+
+async function renderDocxNative(html, title, reqId) {
+  const { extractInPage, buildDocxBuffer } = require('./docx-native');
+
+  log(reqId, '📝 Analyse de la mise en page pour Word (rendu natif)...');
+  const layout = await withRenderedPage(html, reqId, page => page.evaluate(extractInPage));
+
+  if (!layout || !Array.isArray(layout.nodes) || !layout.nodes.length) {
+    throw new Error('Aucun contenu exploitable pour le rendu Word natif');
+  }
+
+  log(reqId, '📝 Génération du DOCX natif... (' + layout.nodes.length + ' blocs)');
+  const docx = Buffer.from(await buildDocxBuffer(layout, title));
+
+  if (docx.subarray(0, 2).toString('latin1') !== 'PK') {
+    throw new Error("Le fichier généré n'est pas un DOCX valide");
+  }
+  return docx;
+}
+
+async function renderDocxLegacy(html, title, reqId) {
   const HTMLtoDOCX = require('html-to-docx');
 
   log(reqId, '📝 Préparation du contenu pour Word...');
@@ -870,7 +945,7 @@ app.post(
       // Word : on vérifie que le module est installé AVANT de brûler le nonce
       if (format === 'docx' && !isDocxAvailable()) {
         return res.status(501).json({
-          error: "Le module Word n'est pas installé sur le serveur (npm install html-to-docx).",
+          error: "Le module Word n'est pas installé sur le serveur (npm install docx).",
           format
         });
       }
@@ -914,9 +989,18 @@ app.post(
         ? data.snapshot
         : null;
 
-      const html = snapshot
+      let html = snapshot
         ? buildSnapshotDocument(template, snapshot, { allowedHosts: ALLOWED_ASSET_HOSTS })
         : buildDocumentHtml(template, data);
+      if (snapshot) html = applySnapshotOverrides(html, data);
+
+      // Diagnostic couleur : le modèle utilise-t-il la variable CSS de couleur principale ?
+      if (snapshot && typeof data.primary_color === 'string') {
+        const css = String(template.css_styles || '') + String(template.html_structure || '');
+        const usesVar = (css.match(/var\(\s*--(?:doc-)?primary-color/gi) || []).length;
+        log(reqId, '🎨 Couleur ' + data.primary_color + ' — le modèle utilise la variable CSS ' + usesVar + ' fois'
+          + (usesVar === 0 ? ' (⚠️ couleurs écrites en dur : la couleur choisie ne peut pas s\'appliquer)' : ''));
+      }
 
       log(reqId, snapshot
         ? '🎨 Instantané du document nettoyé et appliqué au modèle'
@@ -959,7 +1043,7 @@ app.post(
 
       if (error && error.message === 'DOCX_UNAVAILABLE') {
         return res.status(501).json({
-          error: "Le module Word n'est pas installé sur le serveur (npm install html-to-docx).",
+          error: "Le module Word n'est pas installé sur le serveur (npm install docx).",
           requestId: reqId
         });
       }
