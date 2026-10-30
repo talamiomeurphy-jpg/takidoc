@@ -2,7 +2,7 @@
 TAKIDOC — CORS RESTREINT
 Seules les origines listées dans le secret ALLOWED_ORIGINS
 (séparées par des virgules) peuvent appeler les fonctions
-depuis un navigateur. Fini le « * » ouvert à tout le monde.
+depuis un navigateur.
 ============================================================ */
 
 const DEFAULT_ORIGINS = [
@@ -27,8 +27,6 @@ export function corsHeaders(req: Request): Record<string, string> {
   const allowed = origins.includes(origin)
 
   return {
-    // Origine non autorisée : on renvoie la première origine légitime,
-    // le navigateur bloquera donc la réponse.
     'Access-Control-Allow-Origin': allowed ? origin : (origins[0] ?? ''),
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -37,7 +35,6 @@ export function corsHeaders(req: Request): Record<string, string> {
   }
 }
 
-/* Répond aux requêtes de pré-vérification (OPTIONS) */
 export function preflight(req: Request): Response | null {
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders(req) })

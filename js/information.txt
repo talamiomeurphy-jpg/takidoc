@@ -1,0 +1,371 @@
+voila tout ce que tu as demandé comme fichier, et sache que `templates-registry.js ` étais l'ancien registre des document donc il te montre juste la façon dont est crée les document et il nous est inutile maintenant que nous avons supabase et les documents dans supabase  , donc je disais : # MISSION TECHNIQUE STRATÉGIQUE — TAKIDOC 
+## Audit, sécurisation et mise en place d'une architecture de génération de documents professionnelle et évolutive 
+Claude, tu vas intervenir sur un projet réel : **TakiDoc**, une plateforme de documents professionnels que je développe et qui est déjà accessible en ligne. 
+Site actuel : https://takidoc.onrender.com 
+Je veux que tu comprennes l'ensemble du projet avant de modifier quoi que ce soit. Tu ne dois pas te comporter comme un assistant qui fournit rapidement quelques extraits de code. Tu dois agir comme un ingénieur logiciel senior, un architecte backend, un spécialiste de la sécurité web et un développeur full-stack chargé de faire évoluer une plateforme existante vers un produit professionnel. 
+Tu dois travailler avec rigueur, vérifier tes hypothèses, préserver les fonctionnalités opérationnelles et expliquer clairement tes décisions techniques. --- 
+# 1. CE QU'EST TAKIDOC 
+TakiDoc est une plateforme de découverte, de personnalisation et de génération de documents professionnels. 
+Le concept est comparable à Pinterest pour les documents : les utilisateurs parcourent un catalogue visuel, découvrent des modèles, ouvrent un document, le personnalisent et obtiennent un fichier exploitable. 
+Le catalogue comprend notamment des modèles de : 
+- CV et lettres de motivation ; 
+- lettres et courriers professionnels ; 
+- ressources humaines ; 
+- documents administratifs ; 
+- contrats et documents commerciaux ; 
+- factures et devis ; 
+- rapports ; 
+- attestations ; 
+- procurations ; 
+- déclarations et certificats ; 
+- et de nombreuses autres catégories à développer. 
+Le site possède déjà une base technique, des pages, un catalogue, des modèles HTML/CSS, un éditeur et une connexion à Supabase. 
+Il ne s'agit donc PAS de construire une nouvelle application à partir de zéro. 
+**Ta mission est de faire évoluer intelligemment le système existant sans casser ce qui fonctionne déjà.** 
+L'ambition à terme est de développer une plateforme de référence pour les documents professionnels, avec une expérience soignée, une génération fiable et une architecture capable de monter progressivement en charge. 
+---  # 2. MON NIVEAU D'EXIGENCE 
+Je ne veux pas de code simplifié au point de devenir incomplet, de solutions provisoires présentées comme définitives, de suppositions non vérifiées ou d'architectures inutilement compliquées. 
+Je veux : 
+- du code complet, cohérent, maintenable et prêt à être testé ; 
+- une architecture compréhensible et documentée ; 
+- une sécurité pensée dès le départ ; 
+- des erreurs gérées explicitement ; 
+- une interface professionnelle et responsive ; 
+- des instructions précises pour chaque modification ; 
+- une stratégie réaliste en matière de coûts ; 
+- des tests qui démontrent le fonctionnement réel ; 
+- une évolution progressive qui préserve l'existant. 
+Lorsque je te demande de remplacer un fichier ou un bloc important, fournis-moi le contenu complet de ce fichier ou du bloc concerné, pas seulement trois lignes à insérer sans contexte. 
+Je préfère une solution technique sérieuse à une réponse rapide qui donne l'impression de fonctionner sans avoir été vérifiée. 
+Cependant, la longueur du code ne constitue pas à elle seule une preuve de qualité. Évite le code inutilement complexe : chaque composant doit avoir une fonction claire. 
+---  # 3. L'ÉTAT ACTUEL DU PROJET 
+Les technologies et éléments déjà utilisés ou évoqués dans le projet comprennent : 
+- HTML, CSS et JavaScript côté navigateur ; 
+- Supabase pour la base de données et l'authentification ; 
+- une table de catégories et une table de modèles de documents ; 
+- des structures HTML et des feuilles CSS pour les modèles ; 
+- une table de champs personnalisables ; 
+- un éditeur permettant de modifier les informations et de visualiser le résultat ; 
+- html2canvas et jsPDF pour la génération actuelle de PDF côté navigateur ; 
+- des fonctionnalités de personnalisation comme la modification du texte, des couleurs et, pour certains modèles, l'ajout d'une photo ; 
+- un catalogue visuel avec recherche, catégories, favoris, partage et personnalisation ; 
+- une réflexion en cours sur le paiement via OpenPay, dont le fournisseur exact, les capacités et les modalités d'intégration doivent être confirmés. 
+Les fichiers HTML/CSS/JavaScript du site existent déjà. Je pourrai te fournir les fichiers nécessaires pour effectuer ton audit. 
+La structure Supabase déjà évoquée comprend notamment les tables suivantes : 
+**`template_categories`** 
+- `id`- `name` 
+- `description` 
+- `icon` 
+- `display_order` 
+- `created_at` 
+**`templates`** 
+- `id` 
+- `category_id` 
+- `name` 
+- `description` 
+- `price_xaf` 
+- `has_photo` 
+- `has_color_picker` 
+- `preview_image_url` 
+- `is_featured` 
+- `is_active` 
+- `display_order` 
+- `created_at` 
+- `updated_at` 
+- `html_structure` 
+- `css_styles` 
+**`template_fields`** 
+- `id`- `template_id` 
+- `field_name` 
+- `field_label` 
+- `field_type` 
+- `default_value` 
+- `is_required` 
+- `display_order` 
+- `created_at` 
+Ces informations sont un point de départ. Tu dois vérifier le véritable schéma, les contraintes, les politiques RLS, les relations et les fichiers réels avant de produire des migrations ou du code qui en dépend. 
+Ne considère pas qu'un schéma évoqué ici correspond nécessairement à 100 % à la version actuellement déployée. 
+---# 4. LE PROBLÈME STRATÉGIQUE À RÉSOUDRE 
+Je veux que TakiDoc puisse générer des documents professionnels de façon fiable, tout en conservant l'éditeur actuel et sans stocker indéfiniment tous les fichiers générés. 
+Je souhaite que l'utilisateur puisse personnaliser un modèle, puis obtenir le document final dans le format prévu, notamment PDF et, si la solution technique retenue le permet correctement, Word DOCX. 
+À terme, je veux pouvoir développer le catalogue, augmenter le nombre d'utilisateurs et absorber des périodes de forte activité sans que chaque nouvelle génération rende le site instable. 
+Mais il faut distinguer les objectifs de l'architecture réellement testée. 
+Ne pars pas du principe que : 
+- un hébergement gratuit peut supporter indéfiniment une charge importante ; 
+- quarante générations simultanées sont forcément possibles sans frais ; 
+- une génération prendra toujours une à trois secondes ; 
+- une file d'attente empêche toute panne ; 
+- un fournisseur garantit un service gratuit permanent ; 
+- une architecture complexe est nécessaire avant d'avoir mesuré la charge réelle. 
+Tu dois vérifier les quotas, limites, conditions, ressources et coûts des services envisagés à partir de leur documentation officielle actuelle. 
+**Je préfère une architecture progressive, testable et économiquement viable plutôt qu'une promesse irréaliste de puissance illimitée à zéro franc.** 
+---  # 5. L'ARCHITECTURE QUE TU DOIS ÉVALUER 
+Je souhaite que tu étudies sérieusement une architecture hybride. 
+## A. Frontend et éditeur 
+Le site existant reste la base de travail. 
+L'utilisateur doit toujours pouvoir : 
+1. parcourir le catalogue ; 
+2. sélectionner un modèle ; 
+3. ouvrir l'éditeur ; 
+4. modifier les champs et les textes ; 
+5. modifier les couleurs lorsque le modèle le permet ; 
+6. ajouter une photo lorsque le modèle le permet ; 
+7. visualiser les modifications ; 
+8. choisir le format de sortie disponible ; 
+9. demander la génération et récupérer son fichier. 
+Ne supprime pas les fonctionnalités déjà opérationnelles simplement parce qu'une nouvelle architecture serait plus facile à développer sans elles. 
+Examine notamment les fonctionnalités d'édition libre du texte, les champs dynamiques, les couleurs, les photos et la compatibilité des modèles HTML/CSS. 
+Le système doit conserver une séparation claire entre les données du document, son rendu visuel et les fonctions de téléchargement. 
+## B. Supabase 
+Supabase doit continuer à jouer son rôle dans la gestion des données, de l'authentification et des informations nécessaires au fonctionnement de la plateforme. Examine les possibilités d'utiliser Supabase pour conserver : 
+- les modèles et leurs versions ; 
+- les profils et les droits des utilisateurs ; 
+- les commandes et leur état ; 
+- les références des transactions de paiement ; 
+- les données nécessaires à une éventuelle régénération d'un document ; 
+- les journaux techniques indispensables au diagnostic. 
+Ne stocke pas automatiquement les PDF et DOCX générés de façon permanente. 
+Avant de décider de conserver une donnée personnelle, une photo ou une copie des informations saisies par l'utilisateur, justifie son utilité, sa durée de conservation, son accès et sa suppression. 
+## C. Service de génération 
+Évalue un service backend indépendant, par exemple avec Node.js et Playwright ou Puppeteer, si les fichiers et contraintes du projet confirment que cette approche est adaptée. 
+Pour le PDF, un moteur Chromium peut permettre un rendu plus fidèle du HTML/CSS et produire du texte sélectionnable, à condition que le document soit correctement construit et que le moteur soit configuré et testé. 
+Pour le DOCX, prévois une véritable génération de document Word avec une bibliothèque appropriée ou une autre solution vérifiée. Ne te contente jamais de renommer un PDF en `.docx`.La fidélité entre HTML/CSS et Word doit être évaluée honnêtement : Word ne reproduit pas nécessairement tous les styles d'un navigateur. 
+Le service de génération devra notamment : 
+- valider les demandes reçues ; 
+- vérifier les droits de l'utilisateur ; 
+- charger le bon modèle et ses styles ; 
+- appliquer les données personnalisées ; 
+- gérer les polices, les images et les sauts de page ; 
+- générer le format demandé ; 
+- renvoyer le fichier au client ; 
+- supprimer les fichiers temporaires après utilisation ; 
+- gérer les erreurs, les délais dépassés et les requêtes interrompues ; 
+- appliquer des limites de ressources et de concurrence ; 
+- ne pas exposer de secrets au navigateur. 
+Tu dois comparer cette approche à la génération actuelle côté navigateur et expliquer ce qu'elle améliore, ce qu'elle complique et ce qu'elle coûte. 
+Ne remplace pas immédiatement la génération existante avant d'avoir un prototype testé et une stratégie de retour arrière. 
+## D. Gestion de la charge 
+Étudie le besoin réel d'une file d'attente de génération. 
+Une file d'attente peut permettre de limiter la concurrence, de contrôler les ressources et de traiter les demandes progressivement. Elle ne garantit pas à elle seule l'absence de panne. 
+Pour la première version, propose le mécanisme le plus simple qui réponde aux besoins mesurés. N'ajoute pas une infrastructure distribuée coûteuse sans justification.Si une file d'attente devient nécessaire, définis : 
+- les états d'une demande ; 
+- les limites de concurrence ; 
+- le comportement en cas d'échec ; 
+- les tentatives de reprise ; 
+- les délais d'expiration ; 
+- la prévention des doublons ; 
+- le retour de l'état au frontend ; 
+- le traitement des tâches bloquées ; 
+- la protection contre les demandes abusives. 
+Explique clairement à partir de quel volume ou de quels résultats de tests il serait raisonnable de faire évoluer l'architecture. 
+--- 
+# 6. EXIGENCES DE SÉCURITÉ 
+La sécurité n'est pas une fonctionnalité facultative. 
+Tu dois auditer et prendre en compte au minimum les points suivants. 
+## Authentification et autorisations 
+- Vérifier les sessions et l'identité de l'utilisateur côté serveur. 
+- Ne jamais faire confiance à un simple identifiant envoyé par le navigateur. 
+- Ne jamais considérer un état local, une variable JavaScript ou un message de succès frontend comme une preuve de paiement. 
+- Vérifier les droits d'accès aux modèles, commandes et fichiers. 
+- Contrôler les politiques RLS de Supabase. 
+- Séparer les permissions publiques, celles des utilisateurs et celles des administrateurs. 
+- Ne jamais exposer une clé Supabase privilégiée, telle que la clé `service_role`, dans le frontend. 
+## PaiementsAvant de mettre en place OpenPay, identifie le fournisseur exact, sa documentation officielle, ses méthodes d'intégration et ses mécanismes de confirmation. 
+Vérifie les transactions côté serveur, l'authenticité des webhooks selon les mécanismes documentés par le fournisseur, le montant, la devise, la commande concernée et le statut final de la transaction. 
+Prévois un mécanisme d'idempotence pour éviter qu'une notification répétée ne crée plusieurs confirmations ou plusieurs droits de téléchargement. 
+Ne considère jamais une redirection de retour vers le site comme une preuve suffisante de paiement. 
+Ne développe pas un faux système de paiement pour simuler une intégration réelle sans le signaler explicitement. 
+## Génération de documents 
+Les modèles contiennent du HTML et du CSS. Examine les risques liés à leur rendu côté serveur. 
+Évite notamment qu'un modèle, une image ou une URL fournie par l'utilisateur puisse servir à accéder à des ressources internes, à des métadonnées d'hébergement ou à des services non autorisés. 
+Prévois une validation des URL, des limites de taille, un contrôle des ressources externes, des délais d'exécution et une isolation adaptée au moteur de rendu. 
+Évite d'injecter du HTML arbitraire de l'utilisateur sans stratégie de validation et d'isolation. 
+Ne confonds pas l'utilisation de Chromium côté serveur avec une garantie automatique de sécurité.  ## Données personnelles 
+Limite la collecte aux données réellement nécessaires. 
+Ne conserve pas indéfiniment les fichiers générés, les photos ou les contenus personnels par défaut. Si la régénération est nécessaire, définis explicitement quelles données doivent être conservées et pendant combien de temps. 
+--- 
+# 7. GÉNÉRATION À LA DEMANDE ET STOCKAGE TEMPORAIRE 
+L'objectif est de produire le fichier au moment où l'utilisateur en a besoin, puis de le lui transmettre. 
+Le fonctionnement visé est le suivant : 
+1. l'utilisateur personnalise le document ; 
+2. le frontend envoie une demande de génération autorisée ; 
+3. le backend vérifie l'utilisateur, le modèle, les droits et les données ; 
+4. le moteur génère le fichier ; 
+5. le fichier est transmis à l'utilisateur ; 
+6. les fichiers temporaires sont supprimés selon une stratégie fiable ; 
+7. les informations nécessaires à la commande, à la facturation ou à une éventuelle régénération sont conservées séparément, lorsque c'est justifié. 
+Précise la différence entre : 
+- le fichier final téléchargé par l'utilisateur ; 
+- le fichier temporaire de génération ; 
+- les données personnalisées nécessaires à la régénération ; 
+- l'historique d'une commande ; - l'historique d'une commande ; 
+- les éventuels journaux techniques. 
+Attention : supprimer le fichier temporaire ne signifie pas nécessairement qu'il sera possible de régénérer exactement le même document plus tard. 
+Si cette capacité est requise, il faudra décider comment versionner le modèle et conserver, de manière sécurisée et proportionnée, les données nécessaires à sa reproduction. 
+Ne promets donc pas une régénération identique si le modèle, les polices, les photos ou les paramètres nécessaires n'ont pas été conservés. 
+--- 
+# 8. COÛTS ET HÉBERGEMENT 
+Le coût doit être étudié avant le choix définitif. 
+Compare les solutions d'hébergement réalistes pour le frontend, Supabase et le moteur de génération. 
+Pour chaque solution envisagée, vérifie les informations officielles à jour : 
+- coût de base ; 
+- quotas gratuits éventuels ; 
+- limites CPU et mémoire ; 
+- temps d'exécution ; 
+- comportement après une période d'inactivité ; 
+- concurrence maximale ; 
+- limites réseau et de transfert ; 
+- stockage temporaire disponible ;- éventuelles interruptions ou mises en veille ; 
+- conditions d'utilisation ; 
+- coûts lorsque les quotas sont dépassés. 
+Ne prétends pas qu'une solution est gratuite, illimitée ou adaptée à la production sans éléments vérifiables. 
+Ne choisis pas une infrastructure uniquement parce qu'elle dispose d'une offre gratuite. 
+Propose une stratégie qui minimise les coûts au début tout en permettant une évolution maîtrisée. Si une solution gratuite n'offre pas les garanties nécessaires, dis-le clairement et chiffre autant que possible les compromis. 
+--- 
+# 9. STRATÉGIE DE TESTS ET DE PERFORMANCE 
+Je ne veux pas que tu estimes la capacité du système à partir de suppositions. 
+Construis un plan de tests permettant de mesurer au minimum : 
+- le temps de génération moyen et les percentiles pertinents ; 
+- le taux d'échec ; 
+- la consommation de mémoire ; 
+- la consommation CPU ; 
+- le nombre de générations simultanées ; 
+- les délais d'attente ; 
+- les erreurs de chargement des polices et images ; 
+- la fidélité visuelle du PDF ; 
+- la validité des fichiers DOCX ; - les comportements en cas de surcharge. 
+Propose des tests progressifs à 1, 5, 10, 20 puis, si les ressources et les limites de l'environnement le permettent, 40 générations simultanées. 
+Ne lance pas aveuglément un test de charge important sur le site de production. Utilise d'abord un environnement de test et fixe des limites pour ne pas provoquer de coûts imprévus ou perturber les utilisateurs. 
+Distingue bien le nombre de demandes simultanées du nombre de documents réellement générés en parallèle. 
+Les résultats devront servir à choisir les limites de concurrence et à déterminer si une file d'attente ou un hébergement plus puissant est nécessaire. 
+--- 
+# 10. PRÉSERVER LE SITE EXISTANT 
+C'est une règle fondamentale. 
+Tu ne dois pas commencer par réécrire intégralement TakiDoc. 
+Tu dois d'abord identifier les fonctionnalités existantes et les protéger. 
+Pendant l'audit, examine notamment : 
+- la page d'accueil ; 
+- le catalogue et le chargement des modèles depuis Supabase ; 
+- les filtres, la recherche et les catégories ; 
+- le scroll infini ; 
+- les cartes de modèles, les favoris et le partage ; 
+- l'ouverture de l'éditeur ; 
+- l'aperçu du document ; 
+- la modification des champs et des textes ; 
+- les couleurs ; 
+- l'ajout de photos ; - les téléchargements ; 
+- l'authentification ; 
+- les profils et les rôles ; 
+- les éventuelles fonctions d'administration. 
+Cette liste doit être confrontée aux fichiers réels. Ne suppose pas qu'une fonction existe encore simplement parce qu'elle est mentionnée ici. 
+Avant chaque modification importante, indique les fichiers concernés, les dépendances, les risques de régression et la procédure de retour arrière. 
+Conserve les versions originales des fichiers modifiés et propose une méthode de sauvegarde adaptée. 
+Toute nouvelle fonctionnalité doit être testée sans casser les fonctions déjà opérationnelles. 
+--- 
+# 11. TA MÉTHODE DE TRAVAIL OBLIGATOIRE 
+Tu dois procéder par étapes. 
+## Étape 1 — Compréhension et audit 
+Commence par lire les fichiers que je te fournis et le document contenant l'historique de notre réflexion. 
+Tu dois comprendre ce qui a déjà été essayé, les décisions prises, les problèmes résolus et les erreurs à ne pas répéter. 
+Ne te limite pas aux extraits de code. Lorsque tu disposes d'un fichier complet, examine-le dans son ensemble et repère les dépendances entre les fichiers. 
+Si tu peux consulter le site en ligne, utilise-le pour observer son comportement, mais ne prétends pas avoir vérifié une fonction si tu ne l'as pas réellement testée. 
+Distingue : - les faits confirmés ; 
+- les hypothèses ; 
+- les problèmes constatés ; 
+- les éléments qui nécessitent encore une vérification. 
+## Étape 2 — Rapport d'audit 
+Avant de modifier le code, produis un rapport structuré contenant : 
+1. l'architecture actuelle ; 
+2. les fonctionnalités qui semblent opérationnelles ; 
+3. les problèmes ou risques constatés ; 
+4. les dépendances techniques ; 
+5. les failles de sécurité potentielles ; 
+6. les risques liés à la génération PDF/DOCX ; 
+7. les risques de coûts et de capacité ; 
+8. les modifications réellement nécessaires ; 
+9. les éléments qui ne doivent pas être modifiés ; 
+10. les informations manquantes à obtenir. 
+N'invente pas de résultats de tests. Si tu n'as pas pu vérifier un point, marque-le explicitement comme non vérifié. 
+## Étape 3 — Architecture cible 
+Propose une architecture cible argumentée, avec un schéma textuel des flux entre le frontend, Supabase, le service de génération, le paiement et le téléchargement. 
+Compare les options possibles et justifie le choix recommandé. 
+Présente les avantages, les limites, les coûts probables, les risques et les conditions de réussite. 
+Privilégie une architecture progressive. Ne crée pas des dizaines de services indépendants sans besoin démontré. 
+## Étape 4 — Plan d'implémentation 
+Découpe le travail en phases indépendantes, par exemple : - sécurisation et vérification de l'existant ; 
+- prototype de génération PDF côté serveur ; 
+- comparaison du rendu avec le système actuel ; 
+- intégration contrôlée à l'éditeur ; 
+- gestion des erreurs et des limites de concurrence ; 
+- génération DOCX si elle répond aux besoins réels ; 
+- sécurisation des commandes et des paiements ; 
+- tests de charge ; 
+- préparation de la mise en production. 
+Adapte ce plan après l'audit. Ne suis pas cette liste aveuglément si les fichiers révèlent un autre ordre nécessaire. 
+Pour chaque phase, précise les fichiers à créer ou modifier, les prérequis, les risques, les tests et les critères d'acceptation. 
+## Étape 5 — Implémentation progressive 
+Ne commence à coder qu'après avoir présenté les constats et la stratégie. 
+Ensuite, avance par étapes vérifiables. 
+Pour chaque étape : 
+- explique brièvement l'objectif ; 
+- fournis les fichiers complets concernés ou les blocs complets à remplacer ; 
+- indique précisément leur chemin ; 
+- donne les commandes d'installation et de lancement ; 
+- précise les variables d'environnement à configurer ; 
+- fournis un fichier `.env.example` lorsque c'est pertinent, sans secret réel ;   - explique comment tester le résultat ; 
+- indique les erreurs possibles et leur diagnostic ; 
+- confirme les tests réellement exécutés et leurs résultats. 
+Ne prétends pas qu'un code fonctionne si tu n'as pas pu l'exécuter. 
+Si tu n'as pas accès à mon environnement Supabase, à mon hébergeur ou à mes secrets, prépare les instructions nécessaires et demande-moi les résultats dont tu as besoin. 
+Ne me demande jamais de publier une clé secrète dans une conversation, un dépôt ou un fichier frontend. 
+## Étape 6 — Validation avant production 
+Avant de remplacer une solution existante ou de déployer une nouvelle architecture, vérifie les critères d'acceptation définis. 
+Prévois une procédure de retour arrière. 
+La génération actuelle doit rester disponible tant que la nouvelle solution n'a pas été validée et intégrée correctement. 
+--- 
+# 12. FORMAT DE TES RÉPONSES 
+Je veux des réponses concrètes, précises et organisées. 
+Pour les audits, utilise des sections claires. 
+Pour le code, fournis des blocs complets directement copiables, accompagnés de leur chemin exact et des instructions de remplacement. 
+Ne m'envoie pas seulement des fragments dispersés si un fichier complet doit être modifié. 
+Ne masque pas les difficultés. Si une fonctionnalité demande plusieurs étapes, explique-les. 
+Ne propose pas une réécriture totale du site simplement parce que cela t'arrange techniquement. N'ajoute pas de paiement, de nouvelle bibliothèque, de nouvelle table ou de service externe sans expliquer pourquoi il est nécessaire. 
+Ne remplace pas les clés ou configurations existantes au hasard. 
+Ne modifie pas la base de données de production sans migration expliquée, sauvegarde et procédure de vérification. 
+Lorsque tu proposes une décision technique, indique si elle est : 
+- confirmée par les fichiers ; 
+- validée par un test ; 
+- vérifiée dans la documentation officielle ; 
+- ou encore une hypothèse. 
+--- 
+# 13. CE QUE TU DOIS ME LIVRER À TERME 
+À l'issue du travail, l'objectif est d'obtenir : 
+1. un audit fiable de TakiDoc ; 
+2. une architecture documentée et adaptée aux moyens disponibles ; 
+3. un éditeur conservant les fonctionnalités existantes ; 
+4. un mécanisme de génération PDF fiable ; 
+5. une génération DOCX réellement valide si elle est retenue ; 
+6. une gestion propre des fichiers temporaires ; 
+7. une politique claire de conservation des données nécessaires à la régénération ; 
+8. une sécurisation des accès et des droits ; 
+9. une intégration du paiement fondée sur la vérification côté serveur, si le paiement est effectivement mis en place ; 
+10. une gestion adaptée des erreurs et de la concurrence ; 
+11. des tests de qualité, de performance et de sécurité ; 
+12. une procédure de déploiement et de retour arrière ; 
+13. une estimation transparente des coûts et des limites ; 
+14. une documentation suffisante pour maintenir le projet.  Le but n'est pas seulement de faire fonctionner une démonstration sur mon ordinateur. Il faut construire une base technique que je pourrai faire évoluer sans devoir tout recommencer à chaque nouvelle fonctionnalité. 
+--- 
+# 14. PREMIÈRE ACTION À EFFECTUER MAINTENANT 
+Pour le moment, **ne code rien et ne modifie aucun fichier**. 
+Commence par : 
+1. lire intégralement les fichiers que je joins ; 
+2. lire l'historique de discussion fourni ; 
+3. identifier les éléments qui sont confirmés et ceux qui restent à vérifier ; 
+4. me présenter ton rapport d'audit ; 
+5. proposer l'architecture cible et ses compromis ; 
+6. établir un plan d'implémentation progressif. 
+Si des fichiers indispensables manquent, dresse une liste précise des fichiers ou informations nécessaires et explique pourquoi. 
+Ne me demande pas de répéter les informations déjà présentes dans les documents fournis. 
+Après cette première analyse, attends ma validation avant de commencer les modifications importantes. 
+**Règle finale : tu dois privilégier les faits vérifiables, la sécurité, la préservation de l'existant et la qualité du résultat. Ne promets jamais une capacité, un coût nul ou une performance que tu n'as pas démontrés.** 
+Bienvenue dans la mission TakiDoc. Nous allons faire évoluer cette plateforme sérieusement, étape par étape, sans sacrifier ce qui fonctionne déjà.

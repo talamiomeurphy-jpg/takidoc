@@ -6,8 +6,7 @@ TAKIDOC — OUTILS HTTP ET SUPABASE PARTAGÉS
 import { createClient, SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3'
 import { corsHeaders } from './cors.ts'
 
-export const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export function json(
   req: Request,
@@ -26,7 +25,6 @@ export function json(
   })
 }
 
-/* Erreur normalisée : { error: "code_machine", message: "texte pour l'utilisateur" } */
 export function fail(
   req: Request,
   code: string,
@@ -37,7 +35,6 @@ export function fail(
   return json(req, { error: code, message, ...extra }, status)
 }
 
-/* Lit un corps JSON (objet uniquement, taille bornée). Renvoie null si invalide. */
 export async function readJson(
   req: Request,
   maxChars = 300_000,
@@ -53,20 +50,17 @@ export async function readJson(
   }
 }
 
-/* Client avec droits complets (service_role). Réservé aux fonctions serveur. */
 export function adminClient(): SupabaseClient {
   const url = Deno.env.get('SUPABASE_URL')
   const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
-  if (!url || !key) throw new Error('CONFIG_MISSING')
+  if (!url || !key) throw new Error("CONFIG_MISSING")
 
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   })
 }
 
-/* Identifie l'utilisateur à partir de son JETON de connexion (jamais d'un champ du corps).
-   Renvoie null pour un invité (la clé « anon » n'est pas un utilisateur). */
 export async function getAuthUser(
   admin: SupabaseClient,
   req: Request,

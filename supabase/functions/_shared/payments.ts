@@ -1,19 +1,20 @@
 // deno-lint-ignore-file no-explicit-any
 /* ============================================================
-TAKIDOC — RÉCONCILIATION D'UN PAIEMENT
+TAKIDOC — RÉCONCILIATION D'UN PAIEMENT (v5)
 
 Principe de sécurité : on ne croit JAMAIS ce que dit le navigateur
-ni le corps d'un webhook. On demande à Notch Pay l'état réel de la
+ni le corps d'un webhook. On demande à Yabetoo l'état réel de la
 transaction, on contrôle qu'elle appartient bien à cette intention
-d'achat, puis la base de données contrôle montant et devise
-(fonction SQL complete_purchase, atomique et idempotente).
+d'achat, puis la base de données (complete_purchase) contrôle
+montant, devise et idempotence.
 
-Utilisée à la fois par le webhook et par la page de retour
-(purchase-status) : si l'un est en retard, l'autre rattrape.
+Utilisée par handle-yabetoo-webhook ET purchase-status
+(l'interface publique est inchangée : PendingRow, PurchaseState,
+ReconcileResult, reconcilePending).
 ============================================================ */
 
 import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3'
-import { verifyPayment } from './notchpay.ts'
+import { verifyPayment } from './yabetoo.ts'
 
 export interface PendingRow {
   id: string
@@ -32,7 +33,7 @@ export type PurchaseState =
   | 'failed'
   | 'cancelled'
   | 'expired'
-  | 'review' // argent reçu mais incohérence à examiner (montant, devise…)
+  | 'review'
 
 export interface ReconcileResult {
   status: PurchaseState
@@ -51,7 +52,7 @@ export async function reconcilePending(
   pending: PendingRow,
   hintReference: string | null = null,
 ): Promise<ReconcileResult> {
-  // Déjà traité
+  // Déjà traité : rien à refaire (idempotence)
   if (pending.status === 'completed' && pending.purchase_id) {
     return { status: 'completed', purchase_id: pending.purchase_id }
   }
@@ -62,31 +63,42 @@ export async function reconcilePending(
     return { status: knownState(pending.status), purchase_id: null, detail: 'no_reference' }
   }
 
-  // Peut lever NotchError (réseau) : l'appelant décide (le webhook répond 500 pour être rappelé)
+  // Source de vérité : l'API Yabetoo
   const tx = await verifyPayment(reference)
 
   if (!tx) {
     return { status: knownState(pending.status), purchase_id: null, detail: 'unknown_transaction' }
   }
 
-  // Cette transaction doit appartenir à CETTE intention d'achat
-  if (tx.trxref) {
-    if (tx.trxref !== pending.purchase_token) {
-      console.warn('Réconciliation : trxref différent', { token: pending.purchase_token })
-      return { status: knownState(pending.status), purchase_id: null, detail: 'trxref_mismatch' }
+  /* ---------- La transaction appartient-elle bien à cet achat ? ---------- */
+  if (tx.purchaseToken) {
+    if (tx.purchaseToken !== pending.purchase_token) {
+      console.warn('Réconciliation : purchase_token différent', { token: pending.purchase_token })
+      return { status: knownState(pending.status), purchase_id: null, detail: 'token_mismatch' }
     }
-  } else if (!pending.provider_reference) {
-    // Référence venue d'ailleurs (webhook) et aucun moyen de la relier à notre intention
+  } else if (!pending.provider_reference || pending.provider_reference !== reference) {
+    // Pas de token dans la transaction ET référence non enregistrée par nous : on ne peut pas prouver l'appartenance
     return { status: knownState(pending.status), purchase_id: null, detail: 'unverifiable_owner' }
   }
 
+  /* ---------- Paiement réussi ---------- */
   if (tx.status === 'complete') {
+    // Si l'API ne renvoie pas le montant mais que la transaction est prouvée comme
+    // appartenant à cet achat (metadata), on utilise le montant fixé côté serveur.
+    let amount = tx.amount
+    if (amount === null && tx.purchaseToken === pending.purchase_token) {
+      console.warn('Réconciliation : montant absent de la réponse Yabetoo, montant attendu utilisé', {
+        token: pending.purchase_token,
+      })
+      amount = pending.amount
+    }
+
     const { data, error } = await admin.rpc('complete_purchase', {
       p_purchase_token: pending.purchase_token,
       p_provider_reference: tx.reference ?? reference,
-      p_amount: tx.amount,
-      p_currency: tx.currency,
-      p_payment_method: 'notchpay',
+      p_amount: amount,
+      p_currency: tx.currency ?? 'XAF',
+      p_payment_method: 'yabetoo',
     })
 
     if (error) throw new Error(`complete_purchase : ${error.message}`)
@@ -95,23 +107,29 @@ export async function reconcilePending(
       return { status: 'completed', purchase_id: data.purchase_id }
     }
 
-    // Paiement reçu côté Notch Pay mais refusé par nos contrôles : à examiner à la main.
     console.error('PAYMENT_REVIEW', {
       token: pending.purchase_token,
       reason: data?.error,
-      paid: tx.amount,
+      paid: amount,
       expected: pending.amount,
       currency: tx.currency,
     })
     return { status: 'review', purchase_id: null, detail: data?.error ?? 'rejected' }
   }
 
+  /* ---------- Échec / annulation / expiration ---------- */
   if (tx.status === 'failed' || tx.status === 'cancelled' || tx.status === 'expired') {
+    // Sur une Checkout Session, un échec de paiement n'est PAS terminal :
+    // le client peut réessayer sur la même page. On ne le fige donc pas.
+    if (tx.kind === 'session' && tx.status === 'failed') {
+      return { status: 'pending', purchase_id: null, detail: 'payment_failed_retry_possible' }
+    }
+
     await admin
       .from('pending_purchases')
-      .update({ status: tx.status, failure_reason: `notchpay:${tx.status}` })
+      .update({ status: tx.status, failure_reason: `yabetoo:${tx.status}` })
       .eq('purchase_token', pending.purchase_token)
-      .eq('status', 'pending') // ne rétrograde jamais un achat déjà validé
+      .eq('status', 'pending')
 
     return { status: tx.status, purchase_id: null }
   }

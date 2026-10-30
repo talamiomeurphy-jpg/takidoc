@@ -1,29 +1,26 @@
 // deno-lint-ignore-file no-explicit-any
 /* ============================================================
 TAKIDOC — EDGE FUNCTION : PURCHASE STATUS
-Version 3.0
+Version 6.0 — YabetooPay Payment Intents
 
-Appelée par confirmation.html (et l'éditeur) pour suivre un paiement.
+Appelée par la modale de paiement (polling) pour suivre un paiement.
 
 Corps :  { purchase_token: string }
 Réponse :
   {
     status: 'pending' | 'completed' | 'failed' | 'cancelled' | 'expired' | 'review',
     template_id, template_name, amount, currency,
-    quota?: { max, used, remaining, access_expires_at }   // si completed
+    purchase_id: string | null,  // <-- AJOUTÉ : essentiel pour le téléchargement
+    quota?: { max, used, remaining, access_expires_at },
     sandbox: boolean
   }
 
-Si le webhook est en retard (ou mal configuré), cette fonction
-interroge elle-même Notch Pay : le client n'attend jamais pour rien.
-Le statut renvoyé vient de la base de données et de Notch Pay,
-jamais du navigateur.
+Si le webhook est en retard, cette fonction interroge elle-même Yabetoo.
 ============================================================ */
 
 import { preflight } from '../_shared/cors.ts'
 import { adminClient, fail, json, readJson, UUID_RE } from '../_shared/http.ts'
-import { isSandbox, NotchError } from '../_shared/notchpay.ts'
-import { reconcilePending, type PendingRow } from '../_shared/payments.ts'
+import { verifyPayment } from '../_shared/yabetoo.ts'
 
 Deno.serve(async (req) => {
   const early = preflight(req)
@@ -35,51 +32,87 @@ Deno.serve(async (req) => {
 
   try {
     const admin = adminClient()
-
     const body = await readJson(req, 5_000)
     const token = typeof body?.purchase_token === 'string' ? body.purchase_token.trim() : ''
 
     if (!UUID_RE.test(token)) {
-      return fail(req, 'invalid_token', 'Jeton d’achat invalide.', 400)
+      return fail(req, 'invalid_token', 'Jeton d\'achat invalide.', 400)
     }
 
     const { data: pending, error } = await admin
       .from('pending_purchases')
-      .select(
-        'id, purchase_token, template_id, user_id, amount, status, provider_reference, purchase_id, templates(name)',
-      )
+      .select('id, purchase_token, template_id, user_id, amount, status, provider_reference, purchase_id, templates(name)')
       .eq('purchase_token', token)
       .maybeSingle()
 
     if (error) {
       console.error('purchase-status : lecture', error.message)
-      return fail(req, 'server_error', 'Une erreur est survenue. Réessayez dans un instant.', 500)
+      return fail(req, 'server_error', 'Une erreur est survenue.', 500)
     }
 
-    if (!pending) return fail(req, 'purchase_not_found', 'Achat introuvable.', 404)
+    if (!pending) {
+      return fail(req, 'purchase_not_found', 'Achat introuvable.', 404)
+    }
 
     let status: string = pending.status
     let purchaseId: string | null = pending.purchase_id
     let verification: 'ok' | 'unavailable' = 'ok'
 
-    // Pas encore confirmé : on interroge Notch Pay (source de vérité)
-    if (pending.status !== 'completed') {
+    // Si pas encore complété, on interroge Yabetoo (source de vérité)
+    if (pending.status !== 'completed' && pending.provider_reference) {
       try {
-        const result = await reconcilePending(admin, pending as unknown as PendingRow)
-        status = result.status
-        purchaseId = result.purchase_id ?? purchaseId
+        const verified = await verifyPayment(pending.provider_reference)
+
+        if (verified) {
+          if (verified.status === 'complete') {
+            // Vérifier si l'achat n'existe pas déjà (idempotence)
+            if (!purchaseId) {
+              const { data: newPurchase, error: insertError } = await admin
+                .from('purchases')
+                .insert({
+                  user_id: pending.user_id,
+                  guest_email: pending.guest_email,
+                  guest_phone: pending.guest_phone,
+                  template_id: pending.template_id,
+                  amount_paid: pending.amount,
+                  currency: 'XAF',
+                  payment_method: 'yabetoo',
+                  payment_reference: verified.reference,
+                  payment_status: 'completed',
+                })
+                .select('id')
+                .single()
+
+              if (insertError) {
+                console.error('purchase-status : erreur insertion purchase', insertError.message)
+              } else {
+                purchaseId = newPurchase?.id ?? null
+                
+                // Mettre à jour pending_purchases
+                await admin
+                  .from('pending_purchases')
+                  .update({ status: 'completed', purchase_id: purchaseId })
+                  .eq('purchase_token', token)
+              }
+            }
+            status = 'completed'
+          } else if (verified.status === 'failed' || verified.status === 'cancelled' || verified.status === 'expired') {
+            status = verified.status
+            await admin
+              .from('pending_purchases')
+              .update({ status: verified.status })
+              .eq('purchase_token', token)
+          }
+        } else {
+          verification = 'unavailable'
+        }
       } catch (error) {
-        // Notch Pay injoignable : on garde le statut connu, le client réessaiera
         verification = 'unavailable'
-        console.warn(
-          'purchase-status : vérification impossible',
-          error instanceof NotchError ? error.message : String(error),
-        )
+        console.warn('purchase-status : vérification Yabetoo impossible', error instanceof Error ? error.message : String(error))
       }
     }
 
     let quota: unknown = undefined
-
     if (status === 'completed' && purchaseId) {
       const { data } = await admin.rpc('generation_quota', { p_purchase_id: purchaseId })
       quota = data ?? undefined
@@ -92,11 +125,12 @@ Deno.serve(async (req) => {
       template_name: (pending as any).templates?.name ?? null,
       amount: pending.amount,
       currency: 'XAF',
+      purchase_id: purchaseId, // <-- CRUCIAL pour que authorize-download fonctionne
       quota,
-      sandbox: isSandbox(),
+      sandbox: true,
     })
   } catch (error) {
     console.error('purchase-status :', error)
-    return fail(req, 'server_error', 'Une erreur est survenue. Réessayez dans un instant.', 500)
+    return fail(req, 'server_error', 'Une erreur est survenue.', 500)
   }
 })

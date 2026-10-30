@@ -1,28 +1,24 @@
 // ============================================
-// TAKIDOC - CONFIGURATION SUPABASE
+// TAKIDOC - CONFIGURATION SUPABASE (SOURCE UNIQUE)
 // L'équipe Meurphy
 // ============================================
-
-// Importation propre via module ES (plus fiable que window.supabase)
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
+// ⚠️ Ces constantes sont exportées pour être utilisées par editor.js et header.js
+export const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
+export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
 
-// Initialisation du client Supabase
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Initialisation du client Supabase (exporté pour une utilisation directe)
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Fonction utilitaire pour récupérer tous les templates actifs
 export async function fetchTemplates() {
     const { data, error } = await supabase
         .from('templates')
-        .select(`
-            *,
-            category:template_categories(*)
-        `)
+        .select(`*, category:template_categories(*)`)
         .eq('is_active', true)
         .order('display_order', { ascending: true });
-    
+
     if (error) {
         console.error('Erreur lors du chargement des templates:', error);
         return [];
@@ -34,14 +30,10 @@ export async function fetchTemplates() {
 export async function fetchTemplateById(id) {
     const { data, error } = await supabase
         .from('templates')
-        .select(`
-            *,
-            category:template_categories(*),
-            fields:template_fields(*)
-        `)
+        .select(`*, category:template_categories(*), fields:template_fields(*)`)
         .eq('id', id)
         .single();
-    
+
     if (error) {
         console.error('Erreur lors du chargement du template:', error);
         return null;
@@ -55,7 +47,7 @@ export async function fetchCategories() {
         .from('template_categories')
         .select('*')
         .order('display_order', { ascending: true });
-    
+
     if (error) {
         console.error('Erreur lors du chargement des catégories:', error);
         return [];
@@ -70,7 +62,7 @@ export async function createPurchase(purchaseData) {
         .insert([purchaseData])
         .select()
         .single();
-    
+
     if (error) {
         console.error('Erreur lors de la création de l\'achat:', error);
         return null;
@@ -85,7 +77,7 @@ export async function saveUserDocument(documentData) {
         .insert([documentData])
         .select()
         .single();
-    
+
     if (error) {
         console.error('Erreur lors de la sauvegarde du document:', error);
         return null;
@@ -100,7 +92,7 @@ export async function createPendingPurchase(pendingData) {
         .insert([pendingData])
         .select()
         .single();
-    
+
     if (error) {
         console.error('Erreur lors de la création de l\'intention d\'achat:', error);
         return null;
@@ -115,7 +107,7 @@ export async function getPendingPurchaseByToken(token) {
         .select('*')
         .eq('purchase_token', token)
         .single();
-    
+
     if (error) {
         console.error('Erreur lors de la récupération de l\'intention d\'achat:', error);
         return null;
@@ -127,17 +119,13 @@ export async function getPendingPurchaseByToken(token) {
 export async function getCompletedPurchase(email, phone) {
     const { data, error } = await supabase
         .from('purchases')
-        .select(`
-            *,
-            template:templates(*),
-            user_document:user_documents(*)
-        `)
+        .select(`*, template:templates(*), user_document:user_documents(*)`)
         .or(`guest_email.eq.${email},guest_phone.eq.${phone}`)
         .eq('payment_status', 'completed')
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
-    
+
     if (error) {
         console.error('Erreur lors de la récupération de l\'achat:', error);
         return null;
