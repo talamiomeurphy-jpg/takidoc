@@ -60,7 +60,9 @@ USER node
 COPY --chown=node:node package*.json .puppeteerrc.cjs ./
 
 # npm install (et non npm ci) : fonctionne même si package-lock.json n'est pas à jour
-RUN npm install --omit=dev --no-audit --no-fund
+# PUPPETEER_SKIP_DOWNLOAD : on ne télécharge PAS Chrome ici (il est installé à l'étape
+# suivante, une seule fois, avec une sortie visible dans les logs)
+RUN PUPPETEER_SKIP_DOWNLOAD=true npm install --omit=dev --no-audit --no-fund
 
 # Chrome : on repart d'un dossier propre, on l'installe, puis on VÉRIFIE que le
 # programme existe vraiment. Si ce n'est pas le cas, le build échoue ICI
