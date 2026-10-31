@@ -68,7 +68,7 @@ const TAKI_STORY = Object.freeze([
   { state: 'checking',   text: 'Je vérifie la mise en page…',       ms: 2400 },
   { state: 'finalizing', text: 'Je crée le rendu final…',           ms: 2400 }
 ]);
-const TAKI_GRACE_MS = 1500;          // marge accordée au serveur à la fin de l'histoire avant le message de surcharge
+const TAKI_GRACE_MS = 1900;          // marge accordée au serveur à la fin de l'histoire avant le message de surcharge
 const TAKI_OVERLOAD_STEP_MS = 4500;  // durée de chaque message de surcharge
 const TAKI_CELEBRATE_MS = 2300;      // Taki fête avant que le téléchargement ne parte
 const TAKI_OVERLOAD_MESSAGES = Object.freeze([
