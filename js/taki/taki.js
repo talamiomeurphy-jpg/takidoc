@@ -1,8 +1,11 @@
 (() => {
+  /* Messages par défaut de Taki. Les états :
+     idle · thinking · working · waiting (serveur chargé) · celebrating · error */
   const messages = {
     idle: "Bonjour ! Je suis Taki.",
     thinking: "Je réfléchis à la meilleure mise en page…",
     working: "Je m’occupe de ton document.",
+    waiting: "Encore un petit instant, j’arrive…",
     celebrating: "Et voilà ! Ton document est prêt.",
     error: "Un petit souci est survenu. On va regarder ça."
   };
@@ -12,7 +15,14 @@
     const safeState = Object.hasOwn(messages, state) ? state : "idle";
     root.dataset.takiState = safeState;
     const caption = root.querySelector(".taki__caption");
-    if (caption) caption.textContent = message || messages[safeState];
+    if (!caption) return;
+    const text = message || messages[safeState];
+    if (caption.textContent === text) return;
+    caption.textContent = text;
+    // Relance la petite animation d'apparition du texte
+    caption.classList.remove("is-in");
+    void caption.offsetWidth;
+    caption.classList.add("is-in");
   }
 
   async function mount(target, options = {}) {

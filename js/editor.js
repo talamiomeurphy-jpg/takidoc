@@ -291,7 +291,7 @@ async function waitForFile(generation) {
   let round = 0;
   while (!result) {
     const waiting = round > 0 ? await fetchQueueInfo() : null;
-    taki.show('working', overloadMessage(round, waiting));
+    taki.show('waiting', overloadMessage(round, waiting));
     round += 1;
     result = await Promise.race([outcome, sleep(TAKI_OVERLOAD_STEP_MS).then(() => null)]);
   }
