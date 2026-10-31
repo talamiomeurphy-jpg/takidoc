@@ -1,39 +1,26 @@
 /* ============================================================
-   TAKIDOC — MOTEUR D'ÉDITION PROFESSIONNEL (v7.0)
+   TAKIDOC — MOTEUR D'ÉDITION PROFESSIONNEL (v8.0)
    Supabase • CSS isolé • A4 multi-pages • PDF / Word • Brouillons
    Paiement Mobile Money • Génération par le serveur Render
+   Taki, la mascotte : raconte la génération et garde le
+   téléchargement jusqu'à la fin de son histoire.
+
+   PLAN DU FICHIER
+    1. Configuration          9. Photo
+    2. État                  10. Zoom, onglets, raccourcis
+    3. Outils                11. Brouillons
+    4. Taki (mascotte)       12. Fenêtres modales
+    5. Authentification      13. Fonctions Supabase et paiement
+    6. CSS isolé             14. Export (génération + Taki)
+    7. Couleur et police     15. Initialisation
+    8. Document, champs, édition directe
 ============================================================ */
 
-import "../components/taki/taki.js";
+import './taki/taki.js';
 import { initProtection } from './editor-protection.js';
 import './editor-underline-fix.js';
 import { initPagination, refreshPages } from './editor-pagination.js';
 import { supabase } from './supabase-config.js';
-
-// =========================================
-// TAKI — INITIALISATION DANS L'ÉDITEUR
-// =========================================
-
-let takiMascot = null;
-
-async function initTakiMascot() {
-  const container = document.getElementById("taki-container");
-
-  if (!container || !window.TakiMascot) {
-    console.warn("Taki : assistant indisponible.");
-    return;
-  }
-
-  try {
-    takiMascot = await window.TakiMascot.mount(container, {
-      initialState: "idle"
-    });
-  } catch (error) {
-    console.warn("Taki : impossible de charger l'assistant.", error);
-  }
-}
-
-initTakiMascot();
 
 /* ------------------------------------------------------------
    1. CONFIGURATION
@@ -72,6 +59,24 @@ const DEFAULT_FONT = "'Inter', sans-serif";
 const DEFAULT_COLOR = '#0F172A';
 
 const DOWNLOAD_BUTTONS = '#btn-download-pdf, #btn-download-docx, #header-download-btn, #mobileBtnDownload, #btn-download';
+
+/** Histoire de Taki pendant la génération : chaque étape reste affichée `ms` millisecondes.
+ *  Modifie librement ces textes ; la durée totale = somme des `ms`. */
+const TAKI_STORY = Object.freeze([
+  { state: 'thinking', text: 'Je peaufine ton document…', ms: 2600 },
+  { state: 'working', text: 'Je personnalise tes informations…', ms: 2600 },
+  { state: 'working', text: 'Je vérifie la mise en page…', ms: 2400 },
+  { state: 'working', text: 'Je crée le rendu final…', ms: 2600 }
+]);
+const TAKI_GRACE_MS = 1500;          // marge accordée au serveur à la fin de l'histoire avant le message de surcharge
+const TAKI_OVERLOAD_STEP_MS = 4500;  // durée de chaque message de surcharge
+const TAKI_CELEBRATE_MS = 2300;      // Taki fête avant que le téléchargement ne parte
+const TAKI_OVERLOAD_MESSAGES = Object.freeze([
+  'Mon serveur est très sollicité en ce moment…',
+  'Beaucoup de documents sont en cours de création. Je fais au plus vite !',
+  'Encore un petit instant, ton document arrive. Ne ferme pas cette page.',
+  'Merci pour ta patience, je termine ton document.'
+]);
 
 /* ------------------------------------------------------------
    2. ÉTAT
@@ -187,7 +192,115 @@ function markDirty() {
 }
 
 /* ------------------------------------------------------------
-   4. AUTHENTIFICATION ET CHARGEMENT DU MODÈLE
+   4. TAKI — LA MASCOTTE
+   Une seule source de vérité pour l'affichage. Si taki.js ou
+   taki.html ne se charge pas, `taki.available` reste faux et
+   l'export fonctionne quand même, sans histoire ni attente.
+------------------------------------------------------------ */
+const taki = (() => {
+  let mascot = null;
+  let hideTimer = null;
+  const container = () => document.getElementById('taki-container');
+
+  async function init() {
+    const host = container();
+    if (!host || !window.TakiMascot) {
+      console.warn('Taki : assistant indisponible (conteneur ou script manquant).');
+      return false;
+    }
+    try {
+      mascot = await window.TakiMascot.mount(host, {
+        initialState: 'idle',
+        // Chemin calculé depuis ce fichier : fonctionne même si le site n'est pas à la racine du domaine
+        templateUrl: new URL('../components/taki/taki.html', import.meta.url).href
+      });
+      return true;
+    } catch (error) {
+      mascot = null;
+      console.warn("Taki : impossible de charger l'assistant.", error);
+      return false;
+    }
+  }
+
+  /** @param {'idle'|'thinking'|'working'|'celebrating'|'error'} mascotState */
+  function show(mascotState, message, { center = true } = {}) {
+    const host = container();
+    if (!host || !mascot) return;
+    window.clearTimeout(hideTimer);
+    host.classList.toggle('is-center', center);
+    host.hidden = false;
+    mascot.setState(mascotState, message);
+  }
+
+  function hide(delay = 0) {
+    window.clearTimeout(hideTimer);
+    hideTimer = window.setTimeout(() => {
+      const host = container();
+      if (host) host.hidden = true;
+    }, delay);
+  }
+
+  return { init, show, hide, get available() { return Boolean(mascot); } };
+})();
+
+/** Taki raconte son histoire ; s'arrête dès que la génération a échoué. */
+async function playTakiStory(isFailed) {
+  for (const step of TAKI_STORY) {
+    if (isFailed()) return;
+    taki.show(step.state, step.text);
+    await sleep(step.ms);
+  }
+}
+
+/** Nombre de documents en attente côté serveur (facultatif : endpoint /api/queue). */
+async function fetchQueueInfo() {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 2500);
+  try {
+    const response = await fetch(`${CONFIG.generatorUrl}/api/queue`, { cache: 'no-store', signal: controller.signal });
+    if (!response.ok) return null;
+    const data = await response.json();
+    const waiting = Number(data?.waiting);
+    return Number.isFinite(waiting) && waiting > 0 ? Math.round(waiting) : null;
+  } catch (_) {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function overloadMessage(round, waiting) {
+  if (round === 0) return TAKI_OVERLOAD_MESSAGES[0];
+  if (waiting) {
+    return waiting === 1
+      ? 'Une autre personne attend aussi son document. Je fais au plus vite !'
+      : `${waiting} personnes attendent aussi leur document. Je fais au plus vite !`;
+  }
+  return TAKI_OVERLOAD_MESSAGES[1 + ((round - 1) % (TAKI_OVERLOAD_MESSAGES.length - 1))];
+}
+
+/**
+ * Attend le fichier une fois l'histoire terminée.
+ * - prêt dans la marge de grâce : on enchaîne directement sur « terminé » ;
+ * - sinon Taki annonce la surcharge (avec le vrai nombre d'attentes si le serveur le donne)
+ *   et reste là jusqu'à l'arrivée du fichier ou d'une erreur.
+ */
+async function waitForFile(generation) {
+  const outcome = generation.then(value => ({ value }), error => ({ error }));
+  let result = await Promise.race([outcome, sleep(TAKI_GRACE_MS).then(() => null)]);
+  let round = 0;
+  while (!result) {
+    const waiting = round > 0 ? await fetchQueueInfo() : null;
+    taki.show('working', overloadMessage(round, waiting));
+    round += 1;
+    result = await Promise.race([outcome, sleep(TAKI_OVERLOAD_STEP_MS).then(() => null)]);
+  }
+  if (result.error) throw result.error;
+  return result.value;
+}
+
+/* ------------------------------------------------------------
+   5. AUTHENTIFICATION ET CHARGEMENT DU MODÈLE
 ------------------------------------------------------------ */
 async function getAccessToken() {
   if (!supabase) return CONFIG.anonKey;
@@ -251,7 +364,7 @@ async function loadTemplate(id) {
 }
 
 /* ------------------------------------------------------------
-   5. CSS ISOLÉ (le style du modèle ne déborde jamais sur l'éditeur)
+   6. CSS ISOLÉ (le style du modèle ne déborde jamais sur l'éditeur)
 ------------------------------------------------------------ */
 function splitSelectors(selectorText) {
   const result = [];
@@ -345,7 +458,7 @@ function installTemplateCSS() {
 }
 
 /* ------------------------------------------------------------
-   6. COULEUR PRINCIPALE ET POLICE
+   7. COULEUR PRINCIPALE ET POLICE
 ------------------------------------------------------------ */
 function toHex(value) {
   const v = String(value || '').trim();
@@ -448,7 +561,7 @@ function setupDesignControls() {
 }
 
 /* ------------------------------------------------------------
-   7. AFFICHAGE DU DOCUMENT ET CHAMPS
+   8. AFFICHAGE DU DOCUMENT, CHAMPS ET ÉDITION DIRECTE
 ------------------------------------------------------------ */
 function renderDocument() {
   const canvas = getCanvas();
@@ -530,9 +643,6 @@ function buildFieldsForm() {
   });
 }
 
-/* ------------------------------------------------------------
-   8. ÉDITION DIRECTE DANS L'APERÇU
------------------------------------------------------------- */
 const SKIP_TAGS = new Set(['script', 'style', 'noscript', 'template', 'head', 'title', 'meta', 'link', 'svg', 'canvas', 'iframe', 'video', 'audio', 'object', 'embed', 'img', 'br', 'hr', 'button', 'input', 'textarea', 'select', 'option']);
 const MEDIA_TAGS = new Set(['img', 'svg', 'canvas', 'video', 'iframe', 'input', 'button', 'select', 'textarea']);
 
@@ -792,8 +902,10 @@ function setupKeyboardShortcuts() {
     else if (key === '0') { event.preventDefault(); state.zoom = fitZoom(); updateZoom(); }
   });
   window.addEventListener('beforeunload', event => {
+    // Génération en cours : on prévient, sinon le document risque de ne pas arriver.
+    if (state.downloading) { event.preventDefault(); event.returnValue = ''; return; }
     if (!state.isDirty) return;
-    // On tente une sauvegarde silencieuse : si elle réussit, aucune alerte n'est nécessaire.
+    // Sauvegarde silencieuse : si elle réussit, aucune alerte n'est nécessaire.
     if (!saveDraft({ quiet: true })) { event.preventDefault(); event.returnValue = ''; }
   });
 }
@@ -1016,7 +1128,7 @@ function openFormatChooser() {
 }
 
 /* ------------------------------------------------------------
-   13. ÉCHANGES AVEC SUPABASE (fonctions Edge)
+   13. FONCTIONS SUPABASE ET PAIEMENT
 ------------------------------------------------------------ */
 async function postFunction(name, body, token = CONFIG.anonKey) {
   const response = await fetch(`${CONFIG.functionsUrl}/${name}`, {
@@ -1031,9 +1143,6 @@ async function postFunction(name, body, token = CONFIG.anonKey) {
 
 const errorMessageOf = (data, fallback) => data?.message || data?.error || fallback;
 
-/* ------------------------------------------------------------
-   14. SUIVI DES PAIEMENTS
------------------------------------------------------------- */
 const pendingKey = () => `takidoc_pending_${state.template?.id}`;
 
 function savePending(token, format) {
@@ -1096,9 +1205,6 @@ async function recoverPendingPurchase() {
   }
 }
 
-/* ------------------------------------------------------------
-   15. FENÊTRE DE PAIEMENT
------------------------------------------------------------- */
 function buildPaymentDocumentData() {
   const data = {
     fields: {},
@@ -1215,13 +1321,12 @@ function showPaymentModal(initialFormat = 'pdf') {
       const outcome = await watchPurchase(token);
 
       if (outcome === 'completed') {
-        const wasOpen = !modal.isClosed();
-        if (wasOpen) {
+        if (!modal.isClosed()) {
           setStatus('success', 'fa-check-circle', 'Paiement réussi !');
           await sleep(900);
           modal.close('paid');
         }
-        toast('Paiement confirmé ! Génération de votre document…', 'success');
+        toast('Paiement confirmé ! Taki prépare votre document…', 'success');
         await downloadDocument(format, token);
         return;
       }
@@ -1270,7 +1375,14 @@ function showPaymentModal(initialFormat = 'pdf') {
 }
 
 /* ------------------------------------------------------------
-   16. TÉLÉCHARGEMENT DU DOCUMENT
+   14. EXPORT : GÉNÉRATION + HISTOIRE DE TAKI + TÉLÉCHARGEMENT
+   Logique soudée :
+     1. la génération part tout de suite sur Render ;
+     2. en parallèle Taki raconte son histoire (TAKI_STORY) ;
+     3. fin d'histoire : fichier prêt -> Taki fête ; sinon Taki
+        annonce la surcharge jusqu'à l'arrivée du fichier ;
+     4. le téléchargement ne part qu'APRÈS la fête de Taki ;
+     5. si Taki est indisponible, l'export marche sans attente.
 ------------------------------------------------------------ */
 function setExportBusy(busy) {
   $$(DOWNLOAD_BUTTONS).forEach(button => {
@@ -1320,7 +1432,6 @@ async function requestGeneration(payload) {
         signal: controller.signal
       });
       if ([502, 503, 504].includes(response.status) && attempt < CONFIG.generateRetries) {
-        toast('Le serveur de génération démarre, nouvelle tentative…', 'info');
         await sleep(4000);
         continue;
       }
@@ -1330,10 +1441,7 @@ async function requestGeneration(payload) {
         throw new Error('Le serveur met trop de temps à répondre. Réessayez dans un instant.');
       }
       lastError = error;
-      if (attempt < CONFIG.generateRetries) {
-        toast('Le serveur de génération se réveille, patientez quelques secondes…', 'info');
-        await sleep(4000);
-      }
+      if (attempt < CONFIG.generateRetries) await sleep(4000);
     } finally {
       clearTimeout(timer);
     }
@@ -1351,6 +1459,30 @@ function triggerBrowserDownload(blob, fileName) {
   setTimeout(() => URL.revokeObjectURL(url), 30000);
 }
 
+/** Autorisation + génération + lecture du fichier. Renvoie le Blob, ou lève une erreur lisible. */
+async function generateFile({ format, purchaseToken, documentData }) {
+  const auth = await postFunction(
+    'authorize-download',
+    purchaseToken
+      ? { purchase_token: purchaseToken, format }
+      : { template_id: state.template.id, format },
+    await getAccessToken()
+  );
+  if (!auth.ok) throw new Error(errorMessageOf(auth.data, `Erreur d'autorisation (${auth.status})`));
+
+  const response = await requestGeneration({
+    nonce: auth.data.nonce,
+    template_id: state.template.id,
+    format,
+    data: documentData
+  });
+  if (!response.ok) throw new Error(await readServerError(response));
+
+  const blob = await response.blob();
+  if (!blob.size) throw new Error('Le fichier généré est vide. Réessayez.');
+  return blob;
+}
+
 async function downloadDocument(format, purchaseToken = null) {
   if (!state.template) return false;
   if (!FORMATS[format]) format = 'pdf';
@@ -1359,63 +1491,39 @@ async function downloadDocument(format, purchaseToken = null) {
 
   const { label, ext } = FORMATS[format];
   state.downloading = true;
-  showTaki(
-  "thinking",
-  "Je prépare ton document…"
-);
   setExportBusy(true);
-  toast(`Génération de votre document ${label} en cours…`, 'info');
+  const staged = taki.available;
+  if (!staged) toast(`Génération de votre document ${label} en cours…`, 'info');
 
   try {
-    const documentData = buildSnapshotData();
+    const documentData = buildSnapshotData();   // instantané pris AVANT toute attente
 
-    const auth = await postFunction(
-      'authorize-download',
-      purchaseToken
-        ? { purchase_token: purchaseToken, format }
-        : { template_id: state.template.id, format },
-      await getAccessToken()
-    );
-    if (!auth.ok) throw new Error(errorMessageOf(auth.data, `Erreur d'autorisation (${auth.status})`));
+    // 1. La génération démarre immédiatement
+    const generation = generateFile({ format, purchaseToken, documentData });
+    let failed = false;
+    generation.catch(() => { failed = true; });  // évite l'erreur « promesse non gérée »
 
-    const response = await requestGeneration({
-      nonce: auth.data.nonce,
-      template_id: state.template.id,
-      format,
-      data: documentData
-    });
-    if (!response.ok) throw new Error(await readServerError(response));
-
-    const blob = await response.blob();
-    showTaki(
-  "working",
-  "Je travaille sur ton document. Un instant…"
-);
-showTaki(
-  "working",
-  "Ton document est prêt. Je prépare le téléchargement…"
-);
-    if (!blob.size) throw new Error('Le fichier généré est vide. Réessayez.');
+    let blob;
+    if (staged) {
+      await playTakiStory(() => failed);          // 2. l'histoire de Taki
+      blob = await waitForFile(generation);       // 3. attente + messages de surcharge
+      taki.show('celebrating', 'Et voilà ! Ton document est prêt. Tu le retrouves dans tes fichiers téléchargés.');
+      await sleep(TAKI_CELEBRATE_MS);             // 4. Taki fête AVANT le téléchargement
+    } else {
+      blob = await generation;
+    }
 
     triggerBrowserDownload(blob, `TakiDoc_${safeFileBase(state.template.name)}.${ext}`);
-    showTaki(
-  "celebrating",
-  "Et voilà ! Ton document est prêt. 🎉"
-);
+    taki.hide(2500);
 
-hideTaki(3500);
     if (purchaseToken) clearPending();
     saveDraft({ quiet: true });
     toast(`Document ${label} téléchargé avec succès.`, 'success');
     return true;
   } catch (error) {
-    showTaki(
-  "error",
-  "Un petit souci est survenu. On va regarder ça."
-);
-
-hideTaki(5000);
     console.error('Erreur génération :', error);
+    taki.show('error', 'Un petit souci est survenu. On va regarder ça.');
+    taki.hide(5000);
     toast(error.message || `Erreur lors de la génération du ${label}.`, 'error');
     return false;
   } finally {
@@ -1476,13 +1584,14 @@ function warmUpGenerator() {
 }
 
 /* ------------------------------------------------------------
-   17. INITIALISATION
+   15. INITIALISATION
 ------------------------------------------------------------ */
 async function initEditor() {
   if (state.initialized) return;
   state.initialized = true;
   try {
     warmUpGenerator();
+    taki.init();   // en parallèle : n'empêche jamais l'éditeur de s'ouvrir
     await checkAuth();
     initProtection({ supabase, state, toast });
 
@@ -1513,9 +1622,12 @@ async function initEditor() {
     setDocStatus(restored ? 'Brouillon restauré' : 'Document prêt');
     toast('Document chargé avec succès.', 'success');
 
+    window.addEventListener('offline', () => toast('Connexion perdue.', 'error'));
+    window.addEventListener('online', () => toast('Connexion rétablie.', 'info'));
+
     recoverPendingPurchase().catch(error => console.warn('Reprise du paiement impossible :', error));
   } catch (error) {
-    console.error("Initialisation de TakiDoc impossible :", error);
+    console.error('Initialisation de TakiDoc impossible :', error);
     state.initialized = false;
     toast(error.message || 'Erreur de chargement du document.', 'error');
   }
@@ -1523,28 +1635,3 @@ async function initEditor() {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initEditor);
 else initEditor();
-
-let takiHideTimer = null;
-
-function showTaki(state, message) {
-  const container = document.getElementById("taki-container");
-
-  if (!container || !takiMascot) return;
-
-  window.clearTimeout(takiHideTimer);
-  container.hidden = false;
-
-  takiMascot.setState(state, message);
-}
-
-function hideTaki(delay = 0) {
-  window.clearTimeout(takiHideTimer);
-
-  takiHideTimer = window.setTimeout(() => {
-    const container = document.getElementById("taki-container");
-
-    if (container) {
-      container.hidden = true;
-    }
-  }, delay);
-}
