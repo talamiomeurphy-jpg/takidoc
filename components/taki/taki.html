@@ -1,120 +1,207 @@
 <div class="taki" data-taki-state="idle" role="img" aria-label="Taki, la mascotte de TakiDoc">
-<svg class="taki__svg" viewBox="0 0 360 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<svg class="taki__svg" viewBox="95 0 340 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 <defs>
- <linearGradient id="tk-body" x1="0.1" y1="0" x2="0.9" y2="1"><stop offset="0" stop-color="#FFB05E"/><stop offset=".5" stop-color="#FF7430"/><stop offset="1" stop-color="#DD4513"/></linearGradient>
- <linearGradient id="tk-belly" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF9EE"/><stop offset="1" stop-color="#FFDDB9"/></linearGradient>
- <linearGradient id="tk-wing" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFA24F"/><stop offset="1" stop-color="#E4501A"/></linearGradient>
- <radialGradient id="tk-eye" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#3B4A63"/><stop offset=".55" stop-color="#17233A"/><stop offset="1" stop-color="#080E19"/></radialGradient>
- <filter id="tk-blur" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="7"/></filter>
+ <radialGradient id="tk-head" gradientUnits="userSpaceOnUse" cx="255" cy="105" r="190"><stop offset="0" stop-color="#FFAE45"/><stop offset=".5" stop-color="#FF8A20"/><stop offset="1" stop-color="#EA6410"/></radialGradient>
+ <linearGradient id="tk-torso" gradientUnits="userSpaceOnUse" x1="0" y1="190" x2="0" y2="345"><stop offset="0" stop-color="#FF8F22"/><stop offset="1" stop-color="#E9600D"/></linearGradient>
+ <radialGradient id="tk-belly" gradientUnits="userSpaceOnUse" cx="296" cy="252" r="92"><stop offset="0" stop-color="#FFD683"/><stop offset=".6" stop-color="#FDB95C"/><stop offset="1" stop-color="#F59B42"/></radialGradient>
+ <linearGradient id="tk-wing" x1="0" y1="0" x2=".55" y2="1"><stop offset="0" stop-color="#FF8F22"/><stop offset=".55" stop-color="#F26E12"/><stop offset="1" stop-color="#D84F0A"/></linearGradient>
+ <linearGradient id="tk-crest" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF9B2C"/><stop offset="1" stop-color="#F26C12"/></linearGradient>
+ <linearGradient id="tk-foot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8A1E"/><stop offset="1" stop-color="#DB560E"/></linearGradient>
+ <linearGradient id="tk-beak" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFCB3A"/><stop offset="1" stop-color="#F59A12"/></linearGradient>
+ <linearGradient id="tk-mouth" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7A1511"/><stop offset="1" stop-color="#A52A20"/></linearGradient>
+ <linearGradient id="tk-tongue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8A86"/><stop offset="1" stop-color="#E5524F"/></linearGradient>
+ <radialGradient id="tk-iris" cx=".5" cy=".3" r=".8"><stop offset="0" stop-color="#D2761F"/><stop offset=".55" stop-color="#8E410F"/><stop offset="1" stop-color="#4E1E08"/></radialGradient>
+ <linearGradient id="tk-cover" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2D5AA0"/><stop offset="1" stop-color="#162F5C"/></linearGradient>
+ <linearGradient id="tk-ring" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2F4F7"/><stop offset="1" stop-color="#8E96A3"/></linearGradient>
+ <linearGradient id="tk-ferrule" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EEF0F3"/><stop offset=".5" stop-color="#A9B0BB"/><stop offset="1" stop-color="#7D8592"/></linearGradient>
+ <clipPath id="tk-nbclip"><rect x="-52.5" y="-60.5" width="105" height="121" rx="6"/></clipPath>
+ <linearGradient id="tk-glint" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+ <linearGradient id="tk-ok" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4ADE80"/><stop offset="1" stop-color="#16A34A"/></linearGradient>
+ <linearGradient id="tk-scanbar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22C55E" stop-opacity="0"/><stop offset=".5" stop-color="#22C55E" stop-opacity=".85"/><stop offset="1" stop-color="#22C55E" stop-opacity="0"/></linearGradient>
+ <filter id="tk-blur" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="6"/></filter>
 </defs>
 
-<ellipse class="taki__shadow" cx="180" cy="397" rx="90" ry="11" fill="#6C321B" opacity=".2" filter="url(#tk-blur)"/>
+<ellipse class="taki__shadow" cx="262" cy="392" rx="92" ry="9" fill="#5B2A12" opacity=".2" filter="url(#tk-blur)"/>
 
 <!-- Confettis (fête) -->
 <g class="taki__fx taki__confetti">
- <rect x="48" y="20" width="9" height="13" rx="2" fill="#FFC02E" style="animation-delay:0s"/>
- <circle cx="96" cy="8" r="5" fill="#FF6534" style="animation-delay:.25s"/>
- <rect x="140" y="14" width="8" height="12" rx="2" fill="#101828" style="animation-delay:.5s"/>
- <rect x="186" y="4" width="10" height="7" rx="2" fill="#FF8FA3" style="animation-delay:.1s"/>
- <circle cx="232" cy="16" r="5" fill="#2DD4BF" style="animation-delay:.4s"/>
- <rect x="276" y="10" width="9" height="13" rx="2" fill="#FFC02E" style="animation-delay:.65s"/>
- <rect x="318" y="22" width="8" height="12" rx="2" fill="#FF6534" style="animation-delay:.2s"/>
- <circle cx="70" cy="40" r="4" fill="#2DD4BF" style="animation-delay:.8s"/>
- <rect x="208" y="34" width="8" height="11" rx="2" fill="#FFC02E" style="animation-delay:.9s"/>
- <circle cx="300" cy="44" r="4" fill="#101828" style="animation-delay:.55s"/>
+ <rect x="150" y="24" width="9" height="13" rx="2" fill="#FFC02E" style="animation-delay:0s"/>
+ <circle cx="190" cy="10" r="5" fill="#FF6534" style="animation-delay:.25s"/>
+ <rect x="232" y="6" width="8" height="12" rx="2" fill="#101828" style="animation-delay:.5s"/>
+ <rect x="272" y="4" width="10" height="7" rx="2" fill="#FF8FA3" style="animation-delay:.1s"/>
+ <circle cx="318" cy="14" r="5" fill="#2DD4BF" style="animation-delay:.4s"/>
+ <rect x="360" y="8" width="9" height="13" rx="2" fill="#FFC02E" style="animation-delay:.65s"/>
+ <rect x="404" y="22" width="8" height="12" rx="2" fill="#FF6534" style="animation-delay:.2s"/>
+ <circle cx="130" cy="44" r="4" fill="#2DD4BF" style="animation-delay:.8s"/>
+ <rect x="296" y="30" width="8" height="11" rx="2" fill="#FFC02E" style="animation-delay:.9s"/>
+ <circle cx="384" cy="40" r="4" fill="#101828" style="animation-delay:.55s"/>
 </g>
 
 <g class="taki__bird">
  <!-- Pattes -->
- <g class="taki__feet" fill="#F0701F" stroke="#B94A1A" stroke-width="2.5" stroke-linejoin="round">
-  <g class="taki__foot taki__foot--left"><path d="M140 366Q137 386 120 392Q112 397 124 399H152Q164 395 156 387L160 366Z"/><path d="M130 393V399M141 394V399" fill="none" stroke-linecap="round"/></g>
-  <g class="taki__foot taki__foot--right"><path d="M200 366Q197 386 188 392Q180 397 192 399H224Q236 395 228 387L220 366Z"/><path d="M198 393V399M210 394V399" fill="none" stroke-linecap="round"/></g>
+ <g class="taki__feet">
+  <g class="taki__foot taki__foot--left">
+   <path d="M205 336C203 350 203 360 206 366C195 366 182 368 172 374C170 379 177 381 185 378C194 375 200 374 204 375C203 380 203 385 206 387C213 389 219 384 219 376C225 378 232 378 236 372C236 366 227 362 221 360C221 352 223 344 225 336Z" fill="url(#tk-foot)" stroke="#C94A0C" stroke-width="1.5" stroke-linejoin="round"/>
+   <path d="M196 366C200 362 206 361 213 362M210 372C214 370 219 370 224 372" fill="none" stroke="#FFB45E" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+   <g fill="#5E1D06"><ellipse cx="173" cy="376" rx="3.4" ry="2.6"/><ellipse cx="206" cy="387" rx="3.4" ry="2.6"/><ellipse cx="236" cy="373" rx="3.4" ry="2.6"/></g>
+  </g>
+  <g class="taki__foot taki__foot--right">
+   <path d="M262 336C268 348 276 354 282 358C275 362 266 367 259 372C262 377 270 377 278 373C285 372 292 373 300 376C309 377 318 373 326 369C335 367 337 361 330 358C320 354 308 356 297 356C293 350 289 343 287 336Z" fill="url(#tk-foot)" stroke="#C94A0C" stroke-width="1.5" stroke-linejoin="round"/>
+   <path d="M284 362C292 361 300 362 308 364" fill="none" stroke="#FFB45E" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+   <g fill="#5E1D06"><ellipse cx="258" cy="374" rx="3.4" ry="2.6"/><ellipse cx="300" cy="377" rx="3.4" ry="2.6"/><ellipse cx="332" cy="366" rx="3.4" ry="2.6"/></g>
+  </g>
  </g>
 
  <!-- Corps -->
- <path class="taki__torso" d="M180 96C252 96 294 156 294 236C294 324 247 378 180 378C113 378 66 324 66 236C66 156 108 96 180 96Z" fill="url(#tk-body)"/>
- <path d="M96 168C112 124 150 104 190 104" fill="none" stroke="#FFD29A" stroke-width="6" stroke-linecap="round" opacity=".55"/>
- <ellipse cx="180" cy="306" rx="78" ry="64" fill="url(#tk-belly)"/>
- <path d="M138 300Q150 310 162 300M168 318Q180 328 192 318M198 300Q210 310 222 300" fill="none" stroke="#F2C79A" stroke-width="4" stroke-linecap="round" opacity=".8"/>
-
- <!-- Carnet -->
- <g class="taki__notebook"><g transform="rotate(-5 160 312)">
-  <rect x="106" y="274" width="96" height="86" rx="9" fill="#1B2A44"/>
-  <rect x="101" y="268" width="96" height="86" rx="8" fill="#FFF8EE" stroke="#E7D3BE" stroke-width="3"/>
-  <path d="M101 268H121V354H101Z" fill="#24354F"/>
-  <g fill="#F4E5D9"><circle cx="111" cy="282" r="3.5"/><circle cx="111" cy="300" r="3.5"/><circle cx="111" cy="318" r="3.5"/><circle cx="111" cy="336" r="3.5"/></g>
-  <g class="taki__lines" fill="none" stroke="#FF8A4D" stroke-width="4" stroke-linecap="round">
-   <path pathLength="1" d="M130 286H186"/><path pathLength="1" d="M130 301H180"/><path pathLength="1" d="M130 316H184"/><path pathLength="1" d="M130 331H168"/>
-  </g>
-  <path d="M176 268V292L183 286L190 292V268Z" fill="#FF6534"/>
- </g></g>
-
- <!-- Aile gauche (tient le carnet) -->
- <g class="taki__wing taki__wing--left">
-  <path d="M100 198C52 206 34 268 64 320C88 308 114 278 118 232Z" fill="url(#tk-wing)"/>
-  <path d="M86 236Q58 230 50 258M94 262Q68 262 62 286M102 282Q84 292 76 306" fill="none" stroke="#FFD29A" stroke-width="5" stroke-linecap="round"/>
- </g>
-
- <!-- Aile droite (tient le crayon) -->
- <g class="taki__wing taki__wing--right">
-  <path d="M260 198C304 204 312 262 270 306C252 314 228 308 214 296C238 276 246 248 244 226Z" fill="url(#tk-wing)"/>
-  <path d="M276 236Q300 232 304 258M262 258Q284 262 286 284" fill="none" stroke="#FFD29A" stroke-width="5" stroke-linecap="round"/>
-  <g class="taki__pen" transform="translate(196 324) rotate(-50)">
-   <path d="M0 0L16 -4V4Z" fill="#F6D9B0" stroke="#7A4A22" stroke-width="2" stroke-linejoin="round"/>
-   <path d="M0 0L5 -1.4V1.4Z" fill="#17233A"/>
-   <rect x="16" y="-5" width="48" height="10" fill="#FFC02E" stroke="#C88A0A" stroke-width="2"/>
-   <rect x="64" y="-5" width="8" height="10" fill="#C9CED6" stroke="#7B8493" stroke-width="2"/>
-   <rect x="72" y="-5" width="10" height="10" rx="3" fill="#FF8FA3" stroke="#C85A70" stroke-width="2"/>
-  </g>
-  <ellipse cx="226" cy="302" rx="17" ry="12" transform="rotate(-35 226 302)" fill="url(#tk-wing)"/>
- </g>
+ <path class="taki__torso" d="M168 190C150 250 165 322 215 340C250 351 292 346 314 322C338 296 344 250 337 205C330 170 290 150 250 150C205 150 182 165 168 190Z" fill="url(#tk-torso)"/>
+ <path d="M262 205C300 193 340 224 340 266C340 306 316 336 286 341C259 338 249 300 251 260C252 236 255 216 262 205Z" fill="url(#tk-belly)"/>
+ <path d="M272 222L282 233M288 214L296 227M304 220L311 232" fill="none" stroke="#F08F3A" stroke-width="3.5" stroke-linecap="round" opacity=".55"/>
 
  <!-- Tête -->
  <g class="taki__head">
   <g class="taki__crest">
-   <path d="M156 110C136 86 138 58 158 46C167 68 171 90 173 110Z" fill="url(#tk-body)"/>
-   <path d="M175 106C164 68 178 34 200 24C206 54 200 86 193 108Z" fill="url(#tk-body)"/>
-   <path d="M196 110C206 84 226 68 248 70C242 92 226 106 208 114Z" fill="url(#tk-body)"/>
-   <path d="M164 56Q168 76 168 94M192 38Q194 64 190 92" fill="none" stroke="#FFD29A" stroke-width="5" stroke-linecap="round"/>
+   <path d="M172 63C186 45 216 32 249 42C263 48 271 62 273 77C241 64 206 66 180 73C181 70 177 66 172 63Z" fill="url(#tk-crest)"/>
+   <path d="M205 22C225 12 255 16 276 40C288 53 293 68 291 85C263 71 229 51 205 22Z" fill="url(#tk-crest)"/>
+   <path d="M279 47C289 54 295 64 295 78C288 74 282 68 277 60Z" fill="url(#tk-crest)"/>
+   <path d="M214 30C238 28 262 44 278 66M190 56C212 50 240 54 262 66" fill="none" stroke="#FFC070" stroke-width="3.5" stroke-linecap="round" opacity=".6"/>
   </g>
-  <path d="M104 190C104 146 138 128 180 148C222 128 256 146 256 190C256 230 222 252 180 252C138 252 104 230 104 190Z" fill="#FFF8EC"/>
-  <g class="taki__brows" fill="none" stroke="#A94D20" stroke-width="7" stroke-linecap="round">
-   <path class="taki__brow taki__brow--l" d="M126 150Q148 138 170 150"/>
-   <path class="taki__brow taki__brow--r" d="M190 150Q212 138 234 150"/>
+  <path d="M170 126C155 138 141 156 132 172C148 173 161 167 173 158Z" fill="url(#tk-wing)"/>
+  <path d="M168 168C157 180 149 193 145 206C159 204 170 198 180 189Z" fill="url(#tk-wing)"/>
+  <path d="M160 150C160 100 205 62 255 62C320 62 356 105 356 150C358 186 340 216 300 223C260 231 200 226 175 200C163 188 160 170 160 150Z" fill="url(#tk-head)"/>
+  <path d="M182 108C196 84 224 70 254 69" fill="none" stroke="#FFC77C" stroke-width="5" stroke-linecap="round" opacity=".5"/>
+
+  <g class="taki__brows" fill="none" stroke="#4A1A07" stroke-linecap="round">
+   <path class="taki__brow taki__brow--l" stroke-width="6.5" d="M203 107C214 93 234 86 255 90"/>
+   <path class="taki__brow taki__brow--r" stroke-width="5.5" d="M296 84C307 79 320 83 331 92"/>
   </g>
+
   <g class="taki__eyes">
-   <ellipse cx="150" cy="188" rx="26" ry="31" fill="#fff"/><ellipse cx="210" cy="188" rx="26" ry="31" fill="#fff"/>
+   <ellipse cx="233" cy="149" rx="26" ry="36" fill="#FFFFFF" stroke="#150A06" stroke-width="3.5"/><path d="M208 132C212 118 222 112 234 112C246 112 256 118 259 130" fill="none" stroke="#150A06" stroke-width="6" stroke-linecap="round"/>
+   <ellipse cx="317" cy="141" rx="20" ry="33" fill="#FFFFFF" stroke="#150A06" stroke-width="3.5" transform="rotate(-5 317 141)"/><path d="M298 124C301 112 309 108 317 108C326 108 333 113 336 124" fill="none" stroke="#150A06" stroke-width="5" stroke-linecap="round"/>
    <g class="taki__pupils">
-    <ellipse cx="153" cy="193" rx="16" ry="21" fill="url(#tk-eye)"/><ellipse cx="207" cy="193" rx="16" ry="21" fill="url(#tk-eye)"/>
-    <circle cx="159" cy="183" r="7" fill="#fff"/><circle cx="213" cy="183" r="7" fill="#fff"/>
-    <circle cx="148" cy="200" r="3" fill="#fff" opacity=".8"/><circle cx="202" cy="200" r="3" fill="#fff" opacity=".8"/>
+    <ellipse cx="236" cy="153" rx="20" ry="29" fill="url(#tk-iris)"/><ellipse cx="237" cy="154" rx="13.5" ry="21" fill="#0B0605"/>
+    <circle cx="241" cy="132" r="5.8" fill="#fff"/><circle cx="247" cy="168" r="3" fill="#fff" opacity=".75"/>
+    <ellipse cx="315" cy="144" rx="15" ry="26" fill="url(#tk-iris)"/><ellipse cx="315" cy="145" rx="10.5" ry="19" fill="#0B0605"/>
+    <circle cx="312" cy="121" r="4.8" fill="#fff"/><circle cx="318" cy="158" r="2.6" fill="#fff" opacity=".75"/>
    </g>
   </g>
-  <g class="taki__eyes-happy" fill="none" stroke="#17233A" stroke-width="9" stroke-linecap="round">
-   <path d="M126 196Q150 162 174 196"/><path d="M186 196Q210 162 234 196"/>
+  <g class="taki__eyes-happy" fill="none" stroke="#2A1208" stroke-width="8" stroke-linecap="round">
+   <path d="M207 158Q233 108 259 158"/><path d="M297 152Q317 110 337 152"/>
   </g>
-  <ellipse cx="118" cy="224" rx="14" ry="8.5" fill="#F58C78" opacity=".55"/><ellipse cx="242" cy="224" rx="14" ry="8.5" fill="#F58C78" opacity=".55"/>
-  <path d="M164 214Q180 203 196 214Q194 235 180 241Q166 235 164 214Z" fill="#FFB72D" stroke="#D66B12" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M170 218Q180 212 190 218" fill="none" stroke="#FFE08A" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Bec ouvert -->
+  <path d="M258 168C276 164 297 162 313 160C312 181 299 197 283 198C268 195 260 183 258 168Z" fill="url(#tk-mouth)"/>
+  <path d="M268 183C275 175 292 175 301 181C299 191 291 197 283 197C275 195 270 190 268 183Z" fill="url(#tk-tongue)"/>
+  <path d="M256 166C258 185 268 200 284 200C300 199 312 183 314 160" fill="none" stroke="#F7A21B" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M260 156C270 142 292 132 306 141C315 147 317 154 313 161C298 160 278 163 258 169Z" fill="url(#tk-beak)" stroke="#E8820E" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M272 148C282 141 295 139 304 144" fill="none" stroke="#FFEFA8" stroke-width="3" stroke-linecap="round" opacity=".8"/>
  </g>
 
+ <!-- Aile droite (tient le crayon) -->
+ <g class="taki__wing taki__wing--right">
+  <path d="M344 300C338 312 336 322 338 333C350 327 358 317 361 305Z" fill="url(#tk-wing)"/>
+  <path d="M366 306C364 318 366 327 372 335C384 327 391 314 389 299Z" fill="url(#tk-wing)"/>
+  <path d="M338 222C334 204 348 196 366 198C388 200 398 222 396 250C396 282 390 306 374 324C362 328 352 320 348 308C342 300 336 298 331 300C339 284 343 254 338 222Z" fill="url(#tk-wing)"/>
+  <path d="M384 262Q392 284 381 308M361 272Q368 296 358 317" fill="none" stroke="#FFA94C" stroke-width="3.5" stroke-linecap="round" opacity=".7"/>
+  <g class="taki__pen" transform="translate(337 284) rotate(-66.1)">
+   <rect x="0" y="-11" width="17" height="22" rx="7" fill="#F28C9C" stroke="#C85A6E" stroke-width="1.5"/>
+   <rect x="17" y="-12.5" width="15" height="25" fill="url(#tk-ferrule)" stroke="#6F7785" stroke-width="1.2"/>
+   <path d="M22 -12.5V12.5M27 -12.5V12.5" stroke="#6F7785" stroke-width="1" opacity=".7"/>
+   <rect x="32" y="-12.5" width="102" height="25" fill="#FFB81A"/>
+   <rect x="32" y="-12.5" width="102" height="9" fill="#FFD54F"/><rect x="32" y="5" width="102" height="7.5" fill="#E8920A"/>
+   <path d="M134 -12.5L152 -6V6L134 12.5Z" fill="#F7DCB2" stroke="#C9A06A" stroke-width="1"/>
+   <path d="M152 -6L169 0L152 6Z" fill="#26262B"/>
+  </g>
+  <path d="M342 215C340 198 352 190 368 192C388 194 397 212 393 232C390 248 374 254 360 252C346 248 343 232 342 215Z" fill="url(#tk-wing)"/>
+  <path d="M347 213Q362 217 378 212M347 229Q364 233 384 228" fill="none" stroke="#C94A0C" stroke-width="2.5" stroke-linecap="round" opacity=".6"/>
+  <path d="M350 200C358 196 370 196 378 200" fill="none" stroke="#FFB45E" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+ </g>
+
+ <!-- Aile gauche (tient le carnet) -->
+ <g class="taki__wing taki__wing--left">
+  <path d="M160 250C146 246 134 247 126 252C138 258 146 268 152 282Z" fill="url(#tk-wing)"/>
+  <path d="M160 300C146 304 134 312 128 322C142 322 152 320 162 314Z" fill="url(#tk-wing)"/>
+  <path d="M176 330C166 336 158 344 154 350C168 348 178 344 188 338Z" fill="url(#tk-wing)"/>
+  <g class="taki__notebook"><g transform="translate(208 259.5) rotate(-13.8)">
+   <rect x="-52.5" y="-60.5" width="105" height="121" rx="6" fill="url(#tk-cover)"/>
+   <rect x="43" y="-58" width="8" height="117" fill="#F5F1EA" stroke="#CFC6B8" stroke-width="1"/>
+   <path d="M38 -58V59" stroke="#0F2347" stroke-width="2" opacity=".5"/>
+   <rect x="-33" y="-41" width="60" height="35" rx="4" fill="#DCD8D4" stroke="#BDB8B2" stroke-width="1"/>
+   <g class="taki__lines" fill="none" stroke="#7C8FB3" stroke-width="3" stroke-linecap="round">
+    <path pathLength="1" d="M-24 -32H18"/><path pathLength="1" d="M-24 -23H18"/><path pathLength="1" d="M-24 -14H8"/>
+   </g>
+   <g class="taki__fx taki__shine" clip-path="url(#tk-nbclip)"><rect class="taki__glint" x="-80" y="-80" width="30" height="170" fill="url(#tk-glint)"/></g>
+   <g fill="url(#tk-ring)" stroke="#6D7480" stroke-width="1.3">
+    <ellipse cx="-53" cy="-49" rx="8" ry="3.6"/><ellipse cx="-53" cy="-38" rx="8" ry="3.6"/><ellipse cx="-53" cy="-27" rx="8" ry="3.6"/><ellipse cx="-53" cy="-16" rx="8" ry="3.6"/><ellipse cx="-53" cy="-5" rx="8" ry="3.6"/><ellipse cx="-53" cy="6" rx="8" ry="3.6"/>
+   </g>
+  </g></g>
+  <path d="M160 285C165 268 195 262 225 248C245 240 262 234 270 246C277 257 270 267 262 275C252 297 240 319 215 332C190 343 165 336 158 316C155 304 156 294 160 285Z" fill="url(#tk-wing)"/>
+  <path d="M176 302C196 291 216 285 234 279M178 320C198 312 218 304 236 296" fill="none" stroke="#FFA94C" stroke-width="3.5" stroke-linecap="round" opacity=".6"/>
+  <path d="M232 246C246 241 258 240 266 247" fill="none" stroke="#FFB45E" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+ </g>
+
+
+ <!-- Bras qui écrit (visible pendant peaufiner / personnaliser / vérifier) -->
+ <g class="taki__arm-write">
+  <path d="M326 208C310 216 282 220 252 222C236 224 228 236 232 248C236 258 250 260 262 258C290 262 318 276 344 274C358 262 360 236 350 214C346 206 334 204 326 208Z" fill="url(#tk-wing)"/>
+  <path d="M330 232C316 246 296 252 276 250M338 258C322 266 304 266 290 262" fill="none" stroke="#FFA94C" stroke-width="3.5" stroke-linecap="round" opacity=".6"/>
+  <g class="taki__hand-wrap"><g class="taki__hand">
+   <g transform="translate(200 244) rotate(168) scale(.62 -.62) translate(-169 0)">
+    <rect x="0" y="-11" width="17" height="22" rx="7" fill="#F28C9C" stroke="#C85A6E" stroke-width="1.5"/>
+    <rect x="17" y="-12.5" width="15" height="25" fill="url(#tk-ferrule)" stroke="#6F7785" stroke-width="1.2"/>
+    <path d="M22 -12.5V12.5M27 -12.5V12.5" stroke="#6F7785" stroke-width="1" opacity=".7"/>
+    <rect x="32" y="-12.5" width="102" height="25" fill="#FFB81A"/><rect x="32" y="-12.5" width="102" height="9" fill="#FFD54F"/><rect x="32" y="5" width="102" height="7.5" fill="#E8920A"/>
+    <path d="M134 -12.5L152 -6V6L134 12.5Z" fill="#F7DCB2" stroke="#C9A06A" stroke-width="1"/><path d="M152 -6L169 0L152 6Z" fill="#26262B"/>
+   </g>
+   <path d="M224 238C222 226 232 218 246 220C258 222 264 234 260 246C256 258 238 260 230 254C226 250 224 244 224 238Z" fill="url(#tk-wing)"/>
+   <path d="M230 232Q244 236 258 231M230 244Q244 248 256 243" fill="none" stroke="#C94A0C" stroke-width="2.5" stroke-linecap="round" opacity=".6"/>
+   <path d="M232 224C238 220 248 220 254 224" fill="none" stroke="#FFB45E" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+  </g></g>
+ </g>
  <!-- Effets liés à l'état -->
- <g class="taki__fx taki__sweat"><path d="M266 142C259 155 252 161 252 169C252 177 258 182 266 182C274 182 280 177 280 169C280 161 273 155 266 142Z" fill="#8ECBFF" stroke="#3A8FD6" stroke-width="2.5"/><path d="M262 168Q262 174 267 175" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g>
+ <g class="taki__fx taki__sweat"><g transform="translate(90 -46)"><path d="M266 142C259 155 252 161 252 169C252 177 258 182 266 182C274 182 280 177 280 169C280 161 273 155 266 142Z" fill="#8ECBFF" stroke="#3A8FD6" stroke-width="2.5"/><path d="M262 168Q262 174 267 175" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g></g>
  <g class="taki__fx taki__thought">
-  <circle cx="262" cy="100" r="5" fill="#fff" stroke="#F1E4DE" stroke-width="2"/><circle cx="274" cy="84" r="8" fill="#fff" stroke="#F1E4DE" stroke-width="2"/>
-  <g fill="#fff" stroke="#F1E4DE" stroke-width="2"><circle cx="296" cy="58" r="22"/><circle cx="320" cy="68" r="15"/><circle cx="276" cy="66" r="14"/><circle cx="300" cy="80" r="14"/></g>
-  <g fill="#fff"><circle cx="296" cy="58" r="21"/><circle cx="320" cy="68" r="14"/><circle cx="276" cy="66" r="13"/><circle cx="300" cy="80" r="13"/></g>
-  <g fill="#FF6534"><circle class="taki__dot" cx="282" cy="68" r="4.5"/><circle class="taki__dot" cx="298" cy="68" r="4.5" style="animation-delay:.25s"/><circle class="taki__dot" cx="314" cy="68" r="4.5" style="animation-delay:.5s"/></g>
+  <circle cx="346" cy="88" r="4.5" fill="#fff" stroke="#F1E4DE" stroke-width="2"/><circle cx="357" cy="73" r="7.5" fill="#fff" stroke="#F1E4DE" stroke-width="2"/>
+  <g fill="#fff" stroke="#F1E4DE" stroke-width="2"><circle cx="384" cy="42" r="20"/><circle cx="406" cy="52" r="13"/><circle cx="364" cy="50" r="12"/><circle cx="386" cy="62" r="13"/></g>
+  <g fill="#fff"><circle cx="384" cy="42" r="19"/><circle cx="406" cy="52" r="12"/><circle cx="364" cy="50" r="11"/><circle cx="386" cy="62" r="12"/></g>
+  <g fill="#FF6534"><circle class="taki__dot" cx="370" cy="52" r="4"/><circle class="taki__dot" cx="385" cy="52" r="4" style="animation-delay:.25s"/><circle class="taki__dot" cx="400" cy="52" r="4" style="animation-delay:.5s"/></g>
  </g>
  <g class="taki__fx taki__sparks" fill="#FFC02E">
-  <g transform="translate(46 160)"><path class="taki__spark" d="M0-10L3-3L10 0L3 3L0 10L-3 3L-10 0L-3-3Z"/></g>
-  <g transform="translate(318 150)"><path class="taki__spark" style="animation-delay:.3s" d="M0-10L3-3L10 0L3 3L0 10L-3 3L-10 0L-3-3Z"/></g>
-  <g transform="translate(330 268)"><path class="taki__spark" style="animation-delay:.6s" d="M0-8L2.5-2.5L8 0L2.5 2.5L0 8L-2.5 2.5L-8 0L-2.5-2.5Z"/></g>
-  <g transform="translate(34 280)"><path class="taki__spark" style="animation-delay:.9s" d="M0-8L2.5-2.5L8 0L2.5 2.5L0 8L-2.5 2.5L-8 0L-2.5-2.5Z"/></g>
+  <g transform="translate(116 150)"><path class="taki__spark" d="M0-10L3-3L10 0L3 3L0 10L-3 3L-10 0L-3-3Z"/></g>
+  <g transform="translate(424 168)"><path class="taki__spark" style="animation-delay:.3s" d="M0-10L3-3L10 0L3 3L0 10L-3 3L-10 0L-3-3Z"/></g>
+  <g transform="translate(422 292)"><path class="taki__spark" style="animation-delay:.6s" d="M0-8L2.5-2.5L8 0L2.5 2.5L0 8L-2.5 2.5L-8 0L-2.5-2.5Z"/></g>
+  <g transform="translate(112 300)"><path class="taki__spark" style="animation-delay:.9s" d="M0-8L2.5-2.5L8 0L2.5 2.5L0 8L-2.5 2.5L-8 0L-2.5-2.5Z"/></g>
+ </g>
+
+ <g class="taki__fx taki__polish" fill="#FFD85E">
+  <g transform="translate(172 240) scale(.8)"><path class="taki__spark" d="M0-10L3-3L10 0L3 3L0 10L-3 3L-10 0L-3-3Z"/></g>
+  <g transform="translate(198 222) scale(.7)"><path class="taki__spark" style="animation-delay:.35s" d="M0-10L3-3L10 0L3 3L0 10L-3 3L-10 0L-3-3Z"/></g>
+  <g transform="translate(160 212) scale(.6)"><path class="taki__spark" style="animation-delay:.7s" d="M0-10L3-3L10 0L3 3L0 10L-3 3L-10 0L-3-3Z"/></g>
+  <g transform="translate(214 256) scale(.6)"><path class="taki__spark" style="animation-delay:1s" d="M0-10L3-3L10 0L3 3L0 10L-3 3L-10 0L-3-3Z"/></g>
+ </g>
+ <g class="taki__fx taki__preview"><g transform="translate(100 62)">
+  <rect x="0" y="0" width="46" height="62" rx="4" fill="#fff" stroke="#E7D3BE" stroke-width="2"/>
+  <rect x="6" y="6" width="34" height="9" rx="2" fill="#FF8A4D"/>
+  <rect x="6" y="20" width="14" height="22" rx="2" fill="#FFD9BF"/>
+  <path d="M25 22H40M25 28H40M25 34H35M6 48H40M6 54H30" stroke="#C9CED6" stroke-width="2.5" stroke-linecap="round"/>
+  <path class="taki__guide" d="M3 0V62M43 0V62" stroke="#38BDF8" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+  <rect class="taki__scan" x="0" y="-4" width="46" height="8" fill="url(#tk-scanbar)"/>
+  <g class="taki__badge"><circle cx="45" cy="4" r="10" fill="url(#tk-ok)" stroke="#fff" stroke-width="2.5"/><path d="M40 4.5L43.5 8L50 0.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>
+ </g></g>
+ <g class="taki__fx taki__magic" fill="#FFC02E">
+  <g transform="translate(416 108)"><path class="taki__spark" d="M0-10L3-3L10 0L3 3L0 10L-3 3L-10 0L-3-3Z"/></g>
+  <g transform="translate(426 140) scale(.7)"><path class="taki__spark" style="animation-delay:.3s" d="M0-10L3-3L10 0L3 3L0 10L-3 3L-10 0L-3-3Z"/></g>
+  <g transform="translate(396 100) scale(.6)"><path class="taki__spark" style="animation-delay:.6s" d="M0-10L3-3L10 0L3 3L0 10L-3 3L-10 0L-3-3Z"/></g>
+  <g transform="translate(428 78) scale(.55)" fill="#FF8A4D"><path class="taki__spark" style="animation-delay:.9s" d="M0-10L3-3L10 0L3 3L0 10L-3 3L-10 0L-3-3Z"/></g>
+ </g>
+ <g class="taki__fx taki__sheets">
+  <g transform="translate(205 250)"><g class="taki__sheet" style="--tx:-88px;--ty:-70px;--r:-16deg"><rect x="-12" y="-16" width="24" height="32" rx="3" fill="#fff" stroke="#E7D3BE" stroke-width="2"/><path d="M-6 -7H6M-6 -1H6M-6 5H1" stroke="#FF8A4D" stroke-width="2.5" stroke-linecap="round"/></g></g>
+  <g transform="translate(205 250)"><g class="taki__sheet" style="--tx:-96px;--ty:-18px;--r:12deg;animation-delay:.6s"><rect x="-12" y="-16" width="24" height="32" rx="3" fill="#fff" stroke="#E7D3BE" stroke-width="2"/><path d="M-6 -7H6M-6 -1H6M-6 5H1" stroke="#FF8A4D" stroke-width="2.5" stroke-linecap="round"/></g></g>
+  <g transform="translate(205 250)"><g class="taki__sheet" style="--tx:-70px;--ty:-122px;--r:-24deg;animation-delay:1.2s"><rect x="-12" y="-16" width="24" height="32" rx="3" fill="#fff" stroke="#E7D3BE" stroke-width="2"/><path d="M-6 -7H6M-6 -1H6M-6 5H1" stroke="#FF8A4D" stroke-width="2.5" stroke-linecap="round"/></g></g>
  </g>
  <g class="taki__fx taki__pages">
-  <g transform="translate(138 262)"><g class="taki__page"><rect width="22" height="28" rx="3" fill="#fff" stroke="#E7D3BE" stroke-width="2"/><path d="M5 8H17M5 14H17M5 20H11" stroke="#FF8A4D" stroke-width="2.5" stroke-linecap="round"/></g></g>
-  <g transform="translate(182 262)"><g class="taki__page" style="animation-delay:1.1s"><rect width="22" height="28" rx="3" fill="#fff" stroke="#E7D3BE" stroke-width="2"/><path d="M5 8H17M5 14H17M5 20H11" stroke="#FF8A4D" stroke-width="2.5" stroke-linecap="round"/></g></g>
+  <g transform="translate(284 290)"><g class="taki__page"><rect width="22" height="28" rx="3" fill="#fff" stroke="#E7D3BE" stroke-width="2"/><path d="M5 8H17M5 14H17M5 20H11" stroke="#FF8A4D" stroke-width="2.5" stroke-linecap="round"/></g></g>
+  <g transform="translate(318 292)"><g class="taki__page" style="animation-delay:1.1s"><rect width="22" height="28" rx="3" fill="#fff" stroke="#E7D3BE" stroke-width="2"/><path d="M5 8H17M5 14H17M5 20H11" stroke="#FF8A4D" stroke-width="2.5" stroke-linecap="round"/></g></g>
  </g>
 </g>
 </svg><div class="taki__caption" aria-live="polite">Bonjour ! Je suis Taki.</div></div>

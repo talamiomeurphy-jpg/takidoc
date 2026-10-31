@@ -37,8 +37,39 @@ function card(t){const id=String(t.id),r=RT[hash(id)%RT.length],p=price(t.price_
   e._s=e.querySelector('.sheet');return e}
 
 /* ---------- Masonry (colonnes, hauteurs calculées sans lecture du DOM) ---------- */
-function measure(){const w=grid.clientWidth-parseFloat(getComputedStyle(grid).paddingLeft)*2,g=parseFloat(getComputedStyle(grid).columnGap)||16,min=innerWidth<640?150:225,n=Math.max(2,Math.min(8,Math.floor((w+g)/(min+g))));
-  const ch=n!==S.cols;S.gap=g;S.cols=n;S.colW=(w-g*(n-1))/n;grid.style.setProperty('--ps',S.colW/794);return ch}
+
+function measure(){
+  const style = getComputedStyle(grid);
+  const w = grid.clientWidth
+    - parseFloat(style.paddingLeft)
+    - parseFloat(style.paddingRight);
+
+  const g = parseFloat(style.columnGap) || 16;
+
+  // Nombre de colonnes selon la largeur réelle de l'écran
+  let n;
+
+  if (innerWidth <= 640) {
+    n = 2;
+  } else if (innerWidth <= 900) {
+    n = 2;
+  } else if (innerWidth <= 1180) {
+    n = 3;
+  } else {
+    n = 4;
+  }
+
+  const changed = n !== S.cols;
+
+  S.gap = g;
+  S.cols = n;
+  S.colW = (w - g * (n - 1)) / n;
+
+  grid.style.setProperty('--ps', S.colW / 794);
+
+  return changed;
+}
+
 function build(){grid.replaceChildren();S.cs=[];S.hs=Array(S.cols).fill(0);for(let i=0;i<S.cols;i++){const c=document.createElement('div');c.className='col';grid.append(c);S.cs.push(c)}}
 function place(els){els.forEach(e=>{let k=0;for(let i=1;i<S.cols;i++)if(S.hs[i]<S.hs[k])k=i;const h=e._r*S.colW+S.info;S.hs[k]+=h+S.gap;e.style.containIntrinsicSize='auto '+Math.round(h)+'px';S.cs[k].append(e);pio.observe(e)})}
 function relayout(){const old=S.cards;old.forEach(e=>pio.unobserve(e));build();place(old)}

@@ -1,10 +1,14 @@
 (() => {
   /* Messages par défaut de Taki. Les états :
-     idle · thinking · working · waiting (serveur chargé) · celebrating · error */
+     idle · thinking · working · polishing · writing · checking · finalizing · waiting (serveur chargé) · celebrating · error */
   const messages = {
     idle: "Bonjour ! Je suis Taki.",
     thinking: "Je réfléchis à la meilleure mise en page…",
     working: "Je m’occupe de ton document.",
+    polishing: "Je peaufine ton document…",
+    writing: "Je personnalise tes informations…",
+    checking: "Je vérifie la mise en page…",
+    finalizing: "Je crée le rendu final…",
     waiting: "Encore un petit instant, j’arrive…",
     celebrating: "Et voilà ! Ton document est prêt.",
     error: "Un petit souci est survenu. On va regarder ça."

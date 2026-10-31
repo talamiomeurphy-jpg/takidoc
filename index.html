@@ -2157,6 +2157,113 @@ main {
   color: #FF6B35;
 }
 
+/* ===== TAKIDOC : GALERIE RESPONSIVE ===== */
+
+#grid {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: min(1500px, 100%);
+  margin-inline: auto;
+  padding-inline: 28px;
+}
+
+#grid .col {
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+#grid .pin {
+  width: 100%;
+  min-width: 0;
+}
+
+#grid .media {
+  width: 100%;
+}
+
+/* Tablettes */
+@media (max-width: 1180px) {
+  #grid {
+    gap: 18px;
+    padding-inline: 22px;
+  }
+
+  #grid .col {
+    gap: 20px;
+  }
+}
+
+/* Téléphones */
+@media (max-width: 640px) {
+  #grid {
+    gap: 12px;
+    padding-inline: 12px;
+  }
+
+  #grid .col {
+    gap: 16px;
+  }
+
+  #grid .media {
+    border-radius: 12px;
+  }
+}
+
+/* Petits téléphones */
+@media (max-width: 370px) {
+  #grid {
+    gap: 9px;
+    padding-inline: 9px;
+  }
+
+  #grid .col {
+    gap: 13px;
+  }
+}
+
+/* ===== CORRECTIONS PETITS ÉCRANS ===== */
+
+#grid {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  #catalog,
+  #grid {
+    min-width: 0;
+  }
+
+  /* Galerie */
+  #grid {
+    padding-inline: 12px;
+  }
+
+  /* Évite que les éléments flex débordent */
+  #grid .col,
+  #grid .pin {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 370px) {
+  #grid {
+    padding-inline: 9px;
+  }
+}
+
+
 </style>
 <link rel="stylesheet" href="css/header.css">
 </head>
