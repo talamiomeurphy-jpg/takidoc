@@ -63,10 +63,10 @@ const DOWNLOAD_BUTTONS = '#btn-download-pdf, #btn-download-docx, #header-downloa
 /** Histoire de Taki pendant la génération : chaque étape reste affichée `ms` millisecondes.
  *  Modifie librement ces textes ; la durée totale = somme des `ms`. */
 const TAKI_STORY = Object.freeze([
-  { state: 'polishing',  text: 'Je peaufine ton document…',        ms: 2600 },
-  { state: 'writing',    text: 'Je personnalise tes informations…', ms: 2600 },
+  { state: 'polishing',  text: 'Je peaufine ton document…',        ms: 2400 },
+  { state: 'writing',    text: 'Je personnalise tes informations…', ms: 4000 },
   { state: 'checking',   text: 'Je vérifie la mise en page…',       ms: 2400 },
-  { state: 'finalizing', text: 'Je crée le rendu final…',           ms: 2600 }
+  { state: 'finalizing', text: 'Je crée le rendu final…',           ms: 2400 }
 ]);
 const TAKI_GRACE_MS = 1500;          // marge accordée au serveur à la fin de l'histoire avant le message de surcharge
 const TAKI_OVERLOAD_STEP_MS = 4500;  // durée de chaque message de surcharge

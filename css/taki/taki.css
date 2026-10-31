@@ -77,9 +77,11 @@
   z-index: 10001;
 }
 #taki-container.is-center .taki {
-  width: min(82vw, 300px); max-width: none;
+  width: min(88vw, 340px); max-width: none;
   padding: 18px 16px 14px;
   border-radius: 26px;
   background: #fffcfa;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
 }
+
+#taki-container.is-center .taki__svg { max-height: 58vh; }

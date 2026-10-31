@@ -2266,159 +2266,23 @@ main {
 
 </style>
 <link rel="stylesheet" href="css/header.css">
+<link rel="stylesheet" href="css/app-home.css">
 </head>
 <body>
 <div id="td-header-container"></div>
+<nav class="app-rail" aria-label="Navigation de l'application">
+  <button data-go="tHome" class="on" title="Accueil"><i class="fa-solid fa-house"></i><span>Accueil</span></button>
+  <button data-go="tSearch" title="Rechercher"><i class="fa-solid fa-magnifying-glass"></i><span>Chercher</span></button>
+  <button data-go="tFav" title="Favoris"><i class="fa-regular fa-heart"></i><span>Favoris</span></button>
+  <a href="profile.html" title="Mon espace"><i class="fa-regular fa-folder-open"></i><span>Mon espace</span></a>
+  <a href="comment-ca-marche.html" title="Aide"><i class="fa-regular fa-circle-question"></i><span>Aide</span></a>
+</nav>
 <div class="chips" id="chipsBar"><div class="wrap rail" id="rail"></div></div>
 
 <main>
 
     
-<section class="wrap intro" id="hero">
-  <div class="hero-content">
-    <div class="hero-eyebrow">
-      <span class="hero-live-dot"></span>
-      <span>LA BIBLIOTHÈQUE PROFESSIONNELLE</span>
-      <span class="hero-eyebrow-separator">·</span>
-      <span class="hero-eyebrow-detail">Pensée pour vos projets</span>
-    </div>
-
-    <h1>
-      Les bons documents.<br>
-      <span class="hero-title-accent">Les bonnes impressions.</span>
-    </h1>
-
-    <p class="hero-description">
-      CV, lettres, contrats, factures et bien plus.
-      Découvrez des modèles professionnels, personnalisez-les
-      selon vos besoins et donnez une nouvelle dimension à vos projets.
-    </p>
-
-    <div class="hero-actions">
-      <a href="#catalog" class="hero-primary">
-        <i class="fa-solid fa-layer-group"></i>
-        Explorer les modèles
-        <i class="fa-solid fa-arrow-right hero-arrow"></i>
-      </a>
-
-      <a href="comment-ca-marche.html" class="hero-secondary">
-        <span class="hero-play">
-          <i class="fa-solid fa-play"></i>
-        </span>
-        Comment ça marche
-      </a>
-    </div>
-
-    <div class="hero-proof">
-      <div class="hero-proof-item">
-        <span class="hero-proof-icon">
-          <i class="fa-solid fa-file-lines"></i>
-        </span>
-        <span>
-          <strong>Des modèles variés</strong>
-          <small>Pour vos besoins professionnels</small>
-        </span>
-      </div>
-
-      <span class="hero-proof-divider"></span>
-
-      <div class="hero-proof-item">
-        <span class="hero-proof-icon">
-          <i class="fa-solid fa-sliders"></i>
-        </span>
-        <span>
-          <strong>Personnalisation facile</strong>
-          <small>Adaptez chaque document</small>
-        </span>
-      </div>
-    </div>
-  </div>
-
-  <div class="hero-visual" aria-hidden="true">
-    <div class="hero-glow"></div>
-    <div class="hero-orbit hero-orbit-one"></div>
-    <div class="hero-orbit hero-orbit-two"></div>
-
-    <div class="hero-floating-tag hero-tag-top">
-      <span class="hero-tag-icon">
-        <i class="fa-solid fa-file-circle-check"></i>
-      </span>
-      <span>
-        <strong>Prêt à personnaliser</strong>
-        <small>Votre document, votre style</small>
-      </span>
-    </div>
-
-    <div class="hero-document hero-document-back">
-      <div class="hero-doc-topline"></div>
-      <div class="hero-doc-layout">
-        <div class="hero-doc-sidebar"></div>
-        <div class="hero-doc-content">
-          <div class="hero-doc-heading"></div>
-          <div class="hero-doc-line"></div>
-          <div class="hero-doc-line short"></div>
-          <div class="hero-doc-section"></div>
-          <div class="hero-doc-line"></div>
-          <div class="hero-doc-line medium"></div>
-          <div class="hero-doc-section"></div>
-          <div class="hero-doc-line"></div>
-          <div class="hero-doc-line short"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="hero-document hero-document-front">
-      <div class="hero-doc-topline"></div>
-      <div class="hero-cv-header">
-        <div class="hero-avatar">
-          <i class="fa-solid fa-user"></i>
-        </div>
-        <div class="hero-cv-identity">
-          <div class="hero-cv-name"></div>
-          <div class="hero-cv-role"></div>
-          <div class="hero-cv-contact"></div>
-        </div>
-      </div>
-
-      <div class="hero-cv-section-title">PROFIL PROFESSIONNEL</div>
-      <div class="hero-doc-line"></div>
-      <div class="hero-doc-line"></div>
-      <div class="hero-doc-line medium"></div>
-
-      <div class="hero-cv-columns">
-        <div>
-          <div class="hero-cv-section-title">EXPÉRIENCE</div>
-          <div class="hero-doc-line"></div>
-          <div class="hero-doc-line short"></div>
-          <div class="hero-doc-line"></div>
-          <div class="hero-doc-line medium"></div>
-        </div>
-        <div>
-          <div class="hero-cv-section-title">COMPÉTENCES</div>
-          <div class="hero-skill"></div>
-          <div class="hero-skill"></div>
-          <div class="hero-skill"></div>
-        </div>
-      </div>
-
-      <div class="hero-cv-footer"></div>
-    </div>
-
-    <div class="hero-floating-tag hero-tag-bottom">
-      <span class="hero-price-icon">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-      </span>
-      <span>
-        <strong>Simple. Clair. Professionnel.</strong>
-        <small>De l'idée au document final</small>
-      </span>
-      <i class="fa-solid fa-check hero-check"></i>
-    </div>
-
-    <div class="hero-decoration hero-decoration-one"></div>
-    <div class="hero-decoration hero-decoration-two"></div>
-  </div>
-</section>
+<!-- Accueil en mode application : le contenu commence directement avec le flux de documents -->
 
   <div class="wrap tb" id="catalog"><span id="count" aria-live="polite">Chargement…</span>
     <select id="sort" aria-label="Trier les documents"><option value="def">Sélection TakiDoc</option><option value="asc">Prix croissant</option><option value="desc">Prix décroissant</option><option value="name">Nom A–Z</option></select></div>
@@ -2430,9 +2294,19 @@ main {
 <footer class="ft" id="ft"><div class="wrap"><span><strong>TakiDoc</strong> © <span id="yr"></span></span>
   <nav aria-label="Informations"><a href="a-propos.html">À propos</a><a href="contact.html">Contact</a><a href="comment-ca-marche.html">Comment ça marche</a><a href="confidentialite.html">Confidentialité</a><a href="conditions.html">Conditions d’utilisation</a><a href="mentions-legales.html">Mentions légales</a><a href="cookies.html">Cookies</a></nav></div></footer>
 <nav class="tab" aria-label="Navigation"><button id="tHome" class="on"><i class="fa-solid fa-house"></i>Accueil</button><button id="tSearch"><i class="fa-solid fa-magnifying-glass"></i>Rechercher</button><button id="tFav"><i class="fa-regular fa-heart"></i>Favoris</button><button id="tInfo"><i class="fa-solid fa-circle-info"></i>Infos</button></nav>
+<div id="taki-dock" aria-live="polite">
+  <div class="td-panel" hidden>
+    <div class="td-panel-head"><strong>Salut, je suis Taki !</strong><span>Que veux-tu créer aujourd'hui ?</span></div>
+    <div class="td-sugg" id="tdSugg"></div>
+    <div class="td-actions"><button data-act="fav"><i class="fa-regular fa-heart"></i> Mes favoris</button><button data-act="top"><i class="fa-solid fa-arrow-up"></i> Remonter</button></div>
+  </div>
+  <div class="td-bubble" role="status"></div>
+  <button class="td-taki" id="tdTaki" aria-label="Parler à Taki, la mascotte de TakiDoc" aria-expanded="false"></button>
+</div>
 <div class="toast" id="toast" role="status"></div>
 
 <script src="js/home.js"></script>
+<script src="js/taki-dock.js" defer></script>
 <script type="module" src="js/header.js" defer></script>
 </body>
 </html>

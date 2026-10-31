@@ -130,88 +130,115 @@
 
 
 /* ==========================================================
-   TAKI — HISTOIRE DE LA GÉNÉRATION (v3)
-   polishing  : il peaufine (touches fines, étincelles, reflet sur le carnet)
-   writing    : il écrit pour de vrai dans son carnet, ligne après ligne
-   checking   : il vérifie la mise en page (aperçu, guides, balayage, ✓)
-   finalizing : baguette-crayon magique, les feuilles du rendu final s'envolent
+   TAKI — HISTOIRE DE LA GENERATION (v4)
+   Le document de l'utilisateur (un CV) apparaît à côté de Taki, qui le travaille avec son crayon :
+   polishing  : il peaufine le document (le crayon touche les coins, le document se redresse, reflet)
+   writing    : il personnalise le document, champ après champ (nom, poste, coordonnées…) en 4 s
+   checking   : il vérifie la mise en page (guides, balayage vert, ✓)
+   finalizing : baguette-crayon magique, le document brille, des copies s'envolent
+   Durées conseillées dans editor.js (TAKI_STORY) : 2400 / 4000 / 2400 / 2400 ms
 ========================================================== */
-.taki__arm-write,.taki__hand-wrap,.taki__hand,.taki__glint,.taki__scan,.taki__badge,.taki__sheet,.taki__preview,.taki__polish,.taki__magic{transform-box:fill-box;transform-origin:50% 50%}
-.taki__arm-write{opacity:0;transition:opacity .3s ease;pointer-events:none}
-.taki__wing--right{transition:opacity .3s ease}
-.taki__sheet{opacity:0}
-.taki__scan,.taki__badge{opacity:0}
+.taki__doc,.taki__doc-sheet,.taki__scan,.taki__badge,.taki__halo,.taki__dglint,.taki__sheet,.taki__polish,.taki__magic{transform-box:fill-box;transform-origin:50% 50%}
+.taki__doc{transform-origin:50% 100%;opacity:0;transform:translateY(16px) scale(.85);transition:opacity .35s ease,transform .5s cubic-bezier(.3,1.5,.5,1)}
+.taki__halo,.taki__scan,.taki__badge,.taki__guides,.taki__sheet{opacity:0}
+.taki__dglint{transform:translateX(0)}
+.taki__fill{stroke-dasharray:1;stroke-dashoffset:0}
 
-/* — Bras qui écrit à la place du bras qui tient le crayon en l'air — */
-.taki[data-taki-state=polishing] .taki__arm-write,.taki[data-taki-state=writing] .taki__arm-write,.taki[data-taki-state=checking] .taki__arm-write{opacity:1}
-.taki[data-taki-state=polishing] .taki__wing--right,.taki[data-taki-state=writing] .taki__wing--right,.taki[data-taki-state=checking] .taki__wing--right{opacity:0;animation:none}
+/* — Le document est visible pendant toute l'histoire — */
+.taki[data-taki-state=polishing] .taki__doc,.taki[data-taki-state=writing] .taki__doc,.taki[data-taki-state=checking] .taki__doc,.taki[data-taki-state=finalizing] .taki__doc,.taki[data-taki-state=celebrating] .taki__doc{opacity:1;transform:none}
+.taki[data-taki-state=polishing] .taki__doc-sheet,.taki[data-taki-state=writing] .taki__doc-sheet,.taki[data-taki-state=checking] .taki__doc-sheet{animation:tk-doc-bob 2.8s ease-in-out infinite alternate}
+@keyframes tk-doc-bob{from{transform:translateY(0)}to{transform:translateY(-2px)}}
 
-/* — Posture commune : le carnet est remonté, Taki penche la tête dessus — */
-.taki[data-taki-state=polishing] .taki__wing--left,.taki[data-taki-state=writing] .taki__wing--left,.taki[data-taki-state=checking] .taki__wing--left{animation:none;transform:translate(0,-4px)}
-.taki[data-taki-state=polishing] .taki__bird,.taki[data-taki-state=writing] .taki__bird,.taki[data-taki-state=checking] .taki__bird{animation:tk-float 2.8s ease-in-out infinite}
+/* — Posture commune : le bras droit reste immobile, seule la main (poing + crayon) se déplace sur le document — */
+.taki__hand,.taki__hand-jit{transform:translate(0,0)}
+.taki[data-taki-state=polishing] .taki__wing--right,.taki[data-taki-state=writing] .taki__wing--right,.taki[data-taki-state=checking] .taki__wing--right{animation:none;transform:none}
+.taki[data-taki-state=polishing] .taki__bird,.taki[data-taki-state=writing] .taki__bird,.taki[data-taki-state=checking] .taki__bird{animation:tk-float 3.2s ease-in-out infinite}
 .taki[data-taki-state=polishing] .taki__foot--left,.taki[data-taki-state=writing] .taki__foot--left{animation:tk-tap .7s ease-in-out infinite}
 .taki[data-taki-state=polishing] .taki__foot--right,.taki[data-taki-state=writing] .taki__foot--right{animation:tk-tap .7s ease-in-out .35s infinite}
 
-/* ---------- 1. PEAUFINER ---------- */
+/* ---------- 1. PEAUFINER : le document se redresse, les champs sont encore vides ---------- */
+.taki[data-taki-state=polishing] .taki__fill{stroke-dashoffset:1}
+.taki[data-taki-state=polishing] .taki__hand{animation:tk-pol-hand 2.4s ease-in-out 1 both}
+.taki[data-taki-state=polishing] .taki__doc-sheet{animation:tk-pol-doc 2.4s ease-in-out 1 both}
+.taki[data-taki-state=polishing] .taki__guides{animation:tk-pol-guides 2.4s ease-in-out 1 both}
+.taki[data-taki-state=polishing] .taki__pupils{animation:tk-pol-eyes 2.4s ease-in-out 1 both}
 .taki[data-taki-state=polishing] .taki__head{animation:tk-pol-head 2.4s ease-in-out infinite}
-.taki[data-taki-state=polishing] .taki__pupils{animation:none;transform:translate(-5px,6px)}
 .taki[data-taki-state=polishing] .taki__brow--l{transform:translateY(3px) rotate(7deg)}
 .taki[data-taki-state=polishing] .taki__brow--r{transform:translateY(3px) rotate(-5deg)}
-.taki[data-taki-state=polishing] .taki__hand{animation:tk-pol-tap 1.6s ease-in-out infinite}
-.taki[data-taki-state=polishing] .taki__polish,.taki[data-taki-state=polishing] .taki__shine{opacity:1}
-.taki[data-taki-state=polishing] .taki__glint{animation:tk-glint 2.4s ease-in-out infinite}
-@keyframes tk-pol-head{0%,100%{transform:rotate(4deg) translateY(2px)}50%{transform:rotate(2deg) translateY(4px)}}
-@keyframes tk-pol-tap{0%,100%{transform:translate(2px,-8px)}8%{transform:translate(0,0)}16%{transform:translate(2px,-8px)}26%{transform:translate(-6px,-1px)}34%{transform:translate(0,-8px)}44%{transform:translate(8px,0)}52%{transform:translate(2px,-8px)}}
-@keyframes tk-glint{0%{transform:translateX(-30px) skewX(-18deg)}55%,100%{transform:translateX(150px) skewX(-18deg)}}
+.taki[data-taki-state=polishing] .taki__polish{opacity:1}
+.taki[data-taki-state=polishing] .taki__dglint{animation:tk-dglint 2.4s ease-in-out 1 both}
+@keyframes tk-pol-hand{0%{transform:translate(0.0px,0.0px)}12%{transform:translate(26.9px,-23.0px)}16%{transform:translate(24.5px,-17.5px)}19%{transform:translate(26.9px,-23.0px)}35%{transform:translate(26.9px,23.0px)}39%{transform:translate(24.5px,28.5px)}42%{transform:translate(26.9px,23.0px)}57%{transform:translate(-23.1px,23.0px)}61%{transform:translate(-25.5px,28.5px)}64%{transform:translate(-23.1px,23.0px)}84%{transform:translate(-23.1px,-19.0px)}88%{transform:translate(-25.5px,-13.5px)}100%{transform:translate(-25.5px,-13.5px)}}
+@keyframes tk-pol-doc{0%{transform:rotate(-3.5deg)}15%{transform:rotate(-2.6deg) scale(1)}17%{transform:rotate(-2.6deg) scale(1.03)}21%{transform:rotate(-2.2deg) scale(1)}38%{transform:rotate(-1.4deg) scale(1)}40%{transform:rotate(-1.4deg) scale(1.03)}44%{transform:rotate(-1deg) scale(1)}60%{transform:rotate(-.5deg) scale(1)}62%{transform:rotate(-.5deg) scale(1.03)}66%{transform:rotate(-.3deg) scale(1)}87%{transform:rotate(-.2deg) scale(1)}89%{transform:rotate(0) scale(1.03)}93%,100%{transform:rotate(0) scale(1)}}
+@keyframes tk-pol-eyes{0%{transform:translate(0,0)}16%{transform:translate(5px,-3px)}39%{transform:translate(5px,4px)}61%{transform:translate(3px,4px)}88%,100%{transform:translate(3px,-1px)}}
+@keyframes tk-pol-guides{0%,8%{opacity:0}18%,40%{opacity:1}55%,70%{opacity:.5}88%{opacity:1}100%{opacity:0}}
+@keyframes tk-pol-head{0%,100%{transform:rotate(3deg) translateY(2px)}50%{transform:rotate(1.5deg) translateY(3px)}}
+@keyframes tk-dglint{0%,45%{transform:translateX(0) skewX(-18deg)}85%,100%{transform:translateX(100px) skewX(-18deg)}}
 
-/* ---------- 2. PERSONNALISER : il écrit vraiment ---------- */
-.taki[data-taki-state=writing] .taki__head{animation:tk-wr-head .56s ease-in-out infinite alternate}
-.taki[data-taki-state=writing] .taki__pupils{animation:tk-wr-eyes .56s ease-in-out infinite alternate}
+/* ---------- 2. PERSONNALISER : il remplit le document, champ après champ ---------- */
+.taki[data-taki-state=writing] .taki__hand{animation:tk-wr-hand 4s linear 1 both}
+.taki[data-taki-state=writing] .taki__hand-jit{animation:tk-wr-jit .14s ease-in-out infinite alternate}
+.taki[data-taki-state=writing] .taki__pupils{animation:tk-wr-eyes 4s linear 1 both}
+.taki[data-taki-state=writing] .taki__head{animation:tk-wr-head .55s ease-in-out infinite alternate}
 .taki[data-taki-state=writing] .taki__brow--l{transform:translateY(3px) rotate(6deg)}
 .taki[data-taki-state=writing] .taki__brow--r{transform:translateY(3px) rotate(-4deg)}
-.taki[data-taki-state=writing] .taki__hand-wrap{animation:tk-wr-rows 3.6s linear infinite}
-.taki[data-taki-state=writing] .taki__hand{animation:tk-wr-scribble .26s ease-in-out infinite alternate}
-.taki[data-taki-state=writing] .taki__lines path{animation:tk-wl1 3.6s ease-in-out infinite}
-.taki[data-taki-state=writing] .taki__lines path:nth-child(2){animation-name:tk-wl2}
-.taki[data-taki-state=writing] .taki__lines path:nth-child(3){animation-name:tk-wl3}
-@keyframes tk-wr-head{from{transform:rotate(3deg) translateY(3px)}to{transform:rotate(4.5deg) translateY(4px)}}
-@keyframes tk-wr-eyes{from{transform:translate(-6px,6px)}to{transform:translate(-3px,6px)}}
-@keyframes tk-wr-scribble{from{transform:translate(-8px,2px) rotate(-1deg)}to{transform:translate(8px,-2px) rotate(1deg)}}
-@keyframes tk-wr-rows{0%,24%{transform:translateY(-9px)}27%,49%{transform:translateY(0)}52%,74%{transform:translateY(9px)}77%,100%{transform:translateY(-9px)}}
-@keyframes tk-wl1{0%{stroke-dashoffset:1}22%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:1}}
-@keyframes tk-wl2{0%,24%{stroke-dashoffset:1}46%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:1}}
-@keyframes tk-wl3{0%,49%{stroke-dashoffset:1}71%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:1}}
+.taki[data-taki-state=writing] .taki__fill--0{animation:tk-df0 4s linear 1 both}
+.taki[data-taki-state=writing] .taki__fill--1{animation:tk-df1 4s linear 1 both}
+.taki[data-taki-state=writing] .taki__fill--2{animation:tk-df2 4s linear 1 both}
+.taki[data-taki-state=writing] .taki__fill--3{animation:tk-df3 4s linear 1 both}
+.taki[data-taki-state=writing] .taki__fill--4{animation:tk-df4 4s linear 1 both}
+@keyframes tk-wr-hand{0%{transform:translate(-25.5px,-13.5px)}15%{transform:translate(22.5px,-13.5px)}20%{transform:translate(-25.5px,-4.5px)}35%{transform:translate(12.5px,-4.5px)}40%{transform:translate(-25.5px,4.5px)}55%{transform:translate(24.5px,4.5px)}60%{transform:translate(-25.5px,12.5px)}75%{transform:translate(18.5px,12.5px)}80%{transform:translate(-25.5px,20.5px)}95%{transform:translate(22.5px,20.5px)}100%{transform:translate(22.5px,20.5px)}}
+@keyframes tk-wr-eyes{0%{transform:translate(2.0px,-2.0px)}15%{transform:translate(5.0px,-2.0px)}20%{transform:translate(2.0px,0.1px)}35%{transform:translate(5.0px,0.1px)}40%{transform:translate(2.0px,2.2px)}55%{transform:translate(5.0px,2.2px)}60%{transform:translate(2.0px,4.1px)}75%{transform:translate(5.0px,4.1px)}80%{transform:translate(2.0px,6.0px)}95%{transform:translate(5.0px,6.0px)}100%{transform:translate(5px,3px)}}
+@keyframes tk-wr-jit{from{transform:translate(-1.6px,.8px)}to{transform:translate(1.6px,-.8px)}}
+@keyframes tk-wr-head{from{transform:rotate(2.5deg) translateY(2px)}to{transform:rotate(3.8deg) translateY(3px)}}
+@keyframes tk-df0{0%{stroke-dashoffset:1}15%,100%{stroke-dashoffset:0}}
+@keyframes tk-df1{0%,20%{stroke-dashoffset:1}35%,100%{stroke-dashoffset:0}}
+@keyframes tk-df2{0%,40%{stroke-dashoffset:1}55%,100%{stroke-dashoffset:0}}
+@keyframes tk-df3{0%,60%{stroke-dashoffset:1}75%,100%{stroke-dashoffset:0}}
+@keyframes tk-df4{0%,80%{stroke-dashoffset:1}95%,100%{stroke-dashoffset:0}}
 
-/* ---------- 3. VÉRIFIER LA MISE EN PAGE ---------- */
+/* ---------- 3. VÉRIFIER LA MISE EN PAGE : le crayon s'écarte, guides, balayage, ✓ ---------- */
+.taki[data-taki-state=checking] .taki__hand{animation:tk-ck-hand 2.4s ease-in-out 1 both}
+.taki[data-taki-state=checking] .taki__guides{animation:tk-ck-guides 2.4s ease-in-out 1 both}
+.taki[data-taki-state=checking] .taki__scan{animation:tk-ck-scan 2.4s ease-in-out 1 both}
+.taki[data-taki-state=checking] .taki__badge{animation:tk-ck-badge 2.4s ease-in-out 1 both}
+.taki[data-taki-state=checking] .taki__pupils{animation:tk-ck-eyes 2.4s ease-in-out 1 both}
 .taki[data-taki-state=checking] .taki__head{animation:tk-ck-head 2.4s ease-in-out infinite}
-.taki[data-taki-state=checking] .taki__pupils{animation:tk-ck-eyes 2.4s ease-in-out infinite}
 .taki[data-taki-state=checking] .taki__brow--r{transform:translateY(-6px) rotate(-6deg)}
 .taki[data-taki-state=checking] .taki__brow--l{transform:translateY(-2px)}
-.taki[data-taki-state=checking] .taki__hand{animation:tk-ck-point 2.4s ease-in-out infinite}
-.taki[data-taki-state=checking] .taki__preview{opacity:1}
-.taki[data-taki-state=checking] .taki__scan{animation:tk-ck-scan 2.4s ease-in-out infinite}
-.taki[data-taki-state=checking] .taki__badge{animation:tk-ck-badge 2.4s ease-in-out infinite}
-.taki[data-taki-state=checking] .taki__guide{animation:tk-ck-guide 1.2s ease-in-out infinite}
-@keyframes tk-ck-head{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(-1deg) translateY(1px)}}
-@keyframes tk-ck-eyes{0%{transform:translate(-9px,-9px)}45%{transform:translate(-9px,0)}60%,70%{transform:translate(-8px,-6px)}100%{transform:translate(-9px,-9px)}}
-@keyframes tk-ck-point{0%,100%{transform:translate(0,-5px)}50%{transform:translate(-4px,-2px)}}
-@keyframes tk-ck-scan{0%{transform:translateY(0);opacity:0}8%{opacity:1}55%{transform:translateY(60px);opacity:1}62%,100%{transform:translateY(60px);opacity:0}}
-@keyframes tk-ck-badge{0%,56%{transform:scale(0);opacity:0}68%{transform:scale(1.3);opacity:1}78%,92%{transform:scale(1);opacity:1}100%{transform:scale(.8);opacity:0}}
-@keyframes tk-ck-guide{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes tk-ck-hand{0%{transform:translate(22.5px,20.5px)}22%{transform:translate(34.5px,-31.5px)}45%{transform:translate(36.9px,-37.0px)}60%{transform:translate(34.5px,-31.5px)}75%{transform:translate(36.9px,-37.0px)}100%{transform:translate(34.5px,-31.5px)}}
+@keyframes tk-ck-guides{0%{opacity:0}10%,70%{opacity:1}100%{opacity:0}}
+@keyframes tk-ck-scan{0%{transform:translateY(0);opacity:0}6%{opacity:1}55%{transform:translateY(98px);opacity:1}62%,100%{transform:translateY(98px);opacity:0}}
+@keyframes tk-ck-badge{0%,56%{transform:scale(0);opacity:0}68%{transform:scale(1.3);opacity:1}80%,100%{transform:scale(1);opacity:1}}
+@keyframes tk-ck-eyes{0%{transform:translate(3px,-3px)}55%{transform:translate(4px,7px)}75%,100%{transform:translate(5px,3px)}}
+@keyframes tk-ck-head{0%,100%{transform:rotate(2deg)}50%{transform:rotate(4deg) translateY(2px)}}
 
-/* ---------- 4. RENDU FINAL : baguette-crayon, feuilles qui s'envolent ---------- */
+/* ---------- 4. RENDU FINAL : baguette-crayon, le document brille, les copies s'envolent ---------- */
 .taki[data-taki-state=finalizing] .taki__bird{animation:tk-float 1.4s ease-in-out infinite}
+.taki[data-taki-state=finalizing] .taki__hand{animation:tk-fin-hand .5s ease-out 1 both}
 .taki[data-taki-state=finalizing] .taki__head{animation:tk-fin-head 1.1s ease-in-out infinite}
 .taki[data-taki-state=finalizing] .taki__pupils{animation:tk-fin-eyes .55s ease-in-out infinite alternate}
 .taki[data-taki-state=finalizing] .taki__brow{transform:translateY(-5px)}
 .taki[data-taki-state=finalizing] .taki__wing--right{animation:tk-wand .55s ease-in-out infinite alternate}
 .taki[data-taki-state=finalizing] .taki__wing--left{animation:tk-wing-l-work 1.1s ease-in-out infinite}
-.taki[data-taki-state=finalizing] .taki__magic,.taki[data-taki-state=finalizing] .taki__sheets,.taki[data-taki-state=finalizing] .taki__shine{opacity:1}
-.taki[data-taki-state=finalizing] .taki__glint{animation:tk-glint 1.2s ease-in-out infinite}
+.taki[data-taki-state=finalizing] .taki__doc-sheet{animation:tk-doc-lift 1.1s ease-in-out infinite alternate}
+.taki[data-taki-state=finalizing] .taki__halo{animation:tk-halo 1.1s ease-in-out infinite alternate}
+.taki[data-taki-state=finalizing] .taki__badge{opacity:1}
+.taki[data-taki-state=finalizing] .taki__magic,.taki[data-taki-state=finalizing] .taki__sheets{opacity:1}
+.taki[data-taki-state=finalizing] .taki__dglint{animation:tk-dglint-loop 1.2s ease-in-out infinite}
 .taki[data-taki-state=finalizing] .taki__sheet{animation:tk-sheet 1.8s ease-out infinite}
 .taki[data-taki-state=finalizing] .taki__foot--left{animation:tk-tap .5s ease-in-out infinite}
 .taki[data-taki-state=finalizing] .taki__foot--right{animation:tk-tap .5s ease-in-out .25s infinite}
+@keyframes tk-fin-hand{from{transform:translate(34.5px,-31.5px)}to{transform:translate(0,0)}}
 @keyframes tk-fin-head{0%,100%{transform:rotate(2deg) translateY(0)}50%{transform:rotate(-2deg) translateY(-2px)}}
-@keyframes tk-fin-eyes{from{transform:translate(2px,-7px)}to{transform:translate(8px,-6px)}}
-@keyframes tk-wand{from{transform:rotate(-3deg)}to{transform:rotate(24deg)}}
+@keyframes tk-fin-eyes{from{transform:translate(1px,-6px)}to{transform:translate(5px,-5px)}}
+@keyframes tk-wand{from{transform:rotate(-3deg)}to{transform:rotate(14deg)}}
+@keyframes tk-doc-lift{from{transform:translateY(0) scale(1)}to{transform:translateY(-4px) scale(1.04)}}
+@keyframes tk-halo{from{opacity:.15}to{opacity:.95}}
+@keyframes tk-dglint-loop{0%{transform:translateX(0) skewX(-18deg)}70%,100%{transform:translateX(100px) skewX(-18deg)}}
 @keyframes tk-sheet{0%{transform:translate(0,0) rotate(0) scale(.4);opacity:0}15%{opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r)) scale(1.1);opacity:0}}
+
+/* ---------- FÊTE : le document est prêt, ✓ vert, halo doré ---------- */
+.taki[data-taki-state=celebrating] .taki__badge{animation:tk-badge-pop .55s cubic-bezier(.3,1.6,.5,1) both}
+.taki[data-taki-state=celebrating] .taki__halo{animation:tk-halo .6s ease-in-out infinite alternate}
+.taki[data-taki-state=celebrating] .taki__doc-sheet{animation:tk-doc-lift .8s ease-in-out infinite alternate}
+@keyframes tk-badge-pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
