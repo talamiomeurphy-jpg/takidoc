@@ -101,9 +101,9 @@ function jump(){const y=$('#catalog').getBoundingClientRect().top+scrollY-(inner
 
 /* ---------- Favoris (local + compte Supabase) ---------- */
 const saveFav=()=>{try{localStorage.setItem(CFG.favKey,JSON.stringify([...S.fav]))}catch(e){}};
-function syncFav(){const n=S.fav.size,b=$('#favN');b.hidden=!n;b.textContent=n;$('#favBtn').classList.toggle('on',S.favOnly);$('#favBtn').setAttribute('aria-pressed',S.favOnly);$('#favBtn i').className='fa-'+(S.favOnly||n?'solid':'regular')+' fa-heart';$('#tFav').classList.toggle('on',S.favOnly)}
+function syncFav(){document.querySelectorAll('.app-rail [data-go]').forEach(r=>r.classList.toggle('on',S.favOnly?r.dataset.go==='tFav':r.dataset.go==='tHome'));const n=S.fav.size,b=$('#favN');b.hidden=!n;b.textContent=n;$('#favBtn').classList.toggle('on',S.favOnly);$('#favBtn').setAttribute('aria-pressed',S.favOnly);$('#favBtn i').className='fa-'+(S.favOnly||n?'solid':'regular')+' fa-heart';$('#tFav').classList.toggle('on',S.favOnly)}
 function paintFav(id,on){document.querySelectorAll(`.pin[data-id="${CSS.escape(id)}"] .fav`).forEach(b=>{b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Retirer des favoris':'Ajouter aux favoris');b.firstChild.className='fa-'+(on?'solid':'regular')+' fa-heart'})}
-async function toggleCardFav(id){const on=!S.fav.has(id);on?S.fav.add(id):S.fav.delete(id);saveFav();paintFav(id,on);syncFav();
+async function toggleCardFav(id){const on=!S.fav.has(id);on?S.fav.add(id):S.fav.delete(id);saveFav();paintFav(id,on);syncFav();pushFavToHeader();
   toast(on?(S.user?'Ajouté à vos favoris.':'Favori enregistré sur cet appareil. Connectez-vous pour le retrouver partout.'):'Retiré des favoris.');
   if(S.user&&S.sb){let error;const f=()=>S.sb.from('favorites');
     if(on){const r=await f().select('id').eq('user_id',S.user.id).eq('template_id',id).limit(1);error=r.error;if(!error&&!r.data?.length)error=(await f().insert({user_id:S.user.id,template_id:id})).error}
@@ -116,7 +116,7 @@ async function share(t){const u=new URL(edit(t.id),location.href).href;try{if(na
 /* ---------- Données Supabase : tous les modèles actifs, par lots ---------- */
 async function load(){S.loaded=false;msg('fa-spinner fa-spin','Chargement des documents');
   try{if(!window.supabase)throw new Error('La bibliothèque Supabase n’a pas pu se charger. Vérifiez votre connexion Internet.');
-    S.sb=S.sb||supabase.createClient(CFG.url,CFG.key);
+    S.sb=S.sb||await sharedClient();
     const {data:{session}}=await S.sb.auth.getSession();S.user=session?.user||null;await account();
     try{const {data:cd,error:ce}=await S.sb.from('template_categories').select('id,name,display_order').order('display_order',{ascending:true});if(ce)throw ce;S.cats=cd||[]}catch(e){console.warn('Catégories indisponibles :',e.message||e)}
     if(S.cat!=='all'&&!S.cats.some(c=>c.id===S.cat))S.cat=findCat(S.cat)?.id||'all';
@@ -129,26 +129,42 @@ async function load(){S.loaded=false;msg('fa-spinner fa-spin','Chargement des do
     if(!S.all.length){S.loaded=true;sent.hidden=true;msg('fa-folder-open','Le catalogue est vide','Aucun modèle actif n’est disponible pour le moment.')}
   }catch(e){console.error('Catalogue TakiDoc :',e);$('#count').textContent='Catalogue indisponible';sent.hidden=true;msg('fa-triangle-exclamation','Impossible de charger les documents',e.message||'Une erreur est survenue.',['Réessayer',load])}}
 async function account(){if(S.user){const n=(S.user.user_metadata?.full_name||S.user.user_metadata?.name||S.user.email||'T').trim()[0].toUpperCase();$('#user').textContent=n;$('#user').hidden=false;$('#guest').hidden=true;
-    try{const {data}=await S.sb.from('favorites').select('template_id').eq('user_id',S.user.id);(data||[]).forEach(r=>S.fav.add(String(r.template_id)));saveFav()}catch(e){}}else{$('#user').hidden=true;$('#guest').hidden=false}syncFav()}
+    try{const {data,error}=await S.sb.from('favorites').select('template_id').eq('user_id',S.user.id);if(error)throw error;(data||[]).forEach(r=>S.fav.add(String(r.template_id)));saveFav();pushFavToHeader()}catch(e){console.warn('Favoris du compte indisponibles :',e.message||e)}}else{$('#user').hidden=true;$('#guest').hidden=false}syncFav()}
+/* Client Supabase partagé avec le header (même session), sinon client local */
+async function sharedClient(){for(let i=0;i<20;i++){const c=window.TakiDocHeader?.client;if(c?.auth)return c;await new Promise(r=>setTimeout(r,100))}return supabase.createClient(CFG.url,CFG.key)}
+function pushFavToHeader(){try{window.TakiDocHeader?.setFavorites?.([...S.fav])}catch(e){}}
 
 /* ---------- Interface ---------- */
-let sd;const onQ=v=>{$('#qc').hidden=!v;clearTimeout(sd);sd=setTimeout(()=>{S.q=v.trim();url();if(S.loaded){apply(true);jump()}},180)};
-$('#q').addEventListener('input',e=>onQ(e.target.value));$('#sf').addEventListener('submit',e=>{e.preventDefault();clearTimeout(sd);S.q=$('#q').value.trim();url();apply(true);jump();$('#q').blur()});
-$('#qc').onclick=()=>{$('#q').value='';onQ('');$('#q').focus()};
+/* Recherche : le champ vit dans le header (injecté par header.js), on le retrouve à la demande */
+const hdrInput=()=>document.querySelector('#td-header-container input[type="search"],#td-header-container input[name="q"],#td-header-container form input:not([type="hidden"])');
+let sd;const onQ=v=>{clearTimeout(sd);sd=setTimeout(()=>{S.q=String(v).trim();if(S.favOnly&&S.q){S.favOnly=false;syncFav()}url();if(S.loaded){apply(true);jump()}},180)};
+document.addEventListener('input',e=>{if(e.target===hdrInput())onQ(e.target.value)});
+document.addEventListener('submit',e=>{const i=hdrInput();if(!i||!e.target.contains(i))return;e.preventDefault();clearTimeout(sd);S.q=i.value.trim();url();if(S.loaded){apply(true);jump()}i.blur()},true);
+document.addEventListener('search',e=>{if(e.target===hdrInput())onQ(e.target.value)});
+function focusSearch(){scrollTo({top:0,behavior:'smooth'});const go=()=>{const i=hdrInput();if(i){i.focus({preventScroll:true});i.select?.();return true}return false};if(!go())setTimeout(go,300);else setTimeout(go,350)}
+/* Valeur initiale (?q=) dès que le header est rendu */
+(()=>{if(!S.q)return;const t=setInterval(()=>{const i=hdrInput();if(i){i.value=S.q;clearInterval(t)}},150);setTimeout(()=>clearInterval(t),5000)})();
+/* Rail latéral (bureau) : Accueil · Chercher · Favoris */
+document.addEventListener('click',e=>{const b=e.target.closest('.app-rail [data-go]');if(!b)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+  const k=b.dataset.go;
+  if(k==='tSearch'){if(S.favOnly)toggleFav(false);focusSearch()}
+  else if(k==='tFav')toggleFav();
+  else{S.favOnly&&toggleFav(false);scrollTo({top:0,behavior:'smooth'})}
+  syncFav()},true);
 $('#rail').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b)setCat(b.dataset.k)});
 $('#sort').onchange=()=>apply(true);$('#favBtn').onclick=()=>toggleFav();$('#tFav').onclick=()=>toggleFav();
 grid.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const c=b.closest('.pin');b.dataset.a==='fav'?toggleCardFav(c.dataset.id):share(c._t)});
 document.querySelectorAll('.nav a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();setCat(findCat(new URL(a.href).searchParams.get('categorie'))?.id||'all')}));
-addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('#q').focus()}});
+addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();focusSearch()}});
 $('#tHome').onclick=()=>{S.favOnly&&toggleFav(false);scrollTo({top:0,behavior:'smooth'})};
-$('#tSearch').onclick=()=>{$('#top').classList.remove('dn');scrollTo({top:0,behavior:'smooth'});setTimeout(()=>$('#q').focus(),350)};
+$('#tSearch').onclick=()=>{if(S.favOnly)toggleFav(false);focusSearch()};
 $('#tInfo').onclick=()=>{const o=$('#ft').classList.toggle('open');$('#tInfo').classList.toggle('on',o)};
 addEventListener('click',e=>{if(!e.target.closest('#ft,#tInfo'))$('#ft').classList.remove('open')});
 let ly=0,tk=false;addEventListener('scroll',()=>{if(tk)return;tk=true;requestAnimationFrame(()=>{const y=scrollY;if(y>ly+6&&y>180)$('#top').classList.add('dn');else if(y<ly-6||y<80)$('#top').classList.remove('dn');ly=y;tk=false})},{passive:true});
 let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(()=>{if(!S.cards.length)return;if(measure())relayout()},120)}).observe(grid);
 $('#yr').textContent=new Date().getFullYear();
 
-const P=new URLSearchParams(location.search);S.q=P.get('q')||'';$('#q').value=S.q;$('#qc').hidden=!S.q;
+const P=new URLSearchParams(location.search);S.q=P.get('q')||'';
 S.cat=P.get('categorie')||'all';
 try{JSON.parse(localStorage.getItem(CFG.favKey)||'[]').forEach(i=>S.fav.add(String(i)))}catch(e){}
 chips();syncFav();measure();load();

@@ -12,7 +12,7 @@
 main{min-height:60vh}
 .tb{padding-top:14px}
 /* ---- Taki, la mascotte ---- */
-#taki-dock{position:fixed;left:4px;bottom:12px;z-index:60;display:flex;flex-direction:column;align-items:flex-start;gap:8px;pointer-events:none}
+#taki-dock{position:fixed;left:4px;bottom:54px;z-index:60;display:flex;flex-direction:column;align-items:flex-start;gap:8px;pointer-events:none}
 #taki-dock>*{pointer-events:auto}
 .td-taki{width:68px;cursor:pointer;filter:drop-shadow(0 10px 14px rgba(91,42,18,.18));transition:transform .2s}
 .td-taki:hover{transform:scale(1.05) rotate(-2deg)}
@@ -33,3 +33,13 @@ main{min-height:60vh}
 .td-fallback{display:grid;place-items:center;width:56px;height:56px;margin:6px;border-radius:50%;background:var(--or);color:#fff;font:800 24px var(--d)}
 @media(max-width:899px){#taki-dock{left:auto;right:10px;bottom:calc(74px + env(safe-area-inset-bottom));align-items:flex-end}.td-taki{width:72px}.td-bubble,.td-panel{margin-left:0}}
 @media(prefers-reduced-motion:reduce){.td-panel{animation:none}}
+
+/* ---- En-tête en mode application : plus de menu de site, une grande barre de recherche ---- */
+@media(min-width:900px){
+  body.app-home #td-header-container .td-nav{display:none}
+  body.app-home #td-header-container .td-in{gap:24px}
+  body.app-home #td-header-container .td-sf{flex:1 1 auto;max-width:860px;margin-inline:auto;height:48px}
+}
+/* ---- Cartes resserrées : le prix suit directement le titre ---- */
+.info h3{height:auto;min-height:0;margin-bottom:2px}
+.row{min-height:28px;padding-top:2px}
