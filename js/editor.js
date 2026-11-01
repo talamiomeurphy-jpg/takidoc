@@ -345,6 +345,22 @@ async function fetchQueueInfo() {
   }
 }
 
+/** Charge du générateur (GET /api/status). Renvoie null si le serveur ne répond pas vite : on ne bloque jamais le client pour ça. */
+async function fetchGeneratorStatus() {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 2500);
+  try {
+    const response = await fetch(`${CONFIG.generatorUrl}/api/status`, { cache: 'no-store', signal: controller.signal });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return ['free', 'busy', 'saturated'].includes(data?.level) ? data : null;
+  } catch (_) {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function overloadMessage(round, waiting) {
   if (round === 0) return TAKI_OVERLOAD_MESSAGES[0];
   if (waiting) {
@@ -361,13 +377,16 @@ function overloadMessage(round, waiting) {
  * - sinon Taki annonce la surcharge (avec le vrai nombre d'attentes si le serveur le donne)
  *   et reste là jusqu'à l'arrivée du fichier ou d'une erreur.
  */
-async function waitForFile(generation) {
+async function waitForFile(generation, paid = false) {
   const outcome = generation.then(value => ({ value }), error => ({ error }));
   let result = await Promise.race([outcome, sleep(TAKI_GRACE_MS).then(() => null)]);
   let round = 0;
   while (!result) {
     const waiting = round > 0 ? await fetchQueueInfo() : null;
-    taki.show('waiting', serverNotice || overloadMessage(round, waiting));
+    const reassure = paid && round % 3 === 2
+      ? 'Ton paiement est bien enregistré. Même si tu fermes la page, ton document reste disponible 72 h dans Mon espace.'
+      : '';
+    taki.show('waiting', serverNotice || reassure || overloadMessage(round, waiting));
     round += 1;
     result = await Promise.race([outcome, sleep(TAKI_OVERLOAD_STEP_MS).then(() => null)]);
   }
@@ -1257,6 +1276,59 @@ function openFormatChooser() {
   $('.td-card', modal.dialog)?.focus();
 }
 
+/** Fenêtre affichée AVANT le paiement quand le générateur est saturé : personne ne paie pour attendre. */
+function openBusyModal(status, format) {
+  const minutes = Math.max(1, Math.ceil((Number(status?.retryAfterSec) || 60) / 60));
+  const modal = openModal({ label: 'Serveur très sollicité' });
+  const note = h('div', { class: 'td-status', role: 'status', 'aria-live': 'polite' });
+
+  const showNote = (kind, message) => {
+    note.className = `td-status td-${kind}`;
+    note.replaceChildren(h('div', { text: message }));
+  };
+
+  const saveBtn = h('button', { type: 'button', class: 'td-btn' }, icon('fa-save'), ' Enregistrer et revenir plus tard');
+  saveBtn.addEventListener('click', () => {
+    saveDraft();
+    modal.close('saved');
+  });
+
+  const retryBtn = h('button', { type: 'button', class: 'td-link', text: 'Réessayer maintenant' });
+  retryBtn.addEventListener('click', async () => {
+    retryBtn.disabled = true;
+    showNote('processing', 'Vérification du serveur…');
+    const fresh = await fetchGeneratorStatus();
+    if (fresh?.level === 'saturated') {
+      showNote('error', 'Le serveur est toujours très sollicité. Patientez encore un peu.');
+      retryBtn.disabled = false;
+      return;
+    }
+    modal.close('retry');
+    showPaymentModal(format);
+  });
+
+  const payAnywayBtn = h('button', { type: 'button', class: 'td-link', text: 'Payer quand même' });
+  payAnywayBtn.addEventListener('click', () => {
+    modal.close('continue');
+    showPaymentModal(format);
+  });
+
+  modal.dialog.append(
+    h('div', { class: 'td-head' },
+      h('h3', { text: 'Serveur très sollicité' }),
+      h('div', { class: 'td-tname', text: state.template?.name || '' })),
+    h('div', { class: 'td-body' },
+      h('div', { class: 'td-section' },
+        h('p', { text: 'Beaucoup de documents sont en cours de création. Pour éviter que vous payiez et attendiez longtemps, nous vous conseillons de revenir dans environ ' + minutes + ' min.' }),
+        h('p', { text: 'Votre document est gardé sur cet appareil : vous retrouverez tout en rouvrant ce modèle.' })),
+      saveBtn,
+      retryBtn,
+      payAnywayBtn,
+      note)
+  );
+  saveBtn.focus();
+}
+
 /* ------------------------------------------------------------
    13. FONCTIONS SUPABASE ET PAIEMENT
 ------------------------------------------------------------ */
@@ -1736,7 +1808,7 @@ async function downloadDocument(format, purchaseToken = null) {
     let blob;
     if (staged) {
       await playTakiStory(() => failed);          // 2. l'histoire de Taki
-      blob = await waitForFile(generation);       // 3. attente + messages de surcharge
+      blob = await waitForFile(generation, Boolean(purchaseToken));       // 3. attente + messages de surcharge
       taki.show('celebrating', 'Et voilà ! Ton document est prêt. Tu le retrouves dans tes fichiers téléchargés.');
       await sleep(TAKI_CELEBRATE_MS);             // 4. Taki fête AVANT le téléchargement
     } else {
@@ -1767,7 +1839,9 @@ async function downloadDocument(format, purchaseToken = null) {
 }
 
 /** Point d'entrée unique : choisit entre téléchargement direct, choix du format et paiement. */
-function requestDownload(format = null) {
+let checkingServerLoad = false;
+
+async function requestDownload(format = null) {
   if (!state.template) return;
   if (format && !FORMATS[format]) format = null;
   if (isFreeTemplate()) {
@@ -1775,7 +1849,13 @@ function requestDownload(format = null) {
     else openFormatChooser();
     return;
   }
-  showPaymentModal(format || 'pdf');
+  if (checkingServerLoad) return;
+  checkingServerLoad = true;
+  let status = null;
+  try { status = await fetchGeneratorStatus(); } finally { checkingServerLoad = false; }
+
+  if (status?.level === 'saturated') openBusyModal(status, format || 'pdf');
+  else showPaymentModal(format || 'pdf');
 }
 
 function setupExportControls() {

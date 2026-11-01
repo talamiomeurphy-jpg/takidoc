@@ -238,6 +238,18 @@ class Semaphore {
 
 const renderSlots = new Semaphore(CONFIG.maxConcurrentRenders);
 
+// Durées des derniers rendus réussis (ms) : sert à estimer l'attente dans /api/status
+const recentRenderMs = [];
+const DEFAULT_RENDER_MS = 8000;
+function recordRenderDuration(ms) {
+  recentRenderMs.push(ms);
+  if (recentRenderMs.length > 10) recentRenderMs.shift();
+}
+function averageRenderMs() {
+  if (!recentRenderMs.length) return DEFAULT_RENDER_MS;
+  return recentRenderMs.reduce((a, b) => a + b, 0) / recentRenderMs.length;
+}
+
 /* ============================================================
    NAVIGATEUR CHROMIUM PARTAGÉ
 ============================================================ */
@@ -508,6 +520,8 @@ ${bodyHtml}
 async function withRenderedPage(html, reqId, task) {
   await renderSlots.acquire(CONFIG.queueTimeoutMs);
 
+  const renderStartedAt = Date.now();
+  let renderSucceeded = false;
   let page;
   try {
     const browser = await getBrowser();
@@ -546,6 +560,7 @@ async function withRenderedPage(html, reqId, task) {
 
     const result = await task(page);
     renderCount += 1;
+    renderSucceeded = true;
     return result;
   } finally {
     if (page) {
@@ -559,6 +574,7 @@ async function withRenderedPage(html, reqId, task) {
       await closeBrowser();
     }
 
+    if (renderSucceeded) recordRenderDuration(Date.now() - renderStartedAt);
     renderSlots.release();
   }
 }
@@ -942,7 +958,34 @@ app.get('/health', async (req, res) => {
       pending: pendingGenerations,
       maxPending: CONFIG.maxPendingGenerations
     },
+    avgRenderMs: Math.round(averageRenderMs()),
     memoryMB: Math.round(process.memoryUsage().rss / 1024 / 1024)
+  });
+});
+
+/* ------------------------------------------------------------
+   GET /api/status — charge du générateur, lue par l'éditeur AVANT d'ouvrir le paiement
+   level : 'free' (on peut payer), 'busy' (attente probable), 'saturated' (mieux vaut revenir plus tard)
+   Léger : ne touche ni Chromium ni la base de données.
+------------------------------------------------------------ */
+app.get('/api/status', (req, res) => {
+  const avgMs = averageRenderMs();
+  const inFlight = renderSlots.active + renderSlots.queue.length;
+  const waitSec = Math.ceil((inFlight * avgMs) / 1000 / CONFIG.maxConcurrentRenders);
+  const nearLimit = pendingGenerations >= Math.max(1, CONFIG.maxPendingGenerations - 1);
+  const queueLimitSec = Math.round(CONFIG.queueTimeoutMs / 1000);
+
+  let level = 'free';
+  if (nearLimit || waitSec > queueLimitSec - 5) level = 'saturated';
+  else if (waitSec > 15) level = 'busy';
+
+  res.set('Cache-Control', 'no-store');
+  res.json({
+    level,
+    waiting: renderSlots.queue.length,
+    active: renderSlots.active,
+    estimatedWaitSec: waitSec,
+    retryAfterSec: level === 'free' ? 0 : Math.max(30, Math.min(300, waitSec))
   });
 });
 
