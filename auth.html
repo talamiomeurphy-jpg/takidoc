@@ -1,828 +1,450 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion / Inscription - TakiDoc</title>
-    <!-- FAVICONS TAKIDOC -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101828">
+<meta name="robots" content="noindex">
+<title>Connexion / Inscription — TakiDoc</title>
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="manifest" href="site.webmanifest">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --primary: #FF6B35;
-            --primary-dark: #E85A2D;
-            --primary-light: #FFF5F0;
-            --secondary: #004E89;
-            --dark: #1A1A2E;
-            --bg-body: #F5F5F7;
-            --bg-card: #FFFFFF;
-            --text-main: #1A1A2E;
-            --text-muted: #6B7280;
-            --border: #E5E7EB;
-            --success: #10B981;
-            --error: #EF4444;
-            --radius-sm: 8px;
-            --radius-md: 16px;
-            --radius-lg: 24px;
-            --radius-full: 9999px;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="components/taki/taki.css">
+<link rel="stylesheet" href="components/taki/taki-animations.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="components/taki/taki.js" defer></script>
+<style>
+:root{
+  --night:#101828; --night2:#1B2A44; --or:#FF6B35; --or-d:#E85A2D; --ink:#C44A12;
+  --bg:#FFFCFA; --line:#E7E2DD; --mut:#667085; --ok:#0F8A5F; --okb:#DDF5EA; --err:#B42339; --errb:#FDECEE;
+  --f:'Figtree',system-ui,sans-serif; --d:'Bricolage Grotesque','Figtree',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:28px 18px;background:
+  radial-gradient(900px 500px at 90% -10%,rgba(255,107,53,.12),transparent 60%),var(--bg);
+  color:var(--night);font:15px/1.55 var(--f);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid rgba(255,107,53,.55);outline-offset:2px}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg-body);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            line-height: 1.5;
-        }
+.shell{width:min(1040px,100%)}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.back{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:var(--mut);transition:color .18s}
+.back:hover{color:var(--or-d)}
+.brand{font:800 22px var(--d);letter-spacing:-.04em}
+.brand b{color:var(--or);font-weight:800}
 
-        .auth-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            max-width: 1000px;
-            width: 100%;
-            background: white;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            min-height: 600px;
-        }
+.card{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);background:#fff;border:1px solid var(--line);border-radius:28px;overflow:hidden;
+  box-shadow:0 30px 70px -30px rgba(16,24,40,.28)}
 
-        .auth-visual {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            padding: 48px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
+/* ---------- Panneau Taki ---------- */
+.side{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:18px;
+  padding:34px 28px 28px;color:#fff;text-align:center;
+  background:radial-gradient(420px 300px at 50% 38%,rgba(255,107,53,.30),transparent 70%),linear-gradient(160deg,var(--night2),var(--night))}
+.side::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.5;
+  background-image:radial-gradient(rgba(255,255,255,.12) 1px,transparent 1.4px);background-size:22px 22px;
+  mask-image:linear-gradient(180deg,#000,transparent 85%);-webkit-mask-image:linear-gradient(180deg,#000,transparent 85%)}
+.side h1{margin:0;font:800 clamp(24px,2.6vw,31px)/1.12 var(--d);letter-spacing:-.04em;text-wrap:balance}
+.side p{margin:10px auto 0;max-width:30ch;color:rgba(255,255,255,.74);font-size:14.5px}
+#authTaki{width:min(100%,250px);min-height:200px;display:grid;place-items:center}
+#authTaki .taki{width:100%}
+#authTaki .taki__caption{font-size:12.5px;max-width:100%;background:#FFFCFA}
+.perks{list-style:none;margin:0;padding:0;display:grid;gap:9px;width:100%;max-width:290px;text-align:left}
+.perks li{display:flex;align-items:center;gap:11px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.88)}
+.perks i{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,.12);color:#FFB594;font-size:13px}
 
-        .auth-visual::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: float 6s ease-in-out infinite;
-        }
+/* ---------- Formulaires ---------- */
+.panel{padding:40px clamp(22px,4vw,48px) 34px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.panel h2{margin:0;font:800 clamp(26px,3vw,32px)/1.1 var(--d);letter-spacing:-.04em}
+.sub{margin:7px 0 22px;color:var(--mut)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin-bottom:22px;background:#F4F1EE;border-radius:999px}
+.tab{height:42px;border-radius:999px;font-weight:700;font-size:14px;color:var(--mut);transition:.18s}
+.tab[aria-selected=true]{background:#fff;color:var(--or-d);box-shadow:0 2px 8px rgba(16,24,40,.09)}
+.msg{display:none;align-items:flex-start;gap:10px;margin-bottom:16px;padding:12px 14px;border-radius:14px;font-weight:600;font-size:14px}
+.msg.show{display:flex}.msg.err{background:var(--errb);color:var(--err)}.msg.ok{background:var(--okb);color:var(--ok)}.msg.info{background:#EEF4FF;color:#2A4A8C}
+.msg i{margin-top:3px}
 
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-20px, -20px); }
-        }
+form{display:none}form.on{display:block;animation:in .28s ease both}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fd{margin-bottom:14px}
+.fd label{display:block;margin-bottom:6px;font-weight:700;font-size:13px}
+.fd label em{color:var(--err);font-style:normal}
+.in{position:relative;display:flex;align-items:center}
+.in>i.lead{position:absolute;left:14px;color:#98A2B3;font-size:14px;pointer-events:none}
+.in input{width:100%;height:50px;padding:0 14px 0 42px;border:1.5px solid var(--line);border-radius:14px;background:#fff;outline:0;transition:border-color .18s,box-shadow .18s}
+.in input::placeholder{color:#A7AFBD}
+.in input:focus{border-color:var(--or);box-shadow:0 0 0 4px rgba(255,107,53,.12)}
+.in input.bad{border-color:var(--err);box-shadow:0 0 0 4px rgba(180,35,57,.08)}
+.in .pre{position:absolute;left:42px;font-weight:700;color:#475467;pointer-events:none}
+.in.tel input{padding-left:86px}
+.eye{position:absolute;right:6px;width:38px;height:38px;display:grid;place-items:center;border-radius:10px;color:#667085}
+.eye:hover{background:#F4F1EE}
+.in.pw input{padding-right:50px}
+.fe{display:none;margin-top:5px;color:var(--err);font-size:12.5px;font-weight:600}
+.fe.show{display:block}
+.meter{display:flex;gap:4px;margin-top:8px}
+.meter span{flex:1;height:4px;border-radius:2px;background:#ECE8E4;transition:background .2s}
+.meter[data-s="1"] span:nth-child(-n+1){background:#E5484D}
+.meter[data-s="2"] span:nth-child(-n+2){background:#F5A524}
+.meter[data-s="3"] span:nth-child(-n+3){background:#C9B221}
+.meter[data-s="4"] span{background:var(--ok)}
+.hint{margin-top:5px;color:var(--mut);font-size:12.5px;min-height:18px}
+.row{display:flex;justify-content:flex-end;margin:-4px 0 18px;font-size:13px}
+.row a,.link{color:var(--ink);font-weight:700}
+.row a:hover,.link:hover{text-decoration:underline}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:4px 0 18px;font-size:13.5px;color:#475467;cursor:pointer}
+.chk input{width:18px;height:18px;margin-top:2px;accent-color:var(--or);flex:none}
+.chk a{color:var(--ink);font-weight:700}
+.go{width:100%;height:52px;border-radius:14px;background:var(--or);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 10px 22px -10px rgba(255,107,53,.7);transition:background .18s,transform .18s,box-shadow .18s}
+.go:hover:not(:disabled){background:var(--or-d);transform:translateY(-1px)}
+.go:disabled{opacity:.65;cursor:wait}
+.go .sp{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.go.load .sp{display:block}.go.load .t{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.alt{margin:20px 0 0;text-align:center;color:var(--mut);font-size:14px}
+.alt button{color:var(--ink);font-weight:800}
+.alt button:hover{text-decoration:underline}
+.sec{margin-top:18px;display:flex;align-items:center;justify-content:center;gap:8px;color:#8A93A5;font-size:12.5px}
 
-        .auth-visual .logo {
-            font-size: 2rem;
-            font-weight: 900;
-            letter-spacing: -1px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .auth-visual .logo-taki { color: white; }
-        .auth-visual .logo-doc { color: rgba(255,255,255,0.8); }
-
-        .auth-visual-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .auth-visual h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 16px;
-            line-height: 1.2;
-        }
-
-        .auth-visual p {
-            font-size: 1rem;
-            opacity: 0.9;
-            line-height: 1.6;
-        }
-
-        .auth-visual-features {
-            position: relative;
-            z-index: 1;
-            margin-top: 32px;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            font-size: 0.95rem;
-        }
-
-        .feature-item i {
-            width: 32px;
-            height: 32px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-        }
-
-        .auth-form-panel {
-            padding: 48px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .auth-form-header {
-            margin-bottom: 32px;
-        }
-
-        .auth-form-header h2 {
-            font-size: 1.75rem;
-            font-weight: 800;
-            margin-bottom: 8px;
-            color: var(--dark);
-        }
-
-        .auth-form-header p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        .auth-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            background: var(--bg-body);
-            padding: 4px;
-            border-radius: var(--radius-full);
-        }
-
-        .auth-tab {
-            flex: 1;
-            padding: 10px;
-            background: transparent;
-            border: none;
-            border-radius: var(--radius-full);
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-
-        .auth-tab.active {
-            background: white;
-            color: var(--primary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .auth-form {
-            display: none;
-        }
-
-        .auth-form.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 6px;
-        }
-
-        .form-group label .required {
-            color: var(--error);
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input-wrapper i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 14px 12px 42px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: all 0.2s;
-            background: white;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(255,107,53,0.1);
-        }
-
-        .form-group input.error {
-            border-color: var(--error);
-        }
-
-        .error-message {
-            color: var(--error);
-            font-size: 0.8rem;
-            margin-top: 4px;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 16px 0 24px;
-            font-size: 0.85rem;
-        }
-
-        .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .checkbox-wrapper input {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-submit:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
-        }
-
-        .btn-submit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-submit .spinner {
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: none;
-        }
-
-        .btn-submit.loading .spinner { display: block; }
-        .btn-submit.loading .btn-text { display: none; }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .auth-message {
-            padding: 12px 16px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 16px;
-            font-size: 0.9rem;
-            display: none;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .auth-message.show { display: flex; }
-        .auth-message.success {
-            background: #D1FAE5;
-            color: #065F46;
-            border: 1px solid #10B981;
-        }
-        .auth-message.error {
-            background: #FEE2E2;
-            color: #991B1B;
-            border: 1px solid #EF4444;
-        }
-
-        .back-home {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: color 0.2s;
-            z-index: 10;
-        }
-
-        .back-home:hover {
-            color: var(--primary);
-        }
-
-        @media (max-width: 768px) {
-            body { padding: 0; }
-            .auth-container {
-                grid-template-columns: 1fr;
-                border-radius: 0;
-                min-height: 100vh;
-                box-shadow: none;
-            }
-            .auth-visual {
-                padding: 32px 24px;
-                min-height: 200px;
-            }
-            .auth-visual h1 { font-size: 1.5rem; }
-            .auth-visual-features { display: none; }
-            .auth-form-panel { padding: 32px 24px; }
-            .back-home { top: 16px; right: 16px; }
-        }
-    </style>
-    <!-- HEADER TAKIDOC -->
-    <link rel="stylesheet" href="css/header.css">
+@media(max-width:860px){
+  body{padding:0;place-items:start center}
+  .shell{width:100%}
+  .top{padding:14px 16px;margin:0}
+  .card{grid-template-columns:1fr;border-radius:0;border-width:1px 0 0}
+  .side{flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 14px;padding:20px 18px 18px;text-align:left}
+  #authTaki{width:128px;min-height:0;flex:none}
+  #authTaki .taki__caption{display:none}
+  .side .copy{flex:1 1 180px;min-width:0}
+  .side h1{font-size:21px}.side p{font-size:13px;max-width:none;margin-top:6px}
+  .perks{display:none}
+  .panel{padding:26px 20px 30px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
 <body>
-    <!-- HEADER DYNAMIQUE TAKIDOC -->
-    <div id="td-header-container"></div>
+<div class="shell">
+  <div class="top">
+    <a class="back" href="index.html"><i class="fa-solid fa-arrow-left"></i>Accueil</a>
+    <a class="brand" href="index.html" aria-label="TakiDoc">Taki<b>Doc</b></a>
+  </div>
 
+  <main class="card">
+    <aside class="side" aria-label="Présentation">
+      <div id="authTaki" aria-live="polite"></div>
+      <div class="copy">
+        <h1 id="vTitle">Content de te revoir !</h1>
+        <p id="vText">Retrouve tes favoris, tes documents et tes achats.</p>
+      </div>
+      <ul class="perks">
+        <li><i class="fa-solid fa-bolt"></i>Téléchargement instantané</li>
+        <li><i class="fa-solid fa-shield-halved"></i>Paiement Mobile Money sécurisé</li>
+        <li><i class="fa-solid fa-pen-to-square"></i>Personnalisation facile</li>
+      </ul>
+    </aside>
 
-    <a href="index.html" class="back-home">
-        <i class="fas fa-arrow-left"></i>
-        <span>Accueil</span>
-    </a>
+    <section class="panel">
+      <h2 id="fTitle">Connexion</h2>
+      <p class="sub" id="fSub">Accède à ton espace personnel.</p>
 
-    <div class="auth-container">
-        <div class="auth-visual">
-            <div class="logo">
-                <span class="logo-taki">Taki</span><span class="logo-doc">Doc</span>
-            </div>
-            
-            <div class="auth-visual-content">
-                <h1 id="visual-title">Bienvenue sur TakiDoc</h1>
-                <p id="visual-text">La plateforme de référence au Congo pour vos documents professionnels.</p>
-                
-                <div class="auth-visual-features">
-                    <div class="feature-item">
-                        <i class="fas fa-bolt"></i>
-                        <span>Téléchargement instantané</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>Paiement 100% sécurisé</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-edit"></i>
-                        <span>Personnalisation facile</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="position: relative; z-index: 1; font-size: 0.85rem; opacity: 0.8;">
-                © 2026 TakiDoc - L'équipe Meurphy
-            </div>
-        </div>
+      <div class="tabs" role="tablist" id="tabs">
+        <button class="tab" role="tab" data-mode="login" aria-selected="true">Connexion</button>
+        <button class="tab" role="tab" data-mode="signup" aria-selected="false">Inscription</button>
+      </div>
 
-        <div class="auth-form-panel">
-            <div class="auth-form-header">
-                <h2 id="form-title">Connexion</h2>
-                <p id="form-subtitle">Accédez à votre espace personnel</p>
-            </div>
+      <div class="msg" id="msg" role="alert"><i class="fa-solid fa-circle-info"></i><span id="msgT"></span></div>
 
-            <div class="auth-tabs">
-                <button class="auth-tab active" data-mode="login">Connexion</button>
-                <button class="auth-tab" data-mode="signup">Inscription</button>
-            </div>
+      <!-- CONNEXION -->
+      <form id="fLogin" class="on" novalidate>
+        <div class="fd"><label for="lEmail">Adresse e-mail <em>*</em></label>
+          <div class="in"><i class="fa-regular fa-envelope lead"></i><input id="lEmail" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" required></div>
+          <div class="fe" id="lEmailE">Entrez une adresse e-mail valide.</div></div>
+        <div class="fd"><label for="lPass">Mot de passe <em>*</em></label>
+          <div class="in pw"><i class="fa-solid fa-lock lead"></i><input id="lPass" type="password" autocomplete="current-password" placeholder="Votre mot de passe" required>
+            <button type="button" class="eye" data-eye="lPass" aria-label="Afficher le mot de passe"><i class="fa-regular fa-eye"></i></button></div>
+          <div class="fe" id="lPassE">Le mot de passe est requis.</div></div>
+        <div class="row"><a href="#" id="toForgot">Mot de passe oublié ?</a></div>
+        <button class="go" id="bLogin" type="submit"><span class="sp"></span><span class="t"><i class="fa-solid fa-right-to-bracket"></i>&nbsp; Se connecter</span></button>
+        <p class="alt">Pas encore de compte ? <button type="button" data-mode="signup">Créer un compte</button></p>
+      </form>
 
-            <div class="auth-message" id="authMessage">
-                <i class="fas fa-check-circle"></i>
-                <span id="authMessageText"></span>
-            </div>
+      <!-- INSCRIPTION -->
+      <form id="fSignup" novalidate>
+        <div class="fd"><label for="sName">Nom complet <em>*</em></label>
+          <div class="in"><i class="fa-regular fa-user lead"></i><input id="sName" type="text" autocomplete="name" placeholder="Meurphy TALAMIO" maxlength="120" required></div>
+          <div class="fe" id="sNameE">Entrez votre nom (2 caractères minimum).</div></div>
+        <div class="fd"><label for="sEmail">Adresse e-mail <em>*</em></label>
+          <div class="in"><i class="fa-regular fa-envelope lead"></i><input id="sEmail" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" required></div>
+          <div class="fe" id="sEmailE">Entrez une adresse e-mail valide.</div></div>
+        <div class="fd"><label for="sTel">Téléphone <em>*</em></label>
+          <div class="in tel"><i class="fa-solid fa-phone lead"></i><span class="pre">+242</span><input id="sTel" type="tel" autocomplete="tel-national" inputmode="numeric" placeholder="06 518 69 67" maxlength="12" required></div>
+          <div class="fe" id="sTelE">Numéro invalide : 9 chiffres attendus (ex. 06 518 69 67).</div></div>
+        <div class="fd"><label for="sPass">Mot de passe <em>*</em></label>
+          <div class="in pw"><i class="fa-solid fa-lock lead"></i><input id="sPass" type="password" autocomplete="new-password" placeholder="6 caractères minimum" required>
+            <button type="button" class="eye" data-eye="sPass" aria-label="Afficher le mot de passe"><i class="fa-regular fa-eye"></i></button></div>
+          <div class="meter" id="meter" data-s="0"><span></span><span></span><span></span><span></span></div>
+          <div class="hint" id="hint"></div>
+          <div class="fe" id="sPassE">6 caractères minimum.</div></div>
+        <div class="fd"><label for="sPass2">Confirmer le mot de passe <em>*</em></label>
+          <div class="in pw"><i class="fa-solid fa-lock lead"></i><input id="sPass2" type="password" autocomplete="new-password" placeholder="Retapez le mot de passe" required>
+            <button type="button" class="eye" data-eye="sPass2" aria-label="Afficher le mot de passe"><i class="fa-regular fa-eye"></i></button></div>
+          <div class="fe" id="sPass2E">Les mots de passe ne correspondent pas.</div></div>
+        <label class="chk"><input id="sTerms" type="checkbox"><span>J’accepte les <a href="conditions.html" target="_blank" rel="noopener">conditions d’utilisation</a> et la <a href="confidentialite.html" target="_blank" rel="noopener">politique de confidentialité</a>.</span></label>
+        <button class="go" id="bSignup" type="submit"><span class="sp"></span><span class="t"><i class="fa-solid fa-user-plus"></i>&nbsp; Créer mon compte</span></button>
+        <p class="alt">Déjà un compte ? <button type="button" data-mode="login">Se connecter</button></p>
+      </form>
 
-            <!-- Formulaire de Connexion -->
-            <form class="auth-form active" id="loginForm" novalidate>
-                <div class="form-group">
-                    <label for="login-email">Adresse email <span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="login-email" placeholder="vous@exemple.com" required>
-                    </div>
-                    <div class="error-message" id="login-email-error">Veuillez entrer un email valide</div>
-                </div>
+      <!-- MOT DE PASSE OUBLIÉ -->
+      <form id="fForgot" novalidate>
+        <div class="fd"><label for="fEmail">Adresse e-mail <em>*</em></label>
+          <div class="in"><i class="fa-regular fa-envelope lead"></i><input id="fEmail" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.com" required></div>
+          <div class="fe" id="fEmailE">Entrez une adresse e-mail valide.</div></div>
+        <button class="go" id="bForgot" type="submit"><span class="sp"></span><span class="t"><i class="fa-solid fa-paper-plane"></i>&nbsp; Envoyer le lien</span></button>
+        <p class="alt"><button type="button" data-mode="login"><i class="fa-solid fa-arrow-left"></i>&nbsp;Retour à la connexion</button></p>
+      </form>
 
-                <div class="form-group">
-                    <label for="login-password">Mot de passe <span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="login-password" placeholder="••••••••" required>
-                    </div>
-                    <div class="error-message" id="login-password-error">Le mot de passe est requis</div>
-                </div>
+      <div class="sec"><i class="fa-solid fa-lock"></i>Connexion chiffrée · vos données restent privées</div>
+    </section>
+  </main>
+</div>
 
-                <div class="form-options">
-                    <label class="checkbox-wrapper">
-                        <input type="checkbox" id="remember-me">
-                        <span>Se souvenir de moi</span>
-                    </label>
-                </div>
+<script type="module">
+/* ================= Configuration ================= */
+const SB_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
+const HOME = 'index.html';
+const DIAL = '+242', PHONE_DIGITS = 9;
+const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
-                <button type="submit" class="btn-submit" id="loginBtn">
-                    <span class="spinner"></span>
-                    <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Se connecter</span>
-                </button>
+/* ================= Outils ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const okEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+const digits = v => String(v || '').replace(/\D/g, '');
 
-                <div class="auth-footer" style="text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-muted);">
-                    Pas encore de compte ? <a href="#" id="switchToSignup" style="color: var(--primary); font-weight: 700;">S'inscrire</a>
-                </div>
-            </form>
+/** Page de retour après connexion : uniquement un chemin relatif du site (jamais un autre domaine). */
+function nextUrl() {
+  const n = new URLSearchParams(location.search).get('next') || '';
+  return /^[\w\-./]+(\?[\w\-.=&%]*)?(#[\w-]*)?$/.test(n) && !n.startsWith('//') && !n.includes(':') ? n : HOME;
+}
 
-            <!-- Formulaire d'Inscription -->
-            <form class="auth-form" id="signupForm" novalidate>
-                <div class="form-group">
-                    <label for="signup-name">Nom complet <span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="signup-name" placeholder="Meurphy TALAMIO" required>
-                    </div>
-                    <div class="error-message" id="signup-name-error">Le nom est requis (min. 2 caractères)</div>
-                </div>
+/* ================= Taki ================= */
+const TAKI_LINES = {
+  login:  ['Salut ! Connecte-toi pour retrouver tes documents.', 'Content de te revoir !', 'Retrouve tes favoris, tes documents et tes achats.'],
+  signup: ['Bienvenue ! Je t’aide à créer ton compte.', 'Rejoins TakiDoc', 'Des centaines de documents professionnels, prêts à personnaliser.'],
+  forgot: ['Pas de panique, ça arrive à tout le monde.', 'Mot de passe oublié ?', 'Je t’envoie un lien pour en choisir un nouveau.']
+};
+let taki = null, takiTimer = 0, mode = 'login', busy = false;
+function say(state, text, back = 0) {
+  clearTimeout(takiTimer);
+  taki?.setState(state, text);
+  if (back) takiTimer = setTimeout(() => taki?.setState('idle', TAKI_LINES[mode][0]), back);
+}
+async function initTaki() {
+  for (let i = 0; i < 40 && !window.TakiMascot; i++) await sleep(50);
+  if (!window.TakiMascot) { $('#authTaki').hidden = true; return; }
+  try {
+    taki = await window.TakiMascot.mount('#authTaki', { initialState: 'idle', message: TAKI_LINES[mode][0], templateUrl: 'components/taki/taki.html' });
+  } catch (e) { console.warn('Taki indisponible :', e); $('#authTaki').hidden = true; }
+}
 
-                <div class="form-group">
-                    <label for="signup-email">Adresse email <span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="signup-email" placeholder="vous@exemple.com" required>
-                    </div>
-                    <div class="error-message" id="signup-email-error">Veuillez entrer un email valide</div>
-                </div>
+/* ================= Messages ================= */
+function flash(kind, text) {
+  const m = $('#msg');
+  m.className = 'msg show ' + kind;
+  m.querySelector('i').className = 'fa-solid ' + (kind === 'ok' ? 'fa-circle-check' : kind === 'info' ? 'fa-circle-info' : 'fa-circle-exclamation');
+  $('#msgT').textContent = text;
+}
+const unflash = () => $('#msg').classList.remove('show');
+function bad(id, on = true) {
+  $('#' + id).classList.toggle('bad', on);
+  $('#' + id + 'E')?.classList.toggle('show', on);
+}
+const clearBad = () => { $$('.in input').forEach(i => i.classList.remove('bad')); $$('.fe').forEach(e => e.classList.remove('show')); };
+function loading(btn, on) { btn.classList.toggle('load', on); btn.disabled = on; busy = on; }
 
-                <div class="form-group">
-                    <label for="signup-phone">Téléphone <span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-phone"></i>
-                        <input type="tel" id="signup-phone" placeholder="06 518 69 67" required>
-                    </div>
-                    <div class="error-message" id="signup-phone-error">Numéro invalide (format: 06 XX XX XX XX)</div>
-                </div>
+function frError(e) {
+  const m = String(e?.message || e || '');
+  if (/invalid login credentials/i.test(m)) return 'E-mail ou mot de passe incorrect.';
+  if (/email not confirmed/i.test(m)) return 'Adresse e-mail non confirmée : ouvrez le message de confirmation reçu par e-mail.';
+  if (/already registered|already been registered/i.test(m)) return 'Un compte existe déjà avec cette adresse. Connectez-vous.';
+  if (/rate limit|too many|security purposes/i.test(m)) return 'Trop de tentatives. Patientez une minute puis réessayez.';
+  if (/password.*(short|least|weak)/i.test(m)) return 'Mot de passe trop faible : 6 caractères minimum.';
+  if (/database error saving new user/i.test(m)) return 'Création du profil impossible côté serveur. Contactez le support (erreur de base de données).';
+  if (/failed to fetch|network/i.test(m)) return 'Pas de connexion Internet. Vérifiez votre réseau et réessayez.';
+  return m || 'Une erreur est survenue. Réessayez.';
+}
 
-                <div class="form-group">
-                    <label for="signup-password">Mot de passe <span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="signup-password" placeholder="Min. 6 caractères" required minlength="6">
-                    </div>
-                    <div class="error-message" id="signup-password-error">Min. 6 caractères requis</div>
-                </div>
+/* ================= Modes ================= */
+const TITLES = {
+  login:  ['Connexion', 'Accède à ton espace personnel.'],
+  signup: ['Inscription', 'Crée ton compte en 30 secondes.'],
+  forgot: ['Mot de passe oublié', 'Entre ton e-mail pour recevoir un lien de réinitialisation.']
+};
+function setMode(m, { push = true } = {}) {
+  if (busy) return;
+  mode = m;
+  $('#fLogin').classList.toggle('on', m === 'login');
+  $('#fSignup').classList.toggle('on', m === 'signup');
+  $('#fForgot').classList.toggle('on', m === 'forgot');
+  $('#tabs').hidden = m === 'forgot';
+  $$('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.mode === m)));
+  $('#fTitle').textContent = TITLES[m][0];
+  $('#fSub').textContent = TITLES[m][1];
+  $('#vTitle').textContent = TAKI_LINES[m][1];
+  $('#vText').textContent = TAKI_LINES[m][2];
+  say('idle', TAKI_LINES[m][0]);
+  clearBad(); unflash();
+  if (push && m !== 'forgot') {
+    const u = new URL(location.href); u.searchParams.set('action', m); history.replaceState(null, '', u);
+  }
+  setTimeout(() => $(m === 'login' ? '#lEmail' : m === 'signup' ? '#sName' : '#fEmail')?.focus({ preventScroll: true }), 60);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-mode]');
+  if (b) { e.preventDefault(); setMode(b.dataset.mode); }
+});
+$('#toForgot').addEventListener('click', e => { e.preventDefault(); $('#fEmail').value = $('#lEmail').value; setMode('forgot', { push: false }); });
 
-                <div class="form-group">
-                    <label for="signup-password-confirm">Confirmer le mot de passe <span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="signup-password-confirm" placeholder="Retapez le mot de passe" required>
-                    </div>
-                    <div class="error-message" id="signup-confirm-error">Les mots de passe ne correspondent pas</div>
-                </div>
+/* Afficher / masquer les mots de passe */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-eye]'); if (!b) return;
+  const i = $('#' + b.dataset.eye), show = i.type === 'password';
+  i.type = show ? 'text' : 'password';
+  b.querySelector('i').className = show ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+  b.setAttribute('aria-label', show ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+});
 
-                <div class="form-options" style="justify-content: flex-start;">
-                    <label class="checkbox-wrapper">
-                        <input type="checkbox" id="accept-terms" required>
-                        <span>J'accepte les <a href="conditions.html" style="color: var(--primary);">conditions d'utilisation</a></span>
-                    </label>
-                </div>
+/* Taki réagit aux champs : il « ferme les yeux » sur les mots de passe */
+$$('input[type=password]').forEach(i => {
+  i.addEventListener('focus', () => say('thinking', 'Je ne regarde pas, promis !'));
+  i.addEventListener('blur', () => { if (!busy) say('idle', TAKI_LINES[mode][0]); });
+});
 
-                <button type="submit" class="btn-submit" id="signupBtn">
-                    <span class="spinner"></span>
-                    <span class="btn-text"><i class="fas fa-user-plus"></i> Créer mon compte</span>
-                </button>
+/* Téléphone : chiffres seulement, groupés 2-3-2-2 */
+$('#sTel').addEventListener('input', e => {
+  const d = digits(e.target.value).slice(0, PHONE_DIGITS);
+  e.target.value = [d.slice(0, 2), d.slice(2, 5), d.slice(5, 7), d.slice(7, 9)].filter(Boolean).join(' ');
+});
 
-                <div class="auth-footer" style="text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-muted);">
-                    Déjà un compte ? <a href="#" id="switchToLogin" style="color: var(--primary); font-weight: 700;">Se connecter</a>
-                </div>
-            </form>
-        </div>
-    </div>
+/* Force du mot de passe */
+$('#sPass').addEventListener('input', e => {
+  const v = e.target.value; let s = 0;
+  if (v.length >= 6) s++;
+  if (v.length >= 9) s++;
+  if (/[A-Z]/.test(v) && /[a-z]/.test(v)) s++;
+  if (/\d/.test(v) && /[^A-Za-z0-9]/.test(v)) s++;
+  if (!v) s = 0;
+  $('#meter').dataset.s = String(s);
+  $('#hint').textContent = !v ? '' : ['Trop court', 'Faible', 'Moyen', 'Bon', 'Excellent'][s] || '';
+});
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <script type="module">
-        // ============================================
-        // CONFIGURATION SUPABASE
-        // ============================================
-        const SUPABASE_URL = 'https://wyfkogowsdbxctbpfuud.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmtvZ293c2RieGN0YnBmdXVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDc3MjAsImV4cCI6MjEwNjI4MzcyMH0.231eQ38RFvFaH3O6D-ReA8rlf3TehvWfcM-LBWocNEM';
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* Les erreurs disparaissent pendant la frappe */
+$$('.in input').forEach(i => i.addEventListener('input', () => bad(i.id, false)));
 
-        // ============================================
-        // ÉLÉMENTS DU DOM
-        // ============================================
-        const authMessage = document.getElementById('authMessage');
-        const authMessageText = document.getElementById('authMessageText');
-        const tabs = document.querySelectorAll('.auth-tab');
-        const loginForm = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
-        const formTitle = document.getElementById('form-title');
-        const formSubtitle = document.getElementById('form-subtitle');
-        const visualTitle = document.getElementById('visual-title');
-        const visualText = document.getElementById('visual-text');
+/* ================= Actions ================= */
+$('#fLogin').addEventListener('submit', async e => {
+  e.preventDefault(); if (busy) return;
+  clearBad(); unflash();
+  const email = $('#lEmail').value.trim(), pass = $('#lPass').value;
+  let ko = false;
+  if (!okEmail(email)) { bad('lEmail'); ko = true; }
+  if (!pass) { bad('lPass'); ko = true; }
+  if (ko) { say('error', 'Vérifie les champs en rouge.', 3500); return; }
+  const btn = $('#bLogin'); loading(btn, true); say('working', 'Je vérifie tes identifiants…');
+  try {
+    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) throw error;
+    say('celebrating', 'Te revoilà ! Je t’emmène…');
+    flash('ok', 'Connexion réussie. Redirection…');
+    await sleep(1300);
+    location.href = nextUrl();
+  } catch (err) {
+    flash('err', frError(err)); say('error', 'Oups, ça n’a pas marché.', 4500); loading(btn, false);
+  }
+});
 
-        // ============================================
-        // FONCTIONS MESSAGES
-        // ============================================
-        function showMessage(type, text) {
-            authMessage.className = `auth-message show ${type}`;
-            authMessageText.textContent = text;
-            authMessage.querySelector('i').className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
-        }
+$('#fSignup').addEventListener('submit', async e => {
+  e.preventDefault(); if (busy) return;
+  clearBad(); unflash();
+  const name = $('#sName').value.trim().replace(/\s+/g, ' '), email = $('#sEmail').value.trim();
+  const tel = digits($('#sTel').value), p1 = $('#sPass').value, p2 = $('#sPass2').value;
+  let ko = false;
+  if (name.length < 2) { bad('sName'); ko = true; }
+  if (!okEmail(email)) { bad('sEmail'); ko = true; }
+  if (tel.length !== PHONE_DIGITS) { bad('sTel'); ko = true; }
+  if (p1.length < 6) { bad('sPass'); ko = true; }
+  if (p1 !== p2) { bad('sPass2'); ko = true; }
+  if (ko) { say('error', 'Vérifie les champs en rouge.', 3500); return; }
+  if (!$('#sTerms').checked) { flash('err', 'Vous devez accepter les conditions d’utilisation.'); say('error', 'Il me faut ton accord pour continuer.', 3500); return; }
 
-        function hideMessage() {
-            authMessage.classList.remove('show');
-        }
+  const btn = $('#bSignup'); loading(btn, true); say('working', 'Je crée ton compte…');
+  try {
+    /* Le profil (public.profiles) est créé côté serveur par le trigger handle_new_user,
+       à partir de ces métadonnées. Le navigateur n'écrit JAMAIS dans profiles à l'inscription. */
+    const { data, error } = await sb.auth.signUp({
+      email, password: p1,
+      options: {
+        data: { full_name: name, phone_number: DIAL + tel },
+        emailRedirectTo: new URL('auth.html?action=login', location.href).href
+      }
+    });
+    if (error) throw error;
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0)
+      throw new Error('User already registered');
 
-        // ============================================
-        // GESTION DES TABS
-        // ============================================
-        function setMode(mode) {
-            tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.mode === mode));
-            
-            if (mode === 'login') {
-                loginForm.classList.add('active');
-                signupForm.classList.remove('active');
-                formTitle.textContent = 'Connexion';
-                formSubtitle.textContent = 'Accédez à votre espace personnel';
-                visualTitle.textContent = 'Bon retour parmi nous !';
-                visualText.textContent = 'Retrouvez vos documents favoris et votre historique d\'achats.';
-                history.replaceState(null, '', 'auth.html?action=login');
-            } else {
-                signupForm.classList.add('active');
-                loginForm.classList.remove('active');
-                formTitle.textContent = 'Inscription';
-                formSubtitle.textContent = 'Créez votre compte en 30 secondes';
-                visualTitle.textContent = 'Rejoignez TakiDoc';
-                visualText.textContent = 'Accédez à des centaines de documents professionnels au Congo.';
-                history.replaceState(null, '', 'auth.html?action=signup');
-            }
-            
-            hideMessage();
-        }
+    if (data.session) {                       // confirmation e-mail désactivée : connecté directement
+      say('celebrating', `Bienvenue ${name.split(' ')[0]} !`);
+      flash('ok', 'Compte créé. Bienvenue sur TakiDoc !');
+      await sleep(1500);
+      location.href = nextUrl();
+    } else {                                  // confirmation e-mail activée
+      say('celebrating', 'C’est fait ! Regarde ta boîte mail.', 0);
+      flash('ok', `Compte créé. Un e-mail de confirmation a été envoyé à ${email}. Cliquez sur le lien, puis connectez-vous.`);
+      loading(btn, false);
+      $('#lEmail').value = email;
+    }
+  } catch (err) {
+    flash('err', frError(err)); say('error', 'Oups, la création a échoué.', 4500); loading(btn, false);
+  }
+});
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => setMode(tab.dataset.mode));
-        });
+$('#fForgot').addEventListener('submit', async e => {
+  e.preventDefault(); if (busy) return;
+  clearBad(); unflash();
+  const email = $('#fEmail').value.trim();
+  if (!okEmail(email)) { bad('fEmail'); say('error', 'Cette adresse n’est pas valide.', 3500); return; }
+  const btn = $('#bForgot'); loading(btn, true); say('working', 'J’envoie le lien…');
+  try {
+    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: new URL('reset-password.html', location.href).href });
+    if (error) throw error;
+    flash('ok', 'Si un compte existe avec cette adresse, un lien de réinitialisation vient d’être envoyé.');
+    say('celebrating', 'Lien envoyé ! Regarde tes e-mails.');
+  } catch (err) {
+    flash('err', frError(err)); say('error', 'Impossible d’envoyer le lien.', 4500);
+  } finally { loading(btn, false); }
+});
 
-        document.getElementById('switchToSignup').addEventListener('click', (e) => {
-            e.preventDefault();
-            setMode('signup');
-        });
-
-        document.getElementById('switchToLogin').addEventListener('click', (e) => {
-            e.preventDefault();
-            setMode('login');
-        });
-
-        // Détecter le mode depuis l'URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const initialMode = urlParams.get('action') === 'signup' ? 'signup' : 'login';
-        setMode(initialMode);
-
-        // ============================================
-        // VALIDATION
-        // ============================================
-        function validateEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        }
-
-        function validatePhone(phone) {
-            return /^(\+242|0)[0-9\s]{8,12}$/.test(phone.replace(/\s/g, ''));
-        }
-
-        function showError(inputId, errorId) {
-            document.getElementById(inputId).classList.add('error');
-            document.getElementById(errorId).classList.add('show');
-        }
-
-        function clearError(inputId, errorId) {
-            document.getElementById(inputId).classList.remove('error');
-            document.getElementById(errorId).classList.remove('show');
-        }
-
-        function clearAllErrors() {
-            document.querySelectorAll('.form-group input').forEach(input => input.classList.remove('error'));
-            document.querySelectorAll('.error-message').forEach(msg => msg.classList.remove('show'));
-        }
-
-        // ============================================
-        // CONNEXION AVEC SUPABASE
-        // ============================================
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            clearAllErrors();
-            
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
-            let hasError = false;
-
-            if (!validateEmail(email)) {
-                showError('login-email', 'login-email-error');
-                hasError = true;
-            }
-            if (!password) {
-                showError('login-password', 'login-password-error');
-                hasError = true;
-            }
-
-            if (hasError) return;
-
-            const btn = document.getElementById('loginBtn');
-            btn.classList.add('loading');
-            btn.disabled = true;
-
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (error) throw error;
-
-                // Connexion réussie
-                showMessage('success', `Bienvenue ! Redirection...`);
-                setTimeout(() => {
-                    window.location.href = 'profile.html';
-                }, 1000);
-
-            } catch (error) {
-                showMessage('error', error.message || 'Email ou mot de passe incorrect');
-            } finally {
-                btn.classList.remove('loading');
-                btn.disabled = false;
-            }
-        });
-
-        // ============================================
-        // INSCRIPTION AVEC SUPABASE (CONNEXION AUTO)
-        // ============================================
-        signupForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            clearAllErrors();
-            
-            const name = document.getElementById('signup-name').value.trim();
-            const email = document.getElementById('signup-email').value.trim();
-            const phone = document.getElementById('signup-phone').value.trim();
-            const password = document.getElementById('signup-password').value;
-            const passwordConfirm = document.getElementById('signup-password-confirm').value;
-            const acceptTerms = document.getElementById('accept-terms').checked;
-            
-            let hasError = false;
-
-            if (name.length < 2) {
-                showError('signup-name', 'signup-name-error');
-                hasError = true;
-            }
-            if (!validateEmail(email)) {
-                showError('signup-email', 'signup-email-error');
-                hasError = true;
-            }
-            if (!validatePhone(phone)) {
-                showError('signup-phone', 'signup-phone-error');
-                hasError = true;
-            }
-            if (password.length < 6) {
-                showError('signup-password', 'signup-password-error');
-                hasError = true;
-            }
-            if (password !== passwordConfirm) {
-                showError('signup-password-confirm', 'signup-confirm-error');
-                hasError = true;
-            }
-            if (!acceptTerms) {
-                showMessage('error', 'Vous devez accepter les conditions d\'utilisation');
-                hasError = true;
-            }
-
-            if (hasError) return;
-
-            const btn = document.getElementById('signupBtn');
-            btn.classList.add('loading');
-            btn.disabled = true;
-
-            try {
-                // 1. Créer l'utilisateur dans auth.users
-                const { data: authData, error: authError } = await supabase.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: {
-                            full_name: name,
-                            phone_number: phone
-                        }
-                    }
-                });
-
-                if (authError) throw authError;
-
-                // 2. Créer le profil dans public.profiles
-                if (authData.user) {
-                    const { error: profileError } = await supabase
-                        .from('profiles')
-                        .upsert({
-                            id: authData.user.id,
-                            email: email,
-                            full_name: name,
-                            phone_number: phone,
-                            updated_at: new Date().toISOString()
-                        });
-
-                    if (profileError) throw profileError;
-                }
-
-                // 3. Connecter automatiquement l'utilisateur (PAS DE REDIRECTION VERS LOGIN)
-                showMessage('success', 'Compte créé avec succès ! Bienvenue...');
-                
-                setTimeout(() => {
-                    window.location.href = 'profile.html';
-                }, 1200);
-
-            } catch (error) {
-                showMessage('error', error.message || 'Erreur lors de la création du compte');
-            } finally {
-                btn.classList.remove('loading');
-                btn.disabled = false;
-            }
-        });
-
-        // Validation en temps réel
-        document.querySelectorAll('.form-group input').forEach(input => {
-            input.addEventListener('input', () => {
-                const errorId = input.id + '-error';
-                const errorEl = document.getElementById(errorId);
-                if (errorEl) {
-                    input.classList.remove('error');
-                    errorEl.classList.remove('show');
-                }
-            });
-        });
-    </script>
-
-    <!-- HEADER TAKIDOC -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+/* ================= Démarrage ================= */
+(async () => {
+  const q = new URLSearchParams(location.search).get('action');
+  mode = q === 'signup' ? 'signup' : 'login';
+  await initTaki();
+  setMode(mode, { push: false });
+  try {                                       // déjà connecté : inutile de rester ici
+    const { data } = await sb.auth.getSession();
+    if (data?.session) location.replace(nextUrl());
+  } catch (_) { /* hors ligne : on reste sur la page */ }
+})();
+</script>
 </body>
-</html> 
+</html>
