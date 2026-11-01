@@ -1,5 +1,5 @@
 /* ============================================================
-TAKIDOC — GÉNÉRATEUR DE DOCUMENTS (Version 3.0)
+TAKIDOC — GÉNÉRATEUR DE DOCUMENTS (Version 3.1)
 Endpoint POST /api/generate avec Puppeteer — formats PDF et DOCX (Word)
 Mode « instantané » : reçoit le document édité par l'utilisateur (data.snapshot),
 le nettoie, puis l'applique sur le CSS d'origine du modèle.
@@ -13,6 +13,14 @@ Flux :
  6. Génère le PDF avec un navigateur Chromium partagé (file d'attente)
  7. Renvoie le PDF en binaire (Buffer) — corrige le bug du Uint8Array
     qui était sérialisé en JSON par Express et rendait le PDF illisible
+
+Nouveautés v3.1 (adaptée à l'offre gratuite de Render : ~512 Mo de RAM) :
+ - 1 seul rendu à la fois par défaut (MAX_CONCURRENT_RENDERS=1)
+ - Garde de charge AVANT la lecture du corps JSON : au-delà de
+   MAX_PENDING_GENERATIONS requêtes en cours/en attente, réponse 503 immédiate
+   (aucun jeton consommé, le navigateur réessaie tout seul)
+ - Limitation de débit par IP placée avant la lecture du corps JSON
+ - /health répond toujours vite, même pendant le démarrage de Chromium
 
 Correctifs majeurs par rapport à la v1.1 :
  - Conversion Uint8Array -> Buffer (cause du PDF « impossible à ouvrir »)
@@ -59,7 +67,7 @@ const CONFIG = {
   ).map(o => cleanEnv(o).replace(/\/$/, '')).filter(Boolean),
 
   // Rendu
-  maxConcurrentRenders: Math.max(1, Number(process.env.MAX_CONCURRENT_RENDERS) || 2),
+  maxConcurrentRenders: Math.max(1, Number(process.env.MAX_CONCURRENT_RENDERS) || 1),
   queueTimeoutMs: Number(process.env.QUEUE_TIMEOUT_MS) || 45000,
   renderTimeoutMs: Number(process.env.RENDER_TIMEOUT_MS) || 30000,
   browserRecycleAfter: Number(process.env.BROWSER_RECYCLE_AFTER) || 100,
@@ -76,6 +84,13 @@ const CONFIG = {
 
   defaultColorFallback: '#0F172A'
 };
+
+// Plafond de requêtes de génération présentes en même temps (en cours + en attente).
+// Au-delà : refus immédiat (503) avant de lire le corps JSON, pour protéger la mémoire.
+CONFIG.maxPendingGenerations = Math.max(
+  CONFIG.maxConcurrentRenders,
+  Number(process.env.MAX_PENDING_GENERATIONS) || 8
+);
 
 // Hôtes autorisés à charger des ressources dans le document (polices, images…)
 function hostOf(url) {
@@ -850,34 +865,82 @@ app.use(cors({
   maxAge: 86400
 }));
 
+/* ------------------------------------------------------------
+   PROTECTION DE LA MÉMOIRE — avant la lecture du corps JSON (jusqu'à 10 Mo)
+   1. limitation de débit par IP ;
+   2. plafond de générations présentes en même temps : au-delà, 503 immédiat.
+      Aucun jeton n'est consommé à ce stade : le navigateur réessaie tout seul.
+------------------------------------------------------------ */
+const generateLimiter = rateLimit({ windowMs: CONFIG.rateLimitWindowMs, max: CONFIG.rateLimitMax });
+
+let pendingGenerations = 0;
+function generationGuard(req, res, next) {
+  if (req.method !== 'POST') return next();
+
+  if (pendingGenerations >= CONFIG.maxPendingGenerations) {
+    log(req.id, '🚧 Trop de générations en cours (' + pendingGenerations + '/' + CONFIG.maxPendingGenerations + ') : requête refusée');
+    res.set({ 'Retry-After': '5', Connection: 'close' });
+    return res.status(503).json({
+      error: 'Le générateur est très sollicité. Réessayez dans quelques secondes.',
+      requestId: req.id
+    });
+  }
+
+  pendingGenerations += 1;
+  let released = false;
+  const release = () => {
+    if (released) return;
+    released = true;
+    pendingGenerations = Math.max(0, pendingGenerations - 1);
+  };
+  res.on('finish', release);
+  res.on('close', release);
+  next();
+}
+
+app.use('/api/generate', (req, res, next) => (req.method === 'POST' ? generateLimiter(req, res, next) : next()));
+app.use('/api/generate', generationGuard);
+
 app.use(express.json({ limit: '10mb' }));
 
 /* ------------------------------------------------------------
    GET / et GET /health
 ------------------------------------------------------------ */
 app.get('/', (req, res) => {
-  res.json({ service: 'takidoc-generator', version: '3.0.0', status: 'ok' });
+  res.json({ service: 'takidoc-generator', version: '3.1.0', status: 'ok' });
 });
 
 app.get('/health', async (req, res) => {
+  // Ne jamais attendre Chromium plus de 1,5 s : le ping de maintien en éveil doit toujours répondre vite
   let browserConnected = false;
+  let browserState = 'idle';
   if (browserPromise) {
-    try { browserConnected = (await browserPromise).connected; } catch (_) { /* ignoré */ }
+    let timer;
+    try {
+      const browser = await Promise.race([
+        browserPromise,
+        new Promise(resolve => { timer = setTimeout(() => resolve('starting'), 1500); })
+      ]);
+      if (browser === 'starting') browserState = 'starting';
+      else if (browser && browser.connected) { browserConnected = true; browserState = 'connected'; }
+    } catch (_) { /* ignoré */ } finally { clearTimeout(timer); }
   }
 
   res.json({
     status: 'ok',
     service: 'takidoc-generator',
-    version: '3.0.0',
+    version: '3.1.0',
     timestamp: new Date().toISOString(),
     uptime: Math.round(process.uptime()),
     puppeteer: !!puppeteer,
     docx: isDocxAvailable(),
-    browser: browserConnected ? 'connected' : 'idle',
+    browser: browserConnected ? 'connected' : browserState,
     renders: {
       active: renderSlots.active,
       queued: renderSlots.queue.length,
-      max: CONFIG.maxConcurrentRenders
+      max: CONFIG.maxConcurrentRenders,
+      pending: pendingGenerations,
+      maxPending: CONFIG.maxPendingGenerations
     },
     memoryMB: Math.round(process.memoryUsage().rss / 1024 / 1024)
   });
@@ -917,7 +980,6 @@ function parseGenerateRequest(body) {
 
 app.post(
   '/api/generate',
-  rateLimit({ windowMs: CONFIG.rateLimitWindowMs, max: CONFIG.rateLimitMax }),
   async (req, res) => {
     const reqId = req.id;
     let consumedNonce = null;
@@ -1094,11 +1156,11 @@ app.use((err, req, res, next) => {
    DÉMARRAGE ET ARRÊT PROPRE
 ============================================================ */
 const server = app.listen(CONFIG.port, () => {
-  console.log(`🚀 TakiDoc Generator v3.0 démarré sur le port ${CONFIG.port}`);
+  console.log(`🚀 TakiDoc Generator v3.1 démarré sur le port ${CONFIG.port}`);
   console.log(`   Health check   : http://localhost:${CONFIG.port}/health`);
   console.log(`   Génération PDF : POST http://localhost:${CONFIG.port}/api/generate`);
   console.log(`   NODE_ENV       : ${process.env.NODE_ENV || 'development'}`);
-  console.log(`   Rendus max     : ${CONFIG.maxConcurrentRenders} simultanés`);
+  console.log(`   Rendus max     : ${CONFIG.maxConcurrentRenders} simultané(s), ${CONFIG.maxPendingGenerations} requêtes en cours/attente au plus`);
   console.log(`   Origines CORS  : ${CONFIG.allowedOrigins.join(', ')}`);
 
   // Préchauffage : le premier PDF sera instantané

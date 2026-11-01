@@ -1,6 +1,6 @@
 {
   "name": "takidoc-generator",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "TakiDoc Document Generator (PDF & DOCX)",
   "main": "server.js",
   "scripts": {
