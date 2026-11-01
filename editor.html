@@ -1,1146 +1,239 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta name="description" content="Éditeur professionnel TakiDoc - Personnalisez vos documents en temps réel">
-    <meta name="theme-color" content="#FF6B35">
-    <title>Éditeur - TakiDoc</title>
-    
-    <!-- FAVICONS -->
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="manifest" href="site.webmanifest">
-    
-    
-    <!-- Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="css/taki/taki.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<meta name="description" content="Éditeur TakiDoc : personnalisez votre document en direct, avec Taki à vos côtés.">
+<meta name="theme-color" content="#0F172A">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Éditeur — TakiDoc</title>
+
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="site.webmanifest">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="css/taki/taki.css">
 <link rel="stylesheet" href="css/taki/taki-animations.css">
-    <!-- Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <style>
-        :root {
-            --primary: #FF6B35;
-            --primary-dark: #E85A2D;
-            --primary-light: #FFF5F0;
-            --primary-rgb: 255, 107, 53;
-            --dark: #0F172A;
-            --navy: #1E293B;
-            --text-main: #0F172A;
-            --text-muted: #64748B;
-            --text-light: #94A3B8;
-            --border: #E2E8F0;
-            --border-light: #F1F5F9;
-            --bg-body: #F1F5F9;
-            --bg-card: #FFFFFF;
-            --success: #10B981;
-            --success-light: #D1FAE5;
-            --error: #EF4444;
-            --error-light: #FEE2E2;
-            --warning: #F59E0B;
-            --info: #3B82F6;
-            
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-            --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
-            --shadow-xl: 0 16px 48px rgba(0,0,0,0.16);
-            
-            --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 14px;
-            --radius-xl: 20px;
-            --radius-full: 9999px;
-            
-            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; overflow: hidden; }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-body);
-            color: var(--text-main);
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* ============================================
-           HEADER PROFESSIONNEL
-           ============================================ */
-        .editor-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 64px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid var(--border);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .header-logo {
-            font-size: 1.4rem;
-            font-weight: 900;
-            text-decoration: none;
-            letter-spacing: -0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0;
-        }
-
-        .header-logo .taki { color: var(--primary); }
-        .header-logo .doc { color: var(--dark); }
-
-        .header-divider {
-            width: 1px;
-            height: 24px;
-            background: var(--border);
-        }
-
-        .doc-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .doc-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .doc-status {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .doc-status.saving i {
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* ============================================
-           WORKSPACE LAYOUT
-           ============================================ */
-        .editor-workspace {
-            display: flex;
-            height: 100vh;
-            padding-top: 64px;
-        }
-
-        /* ============================================
-           SIDEBAR
-           ============================================ */
-        .editor-sidebar {
-            width: 380px;
-            background: var(--bg-card);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-md);
-        }
-
-        .sidebar-tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border);
-            background: var(--bg-body);
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 14px;
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: inherit;
-        }
-
-        .tab-btn:hover {
-            color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: var(--bg-card);
-        }
-
-        .sidebar-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-        }
-
-        .sidebar-content::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .sidebar-content::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 3px;
-        }
-
-        .tab-pane {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .tab-pane.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .template-info-card {
-            background: var(--primary-light);
-            border: 1px solid rgba(255, 107, 53, 0.2);
-            border-radius: var(--radius-lg);
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-
-        .template-info-card h3 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 6px;
-        }
-
-        .template-info-card p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-        }
-
-        /* ============================================
-           FORM CONTROLS
-           ============================================ */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.82rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 8px;
-        }
-
-        .form-group label .required {
-            color: var(--error);
-            margin-left: 2px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 11px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius-md);
-            font-family: inherit;
-            font-size: 0.9rem;
-            transition: var(--transition);
-            background: var(--bg-card);
-            color: var(--text-main);
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.12);
-        }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 90px;
-            line-height: 1.6;
-        }
-
-        /* ============================================
-           DESIGN TAB SPECIFICS
-           ============================================ */
-        .design-section {
-            margin-bottom: 28px;
-            padding-bottom: 28px;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .design-section:last-child {
-            border-bottom: none;
-        }
-
-        .design-section h4 {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .design-section h4 i {
-            color: var(--primary);
-        }
-
-        .photo-uploader {
-            text-align: center;
-        }
-
-        .photo-preview {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 16px;
-            border-radius: 50%;
-            border: 2.5px dashed var(--border);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-body);
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .photo-preview.has-image {
-            border-style: solid;
-            border-color: var(--primary);
-        }
-
-        .photo-preview i {
-            font-size: 2.5rem;
-            color: var(--text-light);
-            margin-bottom: 8px;
-        }
-
-        .photo-preview span {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .photo-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .btn-upload {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: var(--bg-card);
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius-md);
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-main);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn-upload:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .btn-text-danger {
-            display: block;
-            margin: 12px auto 0;
-            background: none;
-            border: none;
-            color: var(--error);
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .btn-text-danger:hover {
-            text-decoration: underline;
-        }
-
-        .color-picker-advanced {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 16px;
-            padding: 12px;
-            background: var(--bg-body);
-            border-radius: var(--radius-md);
-        }
-
-        #color-picker {
-            width: 50px;
-            height: 50px;
-            border: 2px solid var(--border);
-            border-radius: 50%;
-            cursor: pointer;
-            padding: 3px;
-            background: white;
-        }
-
-        .color-hex-display {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .color-presets {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
-        }
-
-        .color-preset {
-            width: 100%;
-            aspect-ratio: 1;
-            border: 2.5px solid white;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: var(--shadow-sm);
-            position: relative;
-        }
-
-        .color-preset:hover {
-            transform: scale(1.15);
-            box-shadow: var(--shadow-md);
-        }
-
-        .color-preset.active {
-            border-color: var(--dark);
-            transform: scale(1.1);
-        }
-
-        .color-preset.active::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-weight: 800;
-            font-size: 0.9rem;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
-        }
-
-        /* ============================================
-           EXPORT TAB
-           ============================================ */
-        .export-card {
-            background: var(--bg-body);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .export-card h4 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .export-card h4 i {
-            color: var(--primary);
-        }
-
-        .export-card p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-            line-height: 1.5;
-        }
-
-        /* ============================================
-           BUTTONS
-           ============================================ */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 11px 20px;
-            border-radius: var(--radius-md);
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: none;
-            transition: var(--transition);
-            text-decoration: none;
-            font-family: inherit;
-            white-space: nowrap;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            box-shadow: 0 4px 14px rgba(var(--primary-rgb), 0.35);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.45);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-main);
-            border: 1.5px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .btn-block {
-            width: 100%;
-        }
-
-        .btn-lg {
-            padding: 14px 24px;
-            font-size: 1rem;
-        }
-
-        /* ============================================
-           CANVAS AREA (fond dégradé + pointillés)
-           ============================================ */
-        .editor-canvas-area {
-            flex: 1;
-            position: relative;
-            overflow: auto;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            display: flex;
-            justify-content: center;
-            padding: 40px;
-        }
-
-        .editor-canvas-area::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                radial-gradient(circle, rgba(255,255,255,0.25) 3px, transparent 3px),
-                radial-gradient(circle, rgba(255,255,255,0.15) 1.5px, transparent 1.5px);
-            background-size: 50px 50px, 25px 25px;
-            background-position: 0 0, 25px 25px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .zoom-controls-floating {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(12px);
-            padding: 8px 16px;
-            border-radius: var(--radius-full);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
-            z-index: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .zoom-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--bg-card);
-            border: 1.5px solid var(--border);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            color: var(--text-main);
-            font-size: 0.85rem;
-        }
-
-        .zoom-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: scale(1.1);
-        }
-
-        .zoom-level {
-            font-weight: 800;
-            min-width: 60px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--dark);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .document-wrapper {
-            position: relative;
-            z-index: 1;
-            transform-origin: top center;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            margin: 20px 0;
-        }
-
-        .document-canvas {
-            width: 210mm;
-            min-height: 297mm;
-            background: white;
-            box-shadow: var(--shadow-xl);
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Le canvas reste blanc ; tout le reste (fonds, couleurs, polices)
-           vient UNIQUEMENT du CSS du modèle : on ne l'écrase jamais. */
-        #document-canvas {
-            background: white;
-        }
-
-        /* ============================================
-           ÉDITION DIRECTE DU TEXTE
-           On utilise "outline" (et non border / padding / background) :
-           aucun impact sur la mise en page ni sur les couleurs du modèle.
-           ============================================ */
-        #document-canvas .direct-editable {
-            cursor: text;
-            outline: 1px dashed transparent;
-            outline-offset: 2px;
-            transition: outline-color 0.15s ease;
-        }
-
-        #document-canvas .direct-editable:hover {
-            outline-color: rgba(255, 107, 53, 0.75);
-        }
-
-        #document-canvas .direct-editable:focus {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
-
-        /* Zone vidée : reste visible et cliquable */
-        #document-canvas .direct-editable:empty {
-            display: inline-block;
-            min-width: 1.5em;
-            min-height: 1em;
-        }
-
-        #document-canvas [contenteditable="false"] {
-            cursor: default;
-        }
-
-        /* ============================================
-           MODALS & TOASTS
-           ============================================ */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: var(--radius-xl);
-            max-width: 480px;
-            width: 100%;
-            box-shadow: var(--shadow-xl);
-            transform: scale(0.95) translateY(10px);
-            transition: var(--transition);
-            overflow: hidden;
-        }
-
-        .modal-overlay.active .modal-content {
-            transform: scale(1) translateY(0);
-        }
-
-        .modal-header {
-            padding: 28px 28px 0;
-            text-align: center;
-        }
-
-        .modal-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 20px;
-            background: var(--primary-light);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            color: var(--primary);
-        }
-
-        .modal-header h3 {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: var(--dark);
-            margin-bottom: 8px;
-        }
-
-        .modal-body {
-            padding: 20px 28px;
-            color: var(--text-muted);
-            line-height: 1.7;
-            text-align: center;
-        }
-
-        .modal-footer {
-            padding: 0 28px 28px;
-            display: flex;
-            gap: 12px;
-        }
-
-        .modal-footer .btn {
-            flex: 1;
-        }
-
-        .editor-toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: var(--dark);
-            color: white;
-            padding: 14px 28px;
-            border-radius: var(--radius-lg);
-            font-size: 0.9rem;
-            font-weight: 600;
-            box-shadow: var(--shadow-xl);
-            z-index: 9999;
-            opacity: 0;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            max-width: 90%;
-        }
-
-        .editor-toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .editor-toast.success { background: linear-gradient(135deg, var(--success) 0%, #059669 100%); }
-        .editor-toast.error { background: linear-gradient(135deg, var(--error) 0%, #DC2626 100%); }
-        .editor-toast.info { background: linear-gradient(135deg, var(--info) 0%, #2563EB 100%); }
-
-        .mobile-sidebar-toggle {
-            display: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--bg-body);
-            border: 1px solid var(--border);
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--text-main);
-        }
-
-        /* ============================================
-           RESPONSIVE
-           Le document garde TOUJOURS sa taille A4 (210mm) :
-           c'est le zoom qui l'adapte à l'écran, pour ne pas casser le design.
-           ============================================ */
-        @media (max-width: 1024px) {
-            .editor-sidebar {
-                position: fixed;
-                left: -380px;
-                top: 64px;
-                bottom: 0;
-                transition: left 0.3s ease;
-                z-index: 900;
-            }
-            .editor-sidebar.open {
-                left: 0;
-            }
-            .editor-canvas-area {
-                padding: 20px;
-            }
-            .mobile-sidebar-toggle {
-                display: flex !important;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .doc-info { display: none; }
-            .header-divider { display: none; }
-            .zoom-controls-floating {
-                bottom: 20px;
-                padding: 6px 12px;
-            }
-            .zoom-btn { width: 32px; height: 32px; }
-            .zoom-level { min-width: 50px; font-size: 0.8rem; }
-        }
-
-        @media (min-width: 769px) {
-            .editor-desktop-buttons {
-                display: block !important;
-            }
-            .mobile-fab-container {
-                display: none !important;
-            }
-        }
-        @media (max-width: 768px) {
-            .editor-desktop-buttons {
-                display: none !important;
-            }
-            .mobile-fab-container {
-                display: flex !important;
-            }
-        }
-
-        /* ============================================
-           BOUTONS HEADER EN ICÔNES SUR MOBILE
-           ============================================ */
-        @media (max-width: 768px) {
-            .editor-header .btn span {
-                display: none !important;
-            }
-
-            .editor-header .btn {
-                padding: 10px !important;
-                min-width: 40px !important;
-                min-height: 40px !important;
-                border-radius: 50% !important;
-                justify-content: center !important;
-            }
-
-            .editor-header .btn-secondary {
-                background: var(--bg-body) !important;
-                border: 1.5px solid var(--border) !important;
-                color: var(--text-main) !important;
-            }
-
-            .editor-header .btn-secondary i {
-                font-size: 1rem !important;
-            }
-
-            .editor-header .btn-primary {
-                background: var(--primary) !important;
-                box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3) !important;
-            }
-
-            .editor-header .btn-primary i {
-                font-size: 1rem !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header-logo {
-                font-size: 1.2rem;
-            }
-
-            .editor-header .btn {
-                padding: 8px !important;
-                min-width: 36px !important;
-                min-height: 36px !important;
-            }
-
-            .editor-header .btn i {
-                font-size: 0.9rem !important;
-            }
-        }
-    </style>
+<link rel="stylesheet" href="css/app-editor.css">
+<link rel="stylesheet" href="css/editor-discover.css">
+<link rel="stylesheet" href="css/editor-responsive.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body>
-    
-    <!-- HEADER -->
-    <header class="editor-header">
-        <div class="header-left">
-            <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
-                <i class="fas fa-sliders-h"></i>
-            </button>
-            <a href="index.html" class="header-logo">
-                <span class="taki">Taki</span><span class="doc">Doc</span>
-            </a>
-            <div class="header-divider"></div>
-            <div class="doc-info">
-                <div class="doc-title" id="header-doc-title">Chargement...</div>
-                <div class="doc-status" id="header-doc-status">
-                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
-                    <span>Prêt</span>
-                </div>
-            </div>
-        </div>
-        <div class="header-right">
-            <button class="btn btn-secondary" onclick="window.location.href='index.html'">
-                <i class="fas fa-arrow-left"></i> <span class="hide-mobile">Retour</span>
-            </button>
-            <button class="btn btn-primary" id="header-download-btn">
-                <i class="fas fa-download"></i> <span class="hide-mobile">Télécharger</span>
-            </button>
-        </div>
-    </header>
+<body class="app-editor">
+<div class="app" id="app">
 
-    <!-- WORKSPACE -->
-    <div class="editor-workspace">
-        
-        <!-- SIDEBAR -->
-        <aside class="editor-sidebar" id="editorSidebar">
-            <div class="sidebar-tabs">
-                <button class="tab-btn active" data-tab="fields">
-                    <i class="fas fa-edit"></i> Contenu
-                </button>
-                <button class="tab-btn" data-tab="design">
-                    <i class="fas fa-palette"></i> Design
-                </button>
-                <button class="tab-btn" data-tab="export">
-                    <i class="fas fa-file-export"></i> Export
-                </button>
-            </div>
-            
-            <div class="sidebar-content">
-                <!-- TAB: CONTENT -->
-                <div id="tab-fields" class="tab-pane active">
-                    <div class="template-info-card">
-                        <h3 id="sidebar-template-name">Nom du document</h3>
-                        <p id="sidebar-template-desc">Description du modèle...</p>
-                    </div>
-                    <form id="fields-form">
-                        <!-- Champs générés dynamiquement ici -->
-                    </form>
-                </div>
-                
-                <!-- TAB: DESIGN -->
-                <div id="tab-design" class="tab-pane">
-                    <div class="design-section" id="design-photo-section" style="display:none;">
-                        <h4><i class="fas fa-image"></i> Photo de profil</h4>
-                        <div class="photo-uploader">
-                            <div class="photo-preview" id="photo-preview-area">
-                                <i class="fas fa-user-circle"></i>
-                                <span>Aucune photo</span>
-                            </div>
-                            <input type="file" id="photo-input" accept="image/*" hidden>
-                            <label for="photo-input" class="btn-upload">
-                                <i class="fas fa-cloud-upload-alt"></i> Choisir une image
-                            </label>
-                            <button id="photo-remove" class="btn-text-danger" style="display:none;">
-                                <i class="fas fa-trash"></i> Supprimer la photo
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="design-section" id="design-color-section" style="display:none;">
-                        <h4><i class="fas fa-palette"></i> Couleur principale</h4>
-                        <div class="color-picker-advanced">
-                            <input type="color" id="color-picker" value="#0F172A">
-                            <div class="color-hex-display" id="color-hex">#0F172A</div>
-                        </div>
-                        <div class="color-presets" id="color-presets">
-                            <button class="color-preset" data-color="#0F172A" style="background: #0F172A;"></button>
-                            <button class="color-preset" data-color="#FF6B35" style="background: #FF6B35;"></button>
-                            <button class="color-preset" data-color="#004E89" style="background: #004E89;"></button>
-                            <button class="color-preset" data-color="#059669" style="background: #059669;"></button>
-                            <button class="color-preset" data-color="#DC2626" style="background: #DC2626;"></button>
-                            <button class="color-preset" data-color="#7C3AED" style="background: #7C3AED;"></button>
-                        </div>
-                    </div>
-
-                    <div class="design-section">
-                        <h4><i class="fas fa-font"></i> Typographie</h4>
-                        <div class="form-group">
-                            <label>Police du document</label>
-                            <select id="font-family-select" class="form-control">
-                                <option value="'Inter', sans-serif">Inter (Moderne)</option>
-                                <option value="'Georgia', serif">Georgia (Classique)</option>
-                                <option value="'Arial', sans-serif">Arial (Standard)</option>
-                                <option value="'Times New Roman', serif">Times New Roman (Formel)</option>
-                                <option value="'Courier New', monospace">Courier New (Technique)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- TAB: EXPORT -->
-                <div id="tab-export" class="tab-pane">
-                    <div class="export-card">
-                        <h4><i class="fas fa-file-pdf"></i> Télécharger en PDF</h4>
-                        <p>Obtenez une version haute qualité de votre document personnalisé.</p>
-                        <div class="form-group">
-                            <label>Qualité d'exportation</label>
-                            <select id="pdf-quality" class="form-control">
-                                <option value="2">Haute qualité (Recommandé)</option>
-                                <option value="1.5">Qualité standard (Fichier léger)</option>
-                            </select>
-                        </div>
-                        <button id="btn-download-pdf" class="btn btn-primary btn-block btn-lg">
-                            <i class="fas fa-download"></i> Générer et Télécharger
-                        </button>
-                    </div>
-                    
-                    <div class="export-card">
-                        <h4><i class="fas fa-save"></i> Sauvegarder le brouillon</h4>
-                        <p>Reprenez votre travail plus tard. Les données sont stockées localement sur cet appareil.</p>
-                        <button id="btn-save-draft" class="btn btn-secondary btn-block">
-                            <i class="fas fa-save"></i> Enregistrer localement
-                        </button>
-                        <button id="btn-load-draft" class="btn btn-text-danger" style="width:100%; margin-top:10px; display:none;">
-                            <i class="fas fa-undo"></i> Restaurer le brouillon
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </aside>
-        
-        <!-- CANVAS AREA -->
-        <main class="editor-canvas-area" id="canvasArea">
-            <div class="zoom-controls-floating">
-                <button class="zoom-btn" id="btn-zoom-out" title="Dézoomer (Ctrl + -)">
-                    <i class="fas fa-minus"></i>
-                </button>
-                <span class="zoom-level" id="zoom-level">100%</span>
-                <button class="zoom-btn" id="btn-zoom-in" title="Zoomer (Ctrl + +)">
-                    <i class="fas fa-plus"></i>
-                </button>
-                <button class="zoom-btn" id="btn-zoom-fit" title="Ajuster à l'écran">
-                    <i class="fas fa-compress"></i>
-                </button>
-            </div>
-            
-            <div class="document-wrapper" id="document-wrapper">
-                <div id="document-canvas" class="document-canvas">
-                    <!-- Le contenu du template sera injecté ici -->
-                </div>
-            </div>
-        </main>
+  <!-- ===== Barre d'application ===== -->
+  <header class="appbar">
+    <a class="ab-btn ic" id="ab-back" href="index.html" title="Retour" aria-label="Retour"><i class="fas fa-arrow-left"></i></a>
+    <a class="ab-logo" href="index.html" aria-label="TakiDoc, accueil"><span class="taki">Taki</span><span class="doc">Doc</span></a>
+    <div class="ab-doc">
+      <div class="doc-title" id="header-doc-title">Chargement…</div>
+      <div class="doc-status" id="header-doc-status"><i class="fas fa-circle-check"></i><span>Prêt</span></div>
     </div>
-
-    <!-- MODAL: Connexion requise -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-icon">
-                    <i class="fas fa-user-circle"></i>
-                </div>
-                <h3>Connectez-vous pour sauvegarder</h3>
-            </div>
-            <div class="modal-body">
-                <p>Pour retrouver votre document dans votre espace personnel et accéder à l'historique de vos téléchargements, veuillez vous connecter ou créer un compte.</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="loginModalClose">Continuer sans compte</button>
-                <a href="auth.html?action=login" class="btn btn-primary">Se connecter</a>
-            </div>
-        </div>
+    <div class="ab-space"></div>
+    <button class="ab-btn" id="dz-help-btn" type="button" title="Tout ce que tu peux faire (touche ?)" aria-haspopup="dialog"><i class="fas fa-circle-question"></i><span class="lbl">Astuces</span></button>
+    <div class="ab-progress" id="appProgress" title="Champs personnalisés" aria-live="polite">
+      <span class="ring" id="ringFill" style="--p:0"></span><span><b id="ringText">0/0</b> champs</span>
     </div>
+    <button class="ab-btn" id="app-save" type="button" title="Enregistrer le brouillon (Ctrl+S)"><i class="fas fa-floppy-disk"></i><span class="lbl">Brouillon</span></button>
+    <button class="ab-btn" id="panel-toggle" type="button" title="Afficher ou masquer le panneau" aria-label="Afficher ou masquer le panneau" aria-pressed="false"><i class="fas fa-table-columns"></i><span class="lbl">Panneau</span></button>
+    <button class="ab-btn p" id="header-download-btn" type="button"><i class="fas fa-download"></i><span class="lbl">Télécharger</span></button>
+  </header>
 
-    <!-- TOAST -->
-    <div class="editor-toast" id="editorToast"></div>
+  <div class="shell">
 
-    <!-- Assistant Taki -->
+    <!-- ===== Rail d'outils (ordinateur) / barre d'onglets (mobile) ===== -->
+    <nav class="rail" aria-label="Outils de l’éditeur">
+      <button class="tab-btn active" type="button" data-tab="fields" data-title="Contenu"><i class="fas fa-pen-to-square"></i><span>Contenu</span></button>
+      <button class="tab-btn" type="button" data-tab="design" data-title="Design"><i class="fas fa-palette"></i><span>Design</span></button>
+      <button class="tab-btn" type="button" data-tab="export" data-title="Export"><i class="fas fa-file-export"></i><span>Export</span></button>
+      <span class="rail-sp"></span>
+      <button class="rail-dl" type="button" id="mobileBtnDownload" aria-label="Télécharger le document"><i class="fas fa-download"></i><span>Télécharger</span></button>
+    </nav>
+
+    <!-- ===== Panneau (feuille sur mobile) ===== -->
+    <aside class="panel" id="editorSidebar" aria-label="Réglages du document">
+      <div class="sheet-handle" id="sheetHandle"></div>
+      <div class="panel-head">
+        <div class="ph-txt"><h2 id="panelTitle">Contenu</h2><p id="panelSub">Remplis les champs : le document se met à jour en direct.</p></div>
+        <button type="button" id="sheetClose" aria-label="Fermer le panneau"><i class="fas fa-xmark"></i></button>
+      </div>
+
+      <div class="sidebar-content">
+
+        <!-- CONTENU -->
+        <div id="tab-fields" class="tab-pane active">
+          <details class="tpl-card">
+            <summary><h3 id="sidebar-template-name">Nom du document</h3><i class="fas fa-chevron-down"></i></summary>
+            <p id="sidebar-template-desc">Description du modèle…</p>
+          </details>
+          <label class="fsearch"><i class="fas fa-magnifying-glass"></i><input id="field-search" type="search" placeholder="Rechercher un champ…" aria-label="Rechercher un champ" autocomplete="off"></label>
+          <div class="fprog" id="fprog">
+            <div><span><b id="fprog-text">0 / 0</b> champs personnalisés</span><span id="fprog-pct">0 %</span></div>
+            <div class="bar"><i id="fprog-fill"></i></div>
+          </div>
+          <form id="fields-form" onsubmit="return false"></form>
+          <p class="field-empty" id="field-empty" hidden>Aucun champ ne correspond à ta recherche.</p>
+        </div>
+
+        <!-- DESIGN -->
+        <div id="tab-design" class="tab-pane">
+          <div class="design-section" id="design-photo-section" style="display:none">
+            <h4><i class="fas fa-image"></i> Photo</h4>
+            <div class="photo-uploader">
+              <div class="photo-preview" id="photo-preview-area"><i class="fas fa-user-circle"></i><span>Aucune photo</span></div>
+              <input type="file" id="photo-input" accept="image/*" hidden>
+              <label for="photo-input" class="btn-upload"><i class="fas fa-cloud-arrow-up"></i> Choisir une image</label>
+              <button id="photo-remove" type="button" class="btn-text-danger" style="display:none"><i class="fas fa-trash"></i> Supprimer la photo</button>
+            </div>
+          </div>
+
+          <div class="design-section" id="design-color-section" style="display:none">
+            <h4><i class="fas fa-palette"></i> Couleur principale</h4>
+            <div class="color-picker-advanced">
+              <input type="color" id="color-picker" value="#0F172A" aria-label="Choisir la couleur principale">
+              <div class="color-hex-display" id="color-hex">#0F172A</div>
+            </div>
+            <div class="color-presets" id="color-presets">
+              <button type="button" class="color-preset" data-color="#0F172A" style="background:#0F172A" aria-label="Bleu nuit"></button>
+              <button type="button" class="color-preset" data-color="#FF6B35" style="background:#FF6B35" aria-label="Orange"></button>
+              <button type="button" class="color-preset" data-color="#004E89" style="background:#004E89" aria-label="Bleu"></button>
+              <button type="button" class="color-preset" data-color="#059669" style="background:#059669" aria-label="Vert"></button>
+              <button type="button" class="color-preset" data-color="#DC2626" style="background:#DC2626" aria-label="Rouge"></button>
+              <button type="button" class="color-preset" data-color="#7C3AED" style="background:#7C3AED" aria-label="Violet"></button>
+            </div>
+          </div>
+
+          <div class="design-section">
+            <h4><i class="fas fa-font"></i> Typographie</h4>
+            <div class="form-group">
+              <label for="font-family-select">Police du document</label>
+              <select id="font-family-select" class="form-control">
+                <option value="'Inter', sans-serif">Inter (moderne)</option>
+                <option value="'Georgia', serif">Georgia (classique)</option>
+                <option value="'Arial', sans-serif">Arial (standard)</option>
+                <option value="'Times New Roman', serif">Times New Roman (formel)</option>
+                <option value="'Courier New', monospace">Courier New (technique)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="design-section">
+            <button type="button" class="btn-line" id="btn-reset-design"><i class="fas fa-rotate-left"></i> Rétablir le design du modèle</button>
+          </div>
+        </div>
+
+        <!-- EXPORT -->
+        <div id="tab-export" class="tab-pane">
+          <div class="export-card">
+            <h4><i class="fas fa-file-arrow-down"></i> Télécharger</h4>
+            <p>Taki prépare ton document avec la mise en page que tu vois à l’écran.</p>
+            <div class="xbtns">
+              <button id="btn-download-pdf" type="button" class="btn btn-primary btn-lg"><i class="fas fa-file-pdf"></i> PDF</button>
+              <button id="btn-download-docx" type="button" class="btn btn-secondary btn-lg"><i class="fas fa-file-word"></i> Word</button>
+            </div>
+            <div class="hint"><i class="fas fa-circle-info"></i><span>Déjà payé ? Retrouve ton document dans <a href="profile.html#documents/bought"><u>Mon espace</u></a> : le retéléchargement est gratuit.</span></div>
+          </div>
+
+          <div class="export-card">
+            <h4><i class="fas fa-floppy-disk"></i> Brouillon</h4>
+            <p>Reprends ton travail plus tard. Il est gardé sur cet appareil et enregistré automatiquement.</p>
+            <button id="btn-save-draft" type="button" class="btn btn-secondary btn-block"><i class="fas fa-floppy-disk"></i> Enregistrer maintenant</button>
+            <button id="btn-load-draft" type="button" class="btn-text-danger" style="display:none"><i class="fas fa-rotate-left"></i> Restaurer le brouillon</button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- ===== Scène du document ===== -->
+    <main class="editor-canvas-area" id="canvasArea">
+      <div class="zoom-controls-floating">
+        <button class="zoom-btn" id="btn-zoom-out" type="button" title="Dézoomer (Ctrl + -)" aria-label="Dézoomer"><i class="fas fa-minus"></i></button>
+        <span class="zoom-level" id="zoom-level">100%</span>
+        <button class="zoom-btn" id="btn-zoom-in" type="button" title="Zoomer (Ctrl + +)" aria-label="Zoomer"><i class="fas fa-plus"></i></button>
+        <button class="zoom-btn" id="btn-zoom-fit" type="button" title="Ajuster à l’écran (Ctrl + 0)" aria-label="Ajuster à l’écran"><i class="fas fa-compress"></i></button>
+      </div>
+      <div class="document-wrapper" id="document-wrapper">
+        <div id="document-canvas" class="document-canvas"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Barre au-dessus du document : zones modifiables et astuce -->
+<div class="dz-bar" id="dz-bar">
+  <div class="dz-chip" id="dz-hint"><i class="fas fa-hand-pointer lead"></i><span>Clique sur un texte du document pour le modifier</span><button type="button" id="dz-hint-close" aria-label="Fermer l’astuce"><i class="fas fa-xmark"></i></button></div>
+  <button class="dz-tool" id="dz-zones" type="button" aria-pressed="false" title="Surligner tout ce qui est modifiable"><i class="fas fa-pen-ruler"></i><span class="t-lbl">Zones modifiables</span></button>
+</div>
+
+<!-- Fenêtre Astuces -->
+<div class="dz-overlay" id="dz-help" role="dialog" aria-modal="true" aria-labelledby="dz-title" aria-hidden="true">
+  <div class="dz-dialog">
+    <div class="dz-head">
+      <div><h3 id="dz-title">Tout ce que tu peux faire</h3><p>Chaque outil de l’éditeur, et où le trouver.</p></div>
+      <button type="button" id="dz-help-close" aria-label="Fermer"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="dz-grid">
+      <div class="dz-card"><span class="ic"><i class="fas fa-hand-pointer"></i></span><h4>Modifier directement</h4><p>Clique sur n’importe quel texte du document et écris. Les icônes et images restent protégées.</p><button type="button" data-dz="zones">Montrer les zones</button></div>
+      <div class="dz-card"><span class="ic"><i class="fas fa-pen-to-square"></i></span><h4>Remplir les champs</h4><p>Recherche un champ, suis ta progression : le champ que tu modifies s’éclaire dans le document.</p><button type="button" data-dz="fields">Ouvrir Contenu</button></div>
+      <div class="dz-card"><span class="ic"><i class="fas fa-palette"></i></span><h4>Couleur, police, photo</h4><p>Une couleur principale change tout le document d’un clic. Rétablis le design du modèle à tout moment.</p><button type="button" data-dz="design">Ouvrir Design</button></div>
+      <div class="dz-card"><span class="ic"><i class="fas fa-file-export"></i></span><h4>Télécharger</h4><p>PDF ou Word, avec la mise en page que tu vois. Déjà payé : le retéléchargement est gratuit.</p><button type="button" data-dz="export">Ouvrir Export</button></div>
+      <div class="dz-card"><span class="ic"><i class="fas fa-magnifying-glass-plus"></i></span><h4>Zoom et pages</h4><p>Zoome, ajuste le document à l’écran et vois sur quelle page tu te trouves.</p><button type="button" data-dz="fit">Ajuster à l’écran</button></div>
+      <div class="dz-card"><span class="ic"><i class="fas fa-floppy-disk"></i></span><h4>Brouillon</h4><p>Enregistré automatiquement sur cet appareil. Tu peux le restaurer depuis l’onglet Export.</p><button type="button" data-dz="save">Enregistrer maintenant</button></div>
+      <div class="dz-card" data-dz-card="taki"><span class="ic"><i class="fas fa-comment-dots"></i></span><h4>Taki</h4><p>Ton compagnon en bas à droite : menu rapide, conseils, et mode discret s’il parle trop.</p><button type="button" data-dz="taki">Parler à Taki</button></div>
+    </div>
+    <div class="dz-keys">
+      <span><kbd>Ctrl</kbd>+<kbd>S</kbd> enregistrer</span>
+      <span><kbd>Ctrl</kbd>+<kbd>+</kbd>/<kbd>-</kbd> zoom</span>
+      <span><kbd>Ctrl</kbd>+<kbd>0</kbd> ajuster</span>
+      <span><kbd>Ctrl</kbd>+<kbd>Z</kbd> annuler dans le texte</span>
+      <span><kbd>?</kbd> ouvrir cette fenêtre</span>
+    </div>
+  </div>
+</div>
+
+<!-- Connexion requise -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-icon"><i class="fas fa-user-circle"></i></div>
+      <h3>Connecte-toi pour sauvegarder</h3>
+    </div>
+    <div class="modal-body"><p>Pour retrouver ton document dans ton espace personnel et l’historique de tes téléchargements, connecte-toi ou crée un compte.</p></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="loginModalClose" type="button">Continuer sans compte</button>
+      <a href="auth.html?action=login" class="btn btn-primary">Se connecter</a>
+    </div>
+  </div>
+</div>
+
+<div class="editor-toast" id="editorToast"></div>
+
+<!-- Taki : compagnon (en bas à droite) et conteur (au centre pendant la génération) -->
 <div id="taki-container" hidden></div>
+<div class="tk-bubble" id="tkBubble" role="status" aria-live="polite"></div>
+<div class="tk-panel" id="tkPanel" hidden>
+  <strong>Salut, je suis Taki !</strong>
+  <span id="tkTip">Je t’aide à finir ton document.</span>
+  <button class="it" type="button" data-tk="download"><i class="fas fa-download"></i>Télécharger mon document</button>
+  <button class="it" type="button" data-tk="save"><i class="fas fa-floppy-disk"></i>Enregistrer le brouillon</button>
+  <button class="it" type="button" data-tk="fit"><i class="fas fa-compress"></i>Ajuster à l’écran</button>
+  <a class="it" href="profile.html#documents/bought"><i class="fas fa-folder-open"></i>Mes documents payés</a>
+  <div class="tk-keys"><kbd>Ctrl</kbd>+<kbd>S</kbd> enregistrer · <kbd>Ctrl</kbd>+<kbd>+</kbd>/<kbd>-</kbd> zoom · <kbd>Ctrl</kbd>+<kbd>0</kbd> ajuster</div>
+  <label class="tk-quiet"><span>Taki commente mes actions</span><input type="checkbox" id="tkTalk" checked></label>
+</div>
 
-    <!-- Boutons flottants mobile -->
-    <div class="mobile-fab-container" id="mobileFabContainer">
-        <button type="button" class="mobile-fab mobile-fab-customize" id="mobileBtnCustomize" aria-label="Personnaliser le document">
-            <i class="fas fa-sliders-h"></i>
-            <span>Personnaliser</span>
-        </button>
-        <button type="button" class="mobile-fab mobile-fab-download" id="mobileBtnDownload" aria-label="Télécharger le document">
-            <i class="fas fa-download"></i>
-            <span>Télécharger</span>
-        </button>
-    </div>
-
-        <!-- Boutons Desktop (cachés sur mobile) -->
-    <div class="editor-desktop-buttons" style="display: none;">
-        <button id="btn-download" class="btn btn-secondary" style="position: fixed; bottom: 30px; left: 30px; z-index: 999;">
-            <i class="fas fa-download"></i>
-            <span>Télécharger</span>
-        </button>
-        <button id="btn-customize" class="btn btn-primary" style="position: fixed; bottom: 30px; right: 30px; z-index: 999;">
-            <i class="fas fa-sliders-h"></i>
-            <span>Personnaliser</span>
-        </button>
-    </div>
-
-    <!-- Scripts -->
-    <script type="module" src="js/editor.js"></script>
+<script type="module" src="js/editor.js"></script>
+<script type="module" src="js/editor-discover.js"></script>
+<script type="module" src="js/editor-responsive.js"></script>
 </body>
 </html>

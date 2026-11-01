@@ -1,0 +1,123 @@
+/* TakiDoc — css/editor-responsive.css : responsivité absolue.
+   À charger APRÈS app-editor.css et editor-discover.css.
+   Principe : tout est fluide (clamp, unités dvw/dvh, container queries), plus aucune zone ne dépend
+   d'une largeur d'écran précise. Le document s'adapte à n'importe quel écran, de 240 px à 4K. */
+
+/* ---------- 1. Dimensions fluides ---------- */
+:root{
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
+  --sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);
+  --appbar:clamp(48px,7dvh,60px);
+  --rail:clamp(56px,5.2vw,78px);
+  --panel:clamp(280px,27vw,430px);
+  --tab:clamp(54px,9dvh,68px);
+}
+.app{padding-left:var(--sal);padding-right:var(--sar);
+  grid-template-rows:calc(var(--appbar) + var(--sat)) minmax(0,1fr)}
+.appbar{padding-top:var(--sat);container-type:inline-size;container-name:ab}
+.dz-bar{top:calc(var(--appbar) + var(--sat) + 12px)}
+.editor-toast{top:calc(var(--appbar) + var(--sat) + 10px)}
+
+/* ---------- 2. Barre d'application : se compacte selon SA propre largeur ---------- */
+.ab-btn,.ab-progress,.ab-logo{flex:none}
+.ab-doc{flex:0 1 auto;min-width:0}
+.ab-space{flex:1 1 0;min-width:0}
+.doc-title{max-width:min(34vw,460px)}
+@container ab (max-width:1180px){
+  #panel-toggle .lbl,#dz-help-btn .lbl{display:none}
+  #panel-toggle,#dz-help-btn{padding:0;width:38px}
+}
+@container ab (max-width:1000px){
+  #app-save .lbl{display:none}#app-save{padding:0;width:38px}
+}
+@container ab (max-width:820px){
+  /* on garde « 1/58 » et on retire seulement le mot « champs » */
+  .ab-progress>span:last-child{font-size:0}
+  .ab-progress b{display:inline!important;font-size:12.5px}
+  .ab-logo{display:none}
+}
+@container ab (max-width:560px){
+  .ab-doc{border-left:0;padding-left:0}
+}
+@container ab (max-width:300px){
+  .ab-progress,.ab-doc{display:none}
+}
+
+/* ---------- 3. Panneau fluide ---------- */
+.sidebar-content{padding-left:clamp(12px,1.6vw,20px);padding-right:clamp(12px,1.6vw,20px)}
+.panel-head{padding-left:clamp(12px,1.6vw,20px);padding-right:clamp(12px,1.6vw,20px)}
+.panel-head h2{font-size:clamp(17px,1.5vw,20px)}
+.xbtns{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+.color-presets{grid-template-columns:repeat(auto-fit,minmax(34px,1fr))}
+
+/* ---------- 4. Document : ne déborde jamais, pas de défilement horizontal ---------- */
+.editor-canvas-area{justify-content:safe center;align-items:flex-start;padding-left:clamp(8px,3vw,40px);padding-right:clamp(8px,3vw,40px);
+  padding-bottom:calc(120px + var(--sab));touch-action:pan-x pan-y;overscroll-behavior:contain}
+.doc-fit{position:relative;flex:none;margin:20px 0;overflow:clip;border-radius:3px;
+  box-shadow:0 2px 6px rgba(15,23,42,.08),0 24px 50px -12px rgba(15,23,42,.28);
+  transition:width .3s cubic-bezier(.4,0,.2,1),height .3s cubic-bezier(.4,0,.2,1)}
+.doc-fit>.document-wrapper{position:absolute;left:0;top:0;margin:0!important;width:max-content;transform-origin:0 0!important}
+.doc-fit .document-canvas{box-shadow:none}
+
+/* ---------- 5. Fenêtres modales (paiement, format) ---------- */
+.td-overlay{padding:max(12px,var(--sat)) max(12px,var(--sar)) max(12px,var(--sab)) max(12px,var(--sal))}
+.td-overlay .td-dialog{max-height:calc(100dvh - 24px)}
+@media(max-width:340px){.td-overlay .td-grid,.dz-grid{grid-template-columns:1fr}}
+
+/* ---------- 6. Tablette et mobile (le panneau devient une feuille) ---------- */
+@media(max-width:900px){
+  :root{--appbar:clamp(46px,7dvh,54px)}
+  .rail{height:calc(var(--tab) + var(--sab));padding-left:max(8px,var(--sal));padding-right:max(8px,var(--sar))}
+  .panel{bottom:calc(var(--tab) + var(--sab));height:min(66dvh,620px)}
+  .editor-canvas-area{padding-bottom:calc(var(--tab) + var(--sab) + 96px)}
+  .zoom-controls-floating{bottom:calc(var(--tab) + var(--sab) + 14px)}
+  .tk-bubble,.tk-panel{max-width:min(250px,calc(100vw - 24px))}
+}
+@media(max-width:360px){
+  .tab-btn span,.rail-dl span{font-size:10px}
+  .zoom-controls-floating{gap:4px;padding:4px 6px}
+  .zoom-level{min-width:42px}
+}
+
+/* ---------- 7. Écran large et très large ---------- */
+@media(min-width:1800px){
+  body.app-editor{font-size:16px}
+  :root{--panel:clamp(360px,24vw,520px)}
+}
+
+/* ---------- 8. Paysage et écrans peu hauts (téléphone couché) ---------- */
+@media(max-height:520px){
+  :root{--appbar:44px;--tab:46px}
+  .tab-btn span,.rail-dl span{display:none!important}
+  .tab-btn{padding:8px 0}
+  .panel{height:min(80dvh,420px)}
+  .editor-canvas-area{padding-top:54px}
+  .dz-chip span{display:none}
+  #taki-container:not(.is-center){width:44px!important;height:52px!important}
+  .tk-bubble,.tk-panel{bottom:80px}
+}
+@media(max-height:520px) and (min-width:901px){
+  .rail{padding:8px 0}
+  .tab-btn span{display:block!important;font-size:10px}
+}
+
+/* ---------- 9. Écrans tactiles ---------- */
+@media(pointer:coarse){
+  .app-editor button,.app-editor a,.app-editor label,.app-editor summary{touch-action:manipulation}
+  .form-control,.fsearch input,.td-input,.app-editor select{font-size:16px}  /* évite le zoom automatique d'iOS */
+  .ab-btn,.zoom-btn,.dz-tool{min-height:44px;min-width:44px}
+  .zoom-btn{width:44px;height:44px}
+  .tab-btn{min-height:44px}
+}
+
+/* ---------- 10. Préférences d'accessibilité ---------- */
+@media(prefers-contrast:more){
+  .app-editor .rail .tab-btn{border-color:#fff!important}
+  .form-control,.fsearch input{border-color:var(--night)}
+}
+
+/* ---------- 11. Barre au-dessus du document : jamais de texte qui se casse ---------- */
+.dz-bar{flex-wrap:nowrap}
+.dz-chip,.dz-tool{white-space:nowrap;flex:0 1 auto;min-width:0}
+.dz-chip span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.dz-tool{flex:none}

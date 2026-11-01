@@ -3,431 +3,162 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Votre espace TakiDoc : favoris, documents, achats, notifications et paramètres.">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Votre espace TakiDoc : retéléchargez gratuitement vos documents payés, reprenez vos brouillons, retrouvez vos favoris et vos notifications.">
 <title>Mon espace — TakiDoc</title>
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="manifest" href="site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="css/header.css">
-<style>
-:root{--night:#0E1A33;--or:#FF6B35;--ink:#C44A12;--soft:#FFF1EA;--bg:#F3F5F9;--line:#E1E6EF;--mut:#5B6780;--ok:#0F8A5F;--okb:#DDF5EA;--warn:#8A5A00;--warnb:#FFF0CC;--err:#B42339;--errb:#FDECEE;--f:'Figtree',system-ui,sans-serif;--d:'Bricolage Grotesque','Figtree',system-ui,sans-serif;--ps:.3}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--night);font:15px/1.5 var(--f);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-a{color:inherit;text-decoration:none}button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none;padding:0}h1,h2,h3,p{margin:0}[hidden]{display:none!important}
-:focus-visible{outline:2px solid var(--or);outline-offset:2px}
-.shell{width:min(1360px,100%);margin:0 auto;padding:28px 24px 60px}
-.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;align-items:start}
-.side{position:sticky;top:92px;padding:12px;background:#fff;border:1px solid var(--line);border-radius:20px}
-.sl{width:100%;min-height:44px;padding:0 12px;display:flex;align-items:center;gap:12px;border-radius:12px;font-weight:600;font-size:14px;color:#3B455C;text-align:left;transition:.15s}
-.sl i{width:18px;text-align:center;color:var(--mut)}.sl:hover{background:var(--soft);color:var(--ink)}.sl:hover i{color:var(--or)}
-.sl.on{background:var(--night);color:#fff}.sl.on i{color:#fff}.sl.out{color:var(--err)}.sl.out i{color:var(--err)}
-.sl b{margin-left:auto;min-width:22px;padding:0 7px;border-radius:11px;background:var(--bg);color:var(--mut);font-size:12px;text-align:center;line-height:22px}.sl.on b{background:#ffffff26;color:#fff}
-.sep{height:1px;background:var(--line);margin:10px 4px}
-.help{margin:10px 4px 4px;padding:14px;border-radius:14px;background:var(--soft);font-size:13px;color:var(--mut)}.help strong{display:block;color:var(--ink);margin-bottom:2px}.help a{display:inline-block;margin-top:6px;font-weight:700;color:var(--ink)}
-.main{min-width:0}.view{display:none}.view.on{display:block}
-.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
-.head h1,.head h2{font:700 clamp(24px,3vw,34px)/1.1 var(--d);letter-spacing:-.03em}.head p{margin-top:6px;color:var(--mut)}
-.bt{height:44px;padding:0 18px;border-radius:22px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:14px;background:#fff;border:1px solid var(--line);white-space:nowrap;transition:.15s}
-.bt:hover{border-color:var(--or);color:var(--ink)}.bt.p{background:var(--or);border-color:var(--or);color:#fff}.bt.p:hover{background:#E85A27;color:#fff}.bt.s{height:36px;padding:0 14px;font-size:13px}.bt:disabled{opacity:.6;cursor:wait}
-.hero{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px;margin-bottom:18px;background:#fff;border:1px solid var(--line);border-radius:22px}
-.who{display:flex;align-items:center;gap:16px;min-width:0}.who div{min-width:0}
-.av{width:72px;height:72px;flex:none;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(135deg,var(--or),#FF9A70);color:#fff;font:700 26px var(--d)}.av img{width:100%;height:100%;object-fit:cover}
-.who h2{font:700 22px/1.2 var(--d);overflow-wrap:anywhere}.who p{color:var(--mut);overflow-wrap:anywhere}.who small{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:12px;background:var(--bg);color:var(--mut);font-weight:600;font-size:12px}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}
-.stat{padding:18px;background:#fff;border:1px solid var(--line);border-radius:18px;text-align:left;transition:.15s}.stat:hover{border-color:var(--or);transform:translateY(-2px)}
-.stat i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--soft);color:var(--or)}
-.stat strong{display:block;margin:12px 0 2px;font:700 30px/1 var(--d);letter-spacing:-.03em}.stat span{color:var(--mut);font-size:13px;font-weight:600}
-.panel{margin-bottom:18px;background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden}
-.ph{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line)}.ph h2{font:700 18px var(--d)}.ph p{color:var(--mut);font-size:13px}.pb{padding:22px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
-.fc{min-width:0}.pv{position:relative;aspect-ratio:210/297;overflow:hidden;border-radius:14px;background:#fff;box-shadow:0 1px 2px rgba(14,26,51,.07),0 10px 24px -14px rgba(14,26,51,.35)}
-.pv img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}.pv iframe{position:absolute;top:0;left:0;width:794px;height:1123px;border:0;transform-origin:0 0;pointer-events:none;background:#fff}
-.pv .ph0{position:absolute;inset:0;display:grid;place-items:center;font-size:28px;color:#c3cad8;background:linear-gradient(100deg,#fff 30%,#EFF2F8 50%,#fff 70%) 0 0/300% 100%;animation:sh 1.5s linear infinite}.pv.ready .ph0{display:none}@keyframes sh{to{background-position:-200% 0}}
-.pv>a{position:absolute;inset:0;z-index:1}
-.rm{position:absolute;top:10px;right:10px;z-index:2;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--or);color:#fff;box-shadow:0 2px 8px rgba(14,26,51,.25);transition:.15s}.rm:hover{background:var(--err)}
-.fi{padding:9px 2px 0}.fi small{color:var(--ink);font-weight:700;font-size:12px}.fi h3{font:600 14px/1.3 var(--d);margin:2px 0 6px;height:2.6em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.fr{display:flex;align-items:center;justify-content:space-between;gap:8px}.fr b{font-size:14px;color:var(--ink)}.fr b.free{color:var(--ok)}
-.quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.qk{display:flex;gap:14px;align-items:flex-start;padding:16px;border:1px solid var(--line);border-radius:16px;text-align:left;transition:.15s}.qk:hover{border-color:var(--or);transform:translateY(-2px)}
-.qk i{width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--bg);color:var(--or)}.qk strong{display:block;font:700 15px var(--d)}.qk span{color:var(--mut);font-size:13px}
-.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th{padding:12px 18px;background:var(--bg);color:var(--mut);font-size:12px;text-align:left;font-weight:700}td{padding:14px 18px;border-top:1px solid var(--line);font-size:14px}tr:hover td{background:#FAFBFD}
-td b{display:block}td small{color:var(--mut)}.tag{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700}.tag.ok{background:var(--okb);color:var(--ok)}.tag.w{background:var(--warnb);color:var(--warn)}.tag.e{background:var(--errb);color:var(--err)}.tag.n{background:var(--bg);color:var(--mut)}
-.nt{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:14px;align-items:start;padding:16px 22px;border-top:1px solid var(--line)}.nt:first-child{border-top:0}
-.nt.new{background:var(--soft);box-shadow:inset 3px 0 var(--or)}.nt>i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--bg);color:var(--mut)}.nt.new>i{background:var(--or);color:#fff}
-.nt h3{font:700 15px var(--d)}.nt p{color:var(--mut);font-size:14px}.nt small{color:#7A869C;font-size:12px}.nt div:last-child{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.set{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{padding:22px;background:#fff;border:1px solid var(--line);border-radius:22px}.card h3{font:700 18px var(--d)}.card>p{color:var(--mut);font-size:14px;margin:4px 0 18px}
-.fd{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}.fd label{font-weight:700;font-size:13px}.fd input{height:46px;padding:0 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;outline:0;transition:.15s}
-.fd input:focus{border-color:var(--or);box-shadow:0 0 0 4px rgba(255,107,53,.1)}.fd input:disabled{background:var(--bg);color:var(--mut)}.row{display:flex;gap:10px;flex-wrap:wrap}.note{margin-top:12px;color:var(--mut);font-size:12.5px}
-.search{position:relative}.search i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mut)}.search input{width:260px;height:44px;padding:0 14px 0 38px;border:1.5px solid var(--line);border-radius:22px;background:#fff;outline:0}.search input:focus{border-color:var(--or)}
-.empty{padding:54px 20px;text-align:center;color:var(--mut)}.empty>i{width:64px;height:64px;margin-bottom:14px;border-radius:50%;display:inline-grid;place-items:center;background:var(--soft);color:var(--or);font-size:24px}.empty h3{font:700 19px var(--d);color:var(--night)}.empty p{max-width:42ch;margin:6px auto 18px}
-.load{padding:40px;text-align:center;color:var(--mut)}.load i{color:var(--or);margin-right:8px}
-.alert{display:none;margin-bottom:18px;padding:14px 18px;border-radius:14px;font-weight:600}.alert.show{display:flex;gap:10px;align-items:center}.alert.error{background:var(--errb);color:var(--err)}.alert.success{background:var(--okb);color:var(--ok)}
-.toast{position:fixed;left:50%;bottom:24px;z-index:1500;transform:translate(-50%,12px);max-width:calc(100vw - 32px);padding:12px 18px;border-radius:14px;background:var(--night);color:#fff;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:translate(-50%,0)}.toast.err{background:var(--err)}
-.foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:34px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut);font-size:13px}.foot a:hover{color:var(--ink)}
-@media(max-width:1024px){.layout{grid-template-columns:210px minmax(0,1fr);gap:20px}.stats{grid-template-columns:repeat(2,1fr)}.quick,.set{grid-template-columns:1fr}}
-@media(max-width:768px){.shell{padding:16px 14px calc(40px + env(safe-area-inset-bottom))}.layout{display:block}
-.side{position:static;display:flex;gap:6px;overflow-x:auto;margin-bottom:18px;padding:8px;border-radius:18px;scrollbar-width:none}.side::-webkit-scrollbar,.sep,.help,.side .lb{display:none}
-.sl{width:auto;flex:none;min-height:40px;padding:0 14px;border-radius:20px;white-space:nowrap;border:1px solid var(--line)}.sl.on{border-color:var(--night)}
-.head{flex-direction:column;align-items:flex-start}.hero{flex-direction:column;text-align:center;align-items:stretch}.who{flex-direction:column}.hero .bt{width:100%}
-.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.search,.search input{width:100%}.nt{grid-template-columns:36px minmax(0,1fr)}.nt div:last-child{grid-column:2;justify-content:flex-start}.pb{padding:16px}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-
-
-/* =========================================================
-   TAKIDOC — MINIATURES PROFESSIONNELLES DES DOCUMENTS
-   Feuille entière, ratio A4, aperçu centré, sans découpage
-   ========================================================= */
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 22px;
-  align-items: start;
-}
-
-.fc {
-  min-width: 0;
-  width: 100%;
-  position: relative;
-  animation: td-card-in .35s ease both;
-}
-
-@keyframes td-card-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Zone A4 : conserve toujours les proportions de la feuille */
-.pv {
-  position: relative;
-  isolation: isolate;
-  width: 100%;
-  aspect-ratio: 210 / 297;
-  overflow: hidden;
-  border: 1px solid #E1E6EF;
-  border-radius: 13px;
-  background: #EEF1F6;
-  box-shadow:
-    0 2px 5px rgba(14, 26, 51, .035),
-    0 10px 25px -16px rgba(14, 26, 51, .30);
-  transition:
-    box-shadow .22s ease,
-    border-color .22s ease,
-    transform .22s ease;
-}
-
-/* Effet discret, sans déplacer la carte au survol */
-.fc:hover .pv {
-  border-color: #F5B39A;
-  box-shadow:
-    0 5px 12px rgba(14, 26, 51, .06),
-    0 18px 35px -18px rgba(14, 26, 51, .30);
-}
-
-/* Images : montrer l'image complète, jamais la couper */
-.pv img {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center center;
-  background: #fff;
-}
-
-/* Document HTML rendu dans un iframe de dimensions A4 */
-.pv iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: block;
-  width: 794px;
-  height: 1123px;
-  max-width: none;
-  border: 0;
-  margin: 0;
-  padding: 0;
-  transform-origin: top left;
-  pointer-events: none;
-  background: #fff;
-}
-
-/* État de chargement */
-.pv .ph0 {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: grid;
-  place-items: center;
-  color: #A5AEC0;
-  font-size: 30px;
-  background:
-    linear-gradient(
-      100deg,
-      #F0F2F7 20%,
-      #FFFFFF 42%,
-      #F0F2F7 64%
-    );
-  background-size: 250% 100%;
-  animation: td-preview-shimmer 1.6s linear infinite;
-}
-
-.pv.ready .ph0 {
-  display: none;
-}
-
-@keyframes td-preview-shimmer {
-  to { background-position: -250% 0; }
-}
-
-/* Toute la surface reste cliquable pour ouvrir le modèle */
-.pv > a {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: block;
-  border-radius: inherit;
-  cursor: pointer;
-}
-
-.pv > a:focus-visible {
-  outline: 3px solid var(--or);
-  outline-offset: -4px;
-}
-
-/* Bouton de retrait toujours visible au-dessus de l'aperçu */
-.rm {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 3;
-  width: 36px;
-  height: 36px;
-  border: 1px solid rgba(255, 255, 255, .7);
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: #FF6B35;
-  color: #fff;
-  box-shadow: 0 3px 12px rgba(14, 26, 51, .20);
-  transition: background .18s ease, transform .18s ease;
-}
-
-.rm:hover {
-  background: #C92D43;
-  transform: scale(1.06);
-}
-
-.rm:disabled {
-  opacity: .55;
-  cursor: wait;
-}
-
-/* Informations sous la feuille */
-.fi {
-  min-width: 0;
-  padding: 12px 2px 2px;
-}
-
-.fi small {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--ink);
-  font-weight: 700;
-  font-size: 11px;
-  line-height: 1.4;
-  letter-spacing: .045em;
-  text-transform: uppercase;
-}
-
-.fi h3 {
-  min-height: 2.6em;
-  margin: 0 0 10px;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow-wrap: anywhere;
-  font: 700 15px/1.35 var(--d);
-  letter-spacing: -.015em;
-}
-
-.fr {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.fr b {
-  min-width: 0;
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 800;
-  line-height: 1.25;
-}
-
-.fr b.free {
-  color: var(--ok);
-}
-
-.fr .bt {
-  flex-shrink: 0;
-}
-
-/* Téléphones */
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px 12px;
-  }
-
-  .pv {
-    border-radius: 10px;
-  }
-
-  .fi {
-    padding-top: 9px;
-  }
-
-  .fi h3 {
-    font-size: 13px;
-    margin-bottom: 8px;
-  }
-
-  .fr {
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .fr b {
-    font-size: 13px;
-  }
-
-  .fr .bt.s {
-    height: 32px;
-    padding: 0 10px;
-    font-size: 12px;
-  }
-
-  .rm {
-    top: 7px;
-    right: 7px;
-    width: 32px;
-    height: 32px;
-  }
-}
-
-@media (max-width: 360px) {
-  .grid {
-    gap: 12px 9px;
-  }
-
-  .fr {
-    gap: 6px;
-  }
-
-  .fr .bt.s {
-    padding: 0 8px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fc,
-  .pv,
-  .rm,
-  .pv .ph0 {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-</style>
+<link rel="stylesheet" href="css/taki/taki.css">
+<link rel="stylesheet" href="css/taki/taki-animations.css">
+<link rel="stylesheet" href="css/app-profile.css">
 </head>
-<body>
+<body class="app-profile">
 <div id="td-header-container"></div>
-<main class="shell">
-<div class="alert" id="alert" role="status" aria-live="polite"></div>
-<div class="layout">
-  <aside class="side" aria-label="Navigation de l’espace personnel">
-    <button class="sl on" data-view="overview"><i class="fa-solid fa-table-cells-large"></i>Vue d’ensemble</button>
-    <button class="sl" data-view="favorites"><i class="fa-regular fa-heart"></i>Favoris<b id="n-fav">0</b></button>
-    <button class="sl" data-view="documents"><i class="fa-regular fa-file-lines"></i>Mes documents<b id="n-doc">0</b></button>
-    <button class="sl" data-view="purchases"><i class="fa-solid fa-bag-shopping"></i>Achats<b id="n-buy">0</b></button>
-    <button class="sl" data-view="notifications"><i class="fa-regular fa-bell"></i>Notifications<b id="n-not">0</b></button>
-    <div class="sep"></div>
-    <button class="sl" data-view="settings"><i class="fa-solid fa-sliders"></i>Paramètres</button>
-    <button class="sl out" id="logout"><i class="fa-solid fa-arrow-right-from-bracket"></i>Se déconnecter</button>
-    <div class="help lb"><strong>Besoin d’aide ?</strong>Une question sur un document ou un achat ?<br><a href="contact.html">Contacter TakiDoc</a></div>
-  </aside>
 
-  <section class="main">
-    <section class="view on" id="v-overview">
-      <div class="head"><div><h1 id="hello">Bonjour !</h1><p>Vos favoris, documents et achats réunis au même endroit.</p></div><a class="bt p" href="index.html#catalog"><i class="fa-solid fa-magnifying-glass"></i>Explorer les modèles</a></div>
-      <div class="hero"><div class="who"><div class="av" id="av">TD</div><div><h2 id="p-name">Chargement…</h2><p id="p-mail">—</p><small>Membre depuis <span id="joined">—</span></small></div></div><button class="bt" data-view="settings"><i class="fa-solid fa-pen"></i>Modifier mon profil</button></div>
-      <div class="stats">
-        <button class="stat" data-view="favorites"><i class="fa-regular fa-heart"></i><strong id="s-fav">0</strong><span>Modèles favoris</span></button>
-        <button class="stat" data-view="documents"><i class="fa-regular fa-file-lines"></i><strong id="s-doc">0</strong><span>Documents enregistrés</span></button>
-        <button class="stat" data-view="purchases"><i class="fa-solid fa-bag-shopping"></i><strong id="s-buy">0</strong><span>Achats</span></button>
-        <button class="stat" data-view="notifications"><i class="fa-regular fa-bell"></i><strong id="s-not">0</strong><span>Notifications non lues</span></button>
+<!-- Rail de navigation (ordinateur) -->
+<nav class="pf-rail" aria-label="Navigation de Mon espace">
+  <a class="ri" href="index.html" title="Accueil TakiDoc"><i class="fa-solid fa-house"></i><span>Accueil</span></a>
+  <button class="ri on" data-view="home" title="Mon espace"><i class="fa-solid fa-table-cells-large"></i><span>Espace</span></button>
+  <button class="ri" data-view="favorites" title="Favoris"><i class="fa-regular fa-heart"></i><span>Favoris</span></button>
+  <button class="ri" data-view="documents" title="Mes documents"><i class="fa-regular fa-folder-open"></i><span>Documents</span><b class="pf-badge" id="rb-doc" hidden>0</b></button>
+  <button class="ri" data-view="notifications" title="Notifications"><i class="fa-regular fa-bell"></i><span>Alertes</span><b class="pf-badge" id="rb-not" hidden>0</b></button>
+  <div class="sp"></div>
+  <button class="ri" data-view="settings" title="Compte et paramètres"><i class="fa-solid fa-gear"></i><span>Compte</span></button>
+</nav>
+
+<main class="pf" id="main">
+<div class="pf-wrap">
+  <div class="alert" id="alert" role="status" aria-live="polite"></div>
+
+  <!-- ===== ESPACE (accueil) ===== -->
+  <section class="view on" id="v-home" aria-label="Mon espace">
+    <div class="hi">
+      <button class="av" id="av" data-view="settings" aria-label="Ouvrir mon compte">TD</button>
+      <div><h1 id="hello">Bonjour !</h1><p id="hello-sub">Voici ce qui t’attend aujourd’hui.</p></div>
+      <a class="bt p" href="index.html"><i class="fa-solid fa-compass"></i>Explorer les modèles</a>
+    </div>
+    <div class="chips">
+      <button class="chip" data-view="documents" data-seg="bought"><i class="fa-solid fa-download"></i><div><strong id="c-doc">0</strong><span>Payés</span></div></button>
+      <button class="chip" data-view="documents" data-seg="drafts"><i class="fa-solid fa-pen-ruler"></i><div><strong id="c-dra">0</strong><span>Brouillons</span></div></button>
+      <button class="chip" data-view="favorites"><i class="fa-regular fa-heart"></i><div><strong id="c-fav">0</strong><span>Favoris</span></div></button>
+      <button class="chip" data-view="notifications"><i class="fa-regular fa-bell"></i><div><strong id="c-not">0</strong><span>Non lues</span></div></button>
+    </div>
+    <div id="home-body"><div class="load"><i class="fa-solid fa-spinner fa-spin"></i>Chargement…</div></div>
+  </section>
+
+  <!-- ===== FAVORIS ===== -->
+  <section class="view" id="v-favorites" aria-label="Favoris">
+    <div class="vh">
+      <div><h2>Mes favoris</h2><p>Les modèles que tu as gardés, sur tous tes appareils.</p></div>
+      <div class="tools">
+        <label class="search"><i class="fa-solid fa-magnifying-glass"></i><input id="q-fav" type="search" placeholder="Rechercher un favori…" aria-label="Rechercher un favori"></label>
+        <select class="sel" id="s-fav" aria-label="Trier les favoris"><option value="new">Récents</option><option value="name">Nom A–Z</option><option value="asc">Prix croissant</option><option value="desc">Prix décroissant</option></select>
       </div>
-      <div class="panel"><div class="ph"><div><h2>Favoris récents</h2><p>Enregistrés dans votre compte TakiDoc.</p></div><button class="bt s" data-view="favorites">Tout voir</button></div><div class="pb" id="ov-fav"><div class="load"><i class="fa-solid fa-spinner fa-spin"></i>Chargement…</div></div></div>
-      <div class="quick">
-        <a class="qk" href="index.html#catalog"><i class="fa-solid fa-compass"></i><div><strong>Découvrir les modèles</strong><span>Parcourez toute la bibliothèque.</span></div></a>
-        <button class="qk" data-view="documents"><i class="fa-regular fa-file-pdf"></i><div><strong>Retrouver mes documents</strong><span>Vos fichiers et PDF enregistrés.</span></div></button>
-        <button class="qk" data-view="purchases"><i class="fa-solid fa-receipt"></i><div><strong>Suivre mes achats</strong><span>Montants et statuts de paiement.</span></div></button>
+    </div>
+    <div id="fav-list"><div class="load"><i class="fa-solid fa-spinner fa-spin"></i>Chargement…</div></div>
+  </section>
+
+  <!-- ===== DOCUMENTS (récupération) ===== -->
+  <section class="view" id="v-documents" aria-label="Mes documents">
+    <div class="vh">
+      <div><h2>Mes documents</h2><p>Retélécharge gratuitement un document déjà payé, reprends un brouillon ou consulte tes paiements.</p></div>
+      <label class="search"><i class="fa-solid fa-magnifying-glass"></i><input id="q-doc" type="search" placeholder="Rechercher un document…" aria-label="Rechercher un document"></label>
+    </div>
+    <div class="seg" role="tablist" aria-label="Catégories de documents">
+      <button role="tab" data-seg="bought" class="on">Payés<b id="g-bought">0</b></button>
+      <button role="tab" data-seg="drafts">Brouillons<b id="g-drafts">0</b></button>
+      <button role="tab" data-seg="saved">Enregistrés<b id="g-saved">0</b></button>
+      <button role="tab" data-seg="pay">Paiements<b id="g-pay">0</b></button>
+    </div>
+    <div data-pane="bought" id="p-bought"></div>
+    <div data-pane="drafts" id="p-drafts" hidden></div>
+    <div data-pane="saved" id="p-saved" hidden></div>
+    <div data-pane="pay" id="p-pay" hidden></div>
+  </section>
+
+  <!-- ===== NOTIFICATIONS ===== -->
+  <section class="view" id="v-notifications" aria-label="Notifications">
+    <div class="vh">
+      <div><h2>Notifications</h2><p>Les messages liés à ton compte et à tes paiements.</p></div>
+      <div class="tools"><button class="bt" id="read-all"><i class="fa-solid fa-check-double"></i>Tout marquer comme lu</button></div>
+    </div>
+    <div class="seg" role="tablist" aria-label="Filtrer les notifications">
+      <button role="tab" data-nf="all" class="on">Toutes</button>
+      <button role="tab" data-nf="unread">Non lues<b id="g-unread">0</b></button>
+    </div>
+    <div id="not-list"><div class="load"><i class="fa-solid fa-spinner fa-spin"></i>Chargement…</div></div>
+  </section>
+
+  <!-- ===== COMPTE ===== -->
+  <section class="view" id="v-settings" aria-label="Compte et paramètres">
+    <div class="vh"><div><h2>Mon compte</h2><p>Garde tes informations à jour.</p></div></div>
+    <div class="set">
+      <form class="card" id="f-profile">
+        <h3>Informations personnelles</h3><p>Enregistrées dans ton profil TakiDoc.</p>
+        <div class="fd"><label for="i-name">Nom complet</label><input id="i-name" maxlength="120" autocomplete="name" required></div>
+        <div class="fd"><label for="i-mail">Adresse e-mail</label><input id="i-mail" type="email" disabled></div>
+        <div class="fd"><label for="i-tel">Téléphone</label><input id="i-tel" type="tel" maxlength="40" autocomplete="tel" placeholder="Ex. 06 518 69 67"></div>
+        <button class="bt p" id="b-save" type="submit"><i class="fa-solid fa-floppy-disk"></i>Enregistrer</button>
+        <p class="note">L’adresse e-mail est liée à ta connexion et ne peut pas être modifiée ici. Membre depuis <b id="joined">—</b>.</p>
+      </form>
+      <div class="card">
+        <h3>Sécurité</h3><p>Ton mot de passe et ta session.</p>
+        <div class="stack">
+          <button class="bt" id="b-pwd"><i class="fa-solid fa-key"></i>Réinitialiser mon mot de passe</button>
+          <button class="bt d" id="logout"><i class="fa-solid fa-arrow-right-from-bracket"></i>Me déconnecter</button>
+        </div>
+        <p class="note">Un lien de réinitialisation est envoyé à ton adresse e-mail.</p>
       </div>
-    </section>
-
-    <section class="view" id="v-favorites">
-      <div class="head"><div><h2>Mes favoris</h2><p>Les modèles enregistrés dans votre compte, disponibles sur tous vos appareils.</p></div><label class="search"><i class="fa-solid fa-magnifying-glass"></i><input id="q-fav" type="search" placeholder="Rechercher un favori…" aria-label="Rechercher un favori"></label></div>
-      <div id="fav-list"><div class="load"><i class="fa-solid fa-spinner fa-spin"></i>Chargement…</div></div>
-    </section>
-
-    <section class="view" id="v-documents">
-      <div class="head"><div><h2>Mes documents</h2><p>Les documents créés à partir des modèles TakiDoc.</p></div><label class="search"><i class="fa-solid fa-magnifying-glass"></i><input id="q-doc" type="search" placeholder="Rechercher un document…" aria-label="Rechercher un document"></label></div>
-      <div class="panel" id="doc-list"><div class="load"><i class="fa-solid fa-spinner fa-spin"></i>Chargement…</div></div>
-    </section>
-
-    <section class="view" id="v-purchases">
-      <div class="head"><div><h2>Mes achats</h2><p>Historique de vos achats et statut des paiements.</p></div></div>
-      <div class="panel" id="buy-list"><div class="load"><i class="fa-solid fa-spinner fa-spin"></i>Chargement…</div></div>
-    </section>
-
-    <section class="view" id="v-notifications">
-      <div class="head"><div><h2>Notifications</h2><p>Les messages liés à votre compte.</p></div><button class="bt" id="read-all"><i class="fa-solid fa-check-double"></i>Tout marquer comme lu</button></div>
-      <div class="panel" id="not-list"><div class="load"><i class="fa-solid fa-spinner fa-spin"></i>Chargement…</div></div>
-    </section>
-
-    <section class="view" id="v-settings">
-      <div class="head"><div><h2>Paramètres du compte</h2><p>Gardez vos informations à jour.</p></div></div>
-      <div class="set">
-        <form class="card" id="f-profile"><h3>Informations personnelles</h3><p>Enregistrées dans votre profil TakiDoc.</p>
-          <div class="fd"><label for="i-name">Nom complet</label><input id="i-name" maxlength="120" autocomplete="name" required></div>
-          <div class="fd"><label for="i-mail">Adresse e-mail</label><input id="i-mail" type="email" disabled></div>
-          <div class="fd"><label for="i-tel">Téléphone</label><input id="i-tel" type="tel" maxlength="40" autocomplete="tel" placeholder="Ex. 06 518 69 67"></div>
-          <button class="bt p" id="b-save" type="submit"><i class="fa-solid fa-floppy-disk"></i>Enregistrer</button><p class="note">L’adresse e-mail est gérée par votre connexion et ne peut pas être modifiée ici.</p></form>
-        <div class="card"><h3>Photo et sécurité</h3><p>Votre avatar et votre session.</p>
-          <div class="fd"><label for="i-av">Adresse (URL) de la photo de profil</label><input id="i-av" type="url" placeholder="https://…"></div>
-          <div class="row"><button class="bt" id="b-av"><i class="fa-regular fa-image"></i>Enregistrer la photo</button><button class="bt" id="b-av-x">Retirer</button></div><p class="note">Seule l’adresse de l’image est enregistrée : aucun fichier n’est téléversé.</p>
-          <div class="sep" style="margin:20px 0"></div>
-          <div class="row"><button class="bt" id="b-pwd"><i class="fa-solid fa-key"></i>Réinitialiser mon mot de passe</button><button class="bt" id="logout-2" style="color:var(--err)"><i class="fa-solid fa-arrow-right-from-bracket"></i>Se déconnecter</button></div></div>
+      <div class="card">
+        <h3>Cet appareil</h3><p>Les brouillons sont gardés dans ce navigateur uniquement.</p>
+        <div class="stack"><button class="bt d" id="b-clear"><i class="fa-regular fa-trash-can"></i>Vider les brouillons (<span id="clr-n">0</span>)</button></div>
       </div>
-    </section>
-
-    <footer class="foot"><span>© <span id="yr"></span> TakiDoc</span><span><a href="confidentialite.html">Confidentialité</a> · <a href="conditions.html">Conditions</a> · <a href="contact.html">Assistance</a></span></footer>
+      <div class="card">
+        <h3>Aide</h3><p>Une question sur un document ou un paiement ?</p>
+        <div class="stack">
+          <a class="bt" href="comment-ca-marche.html"><i class="fa-regular fa-circle-question"></i>Comment ça marche</a>
+          <a class="bt" href="contact.html"><i class="fa-regular fa-envelope"></i>Contacter TakiDoc</a>
+        </div>
+        <p class="note"><a href="confidentialite.html">Confidentialité</a> · <a href="conditions.html">Conditions</a> · © <span id="yr"></span> TakiDoc</p>
+      </div>
+    </div>
   </section>
 </div>
 </main>
+
+<!-- Barre d'onglets (mobile) -->
+<nav class="pf-tab" aria-label="Navigation de Mon espace">
+  <button class="on" data-view="home"><i class="fa-solid fa-table-cells-large"></i>Espace</button>
+  <button data-view="favorites"><i class="fa-regular fa-heart"></i>Favoris</button>
+  <button data-view="documents"><i class="fa-regular fa-folder-open"></i>Documents<b class="pf-badge" id="tb-doc" hidden>0</b></button>
+  <button data-view="notifications"><i class="fa-regular fa-bell"></i>Alertes<b class="pf-badge" id="tb-not" hidden>0</b></button>
+  <button data-view="settings"><i class="fa-regular fa-user"></i>Compte</button>
+</nav>
+
+<!-- Taki, la mascotte -->
+<div class="pf-taki" id="pfTaki">
+  <div class="tk-panel" id="tkPanel" hidden>
+    <strong>Salut, je suis Taki !</strong><span id="tkTip">Je t’aide à retélécharger tes documents payés.</span>
+    <button class="bt s" data-view="documents" data-seg="bought"><i class="fa-solid fa-download"></i>Mes documents payés</button>
+    <a class="bt s" href="index.html"><i class="fa-solid fa-compass"></i>Explorer les modèles</a>
+    <a class="bt s" href="comment-ca-marche.html"><i class="fa-regular fa-circle-question"></i>Besoin d’aide ?</a>
+  </div>
+  <div class="tk-bubble" id="tkBubble" role="status" aria-live="polite"></div>
+  <button class="tk-btn" id="tkBtn" aria-label="Parler à Taki, la mascotte de TakiDoc" aria-expanded="false"></button>
+</div>
+
+<dialog class="dlg" id="dlg"><h3 id="dlg-t"></h3><p id="dlg-p"></p><div class="ac"><button class="bt" id="dlg-no">Annuler</button><button class="bt p" id="dlg-ok">Confirmer</button></div></dialog>
 <div class="toast" id="toast" role="status"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/taki/taki.js"></script>
 <script type="module" src="js/header.js" defer></script>
 <script src="js/profile.js"></script>
 </body>
 </html>
- 

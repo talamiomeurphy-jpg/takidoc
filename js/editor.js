@@ -1,5 +1,5 @@
 /* ============================================================
-   TAKIDOC — MOTEUR D'ÉDITION PROFESSIONNEL (v9.0)
+   TAKIDOC — MOTEUR D'ÉDITION PROFESSIONNEL (v10.0)
    Supabase • CSS isolé • A4 multi-pages • PDF / Word • Brouillons
    Paiement Mobile Money • Génération par le serveur Render
    Taki, la mascotte : raconte la génération et garde le
@@ -7,6 +7,9 @@
    v9 : génération résistante aux redémarrages du serveur Render
    (nouvelles tentatives progressives, attente du réveil via /health,
    nouveau jeton si le précédent a été perdu en route).
+   Lien de récupération depuis Mon espace : ?recover=<jeton>&format=pdf|docx.
+   v10 : éditeur en mode application (js/editor-app.js), Taki compagnon
+   (bulle, progression, repérage du champ dans le document).
 
    PLAN DU FICHIER
     1. Configuration          9. Photo
@@ -24,6 +27,7 @@ import { initProtection } from './editor-protection.js';
 import './editor-underline-fix.js';
 import { initPagination, refreshPages } from './editor-pagination.js';
 import { supabase } from './supabase-config.js';
+import { createCoach, initWorkspace, renderProgress } from './editor-app.js';
 
 /* ------------------------------------------------------------
    1. CONFIGURATION
@@ -46,7 +50,7 @@ const CONFIG = Object.freeze({
   pollMaxAttempts: 180,        // 6 minutes
   pendingMaxAgeMs: 6 * 60 * 60 * 1000,
   autoSaveDelayMs: 900,
-  zoomMin: 0.3,
+  zoomMin: 0.2,
   zoomMax: 2.5,
   zoomStep: 0.1,
   maxPhotoBytes: 5 * 1024 * 1024
@@ -105,6 +109,7 @@ const state = {
   initialized: false,
   originalCss: '',
   downloading: false,
+  coachReady: false,
   watching: new Set()
 };
 
@@ -154,7 +159,10 @@ function setText(id, value) {
 
 function setDocStatus(text, className = 'doc-status') {
   const status = $('#header-doc-status');
-  if (status) { status.className = className; status.textContent = text; }
+  if (!status) return;
+  const busy = /saving/.test(className);
+  status.className = className;
+  status.replaceChildren(icon(busy ? 'fa-circle-notch fa-spin' : 'fa-circle-check'), h('span', { text }));
 }
 
 function formatPrice(value) {
@@ -191,10 +199,46 @@ function scheduleRefreshPages() {
   state.refreshTimer = setTimeout(() => refreshPages(), 120);
 }
 
+/** Nombre de champs réellement personnalisés (différents de la valeur d'exemple du modèle). */
+function fieldProgress() {
+  const fields = state.template?.fields || [];
+  const done = fields.filter(field => {
+    const value = String(getFieldValue(field.name) ?? '').trim();
+    return value && value !== String(field.defaultValue ?? '').trim();
+  }).length;
+  return { done, total: fields.length };
+}
+
+function refreshProgress(announce = true) {
+  const { done, total } = fieldProgress();
+  renderProgress(done, total);
+  if (!announce || !state.coachReady || !total) return;
+  if (done === total) coach.say('Tout est personnalisé ! Tu peux télécharger ton document.', 'celebrating', { key: 'complete' });
+  else if (total > 3 && done >= Math.ceil(total / 2)) coach.say('Déjà la moitié ! Continue, tu y es presque.', 'working', { key: 'half' });
+}
+
+let locateTimer = null;
+/** Éclaire dans le document le champ en cours de saisie, et le fait défiler à l'écran s'il en sort. */
+function locateField(name) {
+  const el = getTemplateFieldElement(name);
+  if (!el) return;
+  $$('.field-locate').forEach(node => node.classList.remove('field-locate'));
+  clearTimeout(locateTimer);
+  el.classList.add('field-locate');
+  const area = $('#canvasArea');
+  if (area && !window.matchMedia('(max-width: 900px)').matches) {
+    const a = area.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    if (r.top < a.top + 20 || r.bottom > a.bottom - 90) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+  locateTimer = setTimeout(() => el.classList.remove('field-locate'), 1500);
+}
+
 function markDirty() {
   state.isDirty = true;
   setDocStatus('Modifications en cours…', 'doc-status saving');
   scheduleRefreshPages();
+  refreshProgress();
   clearTimeout(state.autoSaveTimer);
   state.autoSaveTimer = setTimeout(() => saveDraft({ quiet: true }), CONFIG.autoSaveDelayMs);
 }
@@ -222,6 +266,7 @@ const taki = (() => {
         // Chemin calculé depuis ce fichier : fonctionne même si le site n'est pas à la racine du domaine
         templateUrl: new URL('../components/taki/taki.html', import.meta.url).href
       });
+      dock();
       return true;
     } catch (error) {
       mascot = null;
@@ -230,26 +275,46 @@ const taki = (() => {
     }
   }
 
-  /** @param {'idle'|'thinking'|'working'|'celebrating'|'error'} mascotState */
+  /** Taki au repos : petit compagnon en bas à droite (la bulle et le menu sont gérés par editor-app.js). */
+  function dock() {
+    const host = container();
+    if (!host || !mascot) return;
+    window.clearTimeout(hideTimer);
+    host.classList.remove('is-center');
+    document.body.classList.remove('taki-story');
+    host.hidden = false;
+    try { mascot.setState('idle'); } catch (_) { /* sans importance */ }
+  }
+
+  /** Taki prend la scène (histoire de génération, fête, erreur). @param {'idle'|'thinking'|'working'|'celebrating'|'error'} mascotState */
   function show(mascotState, message, { center = true } = {}) {
     const host = container();
     if (!host || !mascot) return;
     window.clearTimeout(hideTimer);
     host.classList.toggle('is-center', center);
+    document.body.classList.toggle('taki-story', center);
     host.hidden = false;
     mascot.setState(mascotState, message);
   }
 
+  /** Après la scène, Taki retourne dans son coin au lieu de disparaître. */
   function hide(delay = 0) {
     window.clearTimeout(hideTimer);
-    hideTimer = window.setTimeout(() => {
-      const host = container();
-      if (host) host.hidden = true;
-    }, delay);
+    hideTimer = window.setTimeout(dock, delay);
   }
 
-  return { init, show, hide, get available() { return Boolean(mascot); } };
+  /** Change l'humeur du compagnon sans prendre la scène. */
+  function mood(mascotState, message) {
+    const host = container();
+    if (!mascot || !host || host.classList.contains('is-center')) return;
+    try { mascot.setState(mascotState, message); } catch (_) { /* sans importance */ }
+  }
+
+  return { init, show, hide, dock, mood, get available() { return Boolean(mascot); } };
 })();
+
+/** Le compagnon commente tes actions (bulle, avec délai entre deux messages et mode discret). */
+const coach = createCoach(taki);
 
 /** Taki raconte son histoire ; s'arrête dès que la génération a échoué. */
 async function playTakiStory(isFailed) {
@@ -534,7 +599,10 @@ function applyPrimaryColor(color, options = {}) {
   state.colorActive = true;
   syncColorUI();
   installColorOverrides();
-  if (!options.silent) markDirty();
+  if (!options.silent) {
+    markDirty();
+    coach.say('Jolie couleur ! Elle s’applique à tout le document.', 'celebrating', { key: 'color' });
+  }
 }
 
 function applyFontFamily() {
@@ -559,6 +627,7 @@ function setupDesignControls() {
     state.fontCustom = true;
     applyFontFamily();
     markDirty();
+    coach.say('Nouvelle police appliquée au document.', 'idle', { key: 'font' });
   });
   $('#btn-reset-design')?.addEventListener('click', event => {
     event.preventDefault();
@@ -647,6 +716,7 @@ function buildFieldsForm() {
       if (target && !isBrandElement(target)) target.textContent = input.value;
       markDirty();
     });
+    input.addEventListener('focus', () => locateField(field.name));
     container.appendChild(h('div', { class: 'form-group' },
       h('label', { htmlFor: inputId, text: `${field.label}${field.required ? ' *' : ''}` }),
       input
@@ -827,6 +897,7 @@ function setupPhotoUpload() {
       if (remove) remove.style.display = 'inline-flex';
       markDirty();
       toast('Photo ajoutée au document.', 'success');
+      coach.say('Belle photo ! Elle est déjà en place.', 'celebrating', { key: 'photo' });
     };
     reader.onerror = () => toast('Impossible de lire cette image.', 'error');
     reader.readAsDataURL(file);
@@ -860,8 +931,11 @@ function fitZoom() {
   const container = $('.editor-canvas-area') || $('.preview-container');
   const canvas = getCanvas();
   if (!container || !canvas) return window.innerWidth <= 768 ? 0.48 : 0.85;
-  const available = Math.max(220, container.clientWidth - 80);
-  return Math.max(CONFIG.zoomMin, Math.min(1.2, available / (canvas.offsetWidth || 794)));
+  // Largeur utile = largeur de la zone moins ses marges réelles (fluides selon l'écran)
+  const cs = getComputedStyle(container);
+  const gutter = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+  const available = Math.max(160, container.clientWidth - gutter);
+  return Math.max(CONFIG.zoomMin, Math.min(1.6, available / (canvas.offsetWidth || 794)));
 }
 
 function stepZoom(delta) {
@@ -968,7 +1042,10 @@ function saveDraft(options = {}) {
     localStorage.setItem(state.draftKey, JSON.stringify(collectDraft()));
     state.isDirty = false;
     setDocStatus('Modifications sauvegardées');
-    if (!options.quiet) toast('Brouillon sauvegardé sur cet appareil.', 'success');
+    if (!options.quiet) {
+      toast('Brouillon sauvegardé sur cet appareil.', 'success');
+      coach.say('Brouillon enregistré : tu pourras reprendre plus tard.', 'idle');
+    }
     return true;
   } catch (error) {
     console.error('Sauvegarde du brouillon impossible :', error);
@@ -1018,6 +1095,48 @@ function loadDraft() {
   } catch (error) {
     console.error('Erreur restauration brouillon :', error);
     toast('Impossible de restaurer ce brouillon.', 'error');
+    return false;
+  }
+}
+
+/**
+ * Récupération d'un document payé : recharge la copie conservée 72 h (purchase_documents).
+ * Renvoie false si elle est absente ou expirée : l'éditeur garde alors le brouillon de l'appareil.
+ */
+async function restorePurchasedDocument(purchaseId) {
+  if (!supabase || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(purchaseId))) return false;
+  try {
+    const { data, error } = await supabase
+      .from('purchase_documents')
+      .select('document_data, template_id, expires_at')
+      .eq('purchase_id', purchaseId)
+      .maybeSingle();
+    if (error || !data?.document_data) return false;
+    if (data.template_id && data.template_id !== state.template?.id) return false;
+    if (data.expires_at && new Date(data.expires_at) < new Date()) return false;
+    const doc = data.document_data;
+    Object.entries(doc.fields || {}).forEach(([name, value]) => setFieldValue(name, value));
+    if (doc.primary_color) applyPrimaryColor(doc.primary_color, { silent: true });
+    if (doc.font_family) {
+      state.fontFamily = doc.font_family;
+      state.fontCustom = true;
+      const select = $('#font-family-select');
+      if (select) select.value = state.fontFamily;
+      applyFontFamily();
+    }
+    if (doc.photo_data_url && state.template?.hasPhoto) {
+      state.photoDataUrl = doc.photo_data_url;
+      renderPhotoPreview(state.photoDataUrl);
+      updateDocumentPhoto(state.photoDataUrl);
+      const remove = $('#photo-remove');
+      if (remove) remove.style.display = 'inline-flex';
+    }
+    applySavedFieldValues();
+    refreshPages();
+    state.isDirty = false;
+    return true;
+  } catch (error) {
+    console.warn('Copie conservée illisible :', error);
     return false;
   }
 }
@@ -1630,6 +1749,7 @@ async function downloadDocument(format, purchaseToken = null) {
     if (purchaseToken) clearPending();
     saveDraft({ quiet: true });
     toast(`Document ${label} téléchargé avec succès.`, 'success');
+    setTimeout(() => coach.say('Merci d’utiliser TakiDoc ! Ton brouillon reste ici si tu veux modifier.', 'celebrating', { key: 'downloaded', ms: 6000 }), 2800);
     return true;
   } catch (error) {
     console.error('Erreur génération :', error);
@@ -1705,7 +1825,7 @@ async function initEditor() {
   state.initialized = true;
   try {
     warmUpGenerator();
-    taki.init();   // en parallèle : n'empêche jamais l'éditeur de s'ouvrir
+    const takiReady = taki.init();   // en parallèle : n'empêche jamais l'éditeur de s'ouvrir
     await checkAuth();
     initProtection({ supabase, state, toast });
 
@@ -1726,6 +1846,7 @@ async function initEditor() {
     setupSidebarTabs();
     setupExportControls();
     setupKeyboardShortcuts();
+    initWorkspace({ coach, taki });
 
     const restored = loadDraft();
     applySavedFieldValues();
@@ -1734,12 +1855,39 @@ async function initEditor() {
 
     state.isDirty = false;
     setDocStatus(restored ? 'Brouillon restauré' : 'Document prêt');
-    toast('Document chargé avec succès.', 'success');
+    refreshProgress(false);
 
     window.addEventListener('offline', () => toast('Connexion perdue.', 'error'));
     window.addEventListener('online', () => toast('Connexion rétablie.', 'info'));
 
+    // Lien « Récupérer » de Mon espace : ?recover=<jeton d'achat>&format=pdf|docx
+    const recoverToken = params.get('recover');
+    if (recoverToken) {
+      const recoverFormat = FORMATS[params.get('format')] ? params.get('format') : 'pdf';
+      savePending(recoverToken, recoverFormat);
+      const purchaseId = params.get('purchase');
+      if (purchaseId) {
+        const restored = await restorePurchasedDocument(purchaseId);
+        toast(restored
+          ? 'Ton document payé est rechargé : le retéléchargement est gratuit.'
+          : 'La copie de 72 h n’est plus disponible : ton dernier brouillon est utilisé. Le retéléchargement reste gratuit.',
+        restored ? 'success' : 'info');
+      }
+      params.delete('recover'); params.delete('format'); params.delete('purchase');
+      // Le jeton ne reste pas dans la barre d'adresse ni dans l'historique
+      history.replaceState(null, '', `${window.location.pathname}?${params}${window.location.hash}`);
+    }
+
     recoverPendingPurchase().catch(error => console.warn('Reprise du paiement impossible :', error));
+
+    // Taki dit bonjour une fois monté (jamais pendant une récupération de document payé)
+    takiReady.then(ok => {
+      state.coachReady = true;
+      refreshProgress(false);
+      if (ok && !recoverToken) {
+        coach.say(restored ? 'Je t’ai remis ton brouillon. On continue ?' : 'Salut ! Remplis les champs, ou clique directement sur le document.', 'idle', { key: 'welcome', ms: 7000, force: true });
+      }
+    });
   } catch (error) {
     console.error('Initialisation de TakiDoc impossible :', error);
     state.initialized = false;
