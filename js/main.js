@@ -3,7 +3,7 @@
 // L'équipe Meurphy - 2026
 // ============================================
 import { fetchTemplates, fetchCategories } from './supabase-config.js';
-import { templatesRegistry } from './templates-registry.js';
+//import { templatesRegistry } from './templates-registry.js';
 
 // État global
 let allTemplates = [];

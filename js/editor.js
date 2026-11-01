@@ -1,9 +1,12 @@
 /* ============================================================
-   TAKIDOC — MOTEUR D'ÉDITION PROFESSIONNEL (v8.0)
+   TAKIDOC — MOTEUR D'ÉDITION PROFESSIONNEL (v9.0)
    Supabase • CSS isolé • A4 multi-pages • PDF / Word • Brouillons
    Paiement Mobile Money • Génération par le serveur Render
    Taki, la mascotte : raconte la génération et garde le
    téléchargement jusqu'à la fin de son histoire.
+   v9 : génération résistante aux redémarrages du serveur Render
+   (nouvelles tentatives progressives, attente du réveil via /health,
+   nouveau jeton si le précédent a été perdu en route).
 
    PLAN DU FICHIER
     1. Configuration          9. Photo
@@ -33,7 +36,12 @@ const CONFIG = Object.freeze({
   countryDialCode: '+242',
   phoneDigits: 9,
   generateTimeoutMs: 120000,   // Render (offre gratuite) peut mettre ~50 s à se réveiller
-  generateRetries: 1,
+  generateRetries: 3,          // nouvelles tentatives si le serveur redémarre ou est saturé (502/503/504, coupure)
+  retryBaseDelayMs: 3000,      // délai avant la 1re nouvelle tentative (doublé à chaque fois)
+  retryMaxDelayMs: 15000,
+  wakeMaxMs: 75000,            // attente maximale du réveil du serveur entre deux tentatives
+  healthPollMs: 2500,
+  reauthorizeMax: 2,           // nouveaux jetons demandés si le serveur a perdu le précédent en redémarrant
   pollIntervalMs: 2000,
   pollMaxAttempts: 180,        // 6 minutes
   pendingMaxAgeMs: 6 * 60 * 60 * 1000,
@@ -252,15 +260,18 @@ async function playTakiStory(isFailed) {
   }
 }
 
-/** Nombre de documents en attente côté serveur (facultatif : endpoint /api/queue). */
+/** Message affiché par Taki quand le serveur redémarre et qu'une nouvelle tentative est en cours. */
+let serverNotice = '';
+
+/** Nombre de documents en file d'attente côté serveur (lu dans /health : renders.queued). */
 async function fetchQueueInfo() {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 2500);
   try {
-    const response = await fetch(`${CONFIG.generatorUrl}/api/queue`, { cache: 'no-store', signal: controller.signal });
+    const response = await fetch(`${CONFIG.generatorUrl}/health`, { cache: 'no-store', signal: controller.signal });
     if (!response.ok) return null;
     const data = await response.json();
-    const waiting = Number(data?.waiting);
+    const waiting = Number(data?.renders?.queued ?? data?.waiting);
     return Number.isFinite(waiting) && waiting > 0 ? Math.round(waiting) : null;
   } catch (_) {
     return null;
@@ -273,8 +284,8 @@ function overloadMessage(round, waiting) {
   if (round === 0) return TAKI_OVERLOAD_MESSAGES[0];
   if (waiting) {
     return waiting === 1
-      ? 'Une autre personne attend aussi son document. Je fais au plus vite !'
-      : `${waiting} personnes attendent aussi leur document. Je fais au plus vite !`;
+      ? 'Un document est en file d’attente. Je fais au plus vite !'
+      : `${waiting} documents sont en file d’attente. Je fais au plus vite !`;
   }
   return TAKI_OVERLOAD_MESSAGES[1 + ((round - 1) % (TAKI_OVERLOAD_MESSAGES.length - 1))];
 }
@@ -291,7 +302,7 @@ async function waitForFile(generation) {
   let round = 0;
   while (!result) {
     const waiting = round > 0 ? await fetchQueueInfo() : null;
-    taki.show('waiting', overloadMessage(round, waiting));
+    taki.show('waiting', serverNotice || overloadMessage(round, waiting));
     round += 1;
     result = await Promise.race([outcome, sleep(TAKI_OVERLOAD_STEP_MS).then(() => null)]);
   }
@@ -1418,36 +1429,105 @@ async function readServerError(response) {
   }
 }
 
-/** Appel au générateur avec délai maximal et une nouvelle tentative (serveur gratuit en veille). */
+/** Erreur de génération avec un code lisible : timeout | network | offline. */
+class GenerationError extends Error {
+  constructor(message, code = 'error') {
+    super(message);
+    this.name = 'GenerationError';
+    this.code = code;
+  }
+}
+
+/** Statuts renvoyés pendant un redémarrage ou une saturation : on réessaie automatiquement. */
+const RETRYABLE_STATUS = new Set([502, 503, 504]);
+
+function retryDelay(attempt, response) {
+  const retryAfter = Number(response?.headers?.get('Retry-After'));
+  const wanted = Number.isFinite(retryAfter) && retryAfter > 0
+    ? retryAfter * 1000
+    : CONFIG.retryBaseDelayMs * 2 ** attempt;
+  return Math.min(CONFIG.retryMaxDelayMs, wanted);
+}
+
+/** Informe l'utilisateur (Taki ou message) qu'une nouvelle tentative automatique démarre. */
+function announceRetry(reason = 'restart') {
+  serverNotice = reason === 'token'
+    ? 'Le serveur a redémarré, je relance ton document…'
+    : 'Le serveur redémarre, je réessaie automatiquement…';
+  if (!taki.available) toast('Le serveur démarre, nouvelle tentative automatique…', 'info');
+}
+
+/** Attend que le générateur réponde sur /health (réveil de Render). Renvoie false si le délai est dépassé. */
+async function waitForServer(maxMs = CONFIG.wakeMaxMs) {
+  const deadline = Date.now() + maxMs;
+  while (Date.now() < deadline) {
+    if (!navigator.onLine) return false;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 4000);
+    try {
+      const response = await fetch(`${CONFIG.generatorUrl}/health`, { cache: 'no-store', signal: controller.signal });
+      if (response.ok) return true;
+    } catch (_) {
+      /* serveur encore indisponible : on réessaie */
+    } finally {
+      clearTimeout(timer);
+    }
+    await sleep(CONFIG.healthPollMs);
+  }
+  return false;
+}
+
+/**
+ * Appel au générateur avec délai maximal et nouvelles tentatives progressives.
+ * Renvoie { response, interrupted } : `interrupted` vaut true si une tentative précédente
+ * a été coupée (le serveur a pu consommer le jeton avant de redémarrer).
+ */
 async function requestGeneration(payload) {
+  const attempts = CONFIG.generateRetries + 1;
+  let interrupted = false;
   let lastError = null;
-  for (let attempt = 0; attempt <= CONFIG.generateRetries; attempt++) {
+
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    const isLast = attempt === attempts - 1;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), CONFIG.generateTimeoutMs);
+    let response = null;
+
     try {
-      const response = await fetch(`${CONFIG.generatorUrl}/api/generate`, {
+      response = await fetch(`${CONFIG.generatorUrl}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
         signal: controller.signal
       });
-      if ([502, 503, 504].includes(response.status) && attempt < CONFIG.generateRetries) {
-        await sleep(4000);
-        continue;
-      }
-      return response;
     } catch (error) {
       if (error.name === 'AbortError') {
-        throw new Error('Le serveur met trop de temps à répondre. Réessayez dans un instant.');
+        throw new GenerationError('Le serveur met trop de temps à répondre. Réessayez dans un instant.', 'timeout');
+      }
+      if (!navigator.onLine) {
+        throw new GenerationError('Connexion Internet perdue. Réessayez une fois reconnecté.', 'offline');
       }
       lastError = error;
-      if (attempt < CONFIG.generateRetries) await sleep(4000);
+      interrupted = true;
     } finally {
       clearTimeout(timer);
     }
+
+    if (response && !RETRYABLE_STATUS.has(response.status)) return { response, interrupted };
+    if (response) {
+      interrupted = true;
+      if (isLast) return { response, interrupted };
+      response.body?.cancel?.().catch(() => { /* ignoré */ });
+    }
+    if (isLast) break;
+
+    announceRetry('restart');
+    await sleep(retryDelay(attempt, response));
+    await waitForServer();
   }
+
   console.error('Générateur injoignable :', lastError);
-  throw new Error('Impossible de joindre le serveur de génération. Vérifiez votre connexion.');
+  throw new GenerationError('Impossible de joindre le serveur de génération. Vérifiez votre connexion.', 'network');
 }
 
 function triggerBrowserDownload(blob, fileName) {
@@ -1459,28 +1539,58 @@ function triggerBrowserDownload(blob, fileName) {
   setTimeout(() => URL.revokeObjectURL(url), 30000);
 }
 
-/** Autorisation + génération + lecture du fichier. Renvoie le Blob, ou lève une erreur lisible. */
-async function generateFile({ format, purchaseToken, documentData }) {
-  const auth = await postFunction(
-    'authorize-download',
-    purchaseToken
-      ? { purchase_token: purchaseToken, format }
-      : { template_id: state.template.id, format },
-    await getAccessToken()
-  );
+/** Demande un jeton à authorize-download (avec deux nouveaux essais si le réseau coupe un instant). */
+async function authorizeDownload({ format, purchaseToken }) {
+  const body = purchaseToken
+    ? { purchase_token: purchaseToken, format }
+    : { template_id: state.template.id, format };
+  let auth = null;
+  for (let attempt = 0; attempt < 3 && !auth; attempt++) {
+    try {
+      auth = await postFunction('authorize-download', body, await getAccessToken());
+    } catch (error) {
+      console.warn("Service d'autorisation injoignable :", error);
+      if (attempt < 2) await sleep(1500);
+    }
+  }
+  if (!auth) throw new Error("Impossible de joindre le service d'autorisation. Vérifiez votre connexion.");
   if (!auth.ok) throw new Error(errorMessageOf(auth.data, `Erreur d'autorisation (${auth.status})`));
+  if (!auth.data?.nonce) throw new Error('Autorisation incomplète : jeton manquant. Réessayez.');
+  return auth.data.nonce;
+}
 
-  const response = await requestGeneration({
-    nonce: auth.data.nonce,
-    template_id: state.template.id,
-    format,
-    data: documentData
-  });
-  if (!response.ok) throw new Error(await readServerError(response));
+/**
+ * Autorisation + génération + lecture du fichier. Renvoie le Blob, ou lève une erreur lisible.
+ * Si le serveur redémarre en plein travail, le jeton peut être perdu : on en demande alors
+ * un neuf (jusqu'à CONFIG.reauthorizeMax fois) au lieu d'afficher une erreur.
+ */
+async function generateFile({ format, purchaseToken, documentData }) {
+  for (let round = 0; ; round++) {
+    const canRetry = round < CONFIG.reauthorizeMax;
+    const nonce = await authorizeDownload({ format, purchaseToken });
 
-  const blob = await response.blob();
-  if (!blob.size) throw new Error('Le fichier généré est vide. Réessayez.');
-  return blob;
+    const { response, interrupted } = await requestGeneration({
+      nonce,
+      template_id: state.template.id,
+      format,
+      data: documentData
+    });
+
+    if (response.ok) {
+      let blob = null;
+      try { blob = await response.blob(); } catch (error) { console.warn('Réception du fichier interrompue :', error); }
+      if (blob?.size) { serverNotice = ''; return blob; }
+      if (canRetry) { announceRetry('token'); await waitForServer(); continue; }
+      throw new Error(blob ? 'Le fichier généré est vide. Réessayez.' : 'La réception du fichier a été interrompue. Réessayez.');
+    }
+
+    if (response.status === 403 && interrupted && canRetry) {
+      announceRetry('token');
+      await waitForServer();
+      continue;
+    }
+    throw new Error(await readServerError(response));
+  }
 }
 
 async function downloadDocument(format, purchaseToken = null) {
@@ -1491,6 +1601,7 @@ async function downloadDocument(format, purchaseToken = null) {
 
   const { label, ext } = FORMATS[format];
   state.downloading = true;
+  serverNotice = '';
   setExportBusy(true);
   const staged = taki.available;
   if (!staged) toast(`Génération de votre document ${label} en cours…`, 'info');
@@ -1524,9 +1635,12 @@ async function downloadDocument(format, purchaseToken = null) {
     console.error('Erreur génération :', error);
     taki.show('error', 'Un petit souci est survenu. On va regarder ça.');
     taki.hide(5000);
-    toast(error.message || `Erreur lors de la génération du ${label}.`, 'error');
+    // Paiement validé mais fichier non reçu : la reprise reste possible tant que le jeton est conservé
+    const hint = purchaseToken ? ' Votre paiement est conservé : rechargez la page pour réessayer.' : '';
+    toast((error.message || `Erreur lors de la génération du ${label}.`) + hint, 'error');
     return false;
   } finally {
+    serverNotice = '';
     state.downloading = false;
     setExportBusy(false);
   }
