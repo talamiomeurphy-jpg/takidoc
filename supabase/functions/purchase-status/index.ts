@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 /* ============================================================
 TAKIDOC — EDGE FUNCTION : PURCHASE STATUS
-Version 6.0 — YabetooPay Payment Intents
+Version 6.1 — YabetooPay Payment Intents + conservation 72 h
 
 Appelée par la modale de paiement (polling) pour suivre un paiement.
 
@@ -9,18 +9,32 @@ Corps :  { purchase_token: string }
 Réponse :
   {
     status: 'pending' | 'completed' | 'failed' | 'cancelled' | 'expired' | 'review',
+    verification: 'ok' | 'unavailable',
     template_id, template_name, amount, currency,
-    purchase_id: string | null,  // <-- AJOUTÉ : essentiel pour le téléchargement
+    purchase_id: string | null,      // nécessaire au téléchargement
     quota?: { max, used, remaining, access_expires_at },
+    document_expires_at: string | null,   // fin de conservation du document (72 h)
     sandbox: boolean
   }
 
-Si le webhook est en retard, cette fonction interroge elle-même Yabetoo.
+Si le webhook est en retard, cette fonction interroge elle-même Yabetoo,
+puis valide l'achat avec la MÊME fonction SQL que le webhook
+(complete_purchase) : l'opération est idempotente, donc un paiement ne
+peut plus créer deux achats si le webhook et le polling arrivent en même
+temps.
+
+Correctifs par rapport à la v6.0 :
+  - Plus d'insertion directe dans « purchases » (risque de doublon avec le
+    webhook, et guest_email / guest_phone n'étaient pas lus dans le select).
+  - « sandbox » reflète la configuration réelle (isSandbox) au lieu de true.
+  - Ajout de document_expires_at.
 ============================================================ */
 
 import { preflight } from '../_shared/cors.ts'
 import { adminClient, fail, json, readJson, UUID_RE } from '../_shared/http.ts'
-import { verifyPayment } from '../_shared/yabetoo.ts'
+import { isSandbox, verifyPayment } from '../_shared/yabetoo.ts'
+
+const TERMINAL_FAILURES = ['failed', 'cancelled', 'expired']
 
 Deno.serve(async (req) => {
   const early = preflight(req)
@@ -58,64 +72,74 @@ Deno.serve(async (req) => {
     let purchaseId: string | null = pending.purchase_id
     let verification: 'ok' | 'unavailable' = 'ok'
 
-    // Si pas encore complété, on interroge Yabetoo (source de vérité)
+    // Pas encore complété : on interroge Yabetoo (source de vérité)
     if (pending.status !== 'completed' && pending.provider_reference) {
       try {
         const verified = await verifyPayment(pending.provider_reference)
 
-        if (verified) {
-          if (verified.status === 'complete') {
-            // Vérifier si l'achat n'existe pas déjà (idempotence)
-            if (!purchaseId) {
-              const { data: newPurchase, error: insertError } = await admin
-                .from('purchases')
-                .insert({
-                  user_id: pending.user_id,
-                  guest_email: pending.guest_email,
-                  guest_phone: pending.guest_phone,
-                  template_id: pending.template_id,
-                  amount_paid: pending.amount,
-                  currency: 'XAF',
-                  payment_method: 'yabetoo',
-                  payment_reference: verified.reference,
-                  payment_status: 'completed',
-                })
-                .select('id')
-                .single()
-
-              if (insertError) {
-                console.error('purchase-status : erreur insertion purchase', insertError.message)
-              } else {
-                purchaseId = newPurchase?.id ?? null
-                
-                // Mettre à jour pending_purchases
-                await admin
-                  .from('pending_purchases')
-                  .update({ status: 'completed', purchase_id: purchaseId })
-                  .eq('purchase_token', token)
-              }
-            }
-            status = 'completed'
-          } else if (verified.status === 'failed' || verified.status === 'cancelled' || verified.status === 'expired') {
-            status = verified.status
-            await admin
-              .from('pending_purchases')
-              .update({ status: verified.status })
-              .eq('purchase_token', token)
-          }
-        } else {
+        if (!verified) {
           verification = 'unavailable'
+        } else if (verified.status === 'complete') {
+          // Validation idempotente, identique au webhook
+          const { data: done, error: rpcError } = await admin.rpc('complete_purchase', {
+            p_purchase_token: token,
+            p_provider_reference: verified.reference ?? pending.provider_reference,
+            p_amount: pending.amount,
+            p_currency: 'XAF',
+            p_payment_method: 'yabetoo',
+          })
+
+          if (rpcError) {
+            // Erreur probablement temporaire : le prochain polling réessaiera
+            console.error('purchase-status : complete_purchase', rpcError.message)
+            status = 'pending'
+          } else if (!done?.ok) {
+            // Paiement confirmé chez Yabetoo mais refusé par la base : à examiner à la main
+            console.error('purchase-status : complete_purchase refusé', JSON.stringify(done))
+            status = 'review'
+          } else {
+            // On relit l'état réel (le webhook a pu passer entre-temps)
+            const { data: fresh } = await admin
+              .from('pending_purchases')
+              .select('status, purchase_id')
+              .eq('purchase_token', token)
+              .maybeSingle()
+
+            purchaseId = fresh?.purchase_id ?? purchaseId
+            status = fresh?.status === 'completed' && purchaseId ? 'completed' : 'pending'
+          }
+        } else if (TERMINAL_FAILURES.includes(verified.status)) {
+          status = verified.status
+          await admin
+            .from('pending_purchases')
+            .update({ status: verified.status })
+            .eq('purchase_token', token)
         }
+        // Autre statut (en attente de confirmation Mobile Money) : on reste « pending »
       } catch (error) {
         verification = 'unavailable'
-        console.warn('purchase-status : vérification Yabetoo impossible', error instanceof Error ? error.message : String(error))
+        console.warn(
+          'purchase-status : vérification Yabetoo impossible',
+          error instanceof Error ? error.message : String(error),
+        )
       }
     }
 
     let quota: unknown = undefined
+    let documentExpiresAt: string | null = null
+
     if (status === 'completed' && purchaseId) {
       const { data } = await admin.rpc('generation_quota', { p_purchase_id: purchaseId })
       quota = data ?? undefined
+
+      const { data: stored } = await admin
+        .from('purchase_documents')
+        .select('expires_at')
+        .eq('purchase_id', purchaseId)
+        .gt('expires_at', new Date().toISOString())
+        .maybeSingle()
+
+      documentExpiresAt = stored?.expires_at ?? null
     }
 
     return json(req, {
@@ -125,9 +149,10 @@ Deno.serve(async (req) => {
       template_name: (pending as any).templates?.name ?? null,
       amount: pending.amount,
       currency: 'XAF',
-      purchase_id: purchaseId, // <-- CRUCIAL pour que authorize-download fonctionne
+      purchase_id: purchaseId,
       quota,
-      sandbox: true,
+      document_expires_at: documentExpiresAt,
+      sandbox: isSandbox(),
     })
   } catch (error) {
     console.error('purchase-status :', error)

@@ -1,13 +1,20 @@
 // deno-lint-ignore-file no-explicit-any
 /* ============================================================
 TAKIDOC — EDGE FUNCTION : AUTHORIZE DOWNLOAD
-Version 6.0 — Gestion robuste des tokens et templates gratuits
+Version 6.1 — Conservation 72 h : renvoi du document enregistré
 
 Corps attendu :
-  { purchase_token: string, format?: 'pdf' | 'docx' }   // juste après l'achat
-  { template_id: string,    format?: 'pdf' | 'docx' }   // re-téléchargement
+  { purchase_token: string, format?: 'pdf' | 'docx', with_document?: boolean }   // juste après l'achat
+  { template_id: string,    format?: 'pdf' | 'docx', with_document?: boolean }   // re-téléchargement
 
-Réponse : { nonce, expires_in, format, template_id, remaining, max, generator_url }
+with_document = true :
+  La fonction renvoie aussi le document enregistré au moment du paiement
+  (champ « document »), pour regénérer le fichier même si le client a quitté
+  l'éditeur. Si le document n'est plus conservé (72 h écoulées), la fonction
+  répond 410 « document_expired » SANS consommer de téléchargement.
+
+Réponse : { nonce, expires_in, format, template_id, remaining, max, generator_url,
+            document?, document_expires_at? }
 ============================================================ */
 
 import { preflight } from '../_shared/cors.ts'
@@ -20,6 +27,31 @@ const ERROR_MAP: Record<string, { status: number; message: string }> = {
   access_expired: { status: 403, message: 'L\'accès a expiré.' },
   quota_exceeded: { status: 429, message: 'Limite de téléchargements atteinte.' },
   invalid_format: { status: 400, message: 'Format invalide.' },
+}
+
+const DOCUMENT_EXPIRED_MESSAGE =
+  'Votre document n\'est plus conservé (72 h après l\'achat). Rouvrez le modèle dans l\'éditeur pour le refaire.'
+
+/* ------------------------------------------------------------
+   Document conservé d'un achat (null si absent ou expiré)
+------------------------------------------------------------ */
+async function loadStoredDocument(admin: any, purchaseId: string) {
+  const { data, error } = await admin
+    .from('purchase_documents')
+    .select('document_data, expires_at')
+    .eq('purchase_id', purchaseId)
+    .maybeSingle()
+
+  if (error) throw new Error(`lecture purchase_documents : ${error.message}`)
+  if (!data) return null
+
+  if (new Date(data.expires_at).getTime() <= Date.now()) {
+    // Expiré : on supprime tout de suite (le nettoyage horaire fait le reste)
+    await admin.from('purchase_documents').delete().eq('purchase_id', purchaseId)
+    return null
+  }
+
+  return { document: data.document_data, expiresAt: data.expires_at as string }
 }
 
 Deno.serve(async (req) => {
@@ -40,9 +72,12 @@ Deno.serve(async (req) => {
       return fail(req, 'docx_disabled', 'Format Word indisponible.', 400)
     }
 
+    const withDocument = body.with_document === true
+
     const user = await getAuthUser(admin, req)
     let purchaseId: string | null = null
     let templateId: string | null = null
+    let stored: { document: any; expiresAt: string } | null = null
 
     /* ---------- A. Par purchase_token (flux paiement Yabetoo) ---------- */
     if (typeof body.purchase_token === 'string') {
@@ -80,6 +115,13 @@ Deno.serve(async (req) => {
       purchaseId = pending.purchase_id
       templateId = pending.template_id
 
+      if (withDocument) {
+        stored = await loadStoredDocument(admin, pending.purchase_id)
+        if (!stored) {
+          return fail(req, 'document_expired', DOCUMENT_EXPIRED_MESSAGE, 410)
+        }
+      }
+
     /* ---------- B. Par template_id (re-téléchargement ou gratuit) ---------- */
     } else if (typeof body.template_id === 'string') {
       const wanted = body.template_id.trim()
@@ -103,7 +145,7 @@ Deno.serve(async (req) => {
         return fail(req, 'template_not_found', 'Modèle introuvable.', 404)
       }
 
-      // 1. TEMPLATES GRATUITS : nonce direct sans achat
+      // 1. TEMPLATES GRATUITS : nonce direct sans achat (aucun document conservé)
       if (template.price_xaf === 0) {
         const { data: nonceData, error: nonceError } = await admin.rpc('create_generation_nonce', {
           p_purchase_id: null,
@@ -128,6 +170,8 @@ Deno.serve(async (req) => {
           remaining: null,
           max: null,
           generator_url: Deno.env.get('GENERATOR_URL') ?? null,
+          document: null,
+          document_expires_at: null,
         })
       }
 
@@ -154,25 +198,59 @@ Deno.serve(async (req) => {
         return fail(req, 'payment_required', 'Aucun achat trouvé pour ce modèle.', 402)
       }
 
+      // Achats dont le document est encore conservé (uniquement si demandé)
+      const liveDocuments = new Set<string>()
+      if (withDocument) {
+        const { data: docs, error: docsError } = await admin
+          .from('purchase_documents')
+          .select('purchase_id')
+          .in('purchase_id', purchases.map((p: any) => p.id))
+          .gt('expires_at', new Date().toISOString())
+
+        if (docsError) {
+          console.error('authorize-download : lecture documents', docsError.message)
+          return fail(req, 'server_error', 'Erreur serveur.', 500)
+        }
+        for (const row of docs ?? []) liveDocuments.add(row.purchase_id)
+      }
+
       let firstQuota: any = null
+      let quotaAvailableButNoDocument = false
+
       for (const purchase of purchases) {
         const { data: quota } = await admin.rpc('generation_quota', { p_purchase_id: purchase.id })
         firstQuota = firstQuota ?? quota
 
         const expired = quota?.access_expires_at && new Date(quota.access_expires_at) < new Date()
-        if (quota && quota.remaining > 0 && !expired) {
-          purchaseId = purchase.id
-          break
+        const usable = quota && quota.remaining > 0 && !expired
+        if (!usable) continue
+
+        if (withDocument && !liveDocuments.has(purchase.id)) {
+          quotaAvailableButNoDocument = true
+          continue
         }
+
+        purchaseId = purchase.id
+        break
       }
 
       if (!purchaseId) {
+        if (quotaAvailableButNoDocument) {
+          return fail(req, 'document_expired', DOCUMENT_EXPIRED_MESSAGE, 410)
+        }
         return fail(req, 'quota_exceeded', ERROR_MAP.quota_exceeded.message, 429, {
           quota: firstQuota,
         })
       }
 
       templateId = wanted
+
+      if (withDocument) {
+        stored = await loadStoredDocument(admin, purchaseId)
+        if (!stored) {
+          return fail(req, 'document_expired', DOCUMENT_EXPIRED_MESSAGE, 410)
+        }
+      }
     } else {
       return fail(req, 'invalid_request', 'purchase_token ou template_id requis.', 400)
     }
@@ -204,6 +282,8 @@ Deno.serve(async (req) => {
       remaining: result.remaining,
       max: result.max,
       generator_url: Deno.env.get('GENERATOR_URL') ?? null,
+      document: stored?.document ?? null,
+      document_expires_at: stored?.expiresAt ?? null,
     })
   } catch (error) {
     console.error('authorize-download :', error)
