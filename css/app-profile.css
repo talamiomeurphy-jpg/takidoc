@@ -191,3 +191,1248 @@ dialog.dlg .ac{display:flex;gap:10px;justify-content:flex-end}
   .banner{flex-wrap:wrap}.banner .bt{margin-left:0;width:100%}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+
+
+/* =========================================================
+   TAKIDOC — PROFIL PREMIUM RESPONSIVE
+   Étape 1 : finition visuelle et adaptation multi-écrans
+   CSS additionnel uniquement — ne remplace pas le CSS existant
+========================================================= */
+
+/* ---------- Fond et structure générale ---------- */
+
+body.app-profile {
+  background:
+    radial-gradient(ellipse at 85% 0%, rgba(255, 107, 53, .055), transparent 34%),
+    #F8F7F5;
+}
+
+.pf {
+  min-height: calc(100vh - var(--hh));
+  padding-top: 32px;
+}
+
+.pf-wrap {
+  width: 100%;
+  max-width: 1180px;
+}
+
+.view.on {
+  animation: pfPremiumEnter .3s ease both;
+}
+
+@keyframes pfPremiumEnter {
+  from {
+    opacity: 0;
+    transform: translateY(9px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Titres et en-têtes ---------- */
+
+.hi {
+  position: relative;
+  gap: 18px;
+  margin-bottom: 27px;
+  padding: 22px 24px;
+  border: 1px solid rgba(255, 107, 53, .12);
+  border-radius: 24px;
+  background: linear-gradient(115deg, #fff 60%, #FFF3ED);
+  box-shadow: 0 8px 26px rgba(15, 23, 42, .035);
+}
+
+.hi h1 {
+  font-size: clamp(25px, 3vw, 34px);
+  letter-spacing: -.045em;
+}
+
+.hi p {
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.av {
+  width: 66px;
+  height: 66px;
+  border: 3px solid #fff;
+  box-shadow:
+    0 0 0 1px rgba(255, 107, 53, .2),
+    0 8px 20px rgba(255, 107, 53, .18);
+}
+
+.vh {
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.vh h2 {
+  font-size: clamp(25px, 3vw, 33px);
+  letter-spacing: -.04em;
+}
+
+.vh p {
+  max-width: 620px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ---------- Statistiques ---------- */
+
+.chips {
+  gap: 14px;
+  margin-bottom: 30px;
+}
+
+.chip {
+  min-height: 91px;
+  padding: 17px;
+  border-color: rgba(15, 23, 42, .065);
+  border-radius: 20px;
+  box-shadow: 0 5px 18px rgba(15, 23, 42, .035);
+}
+
+.chip i {
+  width: 45px;
+  height: 45px;
+  border-radius: 15px;
+  font-size: 17px;
+}
+
+.chip strong {
+  font-size: 27px;
+}
+
+.chip span {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.chip:hover {
+  border-color: rgba(255, 107, 53, .4);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, .07);
+}
+
+/* ---------- Sections ---------- */
+
+.sec {
+  margin-bottom: 32px;
+}
+
+.sh {
+  margin-bottom: 16px;
+}
+
+.sh h2 {
+  font-size: 20px;
+  letter-spacing: -.025em;
+}
+
+.sh p {
+  margin-top: 3px;
+  font-size: 13px;
+}
+
+/* ---------- Navigation ordinateur ---------- */
+
+.pf-rail {
+  width: var(--rail);
+  padding: 18px 0;
+  background: rgba(255, 255, 255, .97);
+  box-shadow: 5px 0 22px rgba(15, 23, 42, .025);
+}
+
+.pf-rail .ri {
+  width: 70px;
+  min-height: 64px;
+  border-radius: 18px;
+}
+
+.pf-rail .ri.on {
+  background: linear-gradient(145deg, #172238, #0F172A);
+  box-shadow: 0 6px 15px rgba(15, 23, 42, .15);
+}
+
+.pf-rail .ri.on i {
+  color: #FFB18F;
+}
+
+.pf-rail .ri:hover:not(.on) {
+  transform: translateY(-2px);
+}
+
+/* ---------- Cartes favoris ---------- */
+
+.grid {
+  gap: 24px 20px;
+}
+
+.fc {
+  padding: 9px;
+  border: 1px solid transparent;
+  border-radius: 19px;
+  background: rgba(255, 255, 255, .75);
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.fc:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 107, 53, .2);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .075);
+}
+
+.fc .pv {
+  border-radius: 13px;
+}
+
+.fi {
+  padding: 13px 4px 5px;
+}
+
+.fi h3 {
+  min-height: 2.6em;
+  font-size: 15px;
+}
+
+.fr {
+  min-height: 36px;
+}
+
+.rm {
+  top: 16px;
+  right: 16px;
+}
+
+/* ---------- Cartes documents ---------- */
+
+.dgrid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+}
+
+.dc {
+  min-width: 0;
+  padding: 14px;
+  gap: 16px;
+  border-color: rgba(15, 23, 42, .07);
+  border-radius: 20px;
+  box-shadow: 0 5px 18px rgba(15, 23, 42, .035);
+}
+
+.dc:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 107, 53, .35);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, .065);
+}
+
+.dc .th {
+  width: 94px;
+}
+
+.dc .di {
+  gap: 2px;
+}
+
+.dc h3 {
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.dc .meta {
+  line-height: 1.5;
+}
+
+.dc .ac {
+  gap: 7px;
+}
+
+/* ---------- Aperçus A4 ---------- */
+
+.pv {
+  background: #F1F2F5;
+  border-color: #E8E9ED;
+}
+
+.pv img {
+  object-fit: contain;
+}
+
+.pv.ready {
+  background: #fff;
+}
+
+/* ---------- Boutons ---------- */
+
+.bt {
+  min-height: 42px;
+  border-radius: 13px;
+  transition:
+    transform .18s ease,
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease;
+}
+
+.bt:hover {
+  transform: translateY(-1px);
+}
+
+.bt.p {
+  box-shadow: 0 5px 13px rgba(255, 107, 53, .17);
+}
+
+.bt.p:hover {
+  box-shadow: 0 8px 19px rgba(255, 107, 53, .23);
+}
+
+.bt.s {
+  min-height: 35px;
+  border-radius: 11px;
+}
+
+/* ---------- Recherche et filtres ---------- */
+
+.search input,
+.sel {
+  min-height: 44px;
+  border-color: #E3E5EA;
+  background: #fff;
+  transition: border-color .18s, box-shadow .18s;
+}
+
+.search input:focus,
+.sel:focus {
+  border-color: var(--or);
+  box-shadow: 0 0 0 4px rgba(255, 107, 53, .09);
+}
+
+.seg {
+  max-width: 100%;
+  border: 1px solid rgba(15, 23, 42, .04);
+  background: #EFEEEC;
+}
+
+.seg button.on {
+  box-shadow: 0 3px 9px rgba(15, 23, 42, .13);
+}
+
+/* ---------- Listes ---------- */
+
+.list {
+  border-color: rgba(15, 23, 42, .07);
+  border-radius: 20px;
+}
+
+.row {
+  min-width: 0;
+  padding: 17px 20px;
+  transition: background .18s;
+}
+
+.row:not(.new):hover {
+  background: #FCFBFA;
+}
+
+.row .end {
+  min-width: 0;
+}
+
+.amount {
+  white-space: nowrap;
+}
+
+/* ---------- Compte et paramètres ---------- */
+
+.set {
+  align-items: start;
+  gap: 18px;
+}
+
+.card {
+  min-width: 0;
+  padding: 23px;
+  border-color: rgba(15, 23, 42, .07);
+  border-radius: 21px;
+  box-shadow: 0 5px 20px rgba(15, 23, 42, .035);
+}
+
+.card h3 {
+  font-size: 18px;
+  letter-spacing: -.02em;
+}
+
+.card > p {
+  line-height: 1.6;
+}
+
+.fd {
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.fd input {
+  width: 100%;
+  min-width: 0;
+  height: 47px;
+  border-radius: 13px;
+}
+
+.stack {
+  gap: 10px;
+}
+
+.stack .bt {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}
+
+/* ---------- Messages et états vides ---------- */
+
+.empty {
+  padding: 55px 24px;
+  border-color: #E6DFD9;
+  background: rgba(255, 255, 255, .85);
+}
+
+.empty > i {
+  width: 66px;
+  height: 66px;
+  font-size: 24px;
+}
+
+.empty h3 {
+  font-size: 20px;
+}
+
+.banner {
+  border: 1px solid rgba(138, 90, 0, .12);
+  line-height: 1.5;
+}
+
+.alert {
+  border: 1px solid rgba(180, 35, 57, .12);
+}
+
+/* ---------- Taki ---------- */
+
+.pf-taki {
+  right: 24px;
+  bottom: 22px;
+}
+
+.tk-bubble,
+.tk-panel {
+  backdrop-filter: blur(16px);
+}
+
+.tk-panel {
+  border-color: rgba(255, 107, 53, .14);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, .16);
+}
+
+.tk-btn {
+  filter: drop-shadow(0 8px 14px rgba(91, 42, 18, .12));
+}
+
+/* ---------- Tablettes et petits ordinateurs ---------- */
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  .pf {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .pf-wrap {
+    max-width: 100%;
+  }
+
+  .chips {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .set {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dgrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Tablettes et téléphones ---------- */
+
+@media (max-width: 900px) {
+  .pf {
+    padding: 20px 18px calc(var(--tab) + 105px + env(safe-area-inset-bottom));
+  }
+
+  .hi {
+    padding: 19px;
+    border-radius: 21px;
+  }
+
+  .chips {
+    gap: 11px;
+  }
+
+  .chip {
+    min-height: 84px;
+    padding: 13px;
+  }
+
+  .pf-tab {
+    height: calc(var(--tab) + env(safe-area-inset-bottom));
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    box-shadow: 0 -5px 22px rgba(15, 23, 42, .055);
+  }
+
+  .pf-tab button {
+    min-width: 0;
+    min-height: 48px;
+    font-size: 11px;
+  }
+
+  .pf-tab button i {
+    font-size: 19px;
+  }
+
+  .pf-taki {
+    right: 13px;
+    bottom: calc(var(--tab) + 15px + env(safe-area-inset-bottom));
+  }
+
+  .tk-btn {
+    width: 76px;
+    height: 90px;
+  }
+
+  .dc {
+    padding: 13px;
+  }
+
+  .dc .th {
+    width: 88px;
+  }
+
+  .card {
+    padding: 19px;
+  }
+
+  .row {
+    padding: 15px;
+  }
+}
+
+/* ---------- Téléphones ---------- */
+
+@media (max-width: 600px) {
+  :root {
+    --tab: 66px;
+  }
+
+  .pf {
+    padding: 15px 13px calc(var(--tab) + 110px + env(safe-area-inset-bottom));
+  }
+
+  .hi {
+    gap: 12px;
+    padding: 16px;
+    margin-bottom: 17px;
+    border-radius: 19px;
+  }
+
+  .av {
+    width: 52px;
+    height: 52px;
+    font-size: 19px;
+  }
+
+  .hi h1 {
+    font-size: 24px;
+  }
+
+  .hi p {
+    max-width: 210px;
+    font-size: 12.5px;
+  }
+
+  .vh {
+    align-items: stretch;
+    gap: 13px;
+    margin-bottom: 18px;
+  }
+
+  .vh h2 {
+    font-size: 26px;
+  }
+
+  .vh p {
+    font-size: 13px;
+  }
+
+  .vh > .tools,
+  .vh > .search {
+    width: 100%;
+  }
+
+  .tools {
+    gap: 8px;
+  }
+
+  .search,
+  .search input {
+    width: 100%;
+  }
+
+  .sel {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .chips {
+    gap: 9px;
+    margin-bottom: 24px;
+  }
+
+  .chip {
+    min-height: 76px;
+    gap: 9px;
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  .chip i {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    font-size: 14px;
+  }
+
+  .chip strong {
+    font-size: 22px;
+  }
+
+  .chip span {
+    font-size: 11px;
+  }
+
+  .sh {
+    align-items: flex-start;
+  }
+
+  .sh h2 {
+    font-size: 18px;
+  }
+
+  .sh p {
+    max-width: 240px;
+    font-size: 12px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px 10px;
+  }
+
+  .fc {
+    padding: 6px;
+    border-radius: 15px;
+  }
+
+  .fi {
+    padding: 10px 3px 4px;
+  }
+
+  .fi h3 {
+    font-size: 13px;
+  }
+
+  .fi small {
+    font-size: 9px;
+  }
+
+  .fr {
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .fr b {
+    font-size: 12px;
+  }
+
+  .fr .bt {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  .dgrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .dc {
+    gap: 11px;
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  .dc .th {
+    width: 76px;
+  }
+
+  .dc h3 {
+    font-size: 14px;
+  }
+
+  .dc small,
+  .dc .meta {
+    font-size: 11.5px;
+  }
+
+  .dc .ac .bt {
+    min-height: 33px;
+    padding: 0 9px;
+    font-size: 11px;
+  }
+
+  .tag {
+    font-size: 10.5px;
+    padding: 3px 7px;
+  }
+
+  .seg {
+    display: flex;
+    width: 100%;
+    border-radius: 14px;
+    padding: 4px;
+  }
+
+  .seg button {
+    flex: 0 0 auto;
+    height: 36px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .row {
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 10px;
+    padding: 13px 11px;
+  }
+
+  .row > i {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  .row h3 {
+    font-size: 13px;
+  }
+
+  .row p {
+    font-size: 12px;
+  }
+
+  .row .end {
+    gap: 6px;
+  }
+
+  .set {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 13px;
+  }
+
+  .card {
+    padding: 17px;
+    border-radius: 18px;
+  }
+
+  .card h3 {
+    font-size: 17px;
+  }
+
+  .stack .bt {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .banner {
+    gap: 10px;
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .empty {
+    padding: 38px 15px;
+  }
+
+  .pf-taki {
+    right: 8px;
+    bottom: calc(var(--tab) + 12px + env(safe-area-inset-bottom));
+  }
+
+  .tk-btn {
+    width: 65px;
+    height: 78px;
+  }
+
+  .tk-panel {
+    width: min(270px, calc(100vw - 30px));
+  }
+
+  .tk-bubble {
+    max-width: min(235px, calc(100vw - 35px));
+    font-size: 12px;
+  }
+
+  .toast {
+    bottom: calc(var(--tab) + 14px + env(safe-area-inset-bottom));
+    font-size: 12px;
+  }
+}
+
+/* ---------- Très petits téléphones ---------- */
+
+@media (max-width: 370px) {
+  .pf {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .hi {
+    padding: 13px;
+    gap: 9px;
+  }
+
+  .hi h1 {
+    font-size: 21px;
+  }
+
+  .hi p {
+    font-size: 11.5px;
+  }
+
+  .av {
+    width: 46px;
+    height: 46px;
+  }
+
+  .chip {
+    gap: 7px;
+    padding: 8px;
+  }
+
+  .chip i {
+    width: 31px;
+    height: 31px;
+    font-size: 12px;
+  }
+
+  .chip strong {
+    font-size: 20px;
+  }
+
+  .grid {
+    gap: 10px 7px;
+  }
+
+  .fc {
+    padding: 5px;
+  }
+
+  .fr {
+    gap: 5px;
+  }
+
+  .fr .bt {
+    padding: 0 7px;
+    font-size: 10px;
+  }
+
+  .pf-tab {
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+
+  .pf-tab button {
+    font-size: 9.5px;
+  }
+
+  .pf-tab button i {
+    font-size: 17px;
+  }
+}
+
+/* ---------- Accessibilité ---------- */
+
+@media (hover: none) {
+  .chip:hover,
+  .fc:hover,
+  .dc:hover,
+  .bt:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view.on {
+    animation: none;
+  }
+}
+
+/* =====================================================
+   TAKIDOC — FINITIONS COULEUR PREMIUM
+   Couleurs, profondeur et détails visuels
+   ===================================================== */
+
+/* Fond général plus chaleureux */
+body.app-profile {
+  background:
+    radial-gradient(ellipse at 8% 0%, rgba(255,107,53,.055), transparent 34%),
+    radial-gradient(ellipse at 95% 12%, rgba(255,184,145,.10), transparent 30%),
+    var(--bg);
+}
+
+/* Titres : accent discret */
+.vh h1,
+.vh h2,
+.hi h1 {
+  color: var(--night);
+}
+
+.vh h1::after,
+.vh h2::after {
+  content: "";
+  display: block;
+  width: 42px;
+  height: 4px;
+  margin-top: 9px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--or), #FFB18D);
+}
+
+/* Cartes de statistiques */
+.chip {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, #fff, #FFFCFA);
+}
+
+.chip::after {
+  content: "";
+  position: absolute;
+  width: 75px;
+  height: 75px;
+  right: -28px;
+  bottom: -35px;
+  border-radius: 50%;
+  background: rgba(255,107,53,.07);
+}
+
+.chip:nth-child(2) i {
+  background: #EAF2FF;
+  color: #3975D7;
+}
+
+.chip:nth-child(3) i {
+  background: #E5F7EF;
+  color: #159568;
+}
+
+.chip:nth-child(4) i {
+  background: #FFF3D9;
+  color: #C78A19;
+}
+
+.chip strong {
+  color: var(--night);
+}
+
+/* Sections */
+.sec {
+  position: relative;
+}
+
+.sh {
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(15,23,42,.07);
+}
+
+.sh h2 {
+  color: var(--night);
+}
+
+/* Cartes de documents et favoris */
+.fc,
+.dc,
+.card,
+.list {
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease,
+    transform .2s ease;
+}
+
+.fc:hover,
+.dc:hover,
+.card:hover {
+  border-color: rgba(255,107,53,.35);
+  box-shadow: 0 12px 30px rgba(15,23,42,.075);
+}
+
+.dc {
+  background: linear-gradient(145deg, #fff, #FFFCFA);
+}
+
+.fi h3 {
+  color: var(--night);
+}
+
+.fi small {
+  color: #D95B2C;
+}
+
+/* Boutons principaux */
+.bt.p {
+  background: linear-gradient(135deg, #FF7B45, #F05224);
+  box-shadow: 0 5px 13px rgba(255,107,53,.20);
+}
+
+.bt.p:hover {
+  box-shadow: 0 8px 18px rgba(255,107,53,.28);
+  transform: translateY(-1px);
+}
+
+/* Onglets de navigation */
+.pf-rail .ri.on {
+  background: linear-gradient(145deg, #17243D, #0F172A);
+  box-shadow: 0 5px 13px rgba(15,23,42,.18);
+}
+
+.pf-tab {
+  box-shadow: 0 -5px 20px rgba(15,23,42,.045);
+}
+
+.pf-tab button.on {
+  background: #FFF1EA;
+  color: #E65A2B;
+}
+
+/* Segments et filtres */
+.seg {
+  background: #EEECE9;
+  border: 1px solid rgba(15,23,42,.035);
+}
+
+.seg button.on {
+  background: linear-gradient(135deg, #17243D, #0F172A);
+  box-shadow: 0 3px 9px rgba(15,23,42,.15);
+}
+
+/* Champs de recherche */
+.search input,
+.sel,
+.fd input {
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+.search input:focus,
+.sel:focus,
+.fd input:focus {
+  border-color: var(--or);
+  box-shadow: 0 0 0 4px rgba(255,107,53,.10);
+  background: #FFFEFD;
+}
+
+/* Bandeaux */
+.banner {
+  border: 1px solid #F4DDA9;
+  background: linear-gradient(110deg, #FFF3D9, #FFFAEE);
+}
+
+.alert.error {
+  border: 1px solid #F5C8CE;
+}
+
+/* Aperçus des documents */
+.pv {
+  background: linear-gradient(145deg, #F0F2F7, #FFF7F2);
+}
+
+.pv:hover {
+  border-color: #FFB18D;
+}
+
+/* Favoris */
+.rm {
+  background: linear-gradient(135deg, #FF8756, #F05224);
+}
+
+/* Taki : petite touche lumineuse */
+.tk-btn {
+  filter: drop-shadow(0 8px 13px rgba(255,107,53,.16));
+}
+
+/* Toast */
+.toast {
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 12px 35px rgba(15,23,42,.22);
+}
+
+/* Adaptation mobile */
+@media(max-width:900px) {
+  .chip {
+    border-radius: 16px;
+  }
+
+  .sh {
+    align-items: flex-start;
+  }
+
+  .pf-tab button.on {
+    border-radius: 13px;
+  }
+}
+
+/* ==========================================
+   TAKIDOC — IDENTITÉ VISUELLE BLEUE
+   Mon espace / Profil
+   ========================================== */
+
+:root {
+  --night: #102B50;
+  --bg: #EAF2FC;
+  --surface: #FFFFFF;
+  --line: #DCE6F2;
+  --mut: #63758D;
+  --soft: #FFF1EA;
+  --or: #FF6B35;
+  --ink: #C94A14;
+}
+
+/* Fond général */
+body.app-profile {
+  background:
+    radial-gradient(
+      circle at 5% 5%,
+      rgba(255, 107, 53, .07),
+      transparent 27%
+    ),
+    radial-gradient(
+      circle at 95% 10%,
+      rgba(91, 151, 218, .12),
+      transparent 30%
+    ),
+    #EAF2FC !important;
+}
+
+/* Les grands conteneurs restent transparents */
+body.app-profile .pf,
+body.app-profile .pf-wrap,
+body.app-profile .view {
+  background: transparent !important;
+}
+
+/* Navigation latérale */
+body.app-profile .pf-rail {
+  background: linear-gradient(
+    180deg,
+    #102B50 0%,
+    #173B66 100%
+  );
+  color: #FFFFFF;
+}
+
+/* Cartes et espaces de contenu */
+body.app-profile .sec,
+body.app-profile .card,
+body.app-profile .fc,
+body.app-profile .dc {
+  background: #FFFFFF;
+  border-color: #DCE6F2;
+}
+
+/* En-têtes des sections */
+body.app-profile .sh {
+  color: #102B50;
+}
+
+/* Barre de navigation mobile */
+body.app-profile .pf-tab {
+  background: rgba(255,255,255,.97);
+  border-color: #DCE6F2;
+}
+
+/* Champs de saisie */
+body.app-profile .fi,
+body.app-profile .search,
+body.app-profile .sel {
+  background-color: #F8FAFD;
+  border-color: #DCE6F2;
+}
+
+/* Survol des cartes */
+body.app-profile .sec,
+body.app-profile .card,
+body.app-profile .fc {
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+body.app-profile .sec:hover,
+body.app-profile .card:hover {
+  border-color: #C3D6EC;
+  box-shadow: 0 8px 26px rgba(16,43,80,.07);
+}
+
+/* ==========================================
+   TAKIDOC — STATISTIQUES HARMONISÉES
+   ========================================== */
+
+/* Fond commun des statistiques */
+body.app-profile .chip {
+  background: #F0F5FC !important;
+  border: 1px solid #DFE9F5;
+  color: #102B50;
+  border-radius: 14px;
+}
+
+/* Icônes : une couleur par catégorie */
+body.app-profile .chip:nth-child(1) i {
+  color: #2474C6;
+}
+
+body.app-profile .chip:nth-child(2) i {
+  color: #E69A36;
+}
+
+body.app-profile .chip:nth-child(3) i {
+  color: #FF6B35;
+}
+
+body.app-profile .chip:nth-child(4) i {
+  color: #74869D;
+}
+
+/* Chiffres */
+body.app-profile .chip strong,
+body.app-profile .chip b {
+  color: #102B50;
+}
+
+/* Libellés */
+body.app-profile .chip span {
+  color: #63758D;
+}

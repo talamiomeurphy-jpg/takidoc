@@ -121,3 +121,793 @@
 .dz-chip,.dz-tool{white-space:nowrap;flex:0 1 auto;min-width:0}
 .dz-chip span{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .dz-tool{flex:none}
+
+
+/* =====================================================
+   TAKIDOC — ÉDITEUR : IDENTITÉ BLEUE PREMIUM
+   Première passe : fonds, surfaces et profondeur
+   ===================================================== */
+
+body.app-editor {
+  --night: #102B50;
+  --or: #FF6B35;
+  --or-d: #E85A2D;
+  --ink: #C94A14;
+  --soft: #FFF0E9;
+
+  --bg: #EAF2FC;
+  --surface: #FFFFFF;
+  --line: #D8E4F2;
+  --line2: #EAF0F8;
+  --mut: #63758D;
+  --mut2: #8DA0B8;
+
+  --dark: #102B50;
+  --bg-body: #EAF2FC;
+  --text-main: #102B50;
+  --text-muted: #63758D;
+  --border: #D8E4F2;
+
+  background: #EAF2FC;
+  color: #102B50;
+}
+
+/* Barre supérieure */
+.app-editor .appbar {
+  background: rgba(255,255,255,.96);
+  border-bottom: 1px solid #D8E4F2;
+  box-shadow: 0 3px 16px rgba(16,43,80,.045);
+}
+
+/* Rail de navigation */
+.app-editor .rail {
+  background: linear-gradient(
+    180deg,
+    #102B50 0%,
+    #173B66 100%
+  );
+  border-right: 1px solid #24466D;
+}
+
+.app-editor .rail .tab-btn {
+  color: #D5E3F5;
+}
+
+.app-editor .rail .tab-btn.active {
+  background: linear-gradient(135deg,#FF7B49,#F15C2B);
+  box-shadow: 0 6px 18px rgba(255,107,53,.28);
+}
+
+/* Panneau latéral */
+.app-editor .panel {
+  background: #FFFFFF;
+  border-right-color: #D8E4F2;
+}
+
+.app-editor .panel-head {
+  background: linear-gradient(
+    135deg,
+    #FFFFFF,
+    #F5F9FF
+  );
+  border-bottom: 1px solid #EAF0F8;
+}
+
+.app-editor .panel-head h2 {
+  color: #102B50;
+}
+
+/* Carte du modèle */
+.app-editor .tpl-card {
+  background: linear-gradient(135deg,#FFF4EE,#FFF9F6);
+  border-color: #F6D9CB;
+}
+
+/* Recherche et champs */
+.app-editor .fsearch input,
+.app-editor .form-control {
+  border-color: #D8E4F2;
+  background: #F9FBFE;
+}
+
+.app-editor .fsearch input:focus,
+.app-editor .form-control:focus {
+  background: #FFFFFF;
+  border-color: #FF9A70;
+  box-shadow: 0 0 0 4px rgba(255,107,53,.10);
+}
+
+/* Progression */
+.app-editor .fprog .bar {
+  background: #E5EDF7;
+}
+
+/* Zone de travail : nouveau fond bleu */
+.app-editor .editor-canvas-area {
+  background:
+    radial-gradient(
+      ellipse at 12% 10%,
+      rgba(255,107,53,.075),
+      transparent 32%
+    ),
+    radial-gradient(
+      ellipse at 90% 15%,
+      rgba(91,151,218,.15),
+      transparent 36%
+    ),
+    radial-gradient(
+      circle,
+      rgba(36,75,120,.12) 1px,
+      transparent 1.5px
+    ) 0 0 / 24px 24px,
+    #EAF2FC;
+}
+
+/* La feuille du document reste parfaitement blanche */
+.app-editor .document-canvas {
+  background: #FFFFFF;
+  box-shadow:
+    0 3px 8px rgba(16,43,80,.07),
+    0 22px 55px rgba(16,43,80,.18);
+}
+
+/* Cartes d'export */
+.app-editor .export-card {
+  background: linear-gradient(145deg,#F5F9FF,#EDF4FD);
+  border-color: #DCE7F4;
+}
+
+.app-editor .export-card h4 {
+  color: #102B50;
+}
+
+/* Barre d'aide au-dessus du document */
+.app-editor .dz-tool {
+  border-color: #D8E4F2;
+  color: #24466D;
+  box-shadow: 0 5px 16px rgba(16,43,80,.08);
+}
+
+.app-editor .dz-chip {
+  background: #102B50;
+}
+
+/* Contrôles de zoom */
+.app-editor .zoom-controls-floating {
+  border-color: #D8E4F2;
+  box-shadow: 0 12px 32px rgba(16,43,80,.13);
+}
+
+/* Modales */
+.app-editor .modal-content,
+.app-editor .dz-dialog {
+  box-shadow: 0 24px 70px rgba(16,43,80,.22);
+}
+
+/* Panneau mobile */
+@media(max-width:900px) {
+  .app-editor .panel {
+    background: #FFFFFF;
+    box-shadow: 0 -14px 45px rgba(16,43,80,.18);
+  }
+
+  .app-editor .rail {
+    background: linear-gradient(
+      90deg,
+      #102B50,
+      #173B66
+    );
+    border-top: 1px solid rgba(255,255,255,.12);
+  }
+
+  .app-editor .editor-canvas-area {
+    background:
+      radial-gradient(
+        ellipse at 50% 0%,
+        rgba(91,151,218,.16),
+        transparent 50%
+      ),
+      #EAF2FC;
+  }
+}
+
+
+/* ============================================================
+   TAKIDOC STUDIO — IDENTITÉ VISUELLE PREMIUM
+   Couche décorative uniquement.
+   IMPORTANT : document A4 et moteur de zoom intouchables.
+   ============================================================ */
+
+body.app-editor {
+  --night: #102B50;
+  --or: #FF713F;
+  --or-d: #EA5C2C;
+  --ink: #D6532C;
+  --soft: #FFF1EA;
+  --bg: #EDF4FC;
+  --surface: #FFFFFF;
+  --line: #DCE6F2;
+  --line2: #EAF0F8;
+  --mut: #64748B;
+  --mut2: #94A3B8;
+  --bg-body: #EDF4FC;
+
+  background: #EDF4FC;
+  color: #172B45;
+}
+
+/* APP : fond général */
+body.app-editor .app {
+  background: #EDF4FC;
+}
+
+/* BARRE SUPÉRIEURE */
+body.app-editor .appbar {
+  background: rgba(255,255,255,.94);
+  border-bottom: 1px solid #DFE8F3;
+  box-shadow: 0 4px 18px rgba(22,48,79,.045);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  position: relative;
+  z-index: 30;
+}
+
+body.app-editor .ab-logo {
+  color: #102B50;
+}
+
+body.app-editor #header-doc-title {
+  color: #183653;
+  font-weight: 750;
+  letter-spacing: -.35px;
+}
+
+body.app-editor #header-doc-status {
+  color: #71839A;
+}
+
+body.app-editor .appbar button {
+  transition:
+    background .2s ease,
+    color .2s ease,
+    border-color .2s ease,
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+body.app-editor .appbar button:hover {
+  background: #EDF4FC;
+  border-color: #D4E2F2;
+}
+
+body.app-editor #header-download-btn {
+  background: linear-gradient(135deg,#FF824F,#F45F32);
+  color: #fff;
+  border: 0;
+  box-shadow: 0 5px 14px rgba(244,95,50,.22);
+}
+
+body.app-editor #header-download-btn:hover {
+  background: linear-gradient(135deg,#F76F3C,#E65328);
+  box-shadow: 0 8px 20px rgba(244,95,50,.28);
+  transform: translateY(-1px);
+}
+
+/* NAVIGATION VERTICALE */
+body.app-editor .rail {
+  background:
+    radial-gradient(circle at 50% 0%,rgba(64,125,190,.19),transparent 38%),
+    linear-gradient(180deg,#142F52 0%,#0D2340 100%);
+  border-right: 1px solid rgba(255,255,255,.06);
+  box-shadow: 5px 0 22px rgba(16,43,80,.08);
+}
+
+body.app-editor .rail .tab-btn {
+  border-radius: 13px;
+  margin: 4px 8px;
+  color: #B7C8DE;
+  transition: all .22s ease;
+}
+
+body.app-editor .rail .tab-btn:hover {
+  background: rgba(255,255,255,.09);
+  color: #fff;
+  transform: translateX(2px);
+}
+
+body.app-editor .rail .tab-btn.active {
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    rgba(255,126,77,.25),
+    rgba(255,107,53,.12)
+  );
+  box-shadow: inset 3px 0 #FF713F;
+}
+
+body.app-editor .rail .tab-btn.active svg {
+  color: #FF895D;
+}
+
+/* PANNEAU LATÉRAL */
+body.app-editor .panel {
+  background: #FFFFFF;
+  border-right: 1px solid #DFE8F3;
+  box-shadow: 5px 0 22px rgba(23,49,78,.035);
+}
+
+body.app-editor .sidebar-content {
+  background:
+    linear-gradient(180deg,#FFFFFF 0%,#FBFDFF 100%);
+  scrollbar-color: #C7D7E9 transparent;
+  scrollbar-width: thin;
+}
+
+body.app-editor .sidebar-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+body.app-editor .sidebar-content::-webkit-scrollbar-thumb {
+  background: #CAD8E8;
+  border-radius: 20px;
+}
+
+/* TITRES ET SECTIONS */
+body.app-editor .panel h2,
+body.app-editor .panel h3,
+body.app-editor .sidebar-content h2,
+body.app-editor .sidebar-content h3 {
+  color: #173654;
+  letter-spacing: -.35px;
+}
+
+/* CARTES ET MODÈLES */
+body.app-editor .tpl-card {
+  background: linear-gradient(145deg,#F5F9FF,#EDF4FC);
+  border: 1px solid #E1EAF5;
+  border-radius: 15px;
+  transition: all .22s ease;
+}
+
+body.app-editor .tpl-card:hover {
+  border-color: #F5B69D;
+  box-shadow: 0 9px 24px rgba(27,66,108,.09);
+  transform: translateY(-2px);
+}
+
+/* CHAMPS DE SAISIE */
+body.app-editor .panel input,
+body.app-editor .panel select,
+body.app-editor .panel textarea,
+body.app-editor .sidebar-content input,
+body.app-editor .sidebar-content select,
+body.app-editor .sidebar-content textarea {
+  border-color: #DCE6F2;
+  border-radius: 10px;
+  background: #FBFDFF;
+  color: #183653;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+body.app-editor .panel input:focus,
+body.app-editor .panel select:focus,
+body.app-editor .panel textarea:focus,
+body.app-editor .sidebar-content input:focus,
+body.app-editor .sidebar-content select:focus,
+body.app-editor .sidebar-content textarea:focus {
+  outline: none;
+  border-color: #F28B65;
+  box-shadow: 0 0 0 3px rgba(255,113,63,.11);
+}
+
+/* BOUTONS DU PANNEAU */
+body.app-editor .panel button,
+body.app-editor .sidebar-content button {
+  transition: all .2s ease;
+}
+
+body.app-editor .panel button:hover,
+body.app-editor .sidebar-content button:hover {
+  transform: translateY(-1px);
+}
+
+/* ZONE DE TRAVAIL — DÉCOR UNIQUEMENT */
+body.app-editor .editor-canvas-area {
+  background:
+    radial-gradient(
+      ellipse at 15% 8%,
+      rgba(86,151,224,.19),
+      transparent 37%
+    ),
+    radial-gradient(
+      ellipse at 90% 85%,
+      rgba(255,113,63,.085),
+      transparent 34%
+    ),
+    linear-gradient(
+      145deg,
+      #E9F2FD 0%,
+      #F5F9FF 48%,
+      #E6F0FC 100%
+    );
+}
+
+/* POINTS DÉCORATIFS TRÈS DISCRETS */
+body.app-editor .editor-canvas-area::before {
+  opacity: .20;
+}
+
+/* FEUILLE A4 : NE PAS MODIFIER */
+body.app-editor #document-canvas {
+  background: #FFFFFF;
+}
+
+/* COMMANDES DE ZOOM : ASPECT UNIQUEMENT */
+body.app-editor .zoom-controls-floating {
+  background: rgba(255,255,255,.94);
+  border: 1px solid rgba(211,225,241,.95);
+  border-radius: 15px;
+  box-shadow: 0 8px 28px rgba(24,52,85,.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+body.app-editor .zoom-controls-floating button {
+  border-radius: 9px;
+  transition: background .2s ease, color .2s ease;
+}
+
+body.app-editor .zoom-controls-floating button:hover {
+  background: #EDF4FC;
+  color: #F16C3D;
+}
+
+/* BARRE D'ASTUCES */
+body.app-editor #dz-bar {
+  background: rgba(255,255,255,.94);
+  border: 1px solid #DFE9F4;
+  border-radius: 14px;
+  box-shadow: 0 7px 24px rgba(21,48,80,.09);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* AIDE ET FENÊTRES */
+body.app-editor #dz-help,
+body.app-editor #loginModal {
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+body.app-editor .editor-toast {
+  border: 1px solid #E1EAF5;
+  border-radius: 13px;
+  box-shadow: 0 12px 35px rgba(16,43,80,.15);
+}
+
+/* MASCOTTE TAKI */
+body.app-editor #taki-container {
+  filter: drop-shadow(0 8px 16px rgba(16,43,80,.12));
+}
+
+/* SCROLLBARS GLOBALES */
+body.app-editor * {
+  scrollbar-width: thin;
+  scrollbar-color: #CAD8E8 transparent;
+}
+
+body.app-editor *::-webkit-scrollbar-thumb {
+  background: #CAD8E8;
+  border-radius: 20px;
+}
+
+/* RESPONSIVITÉ DES ÉLÉMENTS EXTÉRIEURS */
+@media (max-width: 900px) {
+  body.app-editor .appbar {
+    box-shadow: 0 3px 15px rgba(16,43,80,.07);
+  }
+
+  body.app-editor .rail {
+    background: linear-gradient(180deg,#153456,#0D2340);
+    box-shadow: 0 -5px 24px rgba(16,43,80,.12);
+  }
+
+  body.app-editor .rail .tab-btn {
+    border-radius: 12px;
+    margin: 3px 4px;
+  }
+
+  body.app-editor .panel {
+    border-radius: 20px 20px 0 0;
+    border: 1px solid #DCE6F2;
+    box-shadow: 0 -12px 35px rgba(16,43,80,.12);
+  }
+
+  body.app-editor .editor-canvas-area {
+    background:
+      radial-gradient(
+        ellipse at 20% 0%,
+        rgba(86,151,224,.17),
+        transparent 42%
+      ),
+      linear-gradient(145deg,#EDF4FC,#F7FAFF);
+  }
+
+  body.app-editor .zoom-controls-floating {
+    box-shadow: 0 5px 20px rgba(16,43,80,.14);
+  }
+}
+
+@media (max-width: 480px) {
+  body.app-editor .panel {
+    border-radius: 18px 18px 0 0;
+  }
+
+  body.app-editor .appbar {
+    border-bottom-color: #E5EDF6;
+  }
+
+  body.app-editor #header-download-btn {
+    box-shadow: 0 3px 10px rgba(244,95,50,.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.app-editor .appbar button,
+  body.app-editor .rail .tab-btn,
+  body.app-editor .tpl-card,
+  body.app-editor .panel button {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   TAKIDOC STUDIO — CORRECTION HEADER MOBILE
+   Document A4 et moteur de zoom totalement préservés.
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+  body.app-editor .appbar {
+    position: relative;
+    z-index: 50;
+    min-height: 112px;
+    height: auto;
+    padding: 12px 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    overflow: visible;
+    background: rgba(255,255,255,.98);
+    border-bottom: 1px solid #DCE6F2;
+    box-shadow: 0 5px 20px rgba(16,43,80,.08);
+  }
+
+  /* Retour et identité */
+  body.app-editor #ab-back {
+    min-width: 42px;
+    min-height: 42px;
+    flex: 0 0 42px;
+    border-radius: 13px;
+    background: #EDF4FC;
+    color: #173654;
+  }
+
+  body.app-editor .ab-logo {
+    font-size: 17px;
+    font-weight: 850;
+    letter-spacing: -.5px;
+  }
+
+  /* Titre du document */
+  body.app-editor #header-doc-title {
+    max-width: min(55vw, 260px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 800;
+    color: #173654;
+  }
+
+  body.app-editor #header-doc-status {
+    font-size: 11px;
+  }
+
+  /* Toutes les commandes restent confortables au toucher */
+  body.app-editor .appbar button {
+    min-height: 40px;
+    min-width: 40px;
+    border-radius: 12px;
+  }
+
+  body.app-editor #header-download-btn {
+    min-height: 43px;
+    padding: 0 15px;
+    border-radius: 12px;
+    font-weight: 750;
+  }
+
+  body.app-editor #dz-help-btn,
+  body.app-editor #app-save,
+  body.app-editor #panel-toggle {
+    background: #F1F6FC;
+    border: 1px solid #E1EAF5;
+    color: #173654;
+  }
+
+  /* Progression : lisible et non écrasée */
+  body.app-editor #appProgress {
+    flex-shrink: 0;
+  }
+}
+
+/* Téléphones étroits */
+@media (max-width: 480px) {
+
+  body.app-editor .appbar {
+    min-height: 124px;
+    padding: 11px 12px;
+    gap: 9px;
+  }
+
+  body.app-editor #header-doc-title {
+    max-width: 48vw;
+    font-size: 13px;
+  }
+
+  body.app-editor .ab-logo {
+    font-size: 15px;
+  }
+
+  body.app-editor #header-download-btn {
+    min-height: 42px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  body.app-editor .appbar button {
+    min-height: 42px;
+    min-width: 42px;
+  }
+}
+
+/* ============================================================
+   TAKIDOC STUDIO — HEADER DESKTOP PREMIUM
+   Correction de hauteur et de respiration visuelle.
+   Aucun changement sur le document A4.
+   ============================================================ */
+
+@media (min-width: 901px) {
+
+  body.app-editor .appbar {
+    min-height: 76px;
+    height: auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    overflow: visible;
+    background: rgba(255,255,255,.97);
+    border-bottom: 1px solid #DCE6F2;
+    box-shadow: 0 5px 20px rgba(16,43,80,.055);
+  }
+
+  /* Identité */
+  body.app-editor .ab-logo {
+    font-size: 19px;
+    font-weight: 850;
+    letter-spacing: -.6px;
+  }
+
+  /* Titre du document */
+  body.app-editor #header-doc-title {
+    font-size: 15px;
+    font-weight: 800;
+    max-width: 340px;
+    line-height: 1.4;
+    color: #173654;
+  }
+
+  body.app-editor #header-doc-status {
+    font-size: 12px;
+    margin-top: 3px;
+  }
+
+  /* Boutons */
+  body.app-editor .appbar button {
+    min-height: 42px;
+    border-radius: 12px;
+  }
+
+  body.app-editor #header-download-btn {
+    min-height: 44px;
+    padding: 0 19px;
+    border-radius: 13px;
+    font-size: 13px;
+    font-weight: 750;
+  }
+
+  /* Meilleure respiration des commandes */
+  body.app-editor #dz-help-btn,
+  body.app-editor #app-save,
+  body.app-editor #panel-toggle {
+    padding: 0 13px;
+  }
+}
+
+/* Écrans PC larges */
+@media (min-width: 1400px) {
+  body.app-editor .appbar {
+    min-height: 82px;
+    padding-left: 30px;
+    padding-right: 30px;
+    gap: 22px;
+  }
+
+  body.app-editor #header-doc-title {
+    max-width: 420px;
+  }
+}
+
+/* ============================================================
+   TAKIDOC — CORRECTION HEADER / SIDEBAR
+   Le header conserve sa hauteur.
+   La zone de travail commence obligatoirement en dessous.
+   ============================================================ */
+
+@media (min-width: 901px) {
+
+  /* La grille doit réserver une vraie ligne au header */
+  body.app-editor .app {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Le header occupe uniquement sa propre ligne */
+  body.app-editor .appbar {
+    grid-row: 1;
+    grid-column: 1 / -1;
+    position: relative;
+    z-index: 20;
+    min-height: 76px;
+    height: auto;
+    box-sizing: border-box;
+  }
+
+  /* La zone principale commence après le header */
+  body.app-editor .shell {
+    grid-row: 2;
+    grid-column: 1;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Les trois zones de l'éditeur restent indépendantes */
+  body.app-editor .rail,
+  body.app-editor .panel,
+  body.app-editor .editor-canvas-area {
+    min-height: 0;
+  }
+
+  body.app-editor .panel {
+    overflow: hidden;
+  }
+
+  body.app-editor .sidebar-content {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  body.app-editor .editor-canvas-area {
+    min-width: 0;
+    overflow: auto;
+  }
+}
