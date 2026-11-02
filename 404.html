@@ -180,6 +180,21 @@ a{text-decoration:none;color:inherit}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
+/* Écrans peu hauts : tout tient sans défilement */
+@media (min-width:761px) and (max-height:780px){
+  .header{padding:16px 28px}
+  .card{padding:30px 40px 28px}
+  .title{margin:14px 0 10px;font-size:clamp(26px,3.6vw,36px)}
+  .desc{font-size:14.5px;line-height:1.6}
+  .path{margin-top:12px;padding:7px 12px}
+  .count{margin-top:16px;padding:11px 14px}
+  .ring{width:50px;height:50px}
+  .actions{margin-top:16px;flex-wrap:nowrap}
+  .btn{min-height:46px;padding:0 18px;font-size:13px;white-space:nowrap}
+  .stage{min-height:210px}
+  #taki-404,#taki-404 .taki{max-width:190px}
+  .main{padding-bottom:20px}
+}
 </style>
 </head>
 
