@@ -1,146 +1,656 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Politique de confidentialité et de protection des données de TakiDoc.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102B50">
+
   <title>Politique de confidentialité | TakiDoc</title>
-  <link rel="stylesheet" href="css/legal.css">
+  <meta name="description" content="Découvrez comment TakiDoc collecte, utilise, conserve et protège vos données personnelles.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy: #102B50;
+      --blue: #245A91;
+      --orange: #F28A24;
+      --background: #F4F7FB;
+      --white: #FFFFFF;
+      --text: #29394D;
+      --muted: #718096;
+      --border: #E5EAF1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--orange);
+    }
+
+    .topbar {
+      min-height: 72px;
+      padding: 14px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      background: white;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      font-family: "Manrope", sans-serif;
+      font-size: 25px;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -1px;
+    }
+
+    .brand span {
+      color: var(--orange);
+    }
+
+    .back-link {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .hero {
+      background: linear-gradient(125deg, #102B50, #245A91);
+      color: white;
+      text-align: center;
+      padding: 65px 20px 85px;
+    }
+
+    .hero-label {
+      display: inline-block;
+      padding: 6px 15px;
+      margin-bottom: 18px;
+      color: #FFD09C;
+      background: rgba(242,138,36,.14);
+      border: 1px solid rgba(242,138,36,.35);
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(28px, 5vw, 43px);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: #D8E5F2;
+      font-size: 14px;
+    }
+
+    .container {
+      width: min(900px, 92%);
+      margin: -35px auto 65px;
+      position: relative;
+    }
+
+    .content {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: clamp(24px, 5vw, 52px);
+      box-shadow: 0 15px 45px rgba(16,43,80,.07);
+    }
+
+    .intro {
+      background: #F3F7FC;
+      border-left: 4px solid var(--orange);
+      border-radius: 9px;
+      padding: 17px 20px;
+      margin-bottom: 28px;
+      font-size: 14px;
+    }
+
+    .section {
+      padding: 25px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section:last-child {
+      border-bottom: none;
+    }
+
+    .section h2 {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--navy);
+      font-family: "Manrope", sans-serif;
+      font-size: 19px;
+      margin-bottom: 14px;
+    }
+
+    .section h2::before {
+      content: "";
+      width: 5px;
+      height: 23px;
+      flex-shrink: 0;
+      border-radius: 5px;
+      background: var(--orange);
+    }
+
+    .section h3 {
+      color: var(--navy);
+      font-size: 15px;
+      margin: 18px 0 8px;
+    }
+
+    .section p {
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .section ul {
+      padding-left: 22px;
+      margin: 12px 0;
+    }
+
+    .section li {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .info {
+      padding: 19px;
+      margin: 15px 0;
+      background: #FAFBFD;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+    }
+
+    .info p {
+      margin-bottom: 7px;
+      overflow-wrap: anywhere;
+    }
+
+    .info p:last-child {
+      margin-bottom: 0;
+    }
+
+    .info strong {
+      color: var(--navy);
+    }
+
+    .notice {
+      background: #FFF8EF;
+      border: 1px solid #F5DFC4;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin: 15px 0;
+      font-size: 13px;
+    }
+
+    .footer {
+      padding: 30px 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .footer strong {
+      color: var(--navy);
+    }
+
+    @media(max-width:600px) {
+      .topbar {
+        padding: 13px 5%;
+      }
+
+      .brand {
+        font-size: 21px;
+      }
+
+      .hero {
+        padding: 48px 18px 65px;
+      }
+
+      .content {
+        border-radius: 14px;
+      }
+
+      .section h2 {
+        font-size: 17px;
+      }
+
+      .back-link {
+        font-size: 12px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header class="legal-header">
-  <a class="legal-brand" href="index.html">Taki<span>Doc</span></a>
-  <a class="legal-back" href="index.html">← Retour à l'accueil</a>
-</header>
+  <header class="topbar">
+    <a class="brand" href="index.html">Taki<span>Doc</span></a>
+    <a class="back-link" href="index.html">← Retour à l'accueil</a>
+  </header>
 
-<section class="legal-hero">
-  <small>Respect de votre vie privée</small>
-  <h1>Politique de confidentialité</h1>
-  <p>Comment TakiDoc collecte et utilise vos informations.</p>
-</section>
+  <section class="hero">
+    <span class="hero-label">Protection de vos données</span>
+    <h1>Politique de confidentialité</h1>
+    <p>La transparence et la protection de vos informations sont importantes pour TakiDoc.</p>
+  </section>
 
-<main class="legal-container">
-  <p class="legal-date">Dernière mise à jour : 2 novembre 2026</p>
+  <main class="container">
+    <article class="content">
 
-  <h2>1. Introduction</h2>
-  <p>TakiDoc accorde une importance particulière à la confidentialité et à la protection des informations personnelles de ses utilisateurs.</p>
-  <p>La présente politique explique quelles informations sont collectées, pourquoi elles sont utilisées, comment elles sont conservées et quels droits les utilisateurs peuvent exercer.</p>
-  <p>Elle s'inscrit notamment dans le cadre de la loi n° 29-2019 du 10 octobre 2019 relative à la protection des données à caractère personnel en République du Congo.</p>
+      <div class="intro">
+        La présente politique explique quelles données personnelles
+        TakiDoc collecte, pourquoi elles sont utilisées, avec quels
+        prestataires elles peuvent être traitées et pendant combien
+        de temps elles sont conservées.
+        <br><br>
+        <strong>Dernière mise à jour : 2 novembre 2026.</strong>
+      </div>
 
-  <h2>2. Responsable du traitement</h2>
-  <p>
-    <strong>Meurphy Talamio</strong><br>
-    Brazzaville, République du Congo<br>
-    E-mail : <a href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a><br>
-    Téléphone : <a href="tel:+242065186967">06 518 69 67</a>
-  </p>
+      <section class="section">
+        <h2>1. Responsable du traitement</h2>
 
-  <h2>3. Informations collectées</h2>
-  <p>Selon les fonctionnalités utilisées, TakiDoc peut traiter les catégories d'informations suivantes :</p>
+        <p>Le responsable du traitement des données personnelles
+          collectées dans le cadre de l'utilisation de TakiDoc est :</p>
 
-  <p><strong>Informations de compte :</strong></p>
-  <ul>
-    <li>Nom et prénom ;</li>
-    <li>Adresse électronique ;</li>
-    <li>Numéro de téléphone ;</li>
-    <li>Informations nécessaires à l'authentification du compte.</li>
-  </ul>
+        <div class="info">
+          <p><strong>Nom et prénom :</strong> Meurphy Talamio</p>
+          <p><strong>Service :</strong> TakiDoc</p>
+          <p><strong>Statut :</strong> Personne physique</p>
+          <p><strong>Localisation :</strong> Brazzaville, République du Congo</p>
+          <p><strong>E-mail :</strong>
+            <a href="mailto:takidoc.contact@gmail.com">
+              takidoc.contact@gmail.com
+            </a>
+          </p>
+          <p><strong>Téléphone :</strong>
+            <a href="tel:+242065186967">+242 06 518 69 67</a>
+          </p>
+        </div>
+      </section>
 
-  <p><strong>Informations relatives aux documents :</strong></p>
-  <ul>
-    <li>Informations saisies par l'utilisateur dans les modèles ;</li>
-    <li>Données nécessaires à la personnalisation et à la génération des documents ;</li>
-    <li>Brouillons et modifications enregistrés ;</li>
-    <li>Références des documents générés.</li>
-  </ul>
-  <p>Les informations saisies dans les documents servent à leur personnalisation, à leur génération et, lorsque cela est demandé, à la sauvegarde des brouillons. Elles ne sont pas destinées à être réutilisées à des fins étrangères à ces fonctionnalités.</p>
+      <section class="section">
+        <h2>2. Données personnelles collectées</h2>
 
-  <p><strong>Informations relatives aux paiements :</strong></p>
-  <ul>
-    <li>Montant de l'achat ;</li>
-    <li>Moyen de paiement choisi ;</li>
-    <li>Opérateur Mobile Money sélectionné ;</li>
-    <li>Numéro de téléphone fourni pour le paiement ;</li>
-    <li>Référence et statut de la transaction ;</li>
-    <li>Informations nécessaires à l'association du paiement à l'achat.</li>
-  </ul>
-  <p>Les paiements sont traités avec l'intervention de Yabetoo. TakiDoc ne prétend pas recevoir les identifiants secrets Mobile Money de l'utilisateur.</p>
+        <p>Selon les fonctionnalités utilisées, TakiDoc peut collecter
+          et traiter les catégories de données suivantes :</p>
 
-  <p><strong>Informations techniques :</strong></p>
-  <p>Certaines informations techniques peuvent être traitées pour assurer le fonctionnement, la sécurité et la disponibilité de la plateforme.</p>
+        <h3>2.1. Données de compte</h3>
+        <ul>
+          <li>Nom et prénom ;</li>
+          <li>Adresse électronique ;</li>
+          <li>Numéro de téléphone ;</li>
+          <li>Informations nécessaires à l'authentification du compte.</li>
+        </ul>
 
-  <h2>4. Finalités du traitement</h2>
-  <p>Les informations sont utilisées pour :</p>
-  <ul>
-    <li>Créer et gérer les comptes ;</li>
-    <li>Authentifier les utilisateurs ;</li>
-    <li>Permettre la consultation et la personnalisation des modèles ;</li>
-    <li>Enregistrer les brouillons et les favoris ;</li>
-    <li>Générer les documents PDF et Word ;</li>
-    <li>Traiter et vérifier les paiements ;</li>
-    <li>Mettre les documents achetés à disposition ;</li>
-    <li>Consulter l'historique des achats et des générations ;</li>
-    <li>Prévenir les opérations frauduleuses et assurer la sécurité du service ;</li>
-    <li>Répondre aux demandes d'assistance.</li>
-  </ul>
+        <h3>2.2. Données saisies dans les documents</h3>
+        <p>Lorsque vous personnalisez un modèle, vous pouvez fournir
+          différentes informations, notamment :</p>
+        <ul>
+          <li>Noms et prénoms ;</li>
+          <li>Adresses et coordonnées ;</li>
+          <li>Informations professionnelles ;</li>
+          <li>Textes, renseignements et autres éléments nécessaires
+            à la composition du document ;</li>
+          <li>Photographies ou images ajoutées au document.</li>
+        </ul>
 
-  <h2>5. Prestataires techniques et destinataires</h2>
-  <ul>
-    <li><strong>Supabase :</strong> authentification, gestion des comptes et stockage des données ;</li>
-    <li><strong>Render :</strong> hébergement du site et génération des documents ;</li>
-    <li><strong>Yabetoo :</strong> traitement et vérification des paiements Mobile Money.</li>
-  </ul>
-  <p>Ces prestataires peuvent traiter les informations nécessaires à l'exécution de leurs fonctions techniques, dans les limites de leurs interventions respectives.</p>
-  <p>Les informations peuvent également être communiquées aux autorités compétentes lorsque la loi l'exige.</p>
+        <p>Ces informations sont utilisées pour les opérations demandées :
+          personnalisation, sauvegarde du brouillon et génération
+          du document. Elles ne sont pas réutilisées par TakiDoc
+          à des fins étrangères à ces opérations.</p>
 
-  <h2>6. Conservation des informations</h2>
-  <p>Les documents générés à la suite d'un achat sont actuellement conservés pendant une durée de <strong>72 heures</strong> afin de permettre leur récupération depuis l'espace utilisateur.</p>
-  <p>À l'expiration de cette période, le document peut être supprimé du stockage de récupération.</p>
-  <p>Les brouillons, données de compte, références de transactions et historiques sont conservés selon les besoins de fonctionnement du service et les obligations applicables. Leur durée exacte dépend de la catégorie de données et des règles de conservation effectivement mises en œuvre.</p>
+        <h3>2.3. Données relatives aux achats et paiements</h3>
+        <p>Lorsqu'un utilisateur achète un modèle ou demande une
+          génération payante, certaines informations sont nécessaires
+          au traitement de l'opération :</p>
+        <ul>
+          <li>Adresse électronique ;</li>
+          <li>Numéro de téléphone utilisé pour le paiement ;</li>
+          <li>Opérateur Mobile Money sélectionné (MTN ou Airtel) ;</li>
+          <li>Montant et devise de la transaction ;</li>
+          <li>Statut du paiement ;</li>
+          <li>Référence de paiement et identifiant de l'opération ;</li>
+          <li>Informations permettant de rattacher l'achat au document
+            demandé.</li>
+        </ul>
 
-  <h2>7. Sécurité</h2>
-  <p>TakiDoc met en œuvre des mécanismes techniques destinés à protéger les informations traitées, notamment des contrôles d'accès et des mécanismes de vérification des transactions.</p>
-  <p>Aucun système informatique ne pouvant garantir une sécurité absolue, les utilisateurs sont invités à protéger leurs identifiants et à éviter de communiquer leur mot de passe.</p>
+        <p>TakiDoc utilise Yabetoo pour le traitement des paiements
+          Mobile Money. Les données de paiement reçues par TakiDoc
+          comprennent notamment les références et le statut de
+          l'opération. TakiDoc ne reçoit pas les codes secrets
+          Mobile Money des utilisateurs.</p>
 
-  <h2>8. Transferts de données</h2>
-  <p>Les prestataires techniques utilisés par TakiDoc peuvent exploiter des infrastructures situées hors de la République du Congo.</p>
-  <p>Les éventuels transferts internationaux de données sont soumis aux exigences de la législation applicable, notamment celles relatives au niveau de protection offert par le pays destinataire et aux formalités auprès de l'autorité compétente.</p>
+        <h3>2.4. Données d'utilisation</h3>
+        <p>La plateforme peut également traiter les informations
+          nécessaires à son fonctionnement, notamment :</p>
+        <ul>
+          <li>Les modèles consultés ou utilisés ;</li>
+          <li>Les modèles ajoutés aux favoris ;</li>
+          <li>L'historique des générations ;</li>
+          <li>Les informations relatives aux brouillons ;</li>
+          <li>Les références techniques nécessaires au suivi
+            des opérations.</li>
+        </ul>
+      </section>
 
-  <h2>9. Droits des utilisateurs</h2>
-  <p>Conformément à la législation applicable, les utilisateurs peuvent notamment demander, dans les conditions prévues par la loi :</p>
-  <ul>
-    <li>L'accès à leurs données personnelles ;</li>
-    <li>La rectification des informations inexactes ;</li>
-    <li>La suppression des données lorsque celle-ci est juridiquement possible ;</li>
-    <li>Des informations sur les traitements et les destinataires ;</li>
-    <li>L'exercice des autres droits reconnus par la législation.</li>
-  </ul>
-  <p>Les demandes peuvent être adressées à <a href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a>.</p>
-  <p>Une vérification raisonnable de l'identité du demandeur peut être nécessaire pour protéger les informations concernées.</p>
+      <section class="section">
+        <h2>3. Finalités du traitement</h2>
 
-  <h2>10. Modifications</h2>
-  <p>La présente politique peut être actualisée afin de tenir compte de l'évolution des fonctionnalités, des prestataires ou de la législation.</p>
-  <p>La version publiée sur le site constitue la version applicable à compter de sa date de mise à jour.</p>
+        <p>Les données collectées sont utilisées pour les finalités
+          suivantes :</p>
+        <ul>
+          <li>Créer et gérer les comptes utilisateurs ;</li>
+          <li>Authentifier les utilisateurs et sécuriser l'accès
+            à leurs espaces personnels ;</li>
+          <li>Permettre la personnalisation des modèles de documents ;</li>
+          <li>Sauvegarder les brouillons et les modifications ;</li>
+          <li>Générer les documents PDF et Word (DOCX) ;</li>
+          <li>Permettre le téléchargement et la récupération
+            des documents ;</li>
+          <li>Traiter et vérifier les paiements ;</li>
+          <li>Conserver les références et l'historique des transactions ;</li>
+          <li>Gérer les modèles favoris et l'historique personnel ;</li>
+          <li>Assurer le fonctionnement technique et la sécurité
+            de la plateforme ;</li>
+          <li>Répondre aux demandes d'assistance des utilisateurs.</li>
+        </ul>
 
-  <h2>11. Contact</h2>
-  <p>Pour toute question concernant cette politique ou le traitement des données personnelles :</p>
-  <p>
-    <strong>Meurphy Talamio</strong><br>
-    <a href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a><br>
-    <a href="tel:+242065186967">06 518 69 67</a><br>
-    Brazzaville, République du Congo.
-  </p>
-</main>
+        <p>Les traitements sont réalisés dans le cadre des services
+          demandés par l'utilisateur, des obligations légales
+          applicables et, lorsque cela est nécessaire, sur la base
+          de son consentement.</p>
+      </section>
 
-<footer class="legal-footer">
-  © 2026 TakiDoc — Tous droits réservés.
-  <p>
-    <a href="mentions-legales.html">Mentions légales</a>
-    <a href="confidentialite.html">Confidentialité</a>
-    <a href="conditions-vente.html">Conditions de vente</a>
-  </p>
-</footer>
+      <section class="section">
+        <h2>4. Prestataires et destinataires des données</h2>
+
+        <p>Pour assurer le fonctionnement de TakiDoc, certaines données
+          peuvent être traitées par des prestataires techniques
+          intervenant pour le compte de la plateforme.</p>
+
+        <h3>Supabase</h3>
+        <p>Supabase fournit les services de gestion des comptes,
+          d'authentification, de base de données et de stockage
+          utilisés par TakiDoc.</p>
+
+        <h3>Render</h3>
+        <p>Render héberge le site TakiDoc ainsi que le serveur chargé
+          de la génération des documents PDF et DOCX. Les informations
+          nécessaires à cette génération peuvent transiter par
+          les infrastructures de ce prestataire.</p>
+
+        <h3>Yabetoo</h3>
+        <p>Yabetoo intervient dans le traitement et la confirmation
+          des paiements Mobile Money. Les informations nécessaires
+          à la vérification d'une opération lui sont communiquées.</p>
+
+        <p>Ces prestataires interviennent uniquement dans le cadre
+          des services techniques ou de paiement qu'ils fournissent.
+          Ils ne deviennent pas propriétaires des données personnelles
+          des utilisateurs.</p>
+
+        <p>Les données peuvent également être communiquées aux autorités
+          compétentes lorsque la loi l'exige.</p>
+      </section>
+
+      <section class="section">
+        <h2>5. Transferts internationaux de données</h2>
+
+        <p>Les prestataires techniques utilisés par TakiDoc disposent
+          d'infrastructures qui peuvent être situées en dehors
+          de la République du Congo.</p>
+
+        <p>Selon la configuration des services utilisés, certaines
+          données peuvent ainsi être hébergées ou traitées depuis
+          un autre pays.</p>
+
+        <p>Les transferts internationaux de données sont soumis
+          aux conditions et garanties prévues par la législation
+          applicable en République du Congo, notamment par les
+          dispositions relatives aux transferts transfrontaliers
+          de données personnelles.</p>
+      </section>
+
+      <section class="section">
+        <h2>6. Durée de conservation des données</h2>
+
+        <p>TakiDoc conserve les données pendant la durée nécessaire
+          à la réalisation des finalités pour lesquelles elles
+          ont été collectées.</p>
+
+        <h3>Documents générés</h3>
+        <p>Les documents générés et conservés dans le cadre
+          d'un achat sont actuellement disponibles pendant
+          une durée de <strong>72 heures</strong> après leur
+          mise à disposition, afin de permettre leur récupération
+          depuis l'espace personnel.</p>
+
+        <p>À l'expiration de cette période, les documents concernés
+          sont supprimés du stockage prévu pour leur récupération,
+          conformément au fonctionnement technique de la plateforme.</p>
+
+        <h3>Brouillons et informations de personnalisation</h3>
+        <p>Les brouillons et les informations nécessaires à leur
+          utilisation sont conservés dans l'espace utilisateur
+          afin de permettre leur consultation et leur modification.
+          Ils sont conservés jusqu'à leur suppression ou jusqu'à
+          la suppression du compte, sous réserve des obligations
+          légales et des contraintes techniques applicables.</p>
+
+        <h3>Données de compte et transactions</h3>
+        <p>Les informations de compte, les références de paiement
+          et l'historique des transactions peuvent être conservés
+          aussi longtemps que nécessaire à la gestion du compte,
+          au suivi des achats, à la sécurité et au respect
+          des obligations légales applicables.</p>
+
+        <p>Les données conservées au-delà de leur durée d'utilisation
+          courante ne le sont que lorsque cela est justifié par
+          une obligation ou une finalité légitime autorisée.</p>
+      </section>
+
+      <section class="section">
+        <h2>7. Cookies et stockage sur votre appareil</h2>
+
+        <p>TakiDoc utilise certains mécanismes de stockage local
+          du navigateur nécessaires au fonctionnement de ses
+          fonctionnalités.</p>
+
+        <h3>Stockage local (localStorage)</h3>
+        <ul>
+          <li><strong>takidoc_favorites :</strong> conserve localement
+            les identifiants des modèles ajoutés aux favoris.</li>
+          <li><strong>Session Supabase :</strong> permet de conserver
+            les informations nécessaires à l'authentification
+            et à la continuité de la connexion.</li>
+        </ul>
+
+        <h3>Stockage de session (sessionStorage)</h3>
+        <ul>
+          <li><strong>takidoc_categories_v2 :</strong> conserve
+            temporairement un cache des catégories.</li>
+          <li><strong>td_taki_hi :</strong> mémorise temporairement
+            l'affichage de la salutation initiale de la mascotte Taki.</li>
+        </ul>
+
+        <p>Les informations stockées dans sessionStorage sont
+          normalement supprimées à la fin de la session de navigation.
+          Les données conservées dans localStorage peuvent rester
+          présentes jusqu'à leur suppression par l'utilisateur
+          ou par le fonctionnement de la plateforme.</p>
+
+        <p>Les favoris peuvent également être synchronisés avec
+          le compte utilisateur lorsqu'une session est ouverte.</p>
+
+        <p>Les scripts fournis et examinés ne montrent pas
+          d'installation actuelle de Google Analytics.
+          Si un outil de mesure d'audience ou un autre traceur
+          non indispensable est ajouté ultérieurement, cette
+          politique et les mécanismes d'information ou de
+          consentement nécessaires seront mis à jour avant
+          son utilisation.</p>
+      </section>
+
+      <section class="section">
+        <h2>8. Sécurité des données</h2>
+
+        <p>TakiDoc met en œuvre des mesures techniques et
+          organisationnelles destinées à protéger les informations
+          personnelles contre les accès non autorisés, la perte,
+          l'altération ou la divulgation injustifiée.</p>
+
+        <p>Ces mesures comprennent notamment le recours à des
+          services d'authentification, des contrôles d'accès,
+          des vérifications des opérations de paiement et des
+          mécanismes de protection des données stockées.</p>
+
+        <p>Aucun système de transmission ou de stockage électronique
+          ne pouvant garantir une sécurité absolue, l'éditeur
+          ne peut promettre une protection sans risque dans
+          toutes les circonstances.</p>
+      </section>
+
+      <section class="section">
+        <h2>9. Droits des utilisateurs</h2>
+
+        <p>Conformément à la loi congolaise n° 29-2019 du
+          10 octobre 2019 portant protection des données
+          à caractère personnel, les utilisateurs disposent,
+          dans les conditions prévues par la loi, de droits
+          concernant leurs données.</p>
+
+        <ul>
+          <li><strong>Droit d'accès :</strong> demander si des données
+            personnelles les concernant sont traitées et en obtenir
+            communication.</li>
+
+          <li><strong>Droit de rectification :</strong> demander
+            la correction des données inexactes ou incomplètes.</li>
+
+          <li><strong>Droit de suppression :</strong> demander
+            la suppression des données lorsque les conditions
+            légales sont réunies.</li>
+
+          <li><strong>Droit d'opposition :</strong> s'opposer,
+            pour des motifs légitimes, à certains traitements.</li>
+
+          <li><strong>Droit à la portabilité :</strong> obtenir
+            les données fournies dans les conditions prévues
+            par la législation applicable.</li>
+        </ul>
+
+        <p>L'exercice de ces droits peut être soumis à une
+          vérification raisonnable de l'identité du demandeur.
+          Certaines données peuvent devoir être conservées
+          lorsqu'une obligation légale l'impose ou lorsqu'elles
+          sont nécessaires à la défense de droits en justice.</p>
+
+        <h3>Comment exercer vos droits ?</h3>
+
+        <p>Pour toute demande relative à vos données personnelles,
+          vous pouvez contacter directement le responsable
+          du traitement :</p>
+
+        <div class="info">
+          <p><strong>E-mail :</strong>
+            <a href="mailto:takidoc.contact@gmail.com">
+              takidoc.contact@gmail.com
+            </a>
+          </p>
+
+          <p><strong>Objet conseillé :</strong>
+            Demande relative à mes données personnelles</p>
+
+          <p><strong>Téléphone :</strong>
+            <a href="tel:+242065186967">+242 06 518 69 67</a>
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>10. Données relatives aux mineurs</h2>
+
+        <p>Les services de la société de l'information proposés
+          par TakiDoc sont soumis aux règles applicables en matière
+          de protection des données des mineurs.</p>
+
+        <p>Conformément à la législation congolaise, un mineur
+          âgé d'au moins seize ans peut consentir seul au traitement
+          de ses données dans le cadre de ces services. En dessous
+          de cet âge, les conditions de consentement conjoint
+          prévues par la loi doivent être respectées.</p>
+      </section>
+
+      <section class="section">
+        <h2>11. Modification de la politique</h2>
+
+        <p>La présente politique peut être modifiée afin de tenir
+          compte de l'évolution des fonctionnalités de TakiDoc,
+          de ses prestataires techniques ou de la réglementation
+          applicable.</p>
+
+        <p>La version mise à jour est publiée sur cette page
+          avec sa nouvelle date de révision.</p>
+      </section>
+
+      <section class="section">
+        <h2>12. Contact</h2>
+
+        <p>Pour toute question concernant la présente politique
+          ou le traitement des données personnelles sur TakiDoc,
+          vous pouvez contacter :</p>
+
+        <div class="info">
+          <p><strong>Meurphy Talamio</strong></p>
+          <p><strong>E-mail :</strong>
+            <a href="mailto:takidoc.contact@gmail.com">
+              takidoc.contact@gmail.com
+            </a>
+          </p>
+          <p><strong>Téléphone / WhatsApp :</strong>
+            <a href="tel:+242065186967">+242 06 518 69 67</a>
+          </p>
+          <p><strong>Localisation :</strong>
+            Brazzaville, République du Congo</p>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer class="footer">
+    <strong>TakiDoc — Équipe Meurphy</strong>
+    <p>Brazzaville, République du Congo.</p>
+    <p>© 2026 TakiDoc. Tous droits réservés.</p>
+  </footer>
 
 </body>
 </html>

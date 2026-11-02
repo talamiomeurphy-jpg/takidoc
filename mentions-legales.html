@@ -1,76 +1,405 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Mentions légales de la plateforme TakiDoc.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102B50">
+
   <title>Mentions légales | TakiDoc</title>
-  <link rel="stylesheet" href="css/legal.css">
+  <meta name="description" content="Consultez les mentions légales de TakiDoc : identité de l'éditeur, hébergement, propriété intellectuelle et contact.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy: #102B50;
+      --blue: #245A91;
+      --orange: #F28A24;
+      --background: #F4F7FB;
+      --white: #FFFFFF;
+      --text: #29394D;
+      --muted: #718096;
+      --border: #E5EAF1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--orange);
+    }
+
+    .topbar {
+      min-height: 72px;
+      padding: 14px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      background: white;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      font-family: "Manrope", sans-serif;
+      font-size: 25px;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -1px;
+    }
+
+    .brand span {
+      color: var(--orange);
+    }
+
+    .back-link {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .hero {
+      background: linear-gradient(125deg, #102B50, #245A91);
+      color: white;
+      text-align: center;
+      padding: 65px 20px 85px;
+    }
+
+    .hero-label {
+      display: inline-block;
+      padding: 6px 15px;
+      margin-bottom: 18px;
+      color: #FFD09C;
+      background: rgba(242,138,36,.14);
+      border: 1px solid rgba(242,138,36,.35);
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(30px, 5vw, 44px);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: #D8E5F2;
+      font-size: 14px;
+    }
+
+    .container {
+      width: min(900px, 92%);
+      margin: -35px auto 65px;
+      position: relative;
+    }
+
+    .content {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: clamp(24px, 5vw, 52px);
+      box-shadow: 0 15px 45px rgba(16,43,80,.07);
+    }
+
+    .intro {
+      background: #F3F7FC;
+      border-left: 4px solid var(--orange);
+      border-radius: 9px;
+      padding: 17px 20px;
+      margin-bottom: 28px;
+      font-size: 14px;
+    }
+
+    .section {
+      padding: 25px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section:last-child {
+      border-bottom: none;
+    }
+
+    .section h2 {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--navy);
+      font-family: "Manrope", sans-serif;
+      font-size: 19px;
+      margin-bottom: 14px;
+    }
+
+    .section h2::before {
+      content: "";
+      width: 5px;
+      height: 23px;
+      flex-shrink: 0;
+      border-radius: 5px;
+      background: var(--orange);
+    }
+
+    .section p {
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .section ul {
+      padding-left: 22px;
+      margin: 12px 0;
+    }
+
+    .section li {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .info {
+      padding: 19px;
+      margin: 15px 0;
+      background: #FAFBFD;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+    }
+
+    .info p {
+      margin-bottom: 7px;
+      overflow-wrap: anywhere;
+    }
+
+    .info p:last-child {
+      margin-bottom: 0;
+    }
+
+    .info strong {
+      color: var(--navy);
+    }
+
+    .footer {
+      padding: 30px 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .footer strong {
+      color: var(--navy);
+    }
+
+    @media(max-width:600px) {
+      .topbar {
+        padding: 13px 5%;
+      }
+
+      .brand {
+        font-size: 21px;
+      }
+
+      .hero {
+        padding: 48px 18px 65px;
+      }
+
+      .content {
+        border-radius: 14px;
+      }
+
+      .section h2 {
+        font-size: 17px;
+      }
+
+      .back-link {
+        font-size: 12px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header class="legal-header">
-  <a class="legal-brand" href="index.html">Taki<span>Doc</span></a>
-  <a class="legal-back" href="index.html">← Retour à l'accueil</a>
-</header>
+  <header class="topbar">
+    <a class="brand" href="index.html">Taki<span>Doc</span></a>
+    <a class="back-link" href="index.html">← Retour à l'accueil</a>
+  </header>
 
-<section class="legal-hero">
-  <small>Informations officielles</small>
-  <h1>Mentions légales</h1>
-  <p>Les informations relatives à l'exploitation de TakiDoc.</p>
-</section>
+  <section class="hero">
+    <span class="hero-label">Informations officielles</span>
+    <h1>Mentions légales</h1>
+    <p>Découvrez les informations relatives à l'éditeur et au fonctionnement de TakiDoc.</p>
+  </section>
 
-<main class="legal-container">
-  <p class="legal-date">Dernière mise à jour : 2 novembre 2026</p>
+  <main class="container">
+    <article class="content">
 
-  <h2>1. Éditeur de la plateforme</h2>
-  <p>Le site TakiDoc, accessible à l'adresse
-    <a href="https://takidoc.onrender.com">https://takidoc.onrender.com</a>,
-    est un service numérique exploité individuellement par :</p>
-  <p>
-    <strong>Responsable :</strong> Meurphy Talamio<br>
-    <strong>Nom de la plateforme :</strong> TakiDoc<br>
-    <strong>Localisation :</strong> Brazzaville, République du Congo<br>
-    <strong>E-mail :</strong> <a href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a><br>
-    <strong>Téléphone et WhatsApp :</strong>
-    <a href="tel:+242065186967">06 518 69 67</a>
-  </p>
-  <p>TakiDoc est actuellement exploité par une personne physique et ne constitue pas, à ce jour, une société commerciale officiellement enregistrée.</p>
+      <div class="intro">
+        Les présentes mentions légales ont pour objet de présenter
+        l'identité de l'éditeur de TakiDoc ainsi que les informations
+        relatives à son exploitation et à ses prestataires techniques.
+        <br><br>
+        <strong>Dernière mise à jour : 2 novembre 2026.</strong>
+      </div>
 
-  <h2>2. Activité</h2>
-  <p>TakiDoc est une plateforme numérique destinée à faciliter la création, la personnalisation et la génération de documents à partir de modèles proposés aux utilisateurs.</p>
-  <p>Les fonctionnalités comprennent notamment la consultation de modèles, leur personnalisation, la génération de documents aux formats PDF et Word, ainsi que la gestion des documents et des informations associées au compte utilisateur.</p>
+      <section class="section">
+        <h2>1. Éditeur du site</h2>
 
-  <h2>3. Hébergement et infrastructure technique</h2>
-  <ul>
-    <li><strong>Render :</strong> hébergement du site et serveur de génération des documents.</li>
-    <li><strong>Supabase :</strong> services d'authentification, gestion des comptes et stockage de données.</li>
-    <li><strong>Yabetoo :</strong> prestataire utilisé pour le traitement des paiements Mobile Money.</li>
-  </ul>
-  <p>Ces prestataires interviennent dans le fonctionnement technique de TakiDoc. Ils ne sont pas propriétaires de la plateforme.</p>
+        <p>Le site TakiDoc, accessible à l'adresse
+          <a href="https://takidoc.onrender.com">
+            https://takidoc.onrender.com
+          </a>,
+          est édité et exploité par :
+        </p>
 
-  <h2>4. Propriété intellectuelle</h2>
-  <p>Les éléments propres à TakiDoc, notamment son identité visuelle, ses textes, ses éléments graphiques, sa mascotte, ses interfaces et ses développements spécifiques, sont protégés par les règles applicables en matière de propriété intellectuelle.</p>
-  <p>Toute reproduction, représentation, adaptation ou exploitation non autorisée de ces éléments est interdite, sous réserve des exceptions prévues par la loi.</p>
-  <p>Les modèles et contenus appartenant à des tiers restent soumis aux droits de leurs titulaires respectifs.</p>
+        <div class="info">
+          <p><strong>Nom et prénom :</strong> Meurphy Talamio</p>
+          <p><strong>Nom du service :</strong> TakiDoc</p>
+          <p><strong>Statut de l'éditeur :</strong> Personne physique</p>
+          <p><strong>Adresse :</strong> Avenue Malamine, quartier Moungali,
+            Brazzaville, République du Congo</p>
+          <p><strong>E-mail :</strong>
+            <a href="mailto:takidoc.contact@gmail.com">
+              takidoc.contact@gmail.com
+            </a>
+          </p>
+          <p><strong>Téléphone / WhatsApp :</strong>
+            <a href="tel:+242065186967">+242 06 518 69 67</a>
+          </p>
+        </div>
 
-  <h2>5. Contact</h2>
-  <p>Pour toute question relative au fonctionnement de TakiDoc, à son contenu ou à ses services :</p>
-  <p>
-    <strong>E-mail :</strong> <a href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a><br>
-    <strong>Téléphone / WhatsApp :</strong> <a href="tel:+242065186967">06 518 69 67</a>
-  </p>
-  <p><strong>Responsable de la plateforme : Meurphy Talamio.</strong></p>
-</main>
+        <p>TakiDoc est actuellement exploité directement par son éditeur,
+          en son nom personnel. Il ne constitue pas, à ce jour, une société
+          juridiquement constituée distincte de celui-ci.</p>
+      </section>
 
-<footer class="legal-footer">
-  © 2026 TakiDoc — Tous droits réservés.
-  <p>
-    <a href="mentions-legales.html">Mentions légales</a>
-    <a href="confidentialite.html">Confidentialité</a>
-    <a href="conditions-vente.html">Conditions de vente</a>
-  </p>
-</footer>
+      <section class="section">
+        <h2>2. Directeur de la publication</h2>
+
+        <p>Le directeur de la publication est
+          <strong>Meurphy Talamio</strong>, éditeur du site TakiDoc.</p>
+      </section>
+
+      <section class="section">
+        <h2>3. Hébergement et prestataires techniques</h2>
+
+        <p>TakiDoc fait appel à des prestataires techniques indépendants
+          pour assurer son fonctionnement :</p>
+
+        <ul>
+          <li><strong>Render :</strong> hébergement du site internet
+            et du serveur de génération des documents PDF et DOCX.</li>
+
+          <li><strong>Supabase :</strong> services d'authentification,
+            gestion des comptes, base de données et stockage.</li>
+
+          <li><strong>Yabetoo :</strong> service utilisé pour le traitement
+            des paiements Mobile Money.</li>
+        </ul>
+
+        <p>Ces prestataires interviennent dans le cadre de leurs services
+          respectifs. Ils ne sont ni propriétaires ni éditeurs de TakiDoc.</p>
+      </section>
+
+      <section class="section">
+        <h2>4. Présentation de TakiDoc</h2>
+
+        <p>TakiDoc est une plateforme numérique destinée à faciliter
+          la création, la personnalisation et la génération de documents.</p>
+
+        <p>Les services proposés comprennent notamment :</p>
+
+        <ul>
+          <li>La consultation de modèles de documents ;</li>
+          <li>La personnalisation de documents à partir des informations
+            fournies par les utilisateurs ;</li>
+          <li>La génération de documents aux formats PDF et Word (DOCX) ;</li>
+          <li>La sauvegarde et la gestion de brouillons ;</li>
+          <li>L'accès à des modèles gratuits ou payants selon les offres
+            disponibles sur la plateforme.</li>
+        </ul>
+
+        <p>Les fonctionnalités et les services proposés peuvent évoluer
+          au fil du développement de la plateforme.</p>
+      </section>
+
+      <section class="section">
+        <h2>5. Propriété intellectuelle</h2>
+
+        <p>Les éléments propres à TakiDoc, notamment son identité visuelle,
+          son logo, ses illustrations, sa mascotte, ses textes, ses interfaces,
+          ses animations et ses éléments logiciels, sont protégés par les
+          règles applicables en matière de propriété intellectuelle.</p>
+
+        <p>Toute reproduction, représentation, adaptation ou exploitation
+          non autorisée de ces éléments est interdite, sous réserve des
+          exceptions prévues par la législation applicable.</p>
+
+        <p>Les modèles de documents peuvent également être soumis à des
+          droits appartenant à leurs auteurs ou titulaires respectifs.</p>
+      </section>
+
+      <section class="section">
+        <h2>6. Responsabilité</h2>
+
+        <p>L'éditeur s'efforce d'assurer le bon fonctionnement et
+          l'accessibilité de TakiDoc. Des interruptions temporaires peuvent
+          néanmoins survenir en raison d'opérations de maintenance,
+          de mises à jour ou de difficultés techniques.</p>
+
+        <p>L'utilisateur est responsable de l'exactitude des informations
+          qu'il saisit dans les documents et doit vérifier le résultat
+          généré avant toute utilisation.</p>
+
+        <p>TakiDoc ne remplace pas l'intervention d'un professionnel
+          qualifié lorsqu'un document nécessite une vérification juridique,
+          administrative, fiscale ou spécialisée.</p>
+      </section>
+
+      <section class="section">
+        <h2>7. Contact</h2>
+
+        <p>Pour toute question concernant TakiDoc ou les présentes
+          mentions légales, l'éditeur peut être contacté aux coordonnées
+          suivantes :</p>
+
+        <div class="info">
+          <p><strong>E-mail :</strong>
+            <a href="mailto:takidoc.contact@gmail.com">
+              takidoc.contact@gmail.com
+            </a>
+          </p>
+
+          <p><strong>Téléphone / WhatsApp :</strong>
+            <a href="tel:+242065186967">+242 06 518 69 67</a>
+          </p>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer class="footer">
+    <strong>TakiDoc — Équipe Meurphy</strong>
+    <p>Brazzaville, République du Congo.</p>
+    <p>© 2026 TakiDoc. Tous droits réservés.</p>
+  </footer>
 
 </body>
 </html>

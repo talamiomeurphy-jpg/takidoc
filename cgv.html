@@ -1,1660 +1,544 @@
 ﻿
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#FF6B35">
-  <meta name="description" content="Consultez les conditions générales de vente de TakiDoc : commandes, prix, paiements, livraison numérique, remboursements et licence d'utilisation.">
-  <meta name="robots" content="index, follow">
-
-  <title>Conditions générales de vente — TakiDoc</title>
-
-  <!-- Favicons TakiDoc -->
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="manifest" href="site.webmanifest">
-
-  <!-- Typographie et icônes -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101d3a">
+  <title>Conditions Générales de Vente | TakiDoc</title>
+  <meta name="description" content="Consultez les Conditions Générales de Vente de TakiDoc : tarifs, paiements, commandes et accès aux documents.">
 
   <style>
     :root {
-      --primary: #FF6B35;
-      --primary-dark: #E85A2D;
-      --primary-soft: #FFF2EC;
-      --navy: #1A1A2E;
-      --navy-soft: #25253D;
-      --text: #374151;
-      --muted: #6B7280;
-      --border: #E5E7EB;
-      --surface: #FFFFFF;
-      --background: #F7F8FA;
-      --green: #047857;
-      --green-soft: #ECFDF5;
-      --blue: #1D4ED8;
-      --blue-soft: #EFF6FF;
-      --container: 1160px;
-      --radius: 18px;
-      --shadow: 0 8px 30px rgba(26, 26, 46, .045);
-      --transition: .22s ease;
+      --navy: #101d3a;
+      --blue: #1e3a66;
+      --orange: #ff8a32;
+      --text: #263449;
+      --muted: #69778b;
+      --bg: #f4f7fb;
+      --white: #fff;
+      --border: #e5eaf1;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 110px;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      background: var(--background);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
       color: var(--text);
-      font-family: "Inter", sans-serif;
-      font-size: 15px;
-      line-height: 1.8;
-      -webkit-font-smoothing: antialiased;
+      line-height: 1.75;
     }
 
-    body, button, a {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    a:focus-visible {
-      outline: 3px solid rgba(255, 107, 53, .45);
-      outline-offset: 4px;
-      border-radius: 5px;
-    }
-
-    button {
-      font: inherit;
-    }
-
-    .container {
-      width: min(var(--container), calc(100% - 48px));
-      margin-inline: auto;
-    }
-
-    /* Navigation */
-
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(255, 255, 255, .94);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(229, 231, 235, .9);
-    }
-
-    .nav-inner {
-      min-height: 76px;
+    header {
+      background: var(--navy);
+      color: white;
+      padding: 22px 6%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 28px;
+      gap: 15px;
     }
 
-    .logo {
-      display: inline-flex;
-      align-items: center;
-      flex-shrink: 0;
-      color: var(--navy);
-      font-size: 1.65rem;
-      font-weight: 900;
-      letter-spacing: -1.5px;
-    }
-
-    .logo span {
-      color: var(--primary);
-    }
-
-    .logo-mark {
-      display: grid;
-      place-items: center;
-      width: 36px;
-      height: 36px;
-      margin-right: 9px;
-      border-radius: 11px;
-      background: var(--primary);
+    .brand {
       color: white;
-      font-size: 1.05rem;
-      letter-spacing: 0;
-      box-shadow: 0 5px 13px rgba(255, 107, 53, .2);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 3px;
-    }
-
-    .nav-links > a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 40px;
-      padding: 0 11px;
-      border-radius: 999px;
-      color: #596273;
-      font-size: .82rem;
-      font-weight: 650;
-      white-space: nowrap;
-      transition: background var(--transition), color var(--transition);
-    }
-
-    .nav-links > a:hover {
-      color: var(--navy);
-      background: #F3F4F6;
-    }
-
-    .nav-links > a.active {
-      color: var(--primary-dark);
-      background: var(--primary-soft);
-    }
-
-    .nav-links > a.nav-cta {
-      margin-left: 7px;
-      padding-inline: 17px;
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 5px 15px rgba(255, 107, 53, .17);
-    }
-
-    .nav-links > a.nav-cta:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-    }
-
-    /* Hero */
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-      padding: 75px 0 66px;
-      background:
-        radial-gradient(ellipse at 4% 0%, rgba(255, 107, 53, .12), transparent 35%),
-        radial-gradient(ellipse at 100% 65%, rgba(0, 78, 137, .08), transparent 33%),
-        white;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .hero::after {
-      position: absolute;
-      top: -105px;
-      right: -85px;
-      width: 280px;
-      height: 280px;
-      border: 1px solid rgba(255, 107, 53, .12);
-      border-radius: 50%;
-      content: "";
-      pointer-events: none;
-    }
-
-    .hero-inner {
-      position: relative;
-      z-index: 1;
-      max-width: 850px;
-      margin: auto;
-      text-align: center;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      padding: 7px 13px;
-      border: 1px solid #FED7C8;
-      border-radius: 999px;
-      background: var(--primary-soft);
-      color: #B94720;
-      font-size: .75rem;
+      font-size: 23px;
       font-weight: 800;
-      letter-spacing: .07em;
-      text-transform: uppercase;
+      text-decoration: none;
+      letter-spacing: -.7px;
     }
 
-    .eyebrow i {
-      font-size: .85rem;
+    .brand span { color: var(--orange); }
+
+    .back {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      opacity: .9;
     }
 
-    .hero h1 {
-      margin: 23px 0 16px;
-      color: var(--navy);
-      font-size: clamp(2.35rem, 5.2vw, 4rem);
-      font-weight: 900;
-      line-height: 1.12;
-      letter-spacing: -.065em;
-    }
+    .back:hover { color: var(--orange); }
 
-    .hero h1 span {
-      color: var(--primary);
-    }
-
-    .hero-description {
-      max-width: 670px;
-      margin: auto;
-      color: var(--muted);
-      font-size: 1.04rem;
-      line-height: 1.85;
-    }
-
-    .hero-tags {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 27px;
-    }
-
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 13px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: white;
-      color: #596273;
-      font-size: .79rem;
-      font-weight: 650;
-    }
-
-    .hero-tag i {
-      color: var(--primary);
-    }
-
-    /* Page layout */
-
-    .main {
-      padding: 45px 0 80px;
-    }
-
-    .content-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 275px;
-      align-items: start;
-      gap: 28px;
+    main {
+      width: min(920px, 92%);
+      margin: 45px auto;
     }
 
     .document {
-      min-width: 0;
-      padding: clamp(25px, 4vw, 49px);
+      background: var(--white);
       border: 1px solid var(--border);
-      border-radius: 23px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
+      border-radius: 18px;
+      padding: clamp(24px, 5vw, 55px);
+      box-shadow: 0 12px 40px rgba(16, 29, 58, .055);
     }
 
-    .document-meta {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding-bottom: 23px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .document-brand {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      color: var(--navy);
-      font-size: .85rem;
-      font-weight: 800;
-    }
-
-    .document-brand i {
-      color: var(--primary);
-    }
-
-    .document-date {
-      color: var(--muted);
-      font-size: .78rem;
-    }
-
-    .document-intro {
-      padding: 26px 0 7px;
-    }
-
-    .document-intro h2 {
-      margin: 0 0 10px;
-      color: var(--navy);
-      font-size: clamp(1.45rem, 3vw, 1.9rem);
-      font-weight: 850;
-      line-height: 1.35;
-      letter-spacing: -.045em;
-    }
-
-    .document-intro p {
-      margin: 0;
-      color: var(--muted);
-      font-size: .94rem;
-    }
-
-    .important-note {
-      display: flex;
-      align-items: flex-start;
-      gap: 13px;
-      padding: 17px;
-      margin: 27px 0 35px;
-      border: 1px solid #DBEAFE;
-      border-radius: 14px;
-      background: var(--blue-soft);
-    }
-
-    .note-icon {
-      display: grid;
-      place-items: center;
-      flex: 0 0 36px;
-      width: 36px;
-      height: 36px;
-      border-radius: 11px;
-      background: white;
-      color: var(--blue);
-    }
-
-    .important-note strong {
-      display: block;
-      margin: 1px 0 4px;
-      color: #1E3A8A;
-      font-size: .88rem;
-    }
-
-    .important-note p {
-      margin: 0;
-      color: #31518A;
-      font-size: .84rem;
-      line-height: 1.7;
-    }
-
-    /* Legal sections */
-
-    .legal-section {
-      padding-top: 7px;
-      margin-top: 31px;
-      scroll-margin-top: 110px;
-    }
-
-    .legal-section:first-of-type {
-      margin-top: 0;
-    }
-
-    .section-heading {
-      display: flex;
-      align-items: flex-start;
-      gap: 13px;
-      padding-bottom: 14px;
-      margin-bottom: 17px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .section-number {
-      display: grid;
-      place-items: center;
-      flex: 0 0 37px;
-      width: 37px;
-      height: 37px;
-      border-radius: 11px;
-      background: var(--primary-soft);
-      color: var(--primary-dark);
-      font-size: .79rem;
-      font-weight: 850;
-    }
-
-    .section-heading h3 {
-      margin: 3px 0 0;
-      color: var(--navy);
-      font-size: clamp(1.03rem, 2vw, 1.2rem);
-      font-weight: 800;
-      line-height: 1.5;
-      letter-spacing: -.025em;
-    }
-
-    .legal-section p {
-      margin: 0 0 15px;
-      font-size: .93rem;
-      line-height: 1.9;
-      overflow-wrap: anywhere;
-    }
-
-    .legal-section ul {
-      display: grid;
-      gap: 9px;
-      padding-left: 23px;
-      margin: 12px 0 20px;
-    }
-
-    .legal-section li {
-      padding-left: 3px;
-      font-size: .92rem;
-      line-height: 1.8;
-    }
-
-    .legal-section li::marker {
-      color: var(--primary);
-    }
-
-    .legal-section strong {
-      color: var(--navy);
-      font-weight: 750;
-    }
-
-    .legal-link {
-      color: var(--primary-dark);
+    .eyebrow {
+      display: inline-block;
+      color: #d96b19;
+      background: #fff1e5;
+      padding: 5px 12px;
+      border-radius: 30px;
+      font-size: 12px;
       font-weight: 700;
-      text-decoration: underline;
-      text-decoration-color: rgba(232, 90, 45, .35);
-      text-underline-offset: 3px;
-      overflow-wrap: anywhere;
+      letter-spacing: .5px;
+      text-transform: uppercase;
     }
 
-    .legal-link:hover {
-      text-decoration-color: var(--primary-dark);
-    }
-
-    .detail-card {
-      padding: 17px 18px;
-      margin: 19px 0;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: #FAFAFB;
-    }
-
-    .detail-card p {
-      margin: 0;
-    }
-
-    .detail-card p + p {
-      margin-top: 8px;
-    }
-
-    .detail-card i {
-      width: 19px;
-      color: var(--primary);
-    }
-
-    .final-note {
-      padding: 17px 19px;
-      margin-top: 35px;
-      border: 1px solid #D1FAE5;
-      border-radius: 13px;
-      background: var(--green-soft);
-    }
-
-    .final-note strong {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--green);
-      font-size: .89rem;
-    }
-
-    .final-note p {
-      margin: 0;
-      color: #166534;
-      font-size: .85rem;
-      line-height: 1.75;
-    }
-
-    /* Sidebar */
-
-    .sidebar {
-      position: sticky;
-      top: 98px;
-      display: grid;
-      gap: 18px;
-    }
-
-    .side-card {
-      padding: 22px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: white;
-      box-shadow: var(--shadow);
-    }
-
-    .side-title {
-      margin: 0 0 15px;
+    h1 {
       color: var(--navy);
-      font-size: .94rem;
-      font-weight: 850;
+      font-size: clamp(27px, 5vw, 39px);
+      line-height: 1.2;
+      margin: 18px 0 10px;
+      letter-spacing: -1px;
     }
 
-    .toc {
-      display: grid;
-      gap: 4px;
-    }
-
-    .toc a {
-      display: flex;
-      align-items: flex-start;
-      gap: 9px;
-      padding: 9px 10px;
-      border-radius: 9px;
+    .updated {
       color: var(--muted);
-      font-size: .79rem;
-      font-weight: 600;
-      line-height: 1.5;
-      transition: background var(--transition), color var(--transition);
+      font-size: 13px;
+      margin-bottom: 32px;
     }
 
-    .toc a span {
-      min-width: 20px;
-      color: #9CA3AF;
-      font-size: .73rem;
-      font-weight: 800;
-    }
-
-    .toc a:hover,
-    .toc a.active {
-      background: var(--primary-soft);
+    h2 {
       color: var(--navy);
+      font-size: 20px;
+      margin: 34px 0 12px;
+      line-height: 1.35;
     }
 
-    .toc a.active span {
-      color: var(--primary-dark);
+    p { margin: 10px 0; }
+
+    ul {
+      padding-left: 23px;
+      margin: 10px 0;
     }
 
-    .help-card {
-      position: relative;
-      overflow: hidden;
-      padding: 23px;
-      border-radius: var(--radius);
-      background: var(--navy);
-      color: white;
+    li { margin: 7px 0; }
+
+    a { color: #d96b19; }
+
+    .notice {
+      background: #fff8f1;
+      border-left: 4px solid var(--orange);
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin: 20px 0;
     }
 
-    .help-card::after {
-      position: absolute;
-      top: -42px;
-      right: -42px;
-      width: 125px;
-      height: 125px;
-      border: 19px solid rgba(255, 255, 255, .06);
-      border-radius: 50%;
-      content: "";
-    }
-
-    .help-icon {
-      display: grid;
-      place-items: center;
-      width: 39px;
-      height: 39px;
-      margin-bottom: 16px;
+    .contact {
+      background: #f3f6fb;
       border-radius: 12px;
-      background: rgba(255, 255, 255, .1);
-      color: #FF9A73;
+      padding: 18px 20px;
+      margin-top: 18px;
     }
 
-    .help-card h3 {
-      position: relative;
-      margin: 0 0 8px;
-      font-size: 1rem;
-      font-weight: 800;
-    }
-
-    .help-card p {
-      position: relative;
-      margin: 0 0 17px;
-      color: #CBD5E1;
-      font-size: .83rem;
-      line-height: 1.75;
-    }
-
-    .help-card a {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: white;
-      font-size: .84rem;
-      font-weight: 750;
-    }
-
-    .help-card a:hover {
-      color: #FFB49A;
-    }
-
-    /* Contact banner */
-
-    .contact-banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      padding: 23px;
-      margin-top: 34px;
-      border: 1px solid #FED7C8;
-      border-radius: 16px;
-      background: linear-gradient(120deg, #FFF5F0, #FFFFFF);
-    }
-
-    .contact-banner h3 {
-      margin: 0 0 5px;
-      color: var(--navy);
-      font-size: 1rem;
-      font-weight: 800;
-    }
-
-    .contact-banner p {
-      margin: 0;
+    footer {
+      text-align: center;
       color: var(--muted);
-      font-size: .84rem;
-      line-height: 1.7;
+      padding: 25px 15px 35px;
+      font-size: 13px;
     }
 
-    .contact-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      gap: 9px;
-      min-height: 44px;
-      padding: 0 17px;
-      border-radius: 999px;
-      background: var(--primary);
-      color: white;
-      font-size: .84rem;
-      font-weight: 800;
-      transition: background var(--transition), transform var(--transition);
+    footer a {
+      color: var(--blue);
+      text-decoration: none;
+      margin: 0 7px;
     }
 
-    .contact-button:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-    }
-
-    /* Footer */
-
-    .site-footer {
-      background: #111827;
-      color: #CBD5E1;
-    }
-
-    .footer-inner {
-      padding: 53px 0 23px;
-    }
-
-    .footer-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 30px;
-      padding-bottom: 35px;
-      border-bottom: 1px solid rgba(255, 255, 255, .1);
-    }
-
-    .footer-top h2 {
-      margin: 0 0 8px;
-      color: white;
-      font-size: clamp(1.4rem, 3vw, 2rem);
-      font-weight: 850;
-      letter-spacing: -.045em;
-      line-height: 1.3;
-    }
-
-    .footer-top h2 span {
-      color: #FF8B60;
-    }
-
-    .footer-top p {
-      margin: 0;
-      color: #9CA3AF;
-      font-size: .89rem;
-      line-height: 1.8;
-    }
-
-    .footer-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      gap: 9px;
-      min-height: 47px;
-      padding: 0 19px;
-      border-radius: 999px;
-      background: var(--primary);
-      color: white;
-      font-size: .85rem;
-      font-weight: 800;
-      transition: background var(--transition), transform var(--transition);
-    }
-
-    .footer-button:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-    }
-
-    .footer-columns {
-      display: grid;
-      grid-template-columns: 1.3fr 1fr 1fr;
-      gap: 40px;
-      padding: 34px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, .1);
-    }
-
-    .footer-column h3 {
-      margin: 0 0 15px;
-      color: white;
-      font-size: .85rem;
-      font-weight: 800;
-    }
-
-    .footer-links {
-      display: grid;
-      gap: 10px;
-    }
-
-    .footer-links a {
-      width: fit-content;
-      color: #9CA3AF;
-      font-size: .83rem;
-      line-height: 1.6;
-      transition: color var(--transition);
-    }
-
-    .footer-links a:hover {
-      color: white;
-    }
-
-    .footer-brand p {
-      max-width: 330px;
-      margin: 14px 0 0;
-      color: #9CA3AF;
-      font-size: .85rem;
-      line-height: 1.8;
-    }
-
-    .footer-bottom {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px 25px;
-      padding-top: 21px;
-      color: #9CA3AF;
-      font-size: .77rem;
-    }
-
-    .footer-bottom p {
-      margin: 0;
-    }
-
-    .footer-bottom a {
-      color: #CBD5E1;
-      transition: color var(--transition);
-    }
-
-    .footer-bottom a:hover {
-      color: white;
-    }
-
-    /* Responsive */
-
-    @media (max-width: 1080px) {
-      .nav-inner {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 10px;
-        padding-top: 15px;
-        padding-bottom: 12px;
-      }
-
-      .nav-links {
-        justify-content: flex-start;
-        width: 100%;
-        max-width: 100%;
-        padding-bottom: 3px;
-        overflow-x: auto;
-        scrollbar-width: thin;
-      }
-
-      .nav-links > a {
-        flex-shrink: 0;
-      }
-
-      .content-layout {
-        grid-template-columns: minmax(0, 1fr) 245px;
-        gap: 20px;
-      }
-
-      .footer-columns {
-        gap: 25px;
-      }
-    }
-
-    @media (max-width: 820px) {
-      .content-layout {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .sidebar {
-        position: static;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        align-items: start;
-      }
-
-      .toc {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .footer-columns {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .footer-brand {
-        grid-column: 1 / -1;
-      }
-    }
-
-    @media (max-width: 560px) {
-      body {
-        font-size: 14px;
-      }
-
-      .container {
-        width: calc(100% - 32px);
-      }
-
-      .nav-inner {
-        min-height: auto;
-      }
-
-      .logo {
-        font-size: 1.5rem;
-      }
-
-      .nav-links > a {
-        min-height: 37px;
-        padding-inline: 11px;
-        font-size: .78rem;
-      }
-
-      .nav-links > a.nav-cta {
-        margin-left: 2px;
-      }
-
-      .hero {
-        padding: 48px 0 42px;
-      }
-
-      .hero h1 {
-        margin-top: 19px;
-        font-size: clamp(2rem, 9vw, 2.8rem);
-      }
-
-      .hero-description {
-        font-size: .93rem;
-      }
-
-      .hero-tags {
-        gap: 7px;
-        margin-top: 20px;
-      }
-
-      .hero-tag {
-        padding: 7px 10px;
-        font-size: .72rem;
-      }
-
-      .main {
-        padding: 22px 0 48px;
-      }
-
-      .document {
-        padding: 22px 17px;
-        border-radius: 17px;
-      }
-
-      .document-meta {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 5px;
-        padding-bottom: 17px;
-      }
-
-      .document-intro {
-        padding-top: 22px;
-      }
-
-      .important-note {
-        gap: 10px;
-        padding: 13px;
-        margin: 22px 0 28px;
-      }
-
-      .note-icon {
-        flex-basis: 31px;
-        width: 31px;
-        height: 31px;
-      }
-
-      .legal-section {
-        margin-top: 27px;
-      }
-
-      .section-heading {
-        gap: 10px;
-      }
-
-      .section-number {
-        flex-basis: 32px;
-        width: 32px;
-        height: 32px;
-        border-radius: 9px;
-      }
-
-      .legal-section p,
-      .legal-section li {
-        font-size: .89rem;
-      }
-
-      .sidebar {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .toc {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .side-card,
-      .help-card {
-        padding: 19px;
-      }
-
-      .contact-banner {
-        align-items: flex-start;
-        flex-direction: column;
-        padding: 19px;
-      }
-
-      .contact-button {
-        width: 100%;
-      }
-
-      .footer-inner {
-        padding-top: 39px;
-      }
-
-      .footer-top {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 20px;
-        padding-bottom: 26px;
-      }
-
-      .footer-button {
-        width: 100%;
-      }
-
-      .footer-columns {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 27px 18px;
-        padding: 28px 0;
-      }
-
-      .footer-brand {
-        grid-column: 1 / -1;
-      }
-
-      .footer-bottom {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 11px;
-        padding-top: 18px;
-        line-height: 1.8;
-      }
-    }
-
-    @media (max-width: 350px) {
-      .container {
-        width: calc(100% - 24px);
-      }
-
-      .document {
-        padding: 19px 14px;
-      }
-
-      .toc {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .footer-columns {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .footer-brand {
-        grid-column: auto;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        scroll-behavior: auto !important;
-        transition-duration: .01ms !important;
-      }
+    @media (max-width: 600px) {
+      header { padding: 18px 5%; }
+      .brand { font-size: 20px; }
+      .back { font-size: 12px; }
+      main { margin: 22px auto; }
+      .document { border-radius: 13px; }
     }
   </style>
-    <!-- HEADER TAKIDOC -->
-    <link rel="stylesheet" href="css/header.css">
 </head>
 
 <body>
-    <!-- HEADER DYNAMIQUE TAKIDOC -->
-    <div id="td-header-container"></div>
-
-
-  <!-- Navigation principale -->
-  
-
-  <main>
-    <!-- En-tête de la page -->
-    <section class="hero">
-      <div class="container hero-inner">
-        <span class="eyebrow">
-          <i class="fa-solid fa-receipt" aria-hidden="true"></i>
-          Achats et paiements
-        </span>
-
-        <h1>Conditions générales<br><span>de vente.</span></h1>
-
-        <p class="hero-description">
-          Retrouvez les règles applicables aux commandes, aux paiements,
-          à la livraison des documents numériques et aux demandes de remboursement
-          sur TakiDoc.
-        </p>
-
-        <div class="hero-tags">
-          <span class="hero-tag">
-            <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
-            Documents numériques
-          </span>
-          <span class="hero-tag">
-            <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
-            Informations commerciales
-          </span>
-          <span class="hero-tag">
-            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-            République du Congo
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contenu -->
-    <section class="main">
-      <div class="container content-layout">
-
-        <article class="document" aria-labelledby="document-title">
-
-          <div class="document-meta">
-            <div class="document-brand">
-              <i class="fa-solid fa-file-contract" aria-hidden="true"></i>
-              Document officiel de TakiDoc
-            </div>
-            <span class="document-date">Dernière mise à jour : 9 octobre 2026</span>
-          </div>
-
-          <div class="document-intro">
-            <h2 id="document-title">Conditions générales de vente</h2>
-            <p>
-              Les présentes conditions décrivent les règles commerciales
-              applicables aux produits numériques proposés sur TakiDoc.
-            </p>
-          </div>
-
-          <div class="important-note" role="note">
-            <div class="note-icon" aria-hidden="true">
-              <i class="fa-solid fa-circle-info"></i>
-            </div>
-            <div>
-              <strong>À lire avant toute commande</strong>
-              <p>
-                Avant de payer, vérifiez le modèle sélectionné, ses caractéristiques,
-                le prix total, les modalités de livraison et les conditions de
-                remboursement affichées sur le site.
-              </p>
-            </div>
-          </div>
-
-          <section class="legal-section" id="vendeur">
-            <div class="section-heading">
-              <span class="section-number">01</span>
-              <h3>Vendeur et coordonnées</h3>
-            </div>
-
-            <p>
-              Les produits proposés sur TakiDoc sont commercialisés par
-              <strong>Meurphy Talamio</strong>, propriétaire du site, avec le
-              soutien de l’Équipe Meurphy, créatrice de la plateforme.
-              Les informations relatives au statut professionnel et aux éventuelles
-              formalités d’immatriculation du vendeur doivent être précisées
-              et vérifiées avant publication définitive.
-            </p>
-
-            <div class="detail-card">
-              <p><i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                <strong>Adresse :</strong> Moungali, avenue de la Paix,
-                Brazzaville, République du Congo.
-              </p>
-              <p><i class="fa-solid fa-envelope" aria-hidden="true"></i>
-                <strong>E-mail :</strong>
-                <a class="legal-link" href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a>
-              </p>
-              <p><i class="fa-solid fa-phone" aria-hidden="true"></i>
-                <strong>Téléphone :</strong>
-                <a class="legal-link" href="tel:+242065186967">06 518 69 67</a>
-              </p>
-            </div>
-          </section>
-
-          <section class="legal-section" id="produits">
-            <div class="section-heading">
-              <span class="section-number">02</span>
-              <h3>Produits proposés</h3>
-            </div>
-
-            <p>
-              TakiDoc propose des modèles de documents numériques destinés à être
-              personnalisés selon les besoins des utilisateurs. Il peut notamment
-              s’agir de CV, de lettres, de documents professionnels ou d’autres
-              modèles présentés sur la plateforme.
-            </p>
-
-            <p>
-              Les caractéristiques, le format, les possibilités de personnalisation,
-              les options disponibles et le prix applicable sont ceux indiqués
-              sur la fiche du modèle au moment de la commande.
-            </p>
-          </section>
-
-          <section class="legal-section" id="prix">
-            <div class="section-heading">
-              <span class="section-number">03</span>
-              <h3>Prix et monnaie</h3>
-            </div>
-
-            <p>
-              Les tarifs peuvent varier selon le type de document et les options
-              choisies. Le prix applicable est celui présenté au client avant
-              la confirmation de sa commande.
-            </p>
-
-            <p>
-              La monnaie de facturation, les frais éventuels et le montant total
-              à payer doivent être clairement indiqués avant le paiement.
-              Si des frais supplémentaires sont applicables, ils doivent être
-              présentés au client avant qu’il ne confirme son achat.
-            </p>
-          </section>
-
-          <section class="legal-section" id="commande">
-            <div class="section-heading">
-              <span class="section-number">04</span>
-              <h3>Commande et confirmation</h3>
-            </div>
-
-            <p>
-              Avant de confirmer sa commande, le client doit pouvoir vérifier
-              le modèle choisi, les options de personnalisation, le prix total
-              et les informations demandées pour le traitement de l’achat.
-            </p>
-
-            <p>
-              Il appartient au client de relire les informations présentées
-              et de corriger les éventuelles erreurs avant de procéder au paiement.
-              La confirmation de commande doit suivre le parcours effectivement
-              proposé par TakiDoc.
-            </p>
-          </section>
-
-          <section class="legal-section" id="paiement">
-            <div class="section-heading">
-              <span class="section-number">05</span>
-              <h3>Moyens de paiement</h3>
-            </div>
-
-            <p>
-              Les moyens de paiement annoncés pour TakiDoc comprennent
-              <strong>MTN Mobile Money</strong> et <strong>Airtel Money</strong>,
-              sous réserve de leur disponibilité effective au moment de la commande.
-            </p>
-
-            <p>
-              Une commande est considérée comme payée lorsque le paiement a été
-              confirmé par le mécanisme utilisé. Une opération en attente, refusée
-              ou échouée ne constitue pas une confirmation définitive.
-            </p>
-
-            <p>
-              Le client doit conserver, dans la mesure du possible, la référence
-              ou la preuve de son paiement afin de faciliter toute vérification
-              en cas de difficulté.
-            </p>
-          </section>
-
-          <section class="legal-section" id="livraison">
-            <div class="section-heading">
-              <span class="section-number">06</span>
-              <h3>Livraison des documents numériques</h3>
-            </div>
-
-            <p>
-              Après confirmation du paiement, le document acheté doit être mis
-              à disposition selon les modalités présentées lors de la commande.
-              Selon le parcours effectivement disponible, cela peut inclure
-              la génération du document, l’accès à un espace utilisateur ou
-              le téléchargement d’un fichier PDF.
-            </p>
-
-            <p>
-              Les délais et les modalités de mise à disposition doivent être
-              indiqués au client avant la validation de l’achat. Ils doivent
-              correspondre au fonctionnement réel de la plateforme.
-            </p>
-
-            <p>
-              Si le paiement est confirmé mais que le document n’est pas accessible,
-              le client peut contacter l’assistance en précisant la date de
-              l’opération, la référence de paiement et le problème rencontré.
-            </p>
-          </section>
-
-          <section class="legal-section" id="personnalisation">
-            <div class="section-heading">
-              <span class="section-number">07</span>
-              <h3>Personnalisation et responsabilité du client</h3>
-            </div>
-
-            <p>
-              Le client est responsable des informations qu’il saisit ou ajoute
-              au document, notamment les noms, dates, coordonnées, montants,
-              photographies et autres données personnelles ou professionnelles.
-            </p>
-
-            <p>
-              Avant d’utiliser, d’imprimer ou de transmettre le document,
-              le client doit vérifier son contenu, sa mise en page et son
-              adéquation avec son besoin.
-            </p>
-
-            <p>
-              Les modèles proposés sont des outils de préparation de documents.
-              Ils ne remplacent pas les conseils d’un professionnel compétent
-              lorsque la nature de la situation le nécessite.
-            </p>
-          </section>
-
-          <section class="legal-section" id="remboursement">
-            <div class="section-heading">
-              <span class="section-number">08</span>
-              <h3>Annulation, rétractation et remboursement</h3>
-            </div>
-
-            <p>
-              Les demandes d’annulation, de rétractation ou de remboursement
-              sont examinées au regard de la législation applicable, de la nature
-              du produit et des circonstances de la commande.
-            </p>
-
-            <p>
-              Le caractère numérique ou personnalisé d’un produit ne supprime
-              pas automatiquement les droits dont le client peut bénéficier.
-              Les éventuelles exceptions, les conditions de mise en œuvre et
-              les informations à fournir au client doivent être vérifiées
-              avant la publication définitive de cette politique.
-            </p>
-
-            <p>
-              En particulier, le traitement des situations suivantes doit être
-              examiné :
-            </p>
-
-            <ul>
-              <li>paiement confirmé sans livraison ou accès au document ;</li>
-              <li>paiement effectué en double pour une même commande ;</li>
-              <li>erreur technique empêchant l’utilisation du produit acheté ;</li>
-              <li>document ne correspondant pas aux caractéristiques annoncées ;</li>
-              <li>demande d’annulation ou de remboursement prévue par les règles applicables.</li>
-            </ul>
-
-            <p>
-              Pour déposer une réclamation, le client peut écrire à
-              <a class="legal-link" href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a>.
-              Il est recommandé d’indiquer la date de l’opération, la référence
-              de paiement et une description précise du problème.
-            </p>
-
-            <p>
-              Les modalités pratiques de traitement des demandes sont également
-              décrites dans la page
-              <a class="legal-link" href="reclamations-remboursements.html">Réclamations et remboursements</a>.
-            </p>
-          </section>
-
-          <section class="legal-section" id="licence">
-            <div class="section-heading">
-              <span class="section-number">09</span>
-              <h3>Licence d’utilisation et propriété intellectuelle</h3>
-            </div>
-
-            <p>
-              Sauf mention contraire sur la fiche du produit, l’achat donne
-              au client un droit d’utilisation du document final conformément
-              aux conditions de la
-              <a class="legal-link" href="licence.html">Licence d’utilisation TakiDoc</a>.
-            </p>
-
-            <p>
-              L’achat d’un document ne signifie pas automatiquement que le client
-              acquiert les droits de propriété intellectuelle sur le modèle
-              vierge, les éléments graphiques ou les autres composants de la
-              plateforme.
-            </p>
-
-            <p>
-              Sauf autorisation expresse ou disposition contraire de la licence
-              applicable, le client ne peut pas revendre ou redistribuer un
-              modèle vierge en tant que produit autonome.
-            </p>
-          </section>
-
-          <section class="legal-section" id="donnees">
-            <div class="section-heading">
-              <span class="section-number">10</span>
-              <h3>Données personnelles</h3>
-            </div>
-
-            <p>
-              Les données nécessaires au traitement d’une commande doivent être
-              utilisées conformément aux informations communiquées aux utilisateurs
-              et aux règles applicables en matière de protection des données.
-            </p>
-
-            <p>
-              Pour en savoir plus sur les traitements de données et les cookies,
-              consultez la
-              <a class="legal-link" href="confidentialite.html">Politique de confidentialité</a>
-              et la
-              <a class="legal-link" href="cookies.html">Politique relative aux cookies</a>.
-            </p>
-          </section>
-
-          <section class="legal-section" id="reclamations">
-            <div class="section-heading">
-              <span class="section-number">11</span>
-              <h3>Réclamations et règlement des différends</h3>
-            </div>
-
-            <p>
-              Pour toute question ou difficulté relative à une commande, le client
-              peut contacter TakiDoc par e-mail à
-              <a class="legal-link" href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a>
-              ou par téléphone au
-              <a class="legal-link" href="tel:+242065186967">06 518 69 67</a>.
-            </p>
-
-            <p>
-              Une solution amiable peut être recherchée. Cette démarche ne prive
-              pas le client des recours auxquels il peut légalement prétendre.
-            </p>
-          </section>
-
-          <section class="legal-section" id="droit">
-            <div class="section-heading">
-              <span class="section-number">12</span>
-              <h3>Droit applicable</h3>
-            </div>
-
-            <p>
-              Les présentes conditions sont établies en tenant compte des règles
-              applicables en République du Congo, sous réserve des dispositions
-              impératives qui pourraient s’appliquer à la commande concernée.
-            </p>
-
-            <p>
-              Les informations relatives au droit applicable et au traitement
-              des différends doivent être vérifiées afin de refléter précisément
-              la situation du vendeur et les obligations légales applicables.
-            </p>
-          </section>
-
-          <section class="legal-section" id="modifications">
-            <div class="section-heading">
-              <span class="section-number">13</span>
-              <h3>Modification des conditions</h3>
-            </div>
-
-            <p>
-              TakiDoc peut être amené à actualiser ses conditions lorsque les
-              produits, les fonctionnalités, les modalités de paiement ou les
-              règles applicables évoluent.
-            </p>
-
-            <p>
-              La version applicable doit être accessible aux clients. Lorsque
-              la réglementation l’exige, les utilisateurs doivent être informés
-              des modifications et leur accord doit être recueilli selon les
-              modalités requises.
-            </p>
-          </section>
-
-          <section class="legal-section" id="contact">
-            <div class="section-heading">
-              <span class="section-number">14</span>
-              <h3>Contacter TakiDoc</h3>
-            </div>
-
-            <p>
-              Pour toute question concernant les présentes conditions,
-              une commande ou un paiement, notre équipe peut être contactée
-              aux coordonnées suivantes :
-            </p>
-
-            <div class="detail-card">
-              <p><i class="fa-solid fa-envelope" aria-hidden="true"></i>
-                <strong>E-mail :</strong>
-                <a class="legal-link" href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a>
-              </p>
-              <p><i class="fa-solid fa-phone" aria-hidden="true"></i>
-                <strong>Téléphone :</strong>
-                <a class="legal-link" href="tel:+242065186967">06 518 69 67</a>
-              </p>
-              <p><i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                <strong>Adresse :</strong> Moungali, avenue de la Paix,
-                Brazzaville, République du Congo.
-              </p>
-            </div>
-          </section>
-
-          <div class="final-note" role="note">
-            <strong><i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-              Informations commerciales</strong>
-            <p>
-              Ces conditions doivent être cohérentes avec le parcours réel
-              d’achat de TakiDoc. Avant publication définitive, vérifiez notamment
-              le statut du vendeur, les prix et la monnaie, les moyens de paiement,
-              les délais de livraison, la licence et les règles de remboursement.
-            </p>
-          </div>
-
-          <div class="contact-banner">
-            <div>
-              <h3>Une question concernant votre commande ?</h3>
-              <p>Contactez l’équipe TakiDoc pour signaler un problème ou demander des informations.</p>
-            </div>
-            <a class="contact-button" href="contact.html">
-              Contacter TakiDoc
-              <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-            </a>
-          </div>
-
-        </article>
-
-        <!-- Sommaire -->
-        <aside class="sidebar" aria-label="Informations complémentaires">
-          <div class="side-card">
-            <h2 class="side-title">Dans cette page</h2>
-
-            <nav class="toc" aria-label="Sommaire des conditions générales de vente">
-              <a href="#vendeur"><span>01</span> Vendeur</a>
-              <a href="#produits"><span>02</span> Produits</a>
-              <a href="#prix"><span>03</span> Prix et monnaie</a>
-              <a href="#commande"><span>04</span> Commande</a>
-              <a href="#paiement"><span>05</span> Paiement</a>
-              <a href="#livraison"><span>06</span> Livraison</a>
-              <a href="#personnalisation"><span>07</span> Personnalisation</a>
-              <a href="#remboursement"><span>08</span> Remboursement</a>
-              <a href="#licence"><span>09</span> Licence</a>
-              <a href="#donnees"><span>10</span> Données personnelles</a>
-              <a href="#reclamations"><span>11</span> Réclamations</a>
-              <a href="#droit"><span>12</span> Droit applicable</a>
-              <a href="#modifications"><span>13</span> Modifications</a>
-              <a href="#contact"><span>14</span> Contact</a>
-            </nav>
-          </div>
-
-          <div class="help-card">
-            <div class="help-icon" aria-hidden="true">
-              <i class="fa-regular fa-comments"></i>
-            </div>
-            <h3>Besoin d’assistance ?</h3>
-            <p>
-              Une question sur un paiement, un document acheté ou les modalités
-              de livraison ? Notre équipe est disponible pour vous orienter.
-            </p>
-            <a href="contact.html">
-              Accéder au contact
-              <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-            </a>
-          </div>
-        </aside>
-
-      </div>
-    </section>
-  </main>
-
-  <!-- Pied de page -->
-  <footer class="site-footer">
-    <div class="container footer-inner">
-
-      <div class="footer-top">
-        <div>
-          <h2>Les bons documents. <span>Le bon départ.</span></h2>
-          <p>Des modèles professionnels à personnaliser selon vos besoins.</p>
-        </div>
-
-        <a class="footer-button" href="contact.html">
-          Contacter TakiDoc
-          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-        </a>
-      </div>
-
-      <div class="footer-columns">
-        <div class="footer-brand">
-          <a class="logo" href="index.html" aria-label="TakiDoc, accueil">
-            <span class="logo-mark" aria-hidden="true">T</span>
-            <span style="color:white"><span>Taki</span>Doc</span>
-          </a>
-          <p>
-            Une plateforme de modèles de documents professionnels conçue
-            pour vous aider à présenter vos idées, votre parcours et vos projets
-            avec confiance.
-          </p>
-        </div>
-
-        <div class="footer-column">
-          <h3>Découvrir TakiDoc</h3>
-          <nav class="footer-links" aria-label="Découvrir TakiDoc">
-            <a href="index.html">Accueil</a>
-            <a href="a-propos.html">À propos</a>
-            <a href="comment-ca-marche.html">Comment ça marche</a>
-            <a href="index.html#documents">Explorer les modèles</a>
-            <a href="contact.html">Contact</a>
-          </nav>
-        </div>
-
-        <div class="footer-column">
-          <h3>Informations légales</h3>
-          <nav class="footer-links" aria-label="Informations légales">
-            <a href="conditions.html">Conditions d’utilisation</a>
-            <a href="cgv.html" aria-current="page">Conditions de vente</a>
-            <a href="confidentialite.html">Confidentialité</a>
-            <a href="mentions-legales.html">Mentions légales</a>
-            <a href="cookies.html">Cookies</a>
-            <a href="licence.html">Licence d’utilisation</a>
-            <a href="reclamations-remboursements.html">Réclamations et remboursements</a>
-          </nav>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <p>© <span id="year">2026</span> TakiDoc. Tous droits réservés.</p>
-        <p>Propriétaire : Meurphy Talamio · Créé par l’Équipe Meurphy</p>
-        <p>
-          <a href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a>
-          ·
-          <a href="tel:+242065186967">06 518 69 67</a>
-        </p>
-      </div>
 
+<header>
+  <a class="brand" href="/">Taki<span>Doc</span></a>
+  <a class="back" href="/">← Retour à TakiDoc</a>
+</header>
+
+<main>
+  <article class="document">
+
+    <span class="eyebrow">Achats et paiements</span>
+
+    <h1>Conditions Générales de Vente</h1>
+
+    <p class="updated">Dernière mise à jour : 2 novembre 2026</p>
+
+    <p>
+      Les présentes Conditions Générales de Vente définissent les règles
+      applicables aux achats effectués sur la plateforme TakiDoc.
+      Elles précisent les modalités de commande, de paiement, de confirmation
+      des transactions et de mise à disposition des documents payants.
+    </p>
+
+    <h2>1. Identification du vendeur</h2>
+
+    <p>
+      La plateforme TakiDoc est éditée par Meurphy Talamio, personne physique,
+      exerçant sous le nom TakiDoc.
+    </p>
+
+    <p>
+      <strong>Adresse :</strong> Avenue Malamine, quartier Moungali,
+      Brazzaville, République du Congo.
+    </p>
+
+    <p>
+      <strong>Email :</strong>
+      <a href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a>
+    </p>
+
+    <p>
+      <strong>Téléphone / WhatsApp :</strong>
+      <a href="tel:+242065186967">+242 06 518 69 67</a>
+    </p>
+
+    <h2>2. Produits et services proposés</h2>
+
+    <p>
+      TakiDoc propose des modèles de documents numériques que les utilisateurs
+      peuvent personnaliser et générer à partir des informations qu’ils
+      fournissent.
+    </p>
+
+    <p>
+      Les modèles peuvent être proposés gratuitement ou moyennant paiement.
+      Les formats de génération disponibles comprennent notamment le PDF
+      et le DOCX, selon le modèle et les fonctionnalités proposées.
+    </p>
+
+    <p>
+      Les caractéristiques essentielles du modèle et son prix sont présentés
+      sur la plateforme avant la validation de l’achat.
+    </p>
+
+    <h2>3. Prix et monnaie</h2>
+
+    <p>
+      Les prix sont affichés sur TakiDoc avant la validation de la commande.
+      Sauf indication contraire, les montants sont exprimés en francs CFA
+      (XAF).
+    </p>
+
+    <p>
+      Le montant présenté au moment de la commande constitue le montant
+      de référence pour la transaction concernée.
+    </p>
+
+    <p>
+      TakiDoc peut modifier les prix de ses modèles. Une modification tarifaire
+      ne change pas le prix d'une commande déjà validée et payée.
+    </p>
+
+    <h2>4. Processus de commande</h2>
+
+    <p>Pour acheter un modèle payant, l’utilisateur doit notamment :</p>
+
+    <ul>
+      <li>sélectionner le modèle souhaité ;</li>
+      <li>consulter son prix et les informations présentées ;</li>
+      <li>renseigner les informations nécessaires à la commande ;</li>
+      <li>choisir le moyen de paiement proposé ;</li>
+      <li>effectuer et confirmer le paiement selon les instructions affichées.</li>
+    </ul>
+
+    <p>
+      Pour certaines commandes, une adresse email peut être demandée afin
+      d’assurer le suivi de l’achat et de permettre la récupération du document.
+    </p>
+
+    <p>
+      La création d’une intention de paiement ne signifie pas que la commande
+      est payée. La vente est considérée comme réglée lorsque le paiement
+      a été confirmé par les mécanismes de vérification prévus.
+    </p>
+
+    <h2>5. Moyens de paiement</h2>
+
+    <p>
+      TakiDoc propose notamment les moyens de paiement suivants, lorsqu’ils
+      sont disponibles :
+    </p>
+
+    <ul>
+      <li>MTN Mobile Money ;</li>
+      <li>Airtel Money.</li>
+    </ul>
+
+    <p>
+      Les paiements sont traités par l’intermédiaire du prestataire Yabetoo.
+      L’utilisateur doit suivre les instructions présentées pendant
+      l’opération et utiliser un numéro compatible avec le moyen de paiement
+      sélectionné.
+    </p>
+
+    <p>
+      La disponibilité d’un moyen de paiement dépend notamment du prestataire,
+      de l’opérateur téléphonique et des conditions du réseau.
+    </p>
+
+    <h2>6. Confirmation du paiement</h2>
+
+    <p>
+      Après le lancement du paiement, la transaction peut apparaître comme
+      en attente pendant le traitement par le prestataire.
+    </p>
+
+    <p>
+      TakiDoc utilise les informations de transaction et les mécanismes
+      de vérification disponibles auprès du prestataire afin de déterminer
+      si le paiement a effectivement été effectué.
+    </p>
+
+    <div class="notice">
+      <strong>À retenir :</strong> une capture d’écran, un message envoyé
+      par l’utilisateur ou le simple lancement d’une opération Mobile Money
+      ne constitue pas à lui seul une preuve suffisante de paiement confirmé.
     </div>
-  </footer>
 
-  <script>
-    // Année automatique dans le pied de page.
-    document.getElementById("year").textContent = new Date().getFullYear();
+    <p>
+      Lorsque le paiement est confirmé, la commande peut être finalisée et
+      le processus de génération du document peut être déclenché.
+    </p>
 
-    // Mise en évidence de la rubrique visible dans le sommaire.
-    const legalSections = document.querySelectorAll(".legal-section[id]");
-    const tocLinks = document.querySelectorAll(".toc a");
+    <p>
+      Lorsqu’une transaction échoue, est annulée ou demeure non confirmée,
+      le document payant n’est pas considéré comme réglé.
+    </p>
 
-    if ("IntersectionObserver" in window) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
+    <h2>7. Mise à disposition et génération des documents</h2>
 
-          tocLinks.forEach((link) => {
-            const isActive = link.getAttribute("href") === "#" + entry.target.id;
+    <p>
+      Après confirmation du paiement, l’utilisateur peut accéder au processus
+      de personnalisation et de génération du document acheté, conformément
+      aux fonctionnalités disponibles.
+    </p>
 
-            link.classList.toggle("active", isActive);
+    <p>
+      La génération peut prendre un certain temps en raison du traitement
+      technique nécessaire à la création du fichier PDF ou DOCX.
+    </p>
 
-            if (isActive) {
-              link.setAttribute("aria-current", "location");
-            } else {
-              link.removeAttribute("aria-current");
-            }
-          });
-        });
-      }, {
-        rootMargin: "-15% 0px -70% 0px",
-        threshold: 0
-      });
+    <p>
+      L’utilisateur est informé de l’état du traitement par les indications
+      affichées sur la plateforme.
+    </p>
 
-      legalSections.forEach((section) => observer.observe(section));
-    }
-  </script>
+    <p>
+      Un délai de traitement technique ne signifie pas automatiquement
+      que la commande a échoué. En cas de difficulté persistante, l’utilisateur
+      peut contacter le support TakiDoc en indiquant les informations
+      permettant d’identifier sa transaction.
+    </p>
 
+    <h2>8. Durée de récupération des documents achetés</h2>
 
-    <!-- HEADER TAKIDOC -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="js/header.js" defer></script>
+    <p>
+      Les documents générés à la suite d’un achat sont conservés pendant
+      une durée de 72 heures à compter de leur mise à disposition, afin
+      de permettre à l’utilisateur de les récupérer.
+    </p>
+
+    <p>
+      Pendant cette période, l’utilisateur peut retrouver son document
+      dans l’espace prévu à cet effet sur TakiDoc, notamment dans son
+      profil lorsque cette fonctionnalité est disponible.
+    </p>
+
+    <p>
+      À l’expiration de cette période, le fichier généré peut être supprimé
+      automatiquement du système de récupération.
+    </p>
+
+    <div class="notice">
+      <strong>Important :</strong> l’utilisateur doit télécharger et sauvegarder
+      son document dans un emplacement personnel avant la fin du délai
+      de 72 heures. Il lui appartient de conserver une copie du fichier
+      après son téléchargement.
+    </div>
+
+    <h2>9. Annulation et remboursement</h2>
+
+    <p>
+      Toute demande relative à une transaction doit être adressée à TakiDoc
+      avec les informations permettant de retrouver l’opération concernée,
+      notamment l’adresse email utilisée, le modèle acheté et la référence
+      de paiement lorsqu’elle est disponible.
+    </p>
+
+    <p>
+      Lorsqu’un paiement a été débité mais que la commande n’a pas été
+      correctement confirmée ou que le document n’a pas été rendu accessible
+      en raison d’un problème imputable au service, TakiDoc examine la
+      situation et recherche une solution appropriée.
+    </p>
+
+    <p>
+      Un remboursement peut être envisagé lorsque les circonstances le
+      justifient, notamment en cas de paiement effectivement encaissé
+      sans fourniture du service correspondant.
+    </p>
+
+    <p>
+      Les demandes sont examinées au cas par cas, en tenant compte de l’état
+      réel de la transaction, des vérifications du prestataire de paiement
+      et des règles légales applicables.
+    </p>
+
+    <p>
+      Aucune disposition de ces conditions ne prive l’utilisateur des droits
+      dont il bénéficie en vertu des dispositions impératives applicables
+      en matière de consommation.
+    </p>
+
+    <h2>10. Commandes gratuites</h2>
+
+    <p>
+      Certains modèles peuvent être accessibles gratuitement.
+      Lorsqu’un modèle est proposé sans paiement, aucune transaction
+      Mobile Money n’est nécessaire pour accéder à la fonctionnalité
+      gratuite concernée.
+    </p>
+
+    <p>
+      L’accès aux modèles gratuits peut néanmoins être soumis à des limites
+      techniques, à des conditions d’utilisation ou à des mécanismes
+      de sécurité destinés à protéger la plateforme.
+    </p>
+
+    <h2>11. Responsabilité de l’utilisateur</h2>
+
+    <p>
+      L’utilisateur est responsable de l’exactitude des informations
+      qu’il fournit pour personnaliser son document.
+    </p>
+
+    <p>
+      Il lui appartient de vérifier le contenu final avant de l’utiliser,
+      de le signer ou de le transmettre à un tiers.
+    </p>
+
+    <p>
+      Les modèles proposés par TakiDoc sont des supports de rédaction
+      et ne constituent pas automatiquement un conseil juridique,
+      administratif, fiscal ou professionnel.
+    </p>
+
+    <h2>12. Incident technique et indisponibilité</h2>
+
+    <p>
+      Malgré les moyens mis en œuvre pour assurer le fonctionnement de
+      TakiDoc, certains événements peuvent perturber temporairement
+      les commandes ou la génération des documents.
+    </p>
+
+    <p>Ces événements peuvent notamment résulter :</p>
+
+    <ul>
+      <li>d’une interruption du réseau Internet ou mobile ;</li>
+      <li>d’une indisponibilité du prestataire de paiement ;</li>
+      <li>d’une maintenance ou d’un incident sur les serveurs ;</li>
+      <li>d’un problème technique affectant la génération du document.</li>
+    </ul>
+
+    <p>
+      TakiDoc s’efforce de traiter les incidents signalés et de rétablir
+      le service dans des délais raisonnables.
+    </p>
+
+    <h2>13. Données liées aux achats</h2>
+
+    <p>
+      Les informations nécessaires au traitement des commandes et des
+      paiements peuvent être enregistrées afin d’assurer le suivi des
+      transactions, la vérification des paiements, la mise à disposition
+      des documents et la gestion des demandes d’assistance.
+    </p>
+
+    <p>
+      Les modalités de traitement et de conservation de ces informations
+      sont détaillées dans la
+      <a href="/confidentialite.html">Politique de confidentialité</a>.
+    </p>
+
+    <h2>14. Propriété intellectuelle</h2>
+
+    <p>
+      L’achat d’un modèle ou la génération d’un document ne transfère pas
+      à l’utilisateur les droits de propriété intellectuelle attachés
+      à la plateforme, à son interface ou aux modèles protégés.
+    </p>
+
+    <p>
+      L’utilisateur peut utiliser le document obtenu pour ses besoins,
+      sous réserve des droits applicables au modèle et du respect des
+      présentes conditions.
+    </p>
+
+    <h2>15. Modification des CGV</h2>
+
+    <p>
+      TakiDoc peut modifier les présentes Conditions Générales de Vente
+      pour tenir compte de l’évolution de ses services, de ses moyens
+      de paiement ou de la réglementation applicable.
+    </p>
+
+    <p>
+      Les conditions applicables à une commande sont celles présentées
+      à l’utilisateur au moment de sa validation.
+    </p>
+
+    <h2>16. Droit applicable et règlement des différends</h2>
+
+    <p>
+      Les présentes Conditions Générales de Vente sont régies par le droit
+      de la République du Congo.
+    </p>
+
+    <p>
+      En cas de désaccord relatif à une commande, l’utilisateur est invité
+      à contacter TakiDoc afin de rechercher une solution amiable.
+      À défaut d’accord, le différend pourra être soumis aux juridictions
+      compétentes conformément aux règles légales applicables.
+    </p>
+
+    <h2>17. Contact et assistance</h2>
+
+    <p>
+      Pour toute question relative à une commande, à un paiement ou à
+      la récupération d’un document, l’utilisateur peut contacter TakiDoc :
+    </p>
+
+    <div class="contact">
+      <p><strong>Éditeur :</strong> Meurphy Talamio — TakiDoc</p>
+      <p><strong>Adresse :</strong> Avenue Malamine, quartier Moungali,
+        Brazzaville, République du Congo</p>
+      <p><strong>Email :</strong>
+        <a href="mailto:takidoc.contact@gmail.com">takidoc.contact@gmail.com</a>
+      </p>
+      <p><strong>Téléphone / WhatsApp :</strong>
+        <a href="tel:+242065186967">+242 06 518 69 67</a>
+      </p>
+    </div>
+
+  </article>
+</main>
+
+<footer>
+  <p>© 2026 TakiDoc — Tous droits réservés.</p>
+  <p>
+    <a href="/mentions-legales.html">Mentions légales</a>
+    <a href="/confidentialite.html">Confidentialité</a>
+    <a href="/cgu.html">CGU</a>
+    <a href="/cgv.html">CGV</a>
+  </p>
+</footer>
+
 </body>
 </html>
