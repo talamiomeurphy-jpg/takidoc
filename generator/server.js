@@ -585,6 +585,9 @@ async function withRenderedPage(html, reqId, task) {
 async function renderPdf(html, reqId) {
   return withRenderedPage(html, reqId, async page => {
     log(reqId, '🖨️  Génération du PDF...');
+    // Rendu « écran » : le PDF reproduit exactement l'aperçu de l'éditeur
+    // (évite que les règles @media print des modèles, ex. padding:0, suppriment les marges)
+    await page.emulateMediaType('screen');
     const pdfRaw = await page.pdf({
       format: 'A4',
       printBackground: true,
