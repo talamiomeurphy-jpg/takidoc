@@ -31,9 +31,11 @@ const MAIN = [
 ];
 
 const LEGAL = [
-    ['Conditions d’utilisation', 'conditions.html'], ['CGV', 'cgv.html'], ['Confidentialité', 'confidentialite.html'],
-    ['Mentions légales', 'mentions-legales.html'], ['Cookies', 'cookies.html'], ['Licence', 'licence.html'],
-    ['Réclamations et remboursements', 'reclamations-remboursements.html']
+    ['Conditions générales d’utilisation', 'cgu.html'],
+    ['Conditions générales de vente', 'cgv.html'],
+    ['Confidentialité', 'confidentialite.html'],
+    ['Mentions légales', 'mentions-legales.html'],
+    ['Cookies', 'cookies.html']
 ];
 
 const FALLBACK_CATS = [['cv', 'CV'], ['lettre', 'Lettres'], ['contrat', 'Contrats'], ['facture', 'Factures'], ['devis', 'Devis'],
@@ -124,28 +126,291 @@ function account() {
 
 function drawer(cur, bare) {
     const u = S.user, n = u ? displayName(u) : '';
-    return `<aside class="td-drawer" id="td-drawer" aria-label="Menu" aria-hidden="true"><div class="td-dh">${logo()}<button class="td-ib" type="button" data-close aria-label="Fermer le menu"><i class="fa-solid fa-xmark"></i></button></div> ${bare ? '' : search('td-q-m')} <div class="td-dn">${bare ? '' : MAIN.map(m => `<a class="td-dl${cur === m.id ? ' on' : ''}" href="${m.url}"> <i class="fa-solid ${m.icon}"></i>${m.name} </a>`).join('')} ${bare ? '' : `<p class="td-st">Catégories</p>${S.cats.map(c => `<a class="td-dl sub" href="${catUrl(c.id)}"><i class="fa-solid ${catIcon(c.name + ' ' + c.id)}"></i>${esc(c.name)}</a>`).join('')}`} ${u ? `<p class="td-st">Mon compte</p>${userLinks('td-dl sub')}` : ''} <p class="td-st">Informations</p>${LEGAL.map(([t, l]) => `<a class="td-dl sub" href="${l}"> <i class="fa-regular fa-file-lines"></i>${t} </a>`).join('')}</div> <div class="td-df">${u ? `<div class="td-uh"> <span class="td-av lg">${esc(initials(n))}</span> <div> <strong>${esc(n)}</strong> <small>${esc(u.email)}</small> </div> </div> <button class="td-dl out" type="button" data-logout> <i class="fa-solid fa-arrow-right-from-bracket"></i>Se déconnecter </button>` : `<a class="td-bt td-g" href="auth.html?action=login">Se connecter</a> <a class="td-bt td-p" href="auth.html?action=signup">Créer un compte</a>`}</div></aside><div class="td-ov" data-close></div>`;
+
+    const information = MAIN
+        .filter(m => m.low)
+        .map(m => `
+            <a class="td-dl sub" href="${m.url}">
+                <i class="fa-solid ${m.icon}"></i>${m.name}
+            </a>
+        `).join('');
+
+    const legalLinks = LEGAL
+        .map(([t, l]) => `
+            <a class="td-dl sub" href="${l}">
+                <i class="fa-regular fa-file-lines"></i>${t}
+            </a>
+        `).join('');
+
+    return `
+        <aside class="td-drawer" id="td-drawer"
+            aria-label="Menu principal" aria-hidden="true">
+
+            <div class="td-dh">
+                ${logo()}
+                <button class="td-ib td-close" type="button"
+                    data-close aria-label="Fermer le menu">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            ${bare ? '' : search('td-q-m')}
+
+            <div class="td-dn">
+
+                ${bare ? '' : `
+                    <p class="td-st">Navigation</p>
+
+                    ${MAIN.filter(m => !m.low).map(m => `
+                        <a class="td-dl${cur === m.id ? ' on' : ''}"
+                            href="${m.url}">
+                            <i class="fa-solid ${m.icon}"></i>
+                            ${m.name}
+                        </a>
+                    `).join('')}
+
+                    <p class="td-st">Catégories</p>
+
+                    ${S.cats.map(c => `
+                        <a class="td-dl sub" href="${catUrl(c.id)}">
+                            <i class="fa-solid ${catIcon(c.name + ' ' + c.id)}"></i>
+                            ${esc(c.name)}
+                        </a>
+                    `).join('')}
+
+                    <a class="td-dl sub td-all-mobile"
+                        href="index.html#catalog">
+                        <i class="fa-solid fa-border-all"></i>
+                        Tous les documents
+                    </a>
+                `}
+
+                ${u ? `
+                    <p class="td-st">Mon espace</p>
+                    ${userLinks('td-dl sub')}
+                ` : ''}
+
+                <p class="td-st">Découvrir TakiDoc</p>
+                ${information}
+
+                <p class="td-st">Informations légales</p>
+                ${legalLinks}
+
+            </div>
+
+            <div class="td-df">
+                ${u ? `
+                    <div class="td-uh">
+                        <span class="td-av lg">${esc(initials(n))}</span>
+                        <div>
+                            <strong>${esc(n)}</strong>
+                            <small>${esc(u.email)}</small>
+                        </div>
+                    </div>
+
+                    <button class="td-dl out" type="button" data-logout>
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        Se déconnecter
+                    </button>
+                ` : `
+                    <a class="td-bt td-g" href="auth.html?action=login">
+                        Se connecter
+                    </a>
+                    <a class="td-bt td-p" href="auth.html?action=signup">
+                        Créer un compte
+                    </a>
+                `}
+            </div>
+        </aside>
+
+        <div class="td-ov" data-close></div>
+    `;
 }
 
+function logoutDialog() {
+    if ($('#td-logout-modal', box)) return;
+
+    const modal = document.createElement('div');
+    modal.id = 'td-logout-modal';
+    modal.className = 'td-logout-overlay';
+
+    modal.innerHTML = `
+        <div class="td-logout-dialog"
+             role="alertdialog"
+             aria-modal="true"
+             aria-labelledby="td-logout-title"
+             aria-describedby="td-logout-desc">
+
+            <div class="td-logout-icon">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </div>
+
+            <h3 id="td-logout-title">
+                Voulez-vous vraiment partir ?
+            </h3>
+
+            <p id="td-logout-desc">
+                Voulez-vous vraiment vous déconnecter de TakiDoc ?
+                Vous devrez vous reconnecter pour accéder à votre espace personnel.
+            </p>
+
+            <div class="td-logout-actions">
+                <button type="button" class="td-logout-cancel">
+                    Annuler
+                </button>
+
+                <button type="button" class="td-logout-confirm">
+                    Se déconnecter
+                </button>
+            </div>
+        </div>
+    `;
+
+    box.appendChild(modal);
+
+    const cancel = $('.td-logout-cancel', modal);
+    const confirm = $('.td-logout-confirm', modal);
+
+    const close = () => {
+        modal.remove();
+        document.documentElement.classList.remove('td-lock');
+        $('[data-logout]', box)?.focus({ preventScroll: true });
+    };
+
+    cancel.addEventListener('click', close);
+
+    modal.addEventListener('click', e => {
+        if (e.target === modal) close();
+    });
+
+    const escapeHandler = e => {
+        if (e.key === 'Escape' && modal.isConnected) {
+            close();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    };
+
+    document.addEventListener('keydown', escapeHandler);
+
+    confirm.addEventListener('click', async () => {
+        confirm.disabled = true;
+        confirm.innerHTML = `
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Déconnexion...
+        `;
+
+        try {
+            const { error } = await S.sb.auth.signOut();
+
+            if (error) throw error;
+
+            location.href = CFG.home;
+        } catch (error) {
+            console.error('Erreur de déconnexion :', error);
+
+            confirm.disabled = false;
+            confirm.textContent = 'Réessayer';
+
+            let message = $('.td-logout-error', modal);
+
+            if (!message) {
+                message = document.createElement('p');
+                message.className = 'td-logout-error';
+                modal.insertBefore(message, $('.td-logout-actions', modal));
+            }
+
+            message.textContent =
+                'Impossible de vous déconnecter. Veuillez réessayer.';
+        }
+    });
+
+    document.documentElement.classList.add('td-lock');
+    cancel.focus();
+}
 function render() {
     if (!box) return;
+
     const a = document.activeElement;
-    const keep = a && box.contains(a) && a.id ? { id: a.id, v: a.value, s: a.selectionStart, e: a.selectionEnd } : null;
+
+    const keep = a && box.contains(a) && a.id
+        ? {
+            id: a.id,
+            v: a.value,
+            s: a.selectionStart,
+            e: a.selectionEnd
+        }
+        : null;
+
     const drawerWasOpen = !!$('#td-drawer.open', box);
-    const cur = page(), bare = ['auth'].includes(cur), noSearch = cur === 'editor' || cur === 'profile';
-    box.innerHTML = `<header class="td-h" role="banner"><div class="td-in">${logo()}
-       ${bare ? '<a class="td-bt td-g td-back" href="index.html"><i class="fa-solid fa-arrow-left"></i>Retour à l’accueil</a>' : nav(cur) + (noSearch ? '<span class="td-sp"></span>' : search('td-q'))}
-       ${bare ? '' : `<div class="td-act">${favBtn()}${account()}</div><button class="td-ib td-burger" type="button" data-open aria-label="Ouvrir le menu" aria-controls="td-drawer"><i class="fa-solid fa-bars"></i></button>`}
-     </div></header>${drawer(cur, bare)}`;
+
+    const cur = page();
+    const bare = ['auth'].includes(cur);
+    const noSearch = cur === 'editor' || cur === 'profile';
+
+    box.innerHTML = `
+        <header class="td-h" role="banner">
+            <div class="td-in">
+
+                ${logo()}
+
+                ${bare
+                    ? `
+                        <a class="td-bt td-g td-back" href="index.html">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            Retour à l’accueil
+                        </a>
+                    `
+                    : `
+                        ${nav(cur)}
+
+                        ${noSearch
+                            ? '<span class="td-sp"></span>'
+                            : search('td-q')
+                        }
+
+                        <div class="td-act">
+                            ${favBtn()}
+                            ${account()}
+                        </div>
+
+                        <button class="td-ib td-burger"
+                            type="button"
+                            data-open
+                            aria-label="Ouvrir le menu"
+                            aria-controls="td-drawer"
+                            aria-expanded="${drawerWasOpen}">
+                            <i class="fa-solid fa-bars"></i>
+                        </button>
+                    `
+                }
+
+            </div>
+        </header>
+
+        ${drawer(cur, bare)}
+    `;
+
     if (drawerWasOpen) {
-        $('#td-drawer', box)?.classList.add('open'); $('.td-ov', box)?.classList.add('open');
+        $('#td-drawer', box)?.classList.add('open');
+        $('.td-ov', box)?.classList.add('open');
         $('#td-drawer', box)?.setAttribute('aria-hidden', 'false');
     }
+
     if (keep) {
         const n = document.getElementById(keep.id);
+
         if (n) {
             n.focus({ preventScroll: true });
-            if (keep.v !== undefined) { n.value = keep.v; try { n.setSelectionRange(keep.s, keep.e); } catch (e) { /* type non supporté */ } }
+
+            if (keep.v !== undefined) {
+                n.value = keep.v;
+
+                try {
+                    n.setSelectionRange(keep.s, keep.e);
+                } catch (e) {
+                    /* Type non supporté */
+                }
+            }
         }
     }
 }
@@ -177,7 +442,11 @@ function bind() {
         if (trg) { const d = trg.closest('.td-dd'), o = !d.classList.contains('open'); closeMenus(d); d.classList.toggle('open', o); trg.setAttribute('aria-expanded', String(o)); return; }
         if (t.closest('[data-open]')) return setDrawer(true);
         if (t.closest('[data-close]')) return setDrawer(false);
-        if (t.closest('[data-logout]')) { e.preventDefault(); try { await S.sb?.auth.signOut(); } finally { location.href = CFG.home; } return; }
+        if (t.closest('[data-logout]')) {
+    e.preventDefault();
+    logoutDialog();
+    return;
+}
         if (t.closest('[data-readall]')) { await markRead(S.notes.filter(n => !n.is_read).map(n => String(n.id))); render(); return; }
         const note = t.closest('[data-note]'); if (note) markRead([note.dataset.note]);
         if (t.closest('.td-drawer a')) setDrawer(false);

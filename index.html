@@ -2262,6 +2262,22 @@ main {
     padding-inline: 9px;
   }
 }
+.ft {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  min-height: 48px;
+  height: auto;
+  padding: 8px 0;
+  background: rgba(255, 255, 255, .96);
+  border-top: 1px solid rgba(229, 233, 241, .95);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  color: #718098;
+  font-size: 12px;
+}
 
 
 </style>
@@ -2294,8 +2310,24 @@ main {
   <div id="sent" aria-hidden="true" hidden><span></span><span></span><span></span></div>
 </main>
 
-<footer class="ft" id="ft"><div class="wrap"><span><strong>TakiDoc</strong> © <span id="yr"></span></span>
-  <nav aria-label="Informations"><a href="a-propos.html">À propos</a><a href="contact.html">Contact</a><a href="comment-ca-marche.html">Comment ça marche</a><a href="confidentialite.html">Confidentialité</a><a href="conditions.html">Conditions d’utilisation</a><a href="mentions-legales.html">Mentions légales</a><a href="cookies.html">Cookies</a></nav></div></footer>
+<footer class="ft" id="ft">
+  <div class="wrap">
+    <span>
+      <strong>TakiDoc</strong> © <span id="yr"></span>
+    </span>
+
+    <nav aria-label="Informations et pages légales">
+      <a href="a-propos.html">À propos</a>
+      <a href="contact.html">Contact</a>
+      <a href="comment-ca-marche.html">Comment ça marche</a>
+      <a href="confidentialite.html">Confidentialité</a>
+      <a href="cgu.html">Conditions d’utilisation</a>
+      <a href="cgv.html">Conditions de vente</a>
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="cookies.html">Cookies</a>
+    </nav>
+  </div>
+</footer>
 <nav class="tab" aria-label="Navigation"><button id="tHome" class="on"><i class="fa-solid fa-house"></i>Accueil</button><button id="tSearch"><i class="fa-solid fa-magnifying-glass"></i>Rechercher</button><button id="tFav"><i class="fa-regular fa-heart"></i>Favoris</button><button id="tInfo"><i class="fa-solid fa-circle-info"></i>Infos</button></nav>
 <div id="taki-dock" aria-live="polite">
   <div class="td-panel" hidden>

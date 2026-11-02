@@ -158,7 +158,16 @@ document.querySelectorAll('.nav a').forEach(a=>a.addEventListener('click',e=>{e.
 addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();focusSearch()}});
 $('#tHome').onclick=()=>{S.favOnly&&toggleFav(false);scrollTo({top:0,behavior:'smooth'})};
 $('#tSearch').onclick=()=>{if(S.favOnly)toggleFav(false);focusSearch()};
-$('#tInfo').onclick=()=>{const o=$('#ft').classList.toggle('open');$('#tInfo').classList.toggle('on',o)};
+$('#tInfo').onclick=()=>{
+  const o=$('#ft').classList.toggle('open');
+  $('#tInfo').classList.toggle('on',o);
+
+  // Masquer Taki quand le menu Infos est ouvert
+  const taki = document.getElementById('taki-dock');
+  if (taki) {
+    taki.style.display = o ? 'none' : '';
+  }
+};
 addEventListener('click',e=>{if(!e.target.closest('#ft,#tInfo'))$('#ft').classList.remove('open')});
 let ly=0,tk=false;addEventListener('scroll',()=>{if(tk)return;tk=true;requestAnimationFrame(()=>{const y=scrollY;if(y>ly+6&&y>180)$('#top').classList.add('dn');else if(y<ly-6||y<80)$('#top').classList.remove('dn');ly=y;tk=false})},{passive:true});
 let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(()=>{if(!S.cards.length)return;if(measure())relayout()},120)}).observe(grid);
@@ -169,3 +178,4 @@ S.cat=P.get('categorie')||'all';
 try{JSON.parse(localStorage.getItem(CFG.favKey)||'[]').forEach(i=>S.fav.add(String(i)))}catch(e){}
 chips();syncFav();measure();load();
 })();
+
