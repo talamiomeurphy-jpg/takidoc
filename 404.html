@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#101828">
+<title>Page introuvable | TakiDoc</title>
+<meta name="description" content="Cette page est introuvable. Taki te ramène sur TakiDoc dans quelques secondes.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- Styles officiels de Taki -->
+<link rel="stylesheet" href="/css/taki/taki.css">
+<link rel="stylesheet" href="/css/taki/taki-animations.css">
+
+<style>
+:root{
+  --navy:#101828; --navy-2:#263650; --orange:#FF6B35; --orange-d:#E95726;
+  --orange-l:#FFF0E9; --muted:#6B778C; --line:#E4E8EF; --bg:#F7F9FC;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  min-height:100vh; min-height:100dvh;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--navy); background:var(--bg); overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{text-decoration:none;color:inherit}
+
+/* ---------- Décor ---------- */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(600px 400px at 85% 8%,rgba(255,107,53,.16),transparent 70%),
+    radial-gradient(700px 500px at 5% 95%,rgba(38,54,80,.10),transparent 70%),
+    linear-gradient(180deg,#fff 0,var(--bg) 70%);
+}
+.bg::after{
+  content:"";position:absolute;inset:0;opacity:.5;
+  background-image:radial-gradient(rgba(16,24,40,.09) 1px,transparent 1px);
+  background-size:26px 26px;
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 20%,transparent 75%);
+          mask-image:radial-gradient(ellipse at center,#000 20%,transparent 75%);
+}
+.sheet{
+  position:absolute;width:64px;height:84px;border-radius:7px;background:#fff;
+  border:1px solid var(--line);box-shadow:0 14px 30px rgba(16,24,40,.08);
+  animation:drift 9s ease-in-out infinite;
+}
+.sheet::before{content:"";position:absolute;left:10px;right:10px;top:12px;height:6px;border-radius:3px;background:var(--orange);opacity:.85}
+.sheet::after{content:"";position:absolute;left:10px;right:22px;top:28px;height:4px;border-radius:2px;background:#DDE2EA;box-shadow:0 10px 0 #DDE2EA,0 20px 0 #DDE2EA,0 30px 0 #DDE2EA}
+.sheet.s1{left:7%;top:20%;--r:-12deg;transform:rotate(-12deg)}
+.sheet.s2{right:8%;top:62%;--r:10deg;transform:rotate(10deg);animation-delay:-3s;width:54px;height:72px}
+.sheet.s3{left:14%;bottom:12%;--r:6deg;transform:rotate(6deg);animation-delay:-6s;width:48px;height:64px;opacity:.7}
+@keyframes drift{0%,100%{transform:translateY(0) rotate(var(--r))}50%{transform:translateY(-14px) rotate(calc(var(--r) + 3deg))}}
+
+/* ---------- Structure ---------- */
+.page{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+.header{
+  width:100%;max-width:1160px;margin:0 auto;padding:22px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:25px;font-weight:900;letter-spacing:-1.3px}
+.logo span{color:var(--orange)}
+.header-link{
+  font-size:13px;font-weight:700;color:var(--navy-2);
+  padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.75);
+  backdrop-filter:blur(8px);transition:.2s;
+}
+.header-link:hover{color:var(--orange);border-color:var(--orange)}
+
+.main{flex:1;display:flex;align-items:center;justify-content:center;padding:10px 20px 40px}
+
+/* ---------- Carte ---------- */
+.card{
+  position:relative;width:100%;max-width:900px;
+  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:10px;align-items:center;
+  padding:46px 46px 40px;border-radius:30px;
+  background:rgba(255,255,255,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(228,232,239,.9);
+  box-shadow:0 1px 0 #fff inset,0 30px 70px -20px rgba(16,24,40,.22),0 8px 20px -8px rgba(16,24,40,.08);
+  animation:rise .7s cubic-bezier(.2,.8,.2,1) both;
+}
+.card::before{
+  content:"";position:absolute;left:46px;right:46px;top:0;height:3px;border-radius:0 0 4px 4px;
+  background:linear-gradient(90deg,var(--orange),#FFB27A,var(--orange));
+}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+.badge{
+  display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;
+  background:var(--orange-l);color:var(--orange-d);font-size:12px;font-weight:800;letter-spacing:.2px;
+}
+.badge i{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,107,53,.5)}100%{box-shadow:0 0 0 9px rgba(255,107,53,0)}}
+
+.title{margin:18px 0 12px;font-size:clamp(28px,4.4vw,42px);font-weight:900;line-height:1.08;letter-spacing:-1.6px}
+.title em{font-style:normal;color:var(--orange)}
+.desc{margin:0;max-width:440px;font-size:15.5px;line-height:1.7;color:var(--muted)}
+
+.path{
+  display:none;margin-top:16px;max-width:100%;padding:9px 13px;border-radius:11px;
+  background:var(--bg);border:1px dashed #D3DAE6;color:var(--navy-2);
+  font:600 12.5px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.path.on{display:block}
+
+/* ---------- Compte à rebours ---------- */
+.count{
+  margin-top:24px;display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:18px;
+  background:#fff;border:1px solid var(--line);box-shadow:0 6px 16px -10px rgba(16,24,40,.2);
+}
+.ring{position:relative;flex:none;width:58px;height:58px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:5}
+.ring .track{stroke:#EEF1F6}
+.ring .bar{stroke:var(--orange);stroke-linecap:round;stroke-dasharray:157.08;stroke-dashoffset:0}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:21px;font-weight:900;letter-spacing:-.5px}
+.count-text{min-width:0;font-size:13.5px;line-height:1.45;color:var(--muted)}
+.count-text strong{display:block;color:var(--navy);font-size:14.5px;font-weight:800}
+
+.actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:20px}
+.btn{
+  min-height:50px;padding:0 24px;border-radius:14px;border:0;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font:800 13.5px Inter,sans-serif;transition:.2s ease;
+}
+.btn-primary{color:#fff;background:linear-gradient(180deg,#FF7A47,var(--orange));box-shadow:0 10px 22px -6px rgba(255,107,53,.55)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 26px -6px rgba(255,107,53,.6)}
+.btn-ghost{color:var(--navy);background:#fff;border:1px solid var(--line)}
+.btn-ghost:hover{color:var(--orange);border-color:var(--orange);transform:translateY(-2px)}
+.btn:focus-visible,.header-link:focus-visible{outline:3px solid rgba(255,107,53,.45);outline-offset:3px}
+
+/* ---------- Taki (taille maîtrisée) ---------- */
+.stage{position:relative;display:flex;align-items:center;justify-content:center;min-height:250px}
+.stage::before{
+  content:"";position:absolute;width:250px;height:250px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,107,53,.22),rgba(255,107,53,0) 68%);
+}
+.ghost404{
+  position:absolute;top:-6px;right:-4px;font-size:84px;font-weight:950;letter-spacing:-5px;line-height:1;
+  color:var(--navy);opacity:.07;user-select:none;pointer-events:none;
+}
+#taki-404{position:relative;width:100%;max-width:230px}
+#taki-404 .taki{width:100%;max-width:230px;margin:0 auto}
+#taki-404 .taki__svg{display:block;width:100%;height:auto;max-height:260px}
+
+.foot{padding:18px;text-align:center;font-size:11.5px;color:#929BAD}
+.foot strong{color:var(--navy)}
+
+/* ---------- Mobile ---------- */
+@media (max-width:760px){
+  .header{padding:18px 20px}
+  .logo{font-size:22px}
+  .card{grid-template-columns:1fr;gap:0;padding:26px 22px 26px;border-radius:24px;text-align:center}
+  .card::before{left:22px;right:22px}
+  .stage{order:-1;min-height:0;margin-bottom:6px}
+  .stage::before{width:170px;height:170px}
+  .ghost404{font-size:56px;right:6px;top:-4px}
+  #taki-404,#taki-404 .taki{max-width:140px}
+  #taki-404 .taki__svg{max-height:150px}
+  .desc{margin:0 auto;font-size:14.5px}
+  .count{text-align:left}
+  .actions{flex-direction:column}
+  .btn{width:100%}
+  .path{margin-left:auto;margin-right:auto}
+  .sheet.s1,.sheet.s3{display:none}
+}
+@media (max-height:640px) and (min-width:761px){
+  #taki-404,#taki-404 .taki{max-width:180px}
+  .card{padding:32px 40px 28px}
+  .stage{min-height:200px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+
+<body>
+<div class="bg" aria-hidden="true">
+  <span class="sheet s1"></span><span class="sheet s2"></span><span class="sheet s3"></span>
+</div>
+
+<div class="page">
+  <header class="header">
+    <a href="/" class="logo" aria-label="Accueil TakiDoc">Taki<span>Doc</span></a>
+    <a href="/" class="header-link">Accueil →</a>
+  </header>
+
+  <main class="main">
+    <section class="card" aria-labelledby="t">
+      <div class="content">
+        <span class="badge"><i></i>Erreur 404</span>
+        <h1 class="title" id="t">Oups ! Cette page <em>s’est égarée.</em></h1>
+        <p class="desc">Le document que tu cherches a pris un autre chemin, ou l’adresse n’existe plus. Pas d’inquiétude, Taki te ramène à l’accueil.</p>
+        <div class="path" id="path" title=""></div>
+
+        <div class="count" role="timer" aria-live="off">
+          <div class="ring">
+            <svg viewBox="0 0 58 58" aria-hidden="true">
+              <circle class="track" cx="29" cy="29" r="25"/>
+              <circle class="bar" id="bar" cx="29" cy="29" r="25"/>
+            </svg>
+            <b id="num">8</b>
+          </div>
+          <div class="count-text" aria-live="polite">
+            <strong id="ctitle">Redirection automatique</strong>
+            <span id="csub">Retour à l’accueil dans 8 secondes</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a href="/" class="btn btn-primary" id="go">Retourner maintenant à l’accueil</a>
+          <button type="button" class="btn btn-ghost" id="toggle">Rester sur cette page</button>
+        </div>
+      </div>
+
+      <div class="stage">
+        <span class="ghost404" aria-hidden="true">404</span>
+        <div id="taki-404"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><strong>TakiDoc</strong> · Les bons documents. Les bonnes impressions.</footer>
+</div>
+
+<!-- Moteur officiel de Taki -->
+<script src="/js/taki/taki.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ===== Réglages ===== */
+  var DELAY = 8;          // secondes avant la redirection
+  var TARGET = '/';       // page d'accueil
+
+  var num = document.getElementById('num');
+  var bar = document.getElementById('bar');
+  var csub = document.getElementById('csub');
+  var ctitle = document.getElementById('ctitle');
+  var toggle = document.getElementById('toggle');
+  var go = document.getElementById('go');
+  var CIRC = 2 * Math.PI * 25;
+
+  /* ===== Adresse demandée ===== */
+  try {
+    var p = location.pathname + location.search;
+    if (p && p !== '/' && !/\/404(\.html)?$/.test(location.pathname)) {
+      var el = document.getElementById('path');
+      el.textContent = p;
+      el.title = p;
+      el.classList.add('on');
+    }
+  } catch (e) {}
+
+  /* ===== Compte à rebours (indépendant de Taki) ===== */
+  var remaining = DELAY * 1000;
+  var last = 0, raf = 0, running = false, done = false;
+
+  function label(sec) { return sec + (sec > 1 ? ' secondes' : ' seconde'); }
+
+  function render() {
+    var sec = Math.max(0, Math.ceil(remaining / 1000));
+    num.textContent = sec;
+    bar.style.strokeDasharray = CIRC;
+    bar.style.strokeDashoffset = CIRC * (1 - remaining / (DELAY * 1000));
+    if (running) csub.textContent = 'Retour à l’accueil dans ' + label(sec);
+  }
+
+  function leave() {
+    if (done) return;
+    done = true;
+    cancelAnimationFrame(raf);
+    ctitle.textContent = 'Redirection…';
+    csub.textContent = 'On y va !';
+    location.replace(TARGET);
+  }
+
+  function tick(now) {
+    if (!running) return;
+    remaining -= now - last;
+    last = now;
+    if (remaining <= 0) { remaining = 0; render(); leave(); return; }
+    render();
+    raf = requestAnimationFrame(tick);
+  }
+
+  function start() {
+    if (done) return;
+    running = true;
+    last = performance.now();
+    ctitle.textContent = 'Redirection automatique';
+    toggle.textContent = 'Rester sur cette page';
+    raf = requestAnimationFrame(tick);
+  }
+
+  function pause() {
+    running = false;
+    cancelAnimationFrame(raf);
+    ctitle.textContent = 'Redirection en pause';
+    csub.textContent = 'Tu restes ici. Reprends quand tu veux.';
+    toggle.textContent = 'Reprendre le compte à rebours';
+  }
+
+  toggle.addEventListener('click', function () {
+    if (running) pause();
+    else { if (remaining <= 0) remaining = DELAY * 1000; start(); }
+  });
+
+  go.addEventListener('click', function (e) {
+    e.preventDefault();
+    leave();
+  });
+
+  /* Pause automatique si l'onglet est caché, reprise au retour */
+  document.addEventListener('visibilitychange', function () {
+    if (done) return;
+    if (document.hidden) { if (running) { running = false; cancelAnimationFrame(raf); } }
+    else if (toggle.textContent.indexOf('Rester') === 0) { start(); }
+  });
+
+  render();
+  start();
+
+  /* ===== Taki : chargement tolérant aux erreurs ===== */
+  function mountTaki() {
+    var host = document.getElementById('taki-404');
+    if (!host || !window.TakiMascot || typeof window.TakiMascot.mount !== 'function') return;
+    Promise.resolve(
+      window.TakiMascot.mount(host, {
+        templateUrl: '/components/taki/taki.html',
+        initialState: 'error',
+        message: 'Oups ! Je crois que cette page s’est égarée.'
+      })
+    ).catch(function (err) {
+      console.error('Taki n’a pas pu être chargé :', err);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountTaki);
+  else mountTaki();
+})();
+</script>
+</body>
+</html>
