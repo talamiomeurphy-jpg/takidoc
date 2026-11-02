@@ -1,0 +1,138 @@
+/* TAKIDOC — PAGES JURIDIQUES */
+:root {
+  --legal-blue: #102b50;
+  --legal-blue-light: #eaf3ff;
+  --legal-orange: #ff8a32;
+  --legal-text: #26364a;
+  --legal-muted: #718096;
+  --legal-border: #e5ebf2;
+  --legal-white: #fff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #f5f8fc;
+  color: var(--legal-text);
+  font-family: Inter, Arial, sans-serif;
+  line-height: 1.75;
+}
+
+.legal-header {
+  background: var(--legal-white);
+  border-bottom: 1px solid var(--legal-border);
+  padding: 17px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.legal-brand {
+  color: var(--legal-blue);
+  font-size: 23px;
+  font-weight: 850;
+  text-decoration: none;
+  letter-spacing: -.7px;
+}
+
+.legal-brand span { color: var(--legal-orange); }
+
+.legal-back {
+  color: var(--legal-blue);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.legal-hero {
+  background: linear-gradient(120deg, #102b50, #1e4775);
+  color: white;
+  padding: 55px 20px 65px;
+  text-align: center;
+}
+
+.legal-hero small {
+  color: #ffc18f;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.legal-hero h1 {
+  margin: 12px 0;
+  font-size: clamp(28px, 5vw, 42px);
+  line-height: 1.2;
+}
+
+.legal-hero p {
+  margin: 0;
+  color: #d9e7f8;
+}
+
+.legal-container {
+  width: min(900px, calc(100% - 32px));
+  margin: -25px auto 55px;
+  position: relative;
+  background: white;
+  border: 1px solid var(--legal-border);
+  border-radius: 18px;
+  padding: clamp(22px, 5vw, 55px);
+  box-shadow: 0 12px 40px rgba(16,43,80,.07);
+}
+
+.legal-container h2 {
+  color: var(--legal-blue);
+  font-size: 20px;
+  margin: 32px 0 10px;
+  line-height: 1.4;
+}
+
+.legal-container h2:first-child { margin-top: 0; }
+
+.legal-container p,
+.legal-container li { font-size: 15px; }
+
+.legal-container ul { padding-left: 23px; }
+
+.legal-container li { margin: 5px 0; }
+
+.legal-container a {
+  color: #1767b2;
+  overflow-wrap: anywhere;
+}
+
+.legal-date {
+  color: var(--legal-muted);
+  font-size: 13px;
+  margin-bottom: 28px;
+}
+
+.legal-note {
+  background: var(--legal-blue-light);
+  border-left: 4px solid var(--legal-orange);
+  padding: 15px 18px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.legal-footer {
+  text-align: center;
+  padding: 25px 15px;
+  color: var(--legal-muted);
+  font-size: 13px;
+}
+
+.legal-footer a {
+  color: var(--legal-blue);
+  text-decoration: none;
+  margin: 0 8px;
+}
+
+@media (max-width: 600px) {
+  .legal-header { padding: 14px 18px; }
+  .legal-brand { font-size: 20px; }
+  .legal-hero { padding: 42px 18px 55px; }
+  .legal-container { border-radius: 13px; }
+}
